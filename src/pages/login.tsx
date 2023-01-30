@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import {NextPage} from "next";
 import {initFirebase} from "@/service/firebase";
 import {getAuth, GoogleAuthProvider, signInWithPopup} from "@firebase/auth";
@@ -16,12 +16,13 @@ const Login: NextPage = () => {
         return <div>Loading</div>
     }
     if (user) {
-        router.push({pathname: "/welcome", query: {uid: user.uid}})
+        router.push("/dashboard")
         return <div>Loading</div>
     }
 
     const signIn = async () => {
         const result = await signInWithPopup(auth, provider);
+        console.log(result.user)
     }
 
     return (
