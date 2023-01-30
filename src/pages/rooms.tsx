@@ -3,14 +3,16 @@ import {NextPage} from "next";
 import React, {useState} from "react";
 
 const makeRoom: NextPage = () =>{
-    const [RoomsInfo, setRoomInfo] = useState();
-    const [RoomName, setRoomName] = useState();
+    const [RoomsInfo, setRoomInfo] = useState<string|null>();
+    const [RoomName, setRoomName] = useState<string|null>();
+    const [RoomPage, setRoomPage] = useState<string|number|null>(0);
+
     const getRooms = async() =>{
-        const response = await fetch(`api/rooms`, {
+        const response = await fetch(`api/rooms?page=${RoomPage}`, {
             method: "GET",
             headers:{
                 'Content-Type': 'application/json'
-            }
+            },
         });
         console.log("response");
         const resJson = await response.json();
@@ -44,14 +46,21 @@ const makeRoom: NextPage = () =>{
         }
     }
 
-    const setName = (e:any) => {
+    const setName = (e:React.ChangeEvent<HTMLInputElement>) => {
         const {target: {value}} = e;
         setRoomName(value);
     }
 
+    const changePageNum = (e:React.ChangeEvent<HTMLInputElement>)=> {
+        const {target: {value}} = e;
+        setRoomPage(value);
+    }
+
+
     return(
         <>
             <h1>rooms page</h1>
+            <input id="pageNum" placeholder="페이지 번호" onChange={changePageNum}></input>
             <button id="getBtn" onClick={getRooms}>GET</button>    
             <br/>
             <input id="roomName" placeholder="방 제목" onChange={setName}></input>

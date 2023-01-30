@@ -4,13 +4,27 @@ import toJson from "./bigIntToJson";
 import { json } from "stream/consumers";
 
 export default async function userHandler(req: NextApiRequest, res: NextApiResponse) {
+    const roomNumPerPage = 30;
     const {body, method} = req;
     switch (method) {
         case 'GET':
-            const rooms = await client.room.findMany()
-            return res.status(200).json(
-                toJson(rooms)
-            );
+            var pageNum;
+            const page = req.query.page;
+            typeof(page)==='string'? pageNum = parseInt(page): null;
+            if(pageNum === undefined) return res.status(404).end("잘못된 페이지네이션 값입니다.") //page이 string[]혹은 undefined 일 경우
+            
+            const rooms = await client.room.findMany({
+                skip: pageNum * roomNumPerPage,
+                take: roomNumPerPage,
+            })
+            console.log(typeof(rooms));
+            if(rooms.length === 0) 
+                return res.status(404).end("더이상 공부방이 존재하지 않습니다.");
+            else 
+                return res.status(200).json(
+                    toJson(rooms)
+                );
+
         case 'POST':
             if(body.password && JSON.stringify(body.password).length-2 < 4){ //큰 따옴표 제외
                 res.status(400).end("비밀번호는 4자 이상으로 설정해야 합니다.")
