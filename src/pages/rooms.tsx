@@ -22,8 +22,16 @@ const makeRoom: NextPage = () =>{
     const createRoom = async () => {
         const response = await fetch(`api/rooms`, {
             method: "POST",
-            body: JSON.stringify({
-                title:RoomName,
+            body: JSON.stringify({ //예시 값
+                id:"room10Id",      
+                master_id:"masterId",  
+                password:"1111", 
+                title: RoomName,
+                timer: 40,           
+                short_break:10,
+                long_break:15,    
+                long_break_interval: 3,
+                expired_at: '2021-08-21T12:30:00.000Z',   
             }),
             headers:{
                 'Content-Type': 'application/json'
