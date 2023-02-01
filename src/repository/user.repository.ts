@@ -1,5 +1,6 @@
 import { user_account } from ".prisma/client";
 import prisma from "../../prisma/client";
+import { UserStatus } from "@/models/user/UserStatus";
 
 export const createUser = async (
   uid: string,
@@ -16,8 +17,7 @@ export const createUser = async (
       name: name,
       introduce: introduce,
       score: 0,
-      // TODO: Enum으로 바꾸기
-      status: "login",
+      status: UserStatus.LOGIN,
       user_tag: {
         createMany: {
           data: [...tagIdsDto],
