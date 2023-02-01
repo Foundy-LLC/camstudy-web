@@ -11,7 +11,6 @@ import {
 import { string } from "prop-types";
 import { NextApiRequest, NextApiResponse } from "next";
 
-// TODO: 테스트 코드 작성하기
 export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: 로깅하기
   try {
