@@ -1,10 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "prisma/client";
-import { uuidv4 } from "@firebase/util";
 import {
   NO_NAME_OR_TAG_ERROR,
   PROFILE_CREATE_SUCCESS,
 } from "@/constants/message";
+import {
+  createTagsIfNotExists,
+  findTagIdsByTagName,
+} from "@/repository/tag.repository";
+import { createUser } from "@/repository/user.repository";
 
 export default async function userHandler(
   req: NextApiRequest,
@@ -27,62 +30,30 @@ export default async function userHandler(
         req.body.tags === null
       ) {
         res.status(400).json(NO_NAME_OR_TAG_ERROR);
+        return;
       }
-
-      let tagName: { name: { contains: string } }[] = [];
-      let tagId;
 
       try {
         /**
          * 태그 테이블에 태그 추가
          */
-        let arr: { id: string; name: string }[] = [];
-        req.body.tags.forEach((tag: string) => {
-          arr.push({ id: uuidv4(), name: tag });
-          tagName.push({ name: { contains: tag } });
-        });
-        const tag = await prisma.tag.createMany({
-          data: [...arr],
-          skipDuplicates: true,
-        });
+        await createTagsIfNotExists(req.body.tags);
+
         /**
          * 태그 id 검색
          */
-        tagId = await prisma.tag.findMany({
-          where: {
-            OR: [...tagName],
-          },
-          select: {
-            id: true,
-          },
-        });
-        console.log(tagId);
+        const tagIds = await findTagIdsByTagName(req.body.tags);
+
+        console.log(tagIds);
         /**
          * 유저 생성
          */
-        let newTagId: { tag_id: string }[] = [];
-        tagId.map((x) => {
-          let y = {
-            tag_id: "",
-          };
-          y["tag_id"] = x["id"];
-          newTagId.push(y);
-        });
-        const response = await prisma.user_account.create({
-          data: {
-            id: req.body.uid,
-            name: req.body.name,
-            introduce: req.body.introduce,
-            score: 0,
-            status: "login",
-            user_tag: {
-              createMany: {
-                data: [...newTagId],
-              },
-            },
-          },
-        });
-        console.log(response);
+        await createUser(
+          req.body.uid,
+          req.body.name,
+          req.body.introduce,
+          tagIds
+        );
       } catch (e) {
         throw e;
       }
