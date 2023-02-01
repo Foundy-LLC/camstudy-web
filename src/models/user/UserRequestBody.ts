@@ -15,7 +15,8 @@ export class UserRequestBody {
     this._validateUid();
     this._validateName();
     this._validateIntroduce();
-    this.tags = this._filterNotEmptyTags(tags);
+    this.tags = this._filterNotEmptyTags(this.tags);
+    this.tags = this._filterDuplicatedTags(this.tags);
     this._validateTags();
   }
 
@@ -37,7 +38,11 @@ export class UserRequestBody {
     validateUserTags(this.tags);
   };
 
-  private _filterNotEmptyTags = (tags: string[]) => {
+  private _filterNotEmptyTags = (tags: string[]): string[] => {
     return tags?.filter((tag) => tag.trim().length > 0);
+  };
+
+  private _filterDuplicatedTags = (tags: string[]): string[] => {
+    return [...new Set(tags)];
   };
 }

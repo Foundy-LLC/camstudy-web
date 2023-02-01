@@ -119,6 +119,17 @@ describe("UserRequestBody", () => {
     // then
     expect(user.tags.length).toBe(1);
   });
+
+  it("should filter duplicated tags", () => {
+    // given
+    const tags = ["hi", "bye", "hi"];
+
+    // when
+    const user = new UserRequestBody("uid", "name", "intro", tags);
+
+    // then
+    expect(user.tags.length).toBe(2);
+  });
 });
 
 export {};
