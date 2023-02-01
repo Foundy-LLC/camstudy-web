@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { UserRequestBody } from "@/models/user.model";
 import {
   createTagsIfNotExists,

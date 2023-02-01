@@ -1,7 +1,7 @@
-import { Prisma, tag } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import prisma from "../../prisma/client";
-import tagWhereInput = Prisma.tagWhereInput;
 import { uuidv4 } from "@firebase/util";
+import tagWhereInput = Prisma.tagWhereInput;
 
 export const createTagsIfNotExists = async (tagNames: string[]) => {
   const data: { id: string; name: string }[] = tagNames.map((tagName) => {

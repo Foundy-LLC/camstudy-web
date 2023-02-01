@@ -1,10 +1,10 @@
 import { UserRequestBody } from "@/models/user.model";
 import {
+  NO_TAG_ERROR_MESSAGE,
+  NO_USER_NAME_ERROR_MESSAGE,
+  TAG_LENGTH_ERROR_MESSAGE,
   USER_INTRODUCE_LENGTH_ERROR_MESSAGE,
   USER_NAME_LENGTH_ERROR_MESSAGE,
-  NO_USER_NAME_ERROR_MESSAGE,
-  NO_TAG_ERROR_MESSAGE,
-  TAG_LENGTH_ERROR_MESSAGE,
 } from "@/constants/message";
 
 describe("UserRequestBody", () => {
