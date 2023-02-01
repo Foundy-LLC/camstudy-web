@@ -11,7 +11,7 @@ const prisma = new PrismaClient()
 const newUser = async () => {
   await prisma.user_account.create({
     data: {
-      id: 1,
+      id: 'test_id',
       name: 'test',
       introduce: 'hi',
       score: 0,
