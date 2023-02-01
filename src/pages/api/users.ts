@@ -9,8 +9,6 @@ export default async function userHandler(
   console.log(req.body);
 
   switch (method) {
-    case "GET":
-      break;
     case "POST":
       await postUser(req, res);
       break;

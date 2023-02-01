@@ -15,7 +15,7 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: 로깅하기
   try {
     const userCreateBody = new UserRequestBody(
-      req.body.uid,
+      req.body.userId,
       req.body.name,
       req.body.introduce,
       req.body.tags

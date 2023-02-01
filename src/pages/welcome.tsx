@@ -3,11 +3,15 @@ import React, { useState } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { auth } from "src/service/firebase";
+import { UserRequestBody } from "@/models/user/UserRequestBody";
 
 const Welcome: NextPage = () => {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const uid = user?.uid;
+  if (uid == null) {
+    throw ReferenceError("회원 정보가 존재하지 않습니다.");
+  }
   const [name, setName] = useState("");
   const [introduce, setIntroduce] = useState("");
   const [tags, setTags] = useState("");
@@ -27,14 +31,11 @@ const Welcome: NextPage = () => {
   };
 
   const createUser = async () => {
-    const response = await fetch(`api/users/${uid}`, {
+    const response = await fetch(`api/users`, {
       method: "POST",
-      body: JSON.stringify({
-        uid: uid,
-        name: name,
-        introduce: introduce,
-        tags: tags.split(" "),
-      }),
+      body: JSON.stringify(
+        new UserRequestBody(uid, name, introduce, tags.split(" "))
+      ),
       headers: {
         "Content-Type": "application/json",
       },
