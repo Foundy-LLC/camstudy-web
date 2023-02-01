@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import { NextPage } from "next";
 import { initFirebase } from "@/service/firebase";
-import {getAuth, GithubAuthProvider, GoogleAuthProvider, signInWithPopup} from "@firebase/auth";
+import {
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "@firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
+import { auth } from "src/service/firebase";
 
 const Login: NextPage = () => {
   initFirebase();
   const googleAuthProvider = new GoogleAuthProvider();
   const githubAuthProvider = new GithubAuthProvider();
-  const auth = getAuth();
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
 

@@ -1,13 +1,10 @@
-import { getAuth } from "@firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import React, { useState } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import setProfile from "@/controller/users";
+import { auth } from "src/service/firebase";
 
 const Welcome: NextPage = () => {
-  const auth = getAuth();
-
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const uid = user?.uid;
