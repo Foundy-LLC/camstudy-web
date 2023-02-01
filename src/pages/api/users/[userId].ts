@@ -1,13 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {
-  NO_NAME_OR_TAG_ERROR,
   PROFILE_CREATE_SUCCESS,
+  SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
 import {
   createTagsIfNotExists,
   findTagIdsByTagName,
 } from "@/repository/tag.repository";
 import { createUser } from "@/repository/user.repository";
+import { UserCreateBody } from "@/models/user.model";
+import { string } from "prop-types";
 
 export default async function userHandler(
   req: NextApiRequest,
@@ -20,44 +22,34 @@ export default async function userHandler(
     case "GET":
       break;
     case "POST":
-      /**
-       * 필수 값(이름, 태그) 체크
-       */
-      if (
-        req.body.name === undefined ||
-        req.body.name === null ||
-        req.body.tags === undefined ||
-        req.body.tags === null
-      ) {
-        res.status(400).json(NO_NAME_OR_TAG_ERROR);
-        return;
-      }
-
       try {
-        /**
-         * 태그 테이블에 태그 추가
-         */
-        await createTagsIfNotExists(req.body.tags);
+        const userCreateBody = new UserCreateBody(
+          req.body.uid,
+          req.body.name,
+          req.body.introduce,
+          req.body.tags
+        );
 
-        /**
-         * 태그 id 검색
-         */
+        await createTagsIfNotExists(userCreateBody.tags);
+
         const tagIds = await findTagIdsByTagName(req.body.tags);
-
         console.log(tagIds);
-        /**
-         * 유저 생성
-         */
+
         await createUser(
           req.body.uid,
           req.body.name,
           req.body.introduce,
           tagIds
         );
+        res.status(201).json(PROFILE_CREATE_SUCCESS);
       } catch (e) {
-        throw e;
+        if (e instanceof string) {
+          res.status(400).end(e);
+          return;
+        }
+        res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
+        return;
       }
-      res.status(201).json(PROFILE_CREATE_SUCCESS);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);
