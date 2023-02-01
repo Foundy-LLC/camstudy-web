@@ -1,7 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "prisma/client";
 import { uuidv4 } from "@firebase/util";
-import { setProfileErr, setProfileMsg } from "@/constants/message";
+import {
+  NO_NAME_OR_TAG_ERROR,
+  PROFILE_CREATE_SUCCESS,
+} from "@/constants/message";
 
 export default async function userHandler(
   req: NextApiRequest,
@@ -23,7 +26,7 @@ export default async function userHandler(
         req.body.tags === undefined ||
         req.body.tags === null
       ) {
-        res.status(400).json(setProfileErr);
+        res.status(400).json(NO_NAME_OR_TAG_ERROR);
       }
 
       let tagName: { name: { contains: string } }[] = [];
@@ -83,7 +86,7 @@ export default async function userHandler(
       } catch (e) {
         throw e;
       }
-      res.status(201).json(setProfileMsg);
+      res.status(201).json(PROFILE_CREATE_SUCCESS);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);
