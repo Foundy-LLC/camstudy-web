@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { NextPage } from "next";
 import { initFirebase } from "@/service/firebase";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "@firebase/auth";
+import {getAuth, GithubAuthProvider, GoogleAuthProvider, signInWithPopup} from "@firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 
 const Login: NextPage = () => {
   initFirebase();
-  const provider = new GoogleAuthProvider();
+  const googleAuthProvider = new GoogleAuthProvider();
+  const githubAuthProvider = new GithubAuthProvider();
   const auth = getAuth();
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
@@ -20,13 +21,17 @@ const Login: NextPage = () => {
     return <div>Loading</div>;
   }
 
-  const signIn = async () => {
-    const result = await signInWithPopup(auth, provider);
+  const GoogleSignIn = async () => {
+    const result = await signInWithPopup(auth, googleAuthProvider);
+  };
+  const GithubSignIn = async () => {
+    const result = await signInWithPopup(auth, githubAuthProvider);
   };
 
   return (
     <div>
-      <button onClick={signIn}>Sign In</button>
+      <button onClick={GoogleSignIn}>Google Sign In</button>
+      <button onClick={GithubSignIn}>Github Sign In</button>
     </div>
   );
 };

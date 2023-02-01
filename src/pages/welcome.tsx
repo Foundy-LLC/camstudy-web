@@ -13,9 +13,9 @@ const Welcome: NextPage = () => {
   const uid = user?.uid;
   const [name, setName] = useState("");
   const [introduce, setIntroduce] = useState("");
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState("");
 
-  const onChange = (e: any) => {
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     switch (e.target.id) {
       case "name":
         setName(e.target.value); //이벤트 발생한 value값으로 {text} 변경
@@ -36,7 +36,7 @@ const Welcome: NextPage = () => {
         uid: uid,
         name: name,
         introduce: introduce,
-        tags: tags.toString().split(" "),
+        tags: tags.split(" "),
       }),
       headers: {
         "Content-Type": "application/json",
