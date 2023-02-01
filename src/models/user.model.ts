@@ -1,9 +1,9 @@
 import {
-  INTRODUCE_LENGTH_ERROR_MESSAGE,
-  NAME_LENGTH_ERROR_MESSAGE,
-  NO_NAME_ERROR_MESSAGE,
+  USER_INTRODUCE_LENGTH_ERROR_MESSAGE,
+  USER_NAME_LENGTH_ERROR_MESSAGE,
+  NO_USER_NAME_ERROR_MESSAGE,
   NO_TAG_ERROR_MESSAGE,
-  NO_UID_ERROR_MESSAGE,
+  NO_USER_UID_ERROR_MESSAGE,
   TAG_LENGTH_ERROR_MESSAGE,
 } from "@/constants/message";
 import {
@@ -28,7 +28,7 @@ export class UserRequestBody {
 
   private _validateUid = () => {
     if (this.userId == null) {
-      throw NO_UID_ERROR_MESSAGE;
+      throw NO_USER_UID_ERROR_MESSAGE;
     }
   };
 
@@ -45,6 +45,6 @@ export class UserRequestBody {
   };
 
   private _filterNotEmptyTags = (tags: string[]) => {
-    return tags.filter((tag) => tag.trim().length > 0);
+    return tags?.filter((tag) => tag.trim().length > 0);
   };
 }

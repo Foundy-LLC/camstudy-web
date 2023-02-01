@@ -1,7 +1,10 @@
 import { UserRequestBody } from "@/models/user.model";
 import {
-  NAME_LENGTH_ERROR_MESSAGE,
-  NO_NAME_ERROR_MESSAGE,
+  USER_INTRODUCE_LENGTH_ERROR_MESSAGE,
+  USER_NAME_LENGTH_ERROR_MESSAGE,
+  NO_USER_NAME_ERROR_MESSAGE,
+  NO_TAG_ERROR_MESSAGE,
+  TAG_LENGTH_ERROR_MESSAGE,
 } from "@/constants/message";
 
 describe("UserRequestBody", () => {
@@ -25,7 +28,7 @@ describe("UserRequestBody", () => {
     // then
     expect(() => {
       createUser();
-    }).toThrowError(new Error(NO_NAME_ERROR_MESSAGE));
+    }).toThrowError(new Error(NO_USER_NAME_ERROR_MESSAGE));
   });
 
   it("should throw error when name length is out of range", () => {
@@ -40,7 +43,81 @@ describe("UserRequestBody", () => {
     // then
     expect(() => {
       createUser();
-    }).toThrowError(new Error(NAME_LENGTH_ERROR_MESSAGE));
+    }).toThrowError(new Error(USER_NAME_LENGTH_ERROR_MESSAGE));
+  });
+
+  it("should throw error when introduce length is out of range", () => {
+    // given
+    let introduce: string = "";
+    for (let i = 0; i < 101; ++i) {
+      introduce += "k";
+    }
+
+    // when
+    const createUser = () => {
+      return new UserRequestBody("uid", "name", introduce, ["tag"]);
+    };
+
+    // then
+    expect(() => {
+      createUser();
+    }).toThrowError(new Error(USER_INTRODUCE_LENGTH_ERROR_MESSAGE));
+  });
+
+  it("should throw error when tags is null", () => {
+    // given
+    const tags: any = undefined;
+
+    // when
+    const createUser = () => {
+      return new UserRequestBody("uid", "name", "intro", tags);
+    };
+
+    // then
+    expect(() => {
+      createUser();
+    }).toThrowError(new Error(NO_TAG_ERROR_MESSAGE));
+  });
+
+  it("should throw error when all tags are blank", () => {
+    // given
+    const tags = [" ", "   "];
+
+    // when
+    const createUser = () => {
+      return new UserRequestBody("uid", "name", "intro", tags);
+    };
+
+    // then
+    expect(() => {
+      createUser();
+    }).toThrowError(new Error(NO_TAG_ERROR_MESSAGE));
+  });
+
+  it("should throw error when some tag length is out of range", () => {
+    // given
+    const tags = [" ", "123456789012345678901"];
+
+    // when
+    const createUser = () => {
+      return new UserRequestBody("uid", "name", "intro", tags);
+    };
+
+    // then
+    expect(() => {
+      createUser();
+    }).toThrowError(new Error(TAG_LENGTH_ERROR_MESSAGE));
+  });
+
+  it("should filter blank tags", () => {
+    // given
+    const tags = [" ", "  ", "hi"];
+
+    // when
+    const user = new UserRequestBody("uid", "name", "intro", tags);
+
+    // then
+    expect(user.tags.length).toBe(1);
   });
 });
 
