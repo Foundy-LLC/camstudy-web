@@ -23,10 +23,15 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
 
     await createTagsIfNotExists(userCreateBody.tags);
 
-    const tagIds = await findTagIdsByTagName(req.body.tags);
+    const tagIds = await findTagIdsByTagName(userCreateBody.tags);
     console.log(tagIds);
 
-    await createUser(req.body.uid, req.body.name, req.body.introduce, tagIds);
+    await createUser(
+      userCreateBody.uid,
+      userCreateBody.name,
+      userCreateBody.introduce,
+      tagIds
+    );
     res.status(201).json(PROFILE_CREATE_SUCCESS);
   } catch (e) {
     if (e instanceof string) {

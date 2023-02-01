@@ -4,7 +4,7 @@ import prisma from "../../prisma/client";
 export const createUser = async (
   uid: string,
   name: string,
-  introduce: string,
+  introduce: string | undefined,
   tagIds: { id: string }[]
 ): Promise<user_account> => {
   const tagIdsDto: { tag_id: string }[] = tagIds.map((tag) => {
