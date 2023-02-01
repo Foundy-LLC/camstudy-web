@@ -1,4 +1,4 @@
-import { UserRequestBody } from "@/models/user.model";
+import { UserRequestBody } from "@/models/user/UserRequestBody";
 import {
   createTagsIfNotExists,
   findTagIdsByTagName,

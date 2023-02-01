@@ -1,4 +1,4 @@
-import { UserRequestBody } from "@/models/user.model";
+import { UserRequestBody } from "@/models/user/UserRequestBody";
 import {
   NO_TAG_ERROR_MESSAGE,
   NO_USER_NAME_ERROR_MESSAGE,
