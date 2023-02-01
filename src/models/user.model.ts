@@ -1,33 +1,50 @@
 import {
+  INTRODUCE_LENGTH_ERROR_MESSAGE,
+  NAME_LENGTH_ERROR_MESSAGE,
   NO_NAME_ERROR_MESSAGE,
   NO_TAG_ERROR_MESSAGE,
+  NO_UID_ERROR_MESSAGE,
+  TAG_LENGTH_ERROR_MESSAGE,
 } from "@/constants/message";
+import {
+  validateUserIntroduce,
+  validateUserName,
+  validateUserTags,
+} from "@/utils/user.validator";
 
-export class UserCreateBody {
+export class UserRequestBody {
   constructor(
-    readonly uid: string,
+    readonly userId: string,
     readonly name: string,
     readonly introduce: string | undefined,
     readonly tags: string[]
   ) {
-    this.validateName(name);
-    this.validateTags(tags);
-    this.tags = this.filterNotEmptyTags(tags);
+    this._validateUid();
+    this._validateName();
+    this._validateIntroduce();
+    this.tags = this._filterNotEmptyTags(tags);
+    this._validateTags();
   }
 
-  private validateName = (name: string) => {
-    if (name === undefined || name === null) {
-      throw NO_NAME_ERROR_MESSAGE;
+  private _validateUid = () => {
+    if (this.userId == null) {
+      throw NO_UID_ERROR_MESSAGE;
     }
   };
 
-  private validateTags = (tags: string[]) => {
-    if (tags === undefined || tags === null || tags.length === 0) {
-      throw NO_TAG_ERROR_MESSAGE;
-    }
+  private _validateName = () => {
+    validateUserName(this.name);
   };
 
-  private filterNotEmptyTags = (tags: string[]) => {
+  private _validateIntroduce = () => {
+    validateUserIntroduce(this.introduce);
+  };
+
+  private _validateTags = () => {
+    validateUserTags(this.tags);
+  };
+
+  private _filterNotEmptyTags = (tags: string[]) => {
     return tags.filter((tag) => tag.trim().length > 0);
   };
 }

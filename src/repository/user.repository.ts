@@ -16,6 +16,7 @@ export const createUser = async (
       name: name,
       introduce: introduce,
       score: 0,
+      // TODO: Enum으로 바꾸기
       status: "login",
       user_tag: {
         createMany: {

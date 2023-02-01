@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { UserCreateBody } from "@/models/user.model";
+import { UserRequestBody } from "@/models/user.model";
 import {
   createTagsIfNotExists,
   findTagIdsByTagName,
@@ -12,9 +12,11 @@ import {
 import { string } from "prop-types";
 import { NextApiRequest, NextApiResponse } from "next";
 
+// TODO: 테스트 코드 작성하기
 export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
+  // TODO: 로깅하기
   try {
-    const userCreateBody = new UserCreateBody(
+    const userCreateBody = new UserRequestBody(
       req.body.uid,
       req.body.name,
       req.body.introduce,
@@ -24,10 +26,9 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
     await createTagsIfNotExists(userCreateBody.tags);
 
     const tagIds = await findTagIdsByTagName(userCreateBody.tags);
-    console.log(tagIds);
 
     await createUser(
-      userCreateBody.uid,
+      userCreateBody.userId,
       userCreateBody.name,
       userCreateBody.introduce,
       tagIds
