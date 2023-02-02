@@ -75,7 +75,7 @@ model room {
   id                  String          @id(map: "pk_room") @db.VarChar(100)
   master_id           String          @db.VarChar(100)
   title               String          @db.VarChar(50)
-  thumnail            String?         @db.VarChar(255)
+  thumbnail           String?         @db.VarChar(255)
   password            String?         @db.VarChar(255)
   timer               Int
   short_break         Int
