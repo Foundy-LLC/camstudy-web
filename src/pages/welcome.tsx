@@ -1,48 +1,21 @@
 import { useAuthState } from "react-firebase-hooks/auth";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { auth } from "src/service/firebase";
-import { UserRequestBody } from "@/models/user/UserRequestBody";
+import welcomeStore from "@/stores/WelcomeStore";
+import { observer } from "mobx-react";
 
 const Welcome: NextPage = () => {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
-  const uid = user?.uid;
-  const [name, setName] = useState("");
-  const [introduce, setIntroduce] = useState("");
-  const [tags, setTags] = useState("");
+  const successToCreate = welcomeStore.successToCreate;
 
-  if (uid == null) {
-    return <div>회원 정보가 존재하지 않습니다.</div>;
-  }
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    switch (e.target.id) {
-      case "name":
-        setName(e.target.value); //이벤트 발생한 value값으로 {text} 변경
-        break;
-      case "introduce":
-        setIntroduce(e.target.value);
-        break;
-      case "tags":
-        setTags(e.target.value);
-        break;
+  useEffect(() => {
+    if (successToCreate) {
+      router.push("/");
     }
-  };
-
-  const createUser = async () => {
-    const response = await fetch(`api/users`, {
-      method: "POST",
-      body: JSON.stringify(
-        new UserRequestBody(uid, name, introduce, tags.split(" "))
-      ),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log(response.json());
-  };
+  }, [successToCreate]);
 
   if (loading) {
     return <div>Loading</div>;
@@ -51,35 +24,42 @@ const Welcome: NextPage = () => {
     router.push("/login");
     return <div>Please sign in to continue</div>;
   }
+  const uid = user?.uid;
 
   return (
     <div>
       <input
         id={"name"}
         type={"text"}
-        onChange={(e) => onChange(e)}
-        value={name}
+        onChange={(e) => welcomeStore.changeName(e.target.value)}
+        value={welcomeStore.name}
       />
       <br />
       <input
         id={"introduce"}
         type={"text"}
-        onChange={(e) => onChange(e)}
-        value={introduce}
+        onChange={(e) => welcomeStore.changeIntroduce(e.target.value)}
+        value={welcomeStore.introduce}
       />
       <br />
       <input
         id={"tags"}
         type={"text"}
-        onChange={(e) => onChange(e)}
-        value={tags}
+        onChange={(e) => welcomeStore.changeTags(e.target.value)}
+        value={welcomeStore.tags}
       />
       <br />
-      <button onClick={() => createUser()}>확인</button>
+      <button onClick={() => welcomeStore.createUser(uid)}>확인</button>
       <br />
 
       <button onClick={() => auth.signOut()}>Sign out</button>
+
+      <div>
+        {welcomeStore.errorMessage != null
+          ? welcomeStore.errorMessage
+          : undefined}
+      </div>
     </div>
   );
 };
-export default Welcome;
+export default observer(Welcome);
