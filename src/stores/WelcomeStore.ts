@@ -1,15 +1,14 @@
 import { makeAutoObservable } from "mobx";
-import { UserRequestBody } from "@/models/user/UserRequestBody";
-import userService from "@/service/user.service";
+import userService, { UserService } from "@/service/user.service";
 
-class WelcomeStore {
+export class WelcomeStore {
   private _name: string = "";
   private _introduce: string = "";
   private _tags: string = "";
   private _errorMessage?: string = undefined;
   private _successToCreate: boolean = false;
 
-  constructor() {
+  constructor(private readonly _userService: UserService = userService) {
     makeAutoObservable(this);
   }
 
@@ -46,21 +45,12 @@ class WelcomeStore {
   }
 
   public createUser = async (uid: string) => {
-    let requestBody: UserRequestBody;
-    try {
-      requestBody = new UserRequestBody(
-        uid,
-        this._name,
-        this._introduce,
-        this._tags.split(" ")
-      );
-    } catch (e) {
-      if (typeof e === "string") {
-        this._errorMessage = e;
-      }
-      return;
-    }
-    const result = await userService.createUser(requestBody);
+    const result = await this._userService.createUser(
+      uid,
+      this._name,
+      this._introduce,
+      this._tags.split(" ")
+    );
     if (result.isSuccess) {
       this._successToCreate = true;
     } else {

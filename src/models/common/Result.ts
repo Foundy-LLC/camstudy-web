@@ -17,6 +17,9 @@ export class Result<T> {
     if (e instanceof Error) {
       return new Result(undefined, e, true);
     }
+    if (typeof e === "string") {
+      return new Result(undefined, Error(e), true);
+    }
     console.log(e);
     return new Result(
       undefined,

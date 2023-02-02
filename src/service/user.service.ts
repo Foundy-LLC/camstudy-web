@@ -5,14 +5,18 @@ const HEADER = {
   "Content-Type": "application/json",
 };
 
-class UserService {
-  public createUser = async (
-    userRequestBody: UserRequestBody
-  ): Promise<Result<void>> => {
+export class UserService {
+  public async createUser(
+    uid: string,
+    name: string,
+    introduce: string,
+    tags: string[]
+  ): Promise<Result<void>> {
     try {
+      const requestBody = new UserRequestBody(uid, name, introduce, tags);
       const response = await fetch(`api/users`, {
         method: "POST",
-        body: JSON.stringify(userRequestBody),
+        body: JSON.stringify(requestBody),
         headers: HEADER,
       });
       if (response.ok) {
@@ -23,7 +27,7 @@ class UserService {
     } catch (e) {
       return Result.errorCatch(e);
     }
-  };
+  }
 }
 
 const userService = new UserService();

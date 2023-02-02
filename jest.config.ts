@@ -17,7 +17,7 @@ const customJestConfig = {
     "^@/repository/(.*)$": "<rootDir>/src/repository/$1",
     "^@/service/(.*)$": "<rootDir>/src/service/$1",
     "^@/styles/(.*)$": "<rootDir>/src/styles/$1",
-    "^@/store/(.*)$": "<rootDir>/src/store/$1",
+    "^@/stores/(.*)$": "<rootDir>/src/stores/$1",
     "^@/utils/(.*)$": "<rootDir>/src/utils/$1",
   },
   moduleDirectories: ["node_modules", "<rootDir>/"],
