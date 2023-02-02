@@ -1,12 +1,13 @@
 import { useAuthState } from "react-firebase-hooks/auth";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { auth } from "src/service/firebase";
-import welcomeStore from "@/stores/WelcomeStore";
+import { WelcomeStore } from "@/stores/WelcomeStore";
 import { observer } from "mobx-react";
 
 const Welcome: NextPage = () => {
+  const [welcomeStore] = useState(new WelcomeStore());
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const successToCreate = welcomeStore.successToCreate;

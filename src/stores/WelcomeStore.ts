@@ -58,6 +58,3 @@ export class WelcomeStore {
     }
   };
 }
-
-const welcomeStore = new WelcomeStore();
-export default welcomeStore;
