@@ -35,6 +35,7 @@ const Welcome: NextPage = () => {
         onChange={(e) => welcomeStore.changeName(e.target.value)}
         value={welcomeStore.name}
       />
+      <div>{welcomeStore.nameErrorMessage}</div>
       <br />
       <input
         id={"introduce"}
@@ -42,6 +43,7 @@ const Welcome: NextPage = () => {
         onChange={(e) => welcomeStore.changeIntroduce(e.target.value)}
         value={welcomeStore.introduce}
       />
+      <div>{welcomeStore.introduceErrorMessage}</div>
       <br />
       <input
         id={"tags"}
@@ -49,17 +51,14 @@ const Welcome: NextPage = () => {
         onChange={(e) => welcomeStore.changeTags(e.target.value)}
         value={welcomeStore.tags}
       />
+      <div>{welcomeStore.tagsErrorMessage}</div>
       <br />
       <button onClick={() => welcomeStore.createUser(uid)}>확인</button>
       <br />
 
       <button onClick={() => auth.signOut()}>Sign out</button>
 
-      <div>
-        {welcomeStore.errorMessage != null
-          ? welcomeStore.errorMessage
-          : undefined}
-      </div>
+      <div>{welcomeStore.errorMessage}</div>
     </div>
   );
 };
