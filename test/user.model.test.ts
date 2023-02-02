@@ -6,6 +6,7 @@ import {
   USER_INTRODUCE_LENGTH_ERROR_MESSAGE,
   USER_NAME_LENGTH_ERROR_MESSAGE,
 } from "@/constants/message";
+import { USER_INTRODUCE_MAX_LENGTH } from "@/constants/user.constant";
 
 describe("UserRequestBody", () => {
   it("success", () => {
@@ -49,7 +50,7 @@ describe("UserRequestBody", () => {
   it("should throw error when introduce length is out of range", () => {
     // given
     let introduce: string = "";
-    for (let i = 0; i < 101; ++i) {
+    for (let i = 0; i < USER_INTRODUCE_MAX_LENGTH + 1; ++i) {
       introduce += "k";
     }
 
