@@ -9,12 +9,13 @@ const Welcome: NextPage = () => {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const uid = user?.uid;
-  if (uid == null) {
-    return <div>회원 정보가 존재하지 않습니다.</div>;
-  }
   const [name, setName] = useState("");
   const [introduce, setIntroduce] = useState("");
   const [tags, setTags] = useState("");
+
+  if (uid == null) {
+    return <div>회원 정보가 존재하지 않습니다.</div>;
+  }
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     switch (e.target.id) {
