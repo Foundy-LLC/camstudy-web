@@ -10,7 +10,7 @@ const Welcome: NextPage = () => {
   const router = useRouter();
   const uid = user?.uid;
   if (uid == null) {
-    throw ReferenceError("회원 정보가 존재하지 않습니다.");
+    return <div>회원 정보가 존재하지 않습니다.</div>;
   }
   const [name, setName] = useState("");
   const [introduce, setIntroduce] = useState("");
