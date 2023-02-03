@@ -95,8 +95,8 @@ export class RoomStore implements RoomViewModel {
     return this._chatInput.length > 0;
   }
 
-  public connectSocket = () => {
-    this._roomService.connect();
+  public connectSocket = (roomId: string) => {
+    this._roomService.connect(roomId);
   };
 
   public showVideo = async () => {

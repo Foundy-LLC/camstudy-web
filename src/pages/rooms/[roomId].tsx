@@ -2,16 +2,21 @@ import { NextPage } from "next";
 import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { ChatMessage, RoomStore } from "@/stores/RoomStore";
+import { useRouter } from "next/router";
 
 const Room: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
+  const router = useRouter();
+  const roomId = router.query.roomId;
 
   const enabledVideo = roomStore.enabledLocalVideo;
   const enabledAudio = roomStore.enabledLocalAudio;
 
   useEffect(() => {
-    roomStore.connectSocket();
-  }, []);
+    if (roomId !== undefined) {
+      roomStore.connectSocket(roomId as string);
+    }
+  }, [roomId]);
 
   return (
     <div>

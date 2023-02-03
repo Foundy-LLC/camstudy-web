@@ -82,7 +82,7 @@ export class RoomSocketService {
     return this._socket;
   };
 
-  public connect = () => {
+  public connect = (roomId: string) => {
     if (this._socket != null) {
       return;
     }
@@ -93,8 +93,7 @@ export class RoomSocketService {
         console.log("Connected: ", socketId);
         const localMediaStream = await this._roomViewModel.onConnected();
         // TODO: 바로 방에 접속하지 않고 준비 화면에서 회원이 접속 버튼을 눌러야지 접속되도록 한다. 준비 화면에서는 로컬 비디오, 음성을 확인해야한다.
-        // TODO: 임시 방이름 말고 진짜 방이름으로 변경하기([roomId] 이용)
-        this.join("roomName", localMediaStream);
+        this.join(roomId, localMediaStream);
       }
     );
   };
