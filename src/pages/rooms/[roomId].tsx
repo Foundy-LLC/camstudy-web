@@ -19,16 +19,17 @@ const Room: NextPage = observer(() => {
               <Video id="localVideo" mediaStream={roomStore.localMediaStream} />
             </td>
             <td className="remoteColumn">
-              <div id="remote-video-container"></div>
+              <RemoteVideoGroup
+                remoteMediaStreamsByPeerId={
+                  roomStore.remoteMediaStreamsByPeerId
+                }
+              />
             </td>
           </tr>
         </tbody>
       </table>
-      <RemoteVideoGroup
-        remoteMediaStreamsByPeerId={roomStore.remoteMediaStreamsByPeerId}
-      />
-      <button id="video-toggle">Video OFF</button>
-      <button id="audio-toggle">Audio OFF</button>
+      <button id="videoToggle">Hide video</button>
+      <button id="audioToggle">Turn off audio</button>
     </div>
   );
 });
