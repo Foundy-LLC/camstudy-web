@@ -8,6 +8,7 @@ import {
   GET_PRODUCER_IDS,
   JOIN_ROOM,
   NAME_SPACE,
+  NEW_PRODUCER,
   TRANSPORT_PRODUCER,
   TRANSPORT_PRODUCER_CONNECT,
   TRANSPORT_RECEIVER_CONNECT,
@@ -86,7 +87,8 @@ export class RoomSocketService {
   };
 
   public join = (roomName: string, localMediaStream: MediaStream) => {
-    this._requireSocket().emit(
+    const socket = this._requireSocket();
+    socket.emit(
       JOIN_ROOM,
       {
         roomName: roomName,
@@ -101,6 +103,19 @@ export class RoomSocketService {
           await device.load({ routerRtpCapabilities: data.rtpCapabilities });
 
           this._createSendTransport(device, localMediaStream);
+
+          socket.on(
+            NEW_PRODUCER,
+            ({
+              producerId,
+              userId,
+            }: {
+              producerId: string;
+              userId: string;
+            }) => {
+              this._addConsumeTransport(producerId, userId, device);
+            }
+          );
         } catch (e) {
           // TODO
         }
