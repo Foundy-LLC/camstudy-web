@@ -25,9 +25,7 @@ const Room: NextPage = observer(() => {
         </tbody>
       </table>
       <RemoteVideoGroup
-        remoteMediaStreamsByProducerId={
-          roomStore.remoteMediaStreamsByProducerId
-        }
+        remoteMediaStreamsByPeerId={roomStore.remoteMediaStreamsByPeerId}
       />
       <button id="video-toggle">Video OFF</button>
       <button id="audio-toggle">Audio OFF</button>
@@ -36,17 +34,15 @@ const Room: NextPage = observer(() => {
 });
 
 const RemoteVideoGroup: NextPage<{
-  remoteMediaStreamsByProducerId: Map<string, MediaStream>;
-}> = observer(({ remoteMediaStreamsByProducerId }) => {
-  const entries = [...remoteMediaStreamsByProducerId.entries()];
+  remoteMediaStreamsByPeerId: Map<string, MediaStream>;
+}> = observer(({ remoteMediaStreamsByPeerId }) => {
+  const entries = [...remoteMediaStreamsByPeerId.entries()];
 
   return (
     <div>
       {entries.map((entry) => {
-        const [producerId, mediaStream] = entry;
-        return (
-          <Video key={producerId} id={producerId} mediaStream={mediaStream} />
-        );
+        const [peerId, mediaStream] = entry;
+        return <Video key={peerId} id={peerId} mediaStream={mediaStream} />;
       })}
     </div>
   );

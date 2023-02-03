@@ -1,6 +1,5 @@
 import { RoomSocketService } from "@/service/RoomSocketService";
 import { makeAutoObservable, observable } from "mobx";
-import { Consumer } from "mediasoup-client/lib/Consumer";
 
 const mediaConstraints = {
   audio: true,
@@ -25,13 +24,14 @@ export enum RoomState {
 export interface RoomViewModel {
   onConnected: () => Promise<MediaStream>;
   onJoined: () => void;
-  onAddedConsumer: (consumer: Consumer) => void;
+  onAddedConsumer: (peerId: string, track: MediaStreamTrack) => void;
+  onDisposedPeer: (disposedPeerId: string) => void;
 }
 
 export class RoomStore implements RoomViewModel {
   private readonly _roomService = new RoomSocketService(this);
   private _localMediaStream?: MediaStream = undefined;
-  private _remoteMediaStreamsByProducerId: Map<string, MediaStream> =
+  private _remoteMediaStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
 
   constructor() {
@@ -42,8 +42,8 @@ export class RoomStore implements RoomViewModel {
     return this._localMediaStream;
   }
 
-  public get remoteMediaStreamsByProducerId(): Map<string, MediaStream> {
-    return this._remoteMediaStreamsByProducerId;
+  public get remoteMediaStreamsByPeerId(): Map<string, MediaStream> {
+    return this._remoteMediaStreamsByPeerId;
   }
 
   public connectSocket = () => {
@@ -62,10 +62,11 @@ export class RoomStore implements RoomViewModel {
     // TODO
   };
 
-  public onAddedConsumer = (consumer: Consumer) => {
-    this._remoteMediaStreamsByProducerId.set(
-      consumer.producerId,
-      new MediaStream([consumer.track])
-    );
+  public onAddedConsumer = (peerId: string, track: MediaStreamTrack) => {
+    this._remoteMediaStreamsByPeerId.set(peerId, new MediaStream([track]));
+  };
+
+  public onDisposedPeer = (peerId: string): void => {
+    this._remoteMediaStreamsByPeerId.delete(peerId);
   };
 }
