@@ -13,6 +13,12 @@ import {
   isUserBlockedAtRoom,
 } from "@/repository/room.repository";
 import { ResponseBody } from "@/models/common/ResponseBody";
+import { UserRequestBody } from "@/models/user/UserRequestBody";
+import { string } from "prop-types";
+import { RoomRequestGet } from "@/models/room/RoomRequestGet";
+import { findTagIdsByTagName } from "@/repository/tag.repository";
+import { FindRooms } from "@/repository/room.repository";
+
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -59,6 +65,21 @@ export const getRoomAvailability = async (
     res
       .status(500)
       .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+  }
+}
+
+export const getRoom = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const roomFindBody = new RoomRequestGet(req.query.page);
+    return FindRooms(roomFindBody.pageNum);
+  } catch (e) {
+    if (e instanceof string) {
+      res.status(400).end(e);
+      return;
+    }
+    res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
     return;
   }
 };
+
+export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {};

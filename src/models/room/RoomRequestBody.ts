@@ -1,10 +1,30 @@
-import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
+import {
+  NO_ROOM_EXPIRED_AT_ERROR_MESSAGE,
+  NO_ROOM_ID_ERROR_MESSAGE,
+  NO_ROOM_LONG_BREAK_ERROR_MESSAGE,
+  NO_ROOM_LONG_BREAK_INTERVAL_ERROR_MESSAGE,
+  NO_ROOM_SHORT_BREAK_ERROR_MESSAGE,
+  NO_ROOM_TIMER_ERROR_MESSAGE,
+  NO_ROOM_TITLE_ERROR_MESSAGE,
+  NO_USER_NAME_ERROR_MESSAGE,
+  NO_USER_UID_ERROR_MESSAGE,
+} from "@/constants/message";
 import {
   validateUserIntroduce,
   validateUserName,
   validateUserTags,
 } from "@/utils/user.validator";
-
+import {
+  validateExpiredAt,
+  validateId,
+  validateLongBreak,
+  validateLongBreakInterval,
+  validateMasterId,
+  validateShortBreak,
+  validateTimer,
+  validateTitle,
+} from "@/utils/rooms.validator";
+~21;
 export class RoomRequestBody {
   constructor(
     readonly id: string,
@@ -30,51 +50,29 @@ export class RoomRequestBody {
   -
   */
   private _validateId = () => {
-    if (this.id == null) {
-      throw NO_USER_UID_ERROR_MESSAGE;
-    }
+    validateId(this.id);
   };
 
   private _validateMasterId = () => {
-    if (this.id == null) {
-      throw NO_USER_UID_ERROR_MESSAGE;
-    }
+    validateMasterId(this.master_id);
   };
   private _validateTitle = () => {
-    if (this.id == null) {
-      throw NO_USER_UID_ERROR_MESSAGE;
-    }
+    validateTitle(this.title);
   };
   private _validateTimer = () => {
-    if (this.id == null) {
-      throw NO_USER_UID_ERROR_MESSAGE;
-    }
+    validateTimer(this.timer);
   };
   private _validateShortBreak = () => {
-    if (this.id == null) {
-      throw NO_USER_UID_ERROR_MESSAGE;
-    }
+    validateShortBreak(this.short_break);
   };
   private _validateLongBreak = () => {
-    if (this.id == null) {
-      throw NO_USER_UID_ERROR_MESSAGE;
-    }
+    validateLongBreak(this.long_break);
   };
   private _validateLongBreakInterval = () => {
-    if (this.id == null) {
-      throw NO_USER_UID_ERROR_MESSAGE;
-    }
+    validateLongBreakInterval(this.long_break_interval);
   };
-  private _validateName = () => {
-    validateUserName(this.name);
-  };
-
-  private _validateIntroduce = () => {
-    validateUserIntroduce(this.introduce);
-  };
-
-  private _validateTags = () => {
-    validateUserTags(this.tags);
+  private _validateExpiredAt = () => {
+    validateExpiredAt(this.expired_at);
   };
 
   private _filterNotEmptyTags = (tags: string[]): string[] => {

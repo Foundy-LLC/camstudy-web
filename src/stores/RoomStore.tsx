@@ -1,24 +1,27 @@
 import { action, makeAutoObservable, observable } from "mobx";
 import { RootStore } from "@/stores/RootStore";
+import RoomService from "@/service/room.service";
 
-class Room {
-  private _id: string = "";
-  private _master_id: string = "";
-  private _title: string = "";
-  private _thumnail: string | undefined;
-  private _password: string | undefined;
-  private _timer: number = 0;
-  private _short_break: number = 0;
-  private _long_break: number = 0;
-  private _long_break_interval: number = 0;
-  private _expired_at: string = "";
-
-  constructor() {
+export class Room {
+  constructor(
+    readonly _id: string,
+    readonly _master_id: string,
+    readonly _title: string,
+    readonly _thumnail: string | undefined,
+    readonly _password: string | undefined,
+    readonly _timer: number,
+    readonly _short_break: number,
+    readonly _long_break: number,
+    readonly _long_break_interval: number,
+    readonly _expired_at: string
+  ) {
     makeAutoObservable(this);
   }
 }
 
 export class RoomStore {
+  private _pageNum: number = 0;
+  private _roomService: RoomService = new RoomService();
   rootStore;
 
   rooms: Room[] = [];
@@ -28,11 +31,17 @@ export class RoomStore {
     this.rootStore = root;
   }
 
+  changeRoomNum(pageNum: number) {
+    this._pageNum = pageNum;
+  }
+  getRooms() {
+    this._roomService.getRoom(this._pageNum);
+  }
   createRoom(
     id: string,
     master_id: string,
     title: string,
-    thumnail: string | undefined,
+    thumbnail: string | undefined,
     password: string | undefined,
     timer: number,
     short_break: number,
@@ -40,15 +49,15 @@ export class RoomStore {
     long_break_interval: number,
     expired_at: string
   ) {
-    const idx = this.rooms.findIndex((x) => x.id === id);
-    if (idx !== undefined) {
+    const roomIndex = this.rooms.findIndex((room: Room) => room._id === id);
+    if (roomIndex !== undefined) {
       this.rooms = [
         ...this.rooms,
         new Room(
           id,
           master_id,
           title,
-          thumnail,
+          thumbnail,
           password,
           timer,
           short_break,
@@ -61,7 +70,7 @@ export class RoomStore {
   }
 
   deleteRoom(id: string) {
-    this.rooms = this.rooms.filter((x) => x.id !== id);
+    this.rooms = this.rooms.filter((x) => x._id !== id);
   }
 
   changeRoomInfo(
@@ -76,7 +85,7 @@ export class RoomStore {
     long_break_interval: number,
     expired_at: string
   ) {
-    const idx = this.rooms.findIndex((x) => x.id === id);
+    const idx = this.rooms.findIndex((x) => x._id === id);
     const room = this.rooms[idx];
 
     this.rooms = [
