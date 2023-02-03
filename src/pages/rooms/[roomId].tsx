@@ -1,22 +1,65 @@
 import { NextPage } from "next";
 import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
-import { ChatMessage, RoomStore } from "@/stores/RoomStore";
+import { ChatMessage, RoomState, RoomStore } from "@/stores/RoomStore";
 import { useRouter } from "next/router";
 
-const Room: NextPage = observer(() => {
+const RoomScaffold: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
+
+  useEffect(() => {
+    roomStore.connectSocket();
+  }, []);
+
+  switch (roomStore.state) {
+    case RoomState.CREATED:
+    case RoomState.CONNECTED:
+      return <RoomReady roomStore={roomStore} />;
+    case RoomState.JOINED:
+      return <Room roomStore={roomStore} />;
+  }
+});
+
+const RoomReady: NextPage<{
+  roomStore: RoomStore;
+}> = observer(({ roomStore }) => {
   const router = useRouter();
   const roomId = router.query.roomId;
 
+  return (
+    <>
+      <Video id="localVideo" videoStream={roomStore.localVideoStream} />
+      <Audio id="localAudio" audioStream={roomStore.localAudioStream} />
+      <button
+        id="videoToggle"
+        onClick={() =>
+          roomStore.enabledLocalVideo
+            ? roomStore.hideVideo()
+            : roomStore.showVideo()
+        }
+      >
+        {roomStore.enabledLocalVideo ? "Hide Video" : "Show Video"}
+      </button>
+      <button
+        id="audioToggle"
+        onClick={() =>
+          roomStore.enabledLocalAudio
+            ? roomStore.muteAudio()
+            : roomStore.unmuteAudio()
+        }
+      >
+        {roomStore.enabledLocalAudio ? "Mute Audio" : "Unmute Audio"}
+      </button>
+      {typeof roomId === "string" ? (
+        <button onClick={() => roomStore.joinRoom(roomId)}>입장</button>
+      ) : undefined}
+    </>
+  );
+});
+
+const Room: NextPage<{ roomStore: RoomStore }> = observer(({ roomStore }) => {
   const enabledVideo = roomStore.enabledLocalVideo;
   const enabledAudio = roomStore.enabledLocalAudio;
-
-  useEffect(() => {
-    if (roomId !== undefined) {
-      roomStore.connectSocket(roomId as string);
-    }
-  }, [roomId]);
 
   return (
     <div>
@@ -148,4 +191,4 @@ const ChatMessage: NextPage<{ messages: ChatMessage[] }> = observer(
   }
 );
 
-export default Room;
+export default RoomScaffold;

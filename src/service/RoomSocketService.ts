@@ -33,7 +33,6 @@ import {
 import { Consumer } from "mediasoup-client/lib/Consumer";
 import { uuidv4 } from "@firebase/util";
 import { Producer } from "mediasoup-client/lib/Producer";
-import { InvalidStateError } from "mediasoup-client/lib/errors";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -82,7 +81,7 @@ export class RoomSocketService {
     return this._socket;
   };
 
-  public connect = (roomId: string) => {
+  public connect = () => {
     if (this._socket != null) {
       return;
     }
@@ -91,25 +90,23 @@ export class RoomSocketService {
       CONNECTION_SUCCESS,
       async ({ socketId }: { socketId: string }) => {
         console.log("Connected: ", socketId);
-        const localMediaStream = await this._roomViewModel.onConnected();
-        // TODO: 바로 방에 접속하지 않고 준비 화면에서 회원이 접속 버튼을 눌러야지 접속되도록 한다. 준비 화면에서는 로컬 비디오, 음성을 확인해야한다.
-        this.join(roomId, localMediaStream);
+        await this._roomViewModel.onConnected();
       }
     );
   };
 
-  public join = (roomName: string, localMediaStream: MediaStream) => {
+  public join = (roomId: string, localMediaStream: MediaStream) => {
     const socket = this._requireSocket();
     socket.emit(
       JOIN_ROOM,
       {
-        roomName: roomName,
+        roomName: roomId,
         // TODO: 실제 회원 ID를 전달하기
         userId: uuidv4(),
       },
       async (data: { rtpCapabilities: RtpCapabilities }) => {
         console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`);
-
+        this._roomViewModel.onJoined();
         try {
           // once we have rtpCapabilities from the Router, create Device
           const device = new Device();
@@ -212,30 +209,35 @@ export class RoomSocketService {
     sendTransport: Transport,
     localMediaStream: MediaStream
   ) => {
-    this._audioProducer = await sendTransport.produce({
-      track: localMediaStream.getAudioTracks()[0],
-    });
-    this._videoProducer = await sendTransport.produce({
-      track: localMediaStream.getVideoTracks()[0],
-    });
+    const audioTrack = localMediaStream.getAudioTracks()[0];
+    if (audioTrack != null) {
+      this._audioProducer = await sendTransport.produce({
+        track: audioTrack,
+      });
+      this._audioProducer.on("trackended", () => {
+        console.log("audio track ended");
+        // TODO: close audio track
+      });
+      this._audioProducer.on("transportclose", () => {
+        console.log("audio transport ended");
+        // close audio track
+      });
+    }
 
-    this._audioProducer.on("trackended", () => {
-      console.log("audio track ended");
-      // TODO: close audio track
-    });
-    this._audioProducer.on("transportclose", () => {
-      console.log("audio transport ended");
-      // close audio track
-    });
-
-    this._videoProducer.on("trackended", () => {
-      console.log("video track ended");
-      // TODO: close video track
-    });
-    this._videoProducer.on("transportclose", () => {
-      console.log("video transport ended");
-      // TODO: close video track
-    });
+    const videoTrack = localMediaStream.getVideoTracks()[0];
+    if (videoTrack != null) {
+      this._videoProducer = await sendTransport.produce({
+        track: videoTrack,
+      });
+      this._videoProducer.on("trackended", () => {
+        console.log("video track ended");
+        // TODO: close video track
+      });
+      this._videoProducer.on("transportclose", () => {
+        console.log("video transport ended");
+        // TODO: close video track
+      });
+    }
   };
 
   private _onConnectedSendTransport = async (
@@ -428,9 +430,7 @@ export class RoomSocketService {
 
   public produceTrack = async (track: MediaStreamTrack) => {
     if (this._sendTransport == null) {
-      throw new InvalidStateError(
-        "_sendTransport가 존재하지 않아 produceTrack를 생성할 수 없습니다."
-      );
+      return;
     }
     this._videoProducer = await this._sendTransport.produce({ track });
   };

@@ -24,7 +24,7 @@ export enum RoomState {
 }
 
 export interface RoomViewModel {
-  onConnected: () => Promise<MediaStream>;
+  onConnected: () => Promise<void>;
   onJoined: () => void;
   onReceivedChat: (message: ChatMessage) => void;
   onAddedConsumer: (
@@ -44,6 +44,8 @@ export interface ChatMessage {
 export class RoomStore implements RoomViewModel {
   private readonly _roomService = new RoomSocketService(this);
 
+  private _state: RoomState = RoomState.CREATED;
+
   private _localVideoStream?: MediaStream = undefined;
   private _localAudioStream?: MediaStream = undefined;
 
@@ -57,6 +59,10 @@ export class RoomStore implements RoomViewModel {
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  public get state(): RoomState {
+    return this._state;
   }
 
   public get localVideoStream(): MediaStream | undefined {
@@ -95,8 +101,39 @@ export class RoomStore implements RoomViewModel {
     return this._chatInput.length > 0;
   }
 
-  public connectSocket = (roomId: string) => {
-    this._roomService.connect(roomId);
+  public connectSocket = () => {
+    this._roomService.connect();
+  };
+
+  public onConnected = async (): Promise<void> => {
+    const mediaStream = await this.fetchLocalMedia({
+      video: true,
+      audio: true,
+    });
+    runInAction(() => {
+      this._state = RoomState.CONNECTED;
+      this._localVideoStream = new MediaStream([
+        mediaStream.getVideoTracks()[0],
+      ]);
+      this._localAudioStream = new MediaStream([
+        mediaStream.getAudioTracks()[0],
+      ]);
+    });
+  };
+
+  public joinRoom = (roomId: string) => {
+    const mediaStream: MediaStream = new MediaStream();
+    if (this._localVideoStream !== undefined) {
+      mediaStream.addTrack(this._localVideoStream.getVideoTracks()[0]);
+    }
+    if (this._localAudioStream !== undefined) {
+      mediaStream.addTrack(this._localAudioStream.getAudioTracks()[0]);
+    }
+    this._roomService.join(roomId, mediaStream);
+  };
+
+  public onJoined = () => {
+    this._state = RoomState.JOINED;
   };
 
   public showVideo = async () => {
@@ -167,26 +204,6 @@ export class RoomStore implements RoomViewModel {
       video: video,
       audio: audio,
     });
-  };
-
-  public onConnected = async (): Promise<MediaStream> => {
-    const mediaStream = await this.fetchLocalMedia({
-      video: true,
-      audio: true,
-    });
-    runInAction(() => {
-      this._localVideoStream = new MediaStream([
-        mediaStream.getVideoTracks()[0],
-      ]);
-      this._localAudioStream = new MediaStream([
-        mediaStream.getAudioTracks()[0],
-      ]);
-    });
-    return mediaStream;
-  };
-
-  public onJoined = () => {
-    // TODO
   };
 
   public onReceivedChat = (message: ChatMessage) => {
