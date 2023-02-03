@@ -26,12 +26,19 @@ export enum RoomState {
 export interface RoomViewModel {
   onConnected: () => Promise<MediaStream>;
   onJoined: () => void;
+  onReceivedChat: (message: ChatMessage) => void;
   onAddedConsumer: (
     peerId: string,
     track: MediaStreamTrack,
     kind: MediaKind
   ) => void;
   onDisposedPeer: (disposedPeerId: string) => void;
+}
+
+export interface ChatMessage {
+  readonly id: string;
+  readonly authorName: string;
+  readonly content: string;
 }
 
 export class RoomStore implements RoomViewModel {
@@ -44,6 +51,9 @@ export class RoomStore implements RoomViewModel {
     observable.map(new Map());
   private _remoteAudioStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
+
+  private _chatInput: string = "";
+  private _chatMessages: ChatMessage[] = observable.array([]);
 
   constructor() {
     makeAutoObservable(this);
@@ -71,6 +81,18 @@ export class RoomStore implements RoomViewModel {
 
   public get remoteAudioStreamsByPeerId(): Map<string, MediaStream> {
     return this._remoteAudioStreamsByPeerId;
+  }
+
+  public get chatInput(): string {
+    return this._chatInput;
+  }
+
+  public get chatMessages(): ChatMessage[] {
+    return this._chatMessages;
+  }
+
+  public get enabledChatSendButton(): boolean {
+    return this._chatInput.length > 0;
   }
 
   public connectSocket = () => {
@@ -127,6 +149,15 @@ export class RoomStore implements RoomViewModel {
     this._localAudioStream = undefined;
   };
 
+  public updateChatInput = (message: string) => {
+    this._chatInput = message;
+  };
+
+  public sendChat = () => {
+    this._roomService.sendChat(this._chatInput);
+    this._chatInput = "";
+  };
+
   private fetchLocalMedia = async ({
     video = false,
     audio = false,
@@ -156,6 +187,10 @@ export class RoomStore implements RoomViewModel {
 
   public onJoined = () => {
     // TODO
+  };
+
+  public onReceivedChat = (message: ChatMessage) => {
+    this._chatMessages.push(message);
   };
 
   public onAddedConsumer = (

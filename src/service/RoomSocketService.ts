@@ -1,4 +1,4 @@
-import { RoomViewModel } from "@/stores/RoomStore";
+import { ChatMessage, RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
   CLOSE_AUDIO_PRODUCER,
@@ -13,6 +13,7 @@ import {
   NEW_PRODUCER,
   OTHER_PEER_DISCONNECTED,
   PRODUCER_CLOSED,
+  SEND_CHAT,
   TRANSPORT_PRODUCER,
   TRANSPORT_PRODUCER_CONNECT,
   TRANSPORT_RECEIVER_CONNECT,
@@ -139,6 +140,9 @@ export class RoomSocketService {
         await this._addConsumeTransport(producerId, userId, device);
       }
     );
+    socket.on(SEND_CHAT, (message: ChatMessage) => {
+      this._roomViewModel.onReceivedChat(message);
+    });
     socket.on(
       OTHER_PEER_DISCONNECTED,
       ({ disposedPeerId }: { disposedPeerId: string }) => {
@@ -450,5 +454,9 @@ export class RoomSocketService {
     producer.close();
     this._audioProducer = undefined;
     this._requireSocket().emit(CLOSE_AUDIO_PRODUCER);
+  };
+
+  public sendChat = (message: string) => {
+    this._requireSocket().emit(SEND_CHAT, message);
   };
 }

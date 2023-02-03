@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
-import { RoomStore } from "@/stores/RoomStore";
+import { ChatMessage, RoomStore } from "@/stores/RoomStore";
 
 const Room: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
@@ -31,6 +31,19 @@ const Room: NextPage = observer(() => {
                   roomStore.remoteAudioStreamsByPeerId
                 }
               />
+            </td>
+            <td className="chatMessageColumn">
+              <ChatMessage messages={roomStore.chatMessages} />
+              <input
+                value={roomStore.chatInput}
+                onChange={(e) => roomStore.updateChatInput(e.target.value)}
+              />
+              <button
+                disabled={!roomStore.enabledChatSendButton}
+                onClick={() => roomStore.sendChat()}
+              >
+                전송
+              </button>
             </td>
           </tr>
         </tbody>
@@ -113,5 +126,21 @@ const Audio: NextPage<{
 
   return <audio ref={audioRef} id={id} autoPlay></audio>;
 };
+
+const ChatMessage: NextPage<{ messages: ChatMessage[] }> = observer(
+  ({ messages }) => {
+    return (
+      <>
+        {messages.map((message) => {
+          return (
+            <div key={message.id}>
+              {message.authorName}: {message.content}
+            </div>
+          );
+        })}
+      </>
+    );
+  }
+);
 
 export default Room;
