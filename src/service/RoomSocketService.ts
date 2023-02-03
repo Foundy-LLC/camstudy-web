@@ -11,6 +11,7 @@ import {
   NAME_SPACE,
   NEW_PRODUCER,
   OTHER_PEER_DISCONNECTED,
+  PRODUCER_CLOSED,
   TRANSPORT_PRODUCER,
   TRANSPORT_PRODUCER_CONNECT,
   TRANSPORT_RECEIVER_CONNECT,
@@ -115,30 +116,45 @@ export class RoomSocketService {
 
           this._createSendTransport(device, localMediaStream);
 
-          socket.on(
-            NEW_PRODUCER,
-            ({
-              producerId,
-              userId,
-            }: {
-              producerId: string;
-              userId: string;
-            }) => {
-              this._addConsumeTransport(producerId, userId, device);
-            }
-          );
-
-          socket.on(
-            OTHER_PEER_DISCONNECTED,
-            ({ disposedPeerId }: { disposedPeerId: string }) => {
-              this._roomViewModel.onDisposedPeer(disposedPeerId);
-            }
-          );
+          this._listenRoomEvents(device);
         } catch (e) {
           // TODO
         }
       }
     );
+  };
+
+  private _listenRoomEvents = (device: Device) => {
+    const socket = this._requireSocket();
+    socket.on(
+      NEW_PRODUCER,
+      async ({
+        producerId,
+        userId,
+      }: {
+        producerId: string;
+        userId: string;
+      }) => {
+        await this._addConsumeTransport(producerId, userId, device);
+      }
+    );
+    socket.on(
+      OTHER_PEER_DISCONNECTED,
+      ({ disposedPeerId }: { disposedPeerId: string }) => {
+        this._roomViewModel.onDisposedPeer(disposedPeerId);
+      }
+    );
+    socket.on(PRODUCER_CLOSED, ({ remoteProducerId }) => {
+      // server notification is received when a producer is closed
+      // we need to close the client-side consumer and associated transport
+      const consumerTransport = this._consumerTransports.find(
+        (transportData) => transportData.producerId === remoteProducerId
+      );
+      if (consumerTransport === undefined) {
+        return;
+      }
+      consumerTransport.consumer.close();
+    });
   };
 
   private _createSendTransport = (
