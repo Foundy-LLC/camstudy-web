@@ -27,6 +27,7 @@ import {
   Transport,
 } from "mediasoup-client/lib/Transport";
 import { Consumer } from "mediasoup-client/lib/Consumer";
+import { uuidv4 } from "@firebase/util";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -93,7 +94,8 @@ export class RoomSocketService {
       JOIN_ROOM,
       {
         roomName: roomName,
-        userId: "userId",
+        // TODO: 실제 회원 ID를 전달하기
+        userId: uuidv4(),
       },
       async (data: { rtpCapabilities: RtpCapabilities }) => {
         console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`);
