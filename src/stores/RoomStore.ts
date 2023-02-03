@@ -1,5 +1,6 @@
 import { RoomSocketService } from "@/service/RoomSocketService";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, observable } from "mobx";
+import { Consumer } from "mediasoup-client/lib/Consumer";
 
 const mediaConstraints = {
   audio: true,
@@ -21,15 +22,17 @@ export enum RoomState {
   JOINED,
 }
 
-export interface RoomObserver {
-  onConnected: () => void;
+export interface RoomViewModel {
+  onConnected: () => Promise<MediaStream>;
   onJoined: () => void;
+  onAddedConsumer: (consumer: Consumer) => void;
 }
 
-class RoomStore implements RoomObserver {
+export class RoomStore implements RoomViewModel {
   private readonly _roomService = new RoomSocketService(this);
-
   private _localMediaStream?: MediaStream = undefined;
+  private _remoteMediaStreamsByProducerId: Map<string, MediaStream> =
+    observable.map(new Map());
 
   constructor() {
     makeAutoObservable(this);
@@ -39,22 +42,30 @@ class RoomStore implements RoomObserver {
     return this._localMediaStream;
   }
 
+  public get remoteMediaStreamsByProducerId(): Map<string, MediaStream> {
+    return this._remoteMediaStreamsByProducerId;
+  }
+
   public connectSocket = () => {
     this._roomService.connect();
   };
 
-  private getLocalMedia = async () => {
-    this._localMediaStream = await navigator.mediaDevices.getUserMedia(
-      mediaConstraints
-    );
+  private fetchLocalMedia = async (): Promise<MediaStream> => {
+    return await navigator.mediaDevices.getUserMedia(mediaConstraints);
   };
 
-  public onConnected(): void {
-    this.getLocalMedia().then();
-  }
+  public onConnected = async (): Promise<MediaStream> => {
+    return (this._localMediaStream = await this.fetchLocalMedia());
+  };
 
-  public onJoined(): void {}
+  public onJoined = () => {
+    // TODO
+  };
+
+  public onAddedConsumer = (consumer: Consumer) => {
+    this._remoteMediaStreamsByProducerId.set(
+      consumer.producerId,
+      new MediaStream([consumer.track])
+    );
+  };
 }
-
-const roomStore = new RoomStore();
-export default roomStore;

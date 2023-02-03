@@ -1,9 +1,11 @@
-import { NextComponentType, NextPage } from "next";
-import { useEffect, useRef } from "react";
+import { NextPage } from "next";
+import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
-import roomStore from "@/stores/RoomStore";
+import { RoomStore } from "@/stores/RoomStore";
 
-const Room: NextPage = () => {
+const Room: NextPage = observer(() => {
+  const [roomStore] = useState(new RoomStore());
+
   useEffect(() => {
     roomStore.connectSocket();
   }, []);
@@ -14,7 +16,7 @@ const Room: NextPage = () => {
         <tbody>
           <tr>
             <td className="localColumn">
-              <LocalVideo />
+              <Video id="localVideo" mediaStream={roomStore.localMediaStream} />
             </td>
             <td className="remoteColumn">
               <div id="remote-video-container"></div>
@@ -22,39 +24,56 @@ const Room: NextPage = () => {
           </tr>
         </tbody>
       </table>
-      <table>
-        <tbody>
-          <tr>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
+      <RemoteVideoGroup
+        remoteMediaStreamsByProducerId={
+          roomStore.remoteMediaStreamsByProducerId
+        }
+      />
       <button id="video-toggle">Video OFF</button>
       <button id="audio-toggle">Audio OFF</button>
     </div>
   );
-};
+});
 
-const LocalVideo: NextComponentType = observer(() => {
-  const localMediaStream = roomStore.localMediaStream;
+const RemoteVideoGroup: NextPage<{
+  remoteMediaStreamsByProducerId: Map<string, MediaStream>;
+}> = observer(({ remoteMediaStreamsByProducerId }) => {
+  const entries = [...remoteMediaStreamsByProducerId.entries()];
+
+  return (
+    <div>
+      {entries.map((entry) => {
+        const [producerId, mediaStream] = entry;
+        return (
+          <Video key={producerId} id={producerId} mediaStream={mediaStream} />
+        );
+      })}
+    </div>
+  );
+});
+
+const Video: NextPage<{ id: string; mediaStream: MediaStream | undefined }> = ({
+  id,
+  mediaStream,
+}) => {
   const localVideoRef = useRef<HTMLVideoElement | null>();
 
   useEffect(() => {
     const localVideo = localVideoRef.current;
-    if (localVideo && localMediaStream !== undefined) {
-      localVideo.srcObject = localMediaStream;
+    if (localVideo && mediaStream !== undefined) {
+      localVideo.srcObject = mediaStream;
     }
-  }, [localMediaStream]);
+  }, [mediaStream]);
 
   return (
     <video
       ref={(video) => (localVideoRef.current = video)}
-      id="localVideo"
+      id={id}
       autoPlay
       className="video"
       muted
     ></video>
   );
-});
+};
 
 export default Room;

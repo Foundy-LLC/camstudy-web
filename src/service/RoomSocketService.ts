@@ -1,12 +1,16 @@
-import { RoomObserver } from "@/stores/RoomStore";
+import { RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
   CONNECTION_SUCCESS,
+  CONSUME,
+  CONSUME_RESUME,
   CREATE_WEB_RTC_TRANSPORT,
+  GET_PRODUCER_IDS,
   JOIN_ROOM,
   NAME_SPACE,
   TRANSPORT_PRODUCER,
   TRANSPORT_PRODUCER_CONNECT,
+  TRANSPORT_RECEIVER_CONNECT,
 } from "@/constants/socketProtocol";
 import {
   MediaKind,
@@ -18,39 +22,71 @@ import {
   DtlsParameters,
   IceCandidate,
   IceParameters,
+  Transport,
 } from "mediasoup-client/lib/Transport";
+import { Consumer } from "mediasoup-client/lib/Consumer";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
 
+interface CreateWebRtcTransportParams {
+  readonly id: string;
+  readonly iceParameters: IceParameters;
+  readonly iceCandidates: IceCandidate[];
+  readonly dtlsParameters: DtlsParameters;
+}
+
+interface ConsumeParams {
+  readonly id: string;
+  readonly producerId: string;
+  readonly kind: MediaKind;
+  readonly rtpParameters: RtpParameters;
+  readonly serverConsumerId: string;
+}
+
+interface ErrorParams {
+  error: any;
+}
+
 export class RoomSocketService {
-  private _socket: Socket | undefined;
+  private _socket?: Socket;
+  private _consumingTransportIds: Set<string> = new Set();
+  private _consumerTransports: {
+    consumerTransport: Transport;
+    serverConsumerTransportId: string;
+    producerId: string;
+    userId: string;
+    consumer: Consumer;
+  }[] = [];
 
-  constructor(private readonly _roomObserver: RoomObserver) {}
+  constructor(private readonly _roomObserver: RoomViewModel) {}
 
-  private requireSocket(): Socket {
+  private _requireSocket = (): Socket => {
     if (this._socket === undefined) {
       throw Error("소켓이 초기화되지 않았습니다.");
     }
     return this._socket;
-  }
+  };
 
   public connect = () => {
+    if (this._socket != null) {
+      return;
+    }
     this._socket = io(SOCKET_SERVER_URL);
     this._socket.on(
       CONNECTION_SUCCESS,
       async ({ socketId }: { socketId: string }) => {
         console.log("Connected: ", socketId);
-        this._roomObserver.onConnected();
+        const localMediaStream = await this._roomObserver.onConnected();
         // TODO: 바로 방에 접속하지 않고 준비 화면에서 회원이 접속 버튼을 눌러야지 접속되도록 한다. 준비 화면에서는 로컬 비디오, 음성을 확인해야한다.
         // TODO: 임시 방이름 말고 진짜 방이름으로 변경하기([roomId] 이용)
-        this.join("roomName");
+        this.join("roomName", localMediaStream);
       }
     );
   };
 
-  public join = (roomName: string) => {
-    this.requireSocket().emit(
+  public join = (roomName: string, localMediaStream: MediaStream) => {
+    this._requireSocket().emit(
       JOIN_ROOM,
       {
         roomName: roomName,
@@ -64,7 +100,7 @@ export class RoomSocketService {
           const device = new Device();
           await device.load({ routerRtpCapabilities: data.rtpCapabilities });
 
-          this.createSendTransport(device);
+          this._createSendTransport(device, localMediaStream);
         } catch (e) {
           // TODO
         }
@@ -72,35 +108,29 @@ export class RoomSocketService {
     );
   };
 
-  private createSendTransport = (device: Device) => {
-    this.requireSocket().emit(
+  private _createSendTransport = (
+    device: Device,
+    localMediaStream: MediaStream
+  ) => {
+    this._requireSocket().emit(
       CREATE_WEB_RTC_TRANSPORT,
       {
         isConsumer: false,
       },
-      async ({
-        params,
-      }: {
-        params: {
-          id: string;
-          iceParameters: IceParameters;
-          iceCandidates: IceCandidate[];
-          dtlsParameters: DtlsParameters;
-        };
-      }) => {
+      async ({ params }: { params: CreateWebRtcTransportParams }) => {
         console.log(params);
         // creates a new WebRTC Transport to send media
         // based on the server's producer transport params
         // https://mediasoup.org/documentation/v3/mediasoup-client/api/#TransportOptions
-        const producerTransport = device.createSendTransport(params);
+        const sendTransport = device.createSendTransport(params);
 
         // https://mediasoup.org/documentation/v3/communication-between-client-and-server/#producing-media
         // this event is raised when a first call to transport.produce() is made
         // see connectSendTransport() below
-        producerTransport.on(
+        sendTransport.on(
           "connect",
           async ({ dtlsParameters }, callback, errback) => {
-            await this.onConnectedProducerTransport(
+            await this._onConnectedSendTransport(
               dtlsParameters,
               callback,
               errback
@@ -108,24 +138,53 @@ export class RoomSocketService {
           }
         );
 
-        producerTransport.on(
-          "produce",
-          async (parameters, callback, errback) => {
-            await this.onProducedProducerTransport(
-              parameters,
-              callback,
-              errback
-            );
-          }
-        );
+        sendTransport.on("produce", async (parameters, callback, errback) => {
+          await this._onProducedSendTransport(
+            device,
+            parameters,
+            callback,
+            errback
+          );
+        });
 
-        // TODO
-        //await connectSendTransport();
+        await this._produceSendTransport(sendTransport, localMediaStream);
       }
     );
   };
 
-  private onConnectedProducerTransport = async (
+  private _produceSendTransport = async (
+    producerTransport: Transport,
+    localMediaStream: MediaStream
+  ) => {
+    const audioProducer = await producerTransport.produce({
+      track: localMediaStream.getAudioTracks()[0],
+    });
+    const videoProducer = await producerTransport.produce({
+      track: localMediaStream.getVideoTracks()[0],
+    });
+
+    audioProducer.on("trackended", () => {
+      console.log("audio track ended");
+      // TODO: close audio track
+    });
+
+    audioProducer.on("transportclose", () => {
+      console.log("audio transport ended");
+      // close audio track
+    });
+
+    videoProducer.on("trackended", () => {
+      console.log("video track ended");
+      // TODO: close video track
+    });
+
+    videoProducer.on("transportclose", () => {
+      console.log("video transport ended");
+      // TODO: close video track
+    });
+  };
+
+  private _onConnectedSendTransport = async (
     dtlsParameters: DtlsParameters,
     callback: () => void,
     errback: (error: Error) => void
@@ -133,10 +192,9 @@ export class RoomSocketService {
     try {
       // Signal local DTLS parameters to the server side transport
       // see server's socket.on('transport-producer-connect', ...)
-      await this.requireSocket().emit(TRANSPORT_PRODUCER_CONNECT, {
+      await this._requireSocket().emit(TRANSPORT_PRODUCER_CONNECT, {
         dtlsParameters,
       });
-
       // Tell the transport that parameters were transmitted.
       callback();
     } catch (error: any) {
@@ -144,7 +202,8 @@ export class RoomSocketService {
     }
   };
 
-  private onProducedProducerTransport = async (
+  private _onProducedSendTransport = async (
+    device: Device,
     parameters: {
       kind: MediaKind;
       rtpParameters: RtpParameters;
@@ -158,7 +217,7 @@ export class RoomSocketService {
       // with the following parameters and produce
       // and expect back a server side producer id
       // see server's socket.on('transport-produce', ...)
-      await this.requireSocket().emit(
+      await this._requireSocket().emit(
         TRANSPORT_PRODUCER,
         {
           kind: parameters.kind,
@@ -169,9 +228,8 @@ export class RoomSocketService {
           // Tell the transport that parameters were transmitted and provide it with the
           // server side producer's id.
           callback({ id });
-
           // if producers exist, then join room
-          if (producersExist) this.getProducers();
+          if (producersExist) this._getProducersAndConsume(device);
         }
       );
     } catch (error: any) {
@@ -179,7 +237,134 @@ export class RoomSocketService {
     }
   };
 
-  private getProducers = () => {
-    // TODO
+  private _getProducersAndConsume = (device: Device) => {
+    this._requireSocket().emit(
+      GET_PRODUCER_IDS,
+      (userProducerIds: { producerId: string; userId: string }[]) => {
+        console.log(userProducerIds);
+        // for each of the producer create a consumer
+        // producerIds.forEach(id => signalNewConsumerTransport(id))
+        userProducerIds.forEach(async (userProducerIdSet) => {
+          await this._addConsumeTransport(
+            userProducerIdSet.producerId,
+            userProducerIdSet.userId,
+            device
+          );
+        });
+      }
+    );
+  };
+
+  private _addConsumeTransport = async (
+    remoteProducerId: string,
+    userId: string,
+    device: Device
+  ) => {
+    if (this._consumingTransportIds.has(remoteProducerId)) {
+      return;
+    }
+    this._consumingTransportIds.add(remoteProducerId);
+
+    await this._requireSocket().emit(
+      CREATE_WEB_RTC_TRANSPORT,
+      { isConsumer: true },
+      ({ params }: { params: CreateWebRtcTransportParams }) => {
+        console.log(`PARAMS... ${params}`);
+
+        let consumerTransport: Transport;
+        try {
+          consumerTransport = device.createRecvTransport(params);
+        } catch (error) {
+          // exceptions:
+          // {InvalidStateError} if not loaded
+          // {TypeError} if wrong arguments.
+          console.log(error);
+          return;
+        }
+
+        consumerTransport.on(
+          "connect",
+          async (
+            { dtlsParameters }: { dtlsParameters: DtlsParameters },
+            callback: () => void,
+            errback: (e: any) => void
+          ) => {
+            try {
+              // Signal local DTLS parameters to the server side transport
+              // see server's socket.on('transport-recv-connect', ...)
+              await this._requireSocket().emit(TRANSPORT_RECEIVER_CONNECT, {
+                dtlsParameters,
+                serverConsumerTransportId: params.id,
+              });
+
+              // Tell the transport that parameters were transmitted.
+              callback();
+            } catch (error) {
+              // Tell the transport that something was wrong
+              errback(error);
+            }
+          }
+        );
+
+        this._connectRecvTransport(
+          consumerTransport,
+          remoteProducerId,
+          params.id,
+          userId,
+          device
+        );
+      }
+    );
+  };
+
+  private _connectRecvTransport = async (
+    consumerTransport: Transport,
+    remoteProducerId: string,
+    serverConsumerTransportId: string,
+    userId: string,
+    device: Device
+  ) => {
+    // for consumer, we need to tell the server first
+    // to create a consumer based on the rtpCapabilities and consume
+    // if the router can consume, it will send back a set of params as below
+    await this._requireSocket().emit(
+      CONSUME,
+      {
+        rtpCapabilities: device.rtpCapabilities,
+        remoteProducerId,
+        serverConsumerTransportId,
+      },
+      async ({ params }: { params: ConsumeParams | ErrorParams }) => {
+        if ((params as ErrorParams).error !== undefined) {
+          params = params as ErrorParams;
+          console.error("Cannot Consume", params.error);
+          return;
+        }
+        params = params as ConsumeParams;
+
+        console.log(`Consumer Params ${params}`);
+        // then consume with the local consumer transport
+        // which creates a consumer
+        const consumer = await consumerTransport.consume(params);
+        this._consumerTransports = [
+          ...this._consumerTransports,
+          {
+            userId,
+            consumerTransport,
+            serverConsumerTransportId: params.id,
+            producerId: remoteProducerId,
+            consumer,
+          },
+        ];
+
+        this._roomObserver.onAddedConsumer(consumer);
+
+        // the server consumer started with media paused,
+        // so we need to inform the server to resume
+        this._requireSocket().emit(CONSUME_RESUME, {
+          serverConsumerId: params.serverConsumerId,
+        });
+      }
+    );
   };
 }
