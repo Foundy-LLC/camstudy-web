@@ -63,7 +63,7 @@ export class RoomSocketService {
   private _audioProducer?: Producer;
   private _videoProducer?: Producer;
 
-  private _consumingTransportIds: Set<string> = new Set();
+  private readonly _consumingTransportIds: Set<string> = new Set();
   private _consumerTransports: {
     consumerTransport: Transport;
     serverConsumerTransportId: string;

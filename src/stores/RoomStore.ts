@@ -49,13 +49,13 @@ export class RoomStore implements RoomViewModel {
   private _localVideoStream?: MediaStream = undefined;
   private _localAudioStream?: MediaStream = undefined;
 
-  private _remoteVideoStreamsByPeerId: Map<string, MediaStream> =
+  private readonly _remoteVideoStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
-  private _remoteAudioStreamsByPeerId: Map<string, MediaStream> =
+  private readonly _remoteAudioStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
 
   private _chatInput: string = "";
-  private _chatMessages: ChatMessage[] = observable.array([]);
+  private readonly _chatMessages: ChatMessage[] = observable.array([]);
 
   constructor() {
     makeAutoObservable(this);
