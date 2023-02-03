@@ -6,7 +6,8 @@ import { RoomStore } from "@/stores/RoomStore";
 const Room: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
 
-  const enabledVideo = roomStore.enabledVideo;
+  const enabledVideo = roomStore.enabledLocalVideo;
+  const enabledAudio = roomStore.enabledLocalAudio;
 
   useEffect(() => {
     roomStore.connectSocket();
@@ -18,12 +19,16 @@ const Room: NextPage = observer(() => {
         <tbody>
           <tr>
             <td className="localColumn">
-              <Video id="localVideo" mediaStream={roomStore.localVideoStream} />
+              <Video id="localVideo" videoStream={roomStore.localVideoStream} />
+              <Audio id="localAudio" audioStream={roomStore.localAudioStream} />
             </td>
             <td className="remoteColumn">
-              <RemoteVideoGroup
-                remoteMediaStreamsByPeerId={
-                  roomStore.remoteMediaStreamsByPeerId
+              <RemoteMediaGroup
+                remoteVideoStreamsByPeerId={
+                  roomStore.remoteVideoStreamsByPeerId
+                }
+                remoteAudioStreamsByPeerId={
+                  roomStore.remoteAudioStreamsByPeerId
                 }
               />
             </td>
@@ -38,48 +43,75 @@ const Room: NextPage = observer(() => {
       >
         {enabledVideo ? "Hide Video" : "Show Video"}
       </button>
-      <button id="audioToggle">Turn off audio</button>
+      <button
+        id="audioToggle"
+        onClick={() =>
+          enabledAudio ? roomStore.muteAudio() : roomStore.unmuteAudio()
+        }
+      >
+        {enabledAudio ? "Mute Audio" : "Unmute Audio"}
+      </button>
     </div>
   );
 });
 
-const RemoteVideoGroup: NextPage<{
-  remoteMediaStreamsByPeerId: Map<string, MediaStream>;
-}> = observer(({ remoteMediaStreamsByPeerId }) => {
-  const entries = [...remoteMediaStreamsByPeerId.entries()];
+const RemoteMediaGroup: NextPage<{
+  remoteVideoStreamsByPeerId: Map<string, MediaStream>;
+  remoteAudioStreamsByPeerId: Map<string, MediaStream>;
+}> = observer(({ remoteVideoStreamsByPeerId, remoteAudioStreamsByPeerId }) => {
+  const videoEntries = [...remoteVideoStreamsByPeerId.entries()];
+  const audioEntries = [...remoteAudioStreamsByPeerId.entries()];
 
   return (
-    <div>
-      {entries.map((entry) => {
-        const [peerId, mediaStream] = entry;
-        return <Video key={peerId} id={peerId} mediaStream={mediaStream} />;
-      })}
-    </div>
+    <>
+      <div>
+        {videoEntries.map((entry) => {
+          const [peerId, mediaStream] = entry;
+          return <Video key={peerId} id={peerId} videoStream={mediaStream} />;
+        })}
+      </div>
+      <div>
+        {audioEntries.map((entry) => {
+          const [peerId, mediaStream] = entry;
+          return <Audio key={peerId} id={peerId} audioStream={mediaStream} />;
+        })}
+      </div>
+    </>
   );
 });
 
-const Video: NextPage<{ id: string; mediaStream: MediaStream | undefined }> = ({
-  id,
-  mediaStream,
-}) => {
-  const videoRef = useRef<HTMLVideoElement | null>();
+const Video: NextPage<{
+  id: string;
+  videoStream: MediaStream | undefined;
+}> = ({ id, videoStream }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (video && mediaStream !== undefined) {
-      video.srcObject = mediaStream;
+    if (video != null) {
+      video.srcObject = videoStream === undefined ? null : videoStream;
     }
-  }, [mediaStream]);
+  }, [videoStream]);
 
   return (
-    <video
-      ref={(video) => (videoRef.current = video)}
-      id={id}
-      autoPlay
-      className="video"
-      muted
-    ></video>
+    <video ref={videoRef} id={id} autoPlay className="video" muted></video>
   );
+};
+
+const Audio: NextPage<{
+  id: string;
+  audioStream: MediaStream | undefined;
+}> = ({ id, audioStream }) => {
+  const audioRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio != null) {
+      audio.srcObject = audioStream === undefined ? null : audioStream;
+    }
+  }, [audioStream]);
+
+  return <audio ref={audioRef} id={id} autoPlay></audio>;
 };
 
 export default Room;

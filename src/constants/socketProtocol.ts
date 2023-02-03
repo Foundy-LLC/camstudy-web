@@ -97,6 +97,11 @@ const PRODUCER_CLOSED = "producer-closed";
 const CLOSE_VIDEO_PRODUCER = "close-video-producer";
 
 /**
+ * 클라이언트가 서버에게 오디오 생산자를 닫으라는 요청을 보낸다.
+ */
+const CLOSE_AUDIO_PRODUCER = "close-audio-producer";
+
+/**
  * 다른 피어가 연결을 끊었을 때 서버에서 클라이언트들에게 브로드캐스트한다.
  */
 const OTHER_PEER_DISCONNECTED = "other-peer-disconnected";
@@ -118,5 +123,6 @@ export {
   NEW_PRODUCER,
   PRODUCER_CLOSED,
   CLOSE_VIDEO_PRODUCER,
+  CLOSE_AUDIO_PRODUCER,
   OTHER_PEER_DISCONNECTED,
 };

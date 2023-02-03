@@ -1,6 +1,7 @@
 import { RoomSocketService } from "@/service/RoomSocketService";
-import { makeAutoObservable, observable } from "mobx";
+import { makeAutoObservable, observable, runInAction } from "mobx";
 import { InvalidStateError } from "mediasoup-client/lib/errors";
+import { MediaKind } from "mediasoup-client/lib/RtpParameters";
 
 const MEDIA_CONSTRAINTS = {
   audio: true,
@@ -25,7 +26,11 @@ export enum RoomState {
 export interface RoomViewModel {
   onConnected: () => Promise<MediaStream>;
   onJoined: () => void;
-  onAddedConsumer: (peerId: string, track: MediaStreamTrack) => void;
+  onAddedConsumer: (
+    peerId: string,
+    track: MediaStreamTrack,
+    kind: MediaKind
+  ) => void;
   onDisposedPeer: (disposedPeerId: string) => void;
 }
 
@@ -35,7 +40,9 @@ export class RoomStore implements RoomViewModel {
   private _localVideoStream?: MediaStream = undefined;
   private _localAudioStream?: MediaStream = undefined;
 
-  private _remoteMediaStreamsByPeerId: Map<string, MediaStream> =
+  private _remoteVideoStreamsByPeerId: Map<string, MediaStream> =
+    observable.map(new Map());
+  private _remoteAudioStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
 
   constructor() {
@@ -46,12 +53,24 @@ export class RoomStore implements RoomViewModel {
     return this._localVideoStream;
   }
 
-  public get enabledVideo(): boolean {
+  public get localAudioStream(): MediaStream | undefined {
+    return this._localAudioStream;
+  }
+
+  public get enabledLocalVideo(): boolean {
     return this._localVideoStream !== undefined;
   }
 
-  public get remoteMediaStreamsByPeerId(): Map<string, MediaStream> {
-    return this._remoteMediaStreamsByPeerId;
+  public get enabledLocalAudio(): boolean {
+    return this._localAudioStream !== undefined;
+  }
+
+  public get remoteVideoStreamsByPeerId(): Map<string, MediaStream> {
+    return this._remoteVideoStreamsByPeerId;
+  }
+
+  public get remoteAudioStreamsByPeerId(): Map<string, MediaStream> {
+    return this._remoteAudioStreamsByPeerId;
   }
 
   public connectSocket = () => {
@@ -65,9 +84,11 @@ export class RoomStore implements RoomViewModel {
       );
     }
     const media = await this.fetchLocalMedia({ video: true });
-    const track = media.getVideoTracks()[0];
-    this._localVideoStream = new MediaStream([track]);
-    await this._roomService.produceTrack(track);
+    await runInAction(async () => {
+      const track = media.getVideoTracks()[0];
+      this._localVideoStream = new MediaStream([track]);
+      await this._roomService.produceTrack(track);
+    });
   };
 
   public hideVideo = () => {
@@ -77,7 +98,33 @@ export class RoomStore implements RoomViewModel {
       );
     }
     this._roomService.closeVideoProducer();
+    this._localVideoStream.getTracks().forEach((track) => track.stop());
     this._localVideoStream = undefined;
+  };
+
+  public unmuteAudio = async () => {
+    if (this._localAudioStream !== undefined) {
+      throw new InvalidStateError(
+        "로컬 오디오가 있는 상태에서 오디오를 생성하려 했습니다."
+      );
+    }
+    const media = await this.fetchLocalMedia({ audio: true });
+    await runInAction(async () => {
+      const track = media.getAudioTracks()[0];
+      this._localAudioStream = new MediaStream([track]);
+      await this._roomService.produceTrack(track);
+    });
+  };
+
+  public muteAudio = () => {
+    if (this._localAudioStream === undefined) {
+      throw new InvalidStateError(
+        "로컬 오디오가 없는 상태에서 오디오를 끄려 했습니다."
+      );
+    }
+    this._roomService.closeAudioProducer();
+    this._localAudioStream.getTracks().forEach((track) => track.stop());
+    this._localAudioStream = undefined;
   };
 
   private fetchLocalMedia = async ({
@@ -96,8 +143,14 @@ export class RoomStore implements RoomViewModel {
       video: true,
       audio: true,
     });
-    this._localVideoStream = new MediaStream([mediaStream.getVideoTracks()[0]]);
-    this._localAudioStream = new MediaStream([mediaStream.getAudioTracks()[0]]);
+    runInAction(() => {
+      this._localVideoStream = new MediaStream([
+        mediaStream.getVideoTracks()[0],
+      ]);
+      this._localAudioStream = new MediaStream([
+        mediaStream.getAudioTracks()[0],
+      ]);
+    });
     return mediaStream;
   };
 
@@ -105,11 +158,23 @@ export class RoomStore implements RoomViewModel {
     // TODO
   };
 
-  public onAddedConsumer = (peerId: string, track: MediaStreamTrack) => {
-    this._remoteMediaStreamsByPeerId.set(peerId, new MediaStream([track]));
+  public onAddedConsumer = (
+    peerId: string,
+    track: MediaStreamTrack,
+    kind: MediaKind
+  ) => {
+    switch (kind) {
+      case "audio":
+        this._remoteAudioStreamsByPeerId.set(peerId, new MediaStream([track]));
+        break;
+      case "video":
+        this._remoteVideoStreamsByPeerId.set(peerId, new MediaStream([track]));
+        break;
+    }
   };
 
   public onDisposedPeer = (peerId: string): void => {
-    this._remoteMediaStreamsByPeerId.delete(peerId);
+    this._remoteVideoStreamsByPeerId.delete(peerId);
+    this._remoteAudioStreamsByPeerId.delete(peerId);
   };
 }

@@ -1,6 +1,7 @@
 import { RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
+  CLOSE_AUDIO_PRODUCER,
   CLOSE_VIDEO_PRODUCER,
   CONNECTION_SUCCESS,
   CONSUME,
@@ -407,7 +408,11 @@ export class RoomSocketService {
           },
         ];
 
-        this._roomViewModel.onAddedConsumer(userId, consumer.track);
+        this._roomViewModel.onAddedConsumer(
+          userId,
+          consumer.track,
+          params.kind
+        );
 
         // the server consumer started with media paused,
         // so we need to inform the server to resume
@@ -435,5 +440,15 @@ export class RoomSocketService {
     producer.close();
     this._videoProducer = undefined;
     this._requireSocket().emit(CLOSE_VIDEO_PRODUCER);
+  };
+
+  public closeAudioProducer = () => {
+    const producer = this._audioProducer;
+    if (producer == null) {
+      return;
+    }
+    producer.close();
+    this._audioProducer = undefined;
+    this._requireSocket().emit(CLOSE_AUDIO_PRODUCER);
   };
 }
