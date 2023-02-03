@@ -1,6 +1,7 @@
 import { RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
+  CLOSE_VIDEO_PRODUCER,
   CONNECTION_SUCCESS,
   CONSUME,
   CONSUME_RESUME,
@@ -28,6 +29,8 @@ import {
 } from "mediasoup-client/lib/Transport";
 import { Consumer } from "mediasoup-client/lib/Consumer";
 import { uuidv4 } from "@firebase/util";
+import { Producer } from "mediasoup-client/lib/Producer";
+import { InvalidStateError } from "mediasoup-client/lib/errors";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -53,6 +56,11 @@ interface ErrorParams {
 
 export class RoomSocketService {
   private _socket?: Socket;
+
+  private _sendTransport?: Transport;
+  private _audioProducer?: Producer;
+  private _videoProducer?: Producer;
+
   private _consumingTransportIds: Set<string> = new Set();
   private _consumerTransports: {
     consumerTransport: Transport;
@@ -147,12 +155,12 @@ export class RoomSocketService {
         // creates a new WebRTC Transport to send media
         // based on the server's producer transport params
         // https://mediasoup.org/documentation/v3/mediasoup-client/api/#TransportOptions
-        const sendTransport = device.createSendTransport(params);
+        this._sendTransport = device.createSendTransport(params);
 
         // https://mediasoup.org/documentation/v3/communication-between-client-and-server/#producing-media
         // this event is raised when a first call to transport.produce() is made
         // see connectSendTransport() below
-        sendTransport.on(
+        this._sendTransport.on(
           "connect",
           async ({ dtlsParameters }, callback, errback) => {
             await this._onConnectedSendTransport(
@@ -163,47 +171,48 @@ export class RoomSocketService {
           }
         );
 
-        sendTransport.on("produce", async (parameters, callback, errback) => {
-          await this._onProducedSendTransport(
-            device,
-            parameters,
-            callback,
-            errback
-          );
-        });
+        this._sendTransport.on(
+          "produce",
+          async (parameters, callback, errback) => {
+            await this._onProducedSendTransport(
+              device,
+              parameters,
+              callback,
+              errback
+            );
+          }
+        );
 
-        await this._produceSendTransport(sendTransport, localMediaStream);
+        await this._produceSendTransport(this._sendTransport, localMediaStream);
       }
     );
   };
 
   private _produceSendTransport = async (
-    producerTransport: Transport,
+    sendTransport: Transport,
     localMediaStream: MediaStream
   ) => {
-    const audioProducer = await producerTransport.produce({
+    this._audioProducer = await sendTransport.produce({
       track: localMediaStream.getAudioTracks()[0],
     });
-    const videoProducer = await producerTransport.produce({
+    this._videoProducer = await sendTransport.produce({
       track: localMediaStream.getVideoTracks()[0],
     });
 
-    audioProducer.on("trackended", () => {
+    this._audioProducer.on("trackended", () => {
       console.log("audio track ended");
       // TODO: close audio track
     });
-
-    audioProducer.on("transportclose", () => {
+    this._audioProducer.on("transportclose", () => {
       console.log("audio transport ended");
       // close audio track
     });
 
-    videoProducer.on("trackended", () => {
+    this._videoProducer.on("trackended", () => {
       console.log("video track ended");
       // TODO: close video track
     });
-
-    videoProducer.on("transportclose", () => {
+    this._videoProducer.on("transportclose", () => {
       console.log("video transport ended");
       // TODO: close video track
     });
@@ -391,5 +400,24 @@ export class RoomSocketService {
         });
       }
     );
+  };
+
+  public produceTrack = async (track: MediaStreamTrack) => {
+    if (this._sendTransport == null) {
+      throw new InvalidStateError(
+        "_sendTransport가 존재하지 않아 produceTrack를 생성할 수 없습니다."
+      );
+    }
+    this._videoProducer = await this._sendTransport.produce({ track });
+  };
+
+  public closeVideoProducer = () => {
+    const producer = this._videoProducer;
+    if (producer == null) {
+      return;
+    }
+    producer.close();
+    this._videoProducer = undefined;
+    this._requireSocket().emit(CLOSE_VIDEO_PRODUCER);
   };
 }

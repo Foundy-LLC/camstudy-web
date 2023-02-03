@@ -6,6 +6,8 @@ import { RoomStore } from "@/stores/RoomStore";
 const Room: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
 
+  const enabledVideo = roomStore.enabledVideo;
+
   useEffect(() => {
     roomStore.connectSocket();
   }, []);
@@ -16,7 +18,7 @@ const Room: NextPage = observer(() => {
         <tbody>
           <tr>
             <td className="localColumn">
-              <Video id="localVideo" mediaStream={roomStore.localMediaStream} />
+              <Video id="localVideo" mediaStream={roomStore.localVideoStream} />
             </td>
             <td className="remoteColumn">
               <RemoteVideoGroup
@@ -28,7 +30,14 @@ const Room: NextPage = observer(() => {
           </tr>
         </tbody>
       </table>
-      <button id="videoToggle">Hide video</button>
+      <button
+        id="videoToggle"
+        onClick={() =>
+          enabledVideo ? roomStore.hideVideo() : roomStore.showVideo()
+        }
+      >
+        {enabledVideo ? "Hide Video" : "Show Video"}
+      </button>
       <button id="audioToggle">Turn off audio</button>
     </div>
   );
@@ -53,18 +62,18 @@ const Video: NextPage<{ id: string; mediaStream: MediaStream | undefined }> = ({
   id,
   mediaStream,
 }) => {
-  const localVideoRef = useRef<HTMLVideoElement | null>();
+  const videoRef = useRef<HTMLVideoElement | null>();
 
   useEffect(() => {
-    const localVideo = localVideoRef.current;
-    if (localVideo && mediaStream !== undefined) {
-      localVideo.srcObject = mediaStream;
+    const video = videoRef.current;
+    if (video && mediaStream !== undefined) {
+      video.srcObject = mediaStream;
     }
   }, [mediaStream]);
 
   return (
     <video
-      ref={(video) => (localVideoRef.current = video)}
+      ref={(video) => (videoRef.current = video)}
       id={id}
       autoPlay
       className="video"

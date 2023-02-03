@@ -1,7 +1,8 @@
 import { RoomSocketService } from "@/service/RoomSocketService";
 import { makeAutoObservable, observable } from "mobx";
+import { InvalidStateError } from "mediasoup-client/lib/errors";
 
-const mediaConstraints = {
+const MEDIA_CONSTRAINTS = {
   audio: true,
   video: {
     width: {
@@ -30,7 +31,10 @@ export interface RoomViewModel {
 
 export class RoomStore implements RoomViewModel {
   private readonly _roomService = new RoomSocketService(this);
-  private _localMediaStream?: MediaStream = undefined;
+
+  private _localVideoStream?: MediaStream = undefined;
+  private _localAudioStream?: MediaStream = undefined;
+
   private _remoteMediaStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
 
@@ -38,8 +42,12 @@ export class RoomStore implements RoomViewModel {
     makeAutoObservable(this);
   }
 
-  public get localMediaStream(): MediaStream | undefined {
-    return this._localMediaStream;
+  public get localVideoStream(): MediaStream | undefined {
+    return this._localVideoStream;
+  }
+
+  public get enabledVideo(): boolean {
+    return this._localVideoStream !== undefined;
   }
 
   public get remoteMediaStreamsByPeerId(): Map<string, MediaStream> {
@@ -50,12 +58,47 @@ export class RoomStore implements RoomViewModel {
     this._roomService.connect();
   };
 
-  private fetchLocalMedia = async (): Promise<MediaStream> => {
-    return await navigator.mediaDevices.getUserMedia(mediaConstraints);
+  public showVideo = async () => {
+    if (this._localVideoStream !== undefined) {
+      throw new InvalidStateError(
+        "로컬 비디오가 있는 상태에서 비디오를 생성하려 했습니다."
+      );
+    }
+    const media = await this.fetchLocalMedia({ video: true });
+    const track = media.getVideoTracks()[0];
+    this._localVideoStream = new MediaStream([track]);
+    await this._roomService.produceTrack(track);
+  };
+
+  public hideVideo = () => {
+    if (this._localVideoStream === undefined) {
+      throw new InvalidStateError(
+        "로컬 비디오가 없는 상태에서 비디오를 끄려 했습니다."
+      );
+    }
+    this._roomService.closeVideoProducer();
+    this._localVideoStream = undefined;
+  };
+
+  private fetchLocalMedia = async ({
+    video = false,
+    audio = false,
+  }): Promise<MediaStream> => {
+    return await navigator.mediaDevices.getUserMedia({
+      ...MEDIA_CONSTRAINTS,
+      video: video,
+      audio: audio,
+    });
   };
 
   public onConnected = async (): Promise<MediaStream> => {
-    return (this._localMediaStream = await this.fetchLocalMedia());
+    const mediaStream = await this.fetchLocalMedia({
+      video: true,
+      audio: true,
+    });
+    this._localVideoStream = new MediaStream([mediaStream.getVideoTracks()[0]]);
+    this._localAudioStream = new MediaStream([mediaStream.getAudioTracks()[0]]);
+    return mediaStream;
   };
 
   public onJoined = () => {
