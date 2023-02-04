@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [15.x]
+        node-version: [ 15.x ]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -28,16 +28,19 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm install and build
-        env:
-          NEXT_PUBLIC_API_KEY: ${{ secrets.NEXT_PUBLIC_API_KEY }}
-          NEXT_PUBLIC_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_AUTH_DOMAIN }}
-          NEXT_PUBLIC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_PROJECT_ID }}
-          NEXT_PUBLIC_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_STORAGE_BUCKET }}
-          NEXT_PUBLIC_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_MESSAGING_SENDER_ID }}
-          NEXT_PUBLIC_APP_ID: ${{ secrets.NEXT_PUBLIC_APP_ID }}
-          NEXT_PUBLIC_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_MEASUREMENT_ID }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - name: Make env
+        uses: SpicyPizza/create-envfile@v1.3.1
+        with:
+          envkey_NEXT_PUBLIC_API_KEY: ${{ secrets.NEXT_PUBLIC_API_KEY }}
+          envkey_NEXT_PUBLIC_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_AUTH_DOMAIN }}
+          envkey_NEXT_PUBLIC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_PROJECT_ID }}
+          envkey_NEXT_PUBLIC_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_STORAGE_BUCKET }}
+          envkey_NEXT_PUBLIC_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_MESSAGING_SENDER_ID }}
+          envkey_NEXT_PUBLIC_APP_ID: ${{ secrets.NEXT_PUBLIC_APP_ID }}
+          envkey_NEXT_PUBLIC_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_MEASUREMENT_ID }}
+          envkey_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          fail_on_empty: true
+      - name: npm install, build and test
         run: |
           npm install
           npm run build
