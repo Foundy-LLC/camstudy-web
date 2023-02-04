@@ -5,6 +5,7 @@ import {
   validateUserTags,
 } from "@/utils/user.validator";
 
+// TODO: CreateUserRequestBody 로 이름 바꾸기
 export class UserRequestBody {
   constructor(
     readonly userId: string,

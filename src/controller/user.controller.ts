@@ -33,6 +33,7 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
     );
     res.status(201).json(PROFILE_CREATE_SUCCESS);
   } catch (e) {
+    // TODO: typeof로 수정해야함!!
     if (e instanceof string) {
       res.status(400).end(e);
       return;
