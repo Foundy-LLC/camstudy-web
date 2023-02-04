@@ -29,7 +29,6 @@ const RoomReady: NextPage<{
   return (
     <>
       <Video id="localVideo" videoStream={roomStore.localVideoStream} />
-      <Audio id="localAudio" audioStream={roomStore.localAudioStream} />
       <button
         id="videoToggle"
         onClick={() =>
@@ -68,7 +67,6 @@ const Room: NextPage<{ roomStore: RoomStore }> = observer(({ roomStore }) => {
           <tr>
             <td className="localColumn">
               <Video id="localVideo" videoStream={roomStore.localVideoStream} />
-              <Audio id="localAudio" audioStream={roomStore.localAudioStream} />
             </td>
             <td className="remoteColumn">
               <RemoteMediaGroup

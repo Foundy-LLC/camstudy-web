@@ -69,10 +69,6 @@ export class RoomStore implements RoomViewModel {
     return this._localVideoStream;
   }
 
-  public get localAudioStream(): MediaStream | undefined {
-    return this._localAudioStream;
-  }
-
   public get enabledLocalVideo(): boolean {
     return this._localVideoStream !== undefined;
   }
