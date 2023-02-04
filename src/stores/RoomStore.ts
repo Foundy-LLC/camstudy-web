@@ -81,12 +81,12 @@ export class RoomStore implements RoomViewModel {
     return this._localAudioStream !== undefined;
   }
 
-  public get remoteVideoStreamsByPeerId(): Map<string, MediaStream> {
-    return this._remoteVideoStreamsByPeerId;
+  public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {
+    return [...this._remoteVideoStreamsByPeerId.entries()];
   }
 
-  public get remoteAudioStreamsByPeerId(): Map<string, MediaStream> {
-    return this._remoteAudioStreamsByPeerId;
+  public get remoteAudioStreamByPeerIdEntries(): [string, MediaStream][] {
+    return [...this._remoteAudioStreamsByPeerId];
   }
 
   public get chatInput(): string {

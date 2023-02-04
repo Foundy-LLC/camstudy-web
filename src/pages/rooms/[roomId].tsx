@@ -72,11 +72,11 @@ const Room: NextPage<{ roomStore: RoomStore }> = observer(({ roomStore }) => {
             </td>
             <td className="remoteColumn">
               <RemoteMediaGroup
-                remoteVideoStreamsByPeerId={
-                  roomStore.remoteVideoStreamsByPeerId
+                remoteVideoStreamByPeerIdEntries={
+                  roomStore.remoteVideoStreamByPeerIdEntries
                 }
-                remoteAudioStreamsByPeerId={
-                  roomStore.remoteAudioStreamsByPeerId
+                remoteAudioStreamByPeerIdEntries={
+                  roomStore.remoteAudioStreamByPeerIdEntries
                 }
               />
             </td>
@@ -117,29 +117,28 @@ const Room: NextPage<{ roomStore: RoomStore }> = observer(({ roomStore }) => {
 });
 
 const RemoteMediaGroup: NextPage<{
-  remoteVideoStreamsByPeerId: Map<string, MediaStream>;
-  remoteAudioStreamsByPeerId: Map<string, MediaStream>;
-}> = observer(({ remoteVideoStreamsByPeerId, remoteAudioStreamsByPeerId }) => {
-  const videoEntries = [...remoteVideoStreamsByPeerId.entries()];
-  const audioEntries = [...remoteAudioStreamsByPeerId.entries()];
-
-  return (
-    <>
-      <div>
-        {videoEntries.map((entry) => {
-          const [peerId, mediaStream] = entry;
-          return <Video key={peerId} id={peerId} videoStream={mediaStream} />;
-        })}
-      </div>
-      <div>
-        {audioEntries.map((entry) => {
-          const [peerId, mediaStream] = entry;
-          return <Audio key={peerId} id={peerId} audioStream={mediaStream} />;
-        })}
-      </div>
-    </>
-  );
-});
+  remoteVideoStreamByPeerIdEntries: [string, MediaStream][];
+  remoteAudioStreamByPeerIdEntries: [string, MediaStream][];
+}> = observer(
+  ({ remoteVideoStreamByPeerIdEntries, remoteAudioStreamByPeerIdEntries }) => {
+    return (
+      <>
+        <div>
+          {remoteVideoStreamByPeerIdEntries.map((entry) => {
+            const [peerId, mediaStream] = entry;
+            return <Video key={peerId} id={peerId} videoStream={mediaStream} />;
+          })}
+        </div>
+        <div>
+          {remoteAudioStreamByPeerIdEntries.map((entry) => {
+            const [peerId, mediaStream] = entry;
+            return <Audio key={peerId} id={peerId} audioStream={mediaStream} />;
+          })}
+        </div>
+      </>
+    );
+  }
+);
 
 const Video: NextPage<{
   id: string;
