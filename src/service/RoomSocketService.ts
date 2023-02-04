@@ -430,11 +430,18 @@ export class RoomSocketService {
     );
   };
 
-  public produceTrack = async (track: MediaStreamTrack) => {
+  public produceVideoTrack = async (track: MediaStreamTrack) => {
     if (this._sendTransport == null) {
       return;
     }
     this._videoProducer = await this._sendTransport.produce({ track });
+  };
+
+  public produceAudioTrack = async (track: MediaStreamTrack) => {
+    if (this._sendTransport == null) {
+      return;
+    }
+    this._audioProducer = await this._sendTransport.produce({ track });
   };
 
   public closeVideoProducer = () => {

@@ -142,7 +142,7 @@ export class RoomStore implements RoomViewModel {
     await runInAction(async () => {
       const track = media.getVideoTracks()[0];
       this._localVideoStream = new MediaStream([track]);
-      await this._roomService.produceTrack(track);
+      await this._roomService.produceVideoTrack(track);
     });
   };
 
@@ -167,7 +167,7 @@ export class RoomStore implements RoomViewModel {
     await runInAction(async () => {
       const track = media.getAudioTracks()[0];
       this._localAudioStream = new MediaStream([track]);
-      await this._roomService.produceTrack(track);
+      await this._roomService.produceAudioTrack(track);
     });
   };
 
