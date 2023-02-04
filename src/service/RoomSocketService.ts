@@ -103,6 +103,8 @@ export class RoomSocketService {
         roomName: roomId,
         // TODO: 실제 회원 ID를 전달하기
         userId: uuidv4(),
+        // TODO: 실제 회원 이름을 전달하기
+        userName: uuidv4(),
       },
       async (data: { rtpCapabilities: RtpCapabilities }) => {
         console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`);
