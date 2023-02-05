@@ -2,6 +2,8 @@ import { action, makeAutoObservable, observable } from "mobx";
 import { RootStore } from "@/stores/RootStore";
 import RoomService from "@/service/room.service";
 import Rooms from "@/pages/rooms";
+import { string } from "prop-types";
+import { DEFAULT_PASSWORD, DEFAULT_THUMBNAIL } from "@/constants/default";
 
 export class Room {
   private _id: string = "";
@@ -27,10 +29,10 @@ export class Room {
     return this._title;
   }
   get thumbnail() {
-    return this._thumbnail ? this._thumbnail : undefined;
+    return this._thumbnail ? this._thumbnail : DEFAULT_THUMBNAIL;
   }
   get password() {
-    return this._password ? this._password : undefined;
+    return this._password ? this._password : DEFAULT_PASSWORD;
   }
   get timer() {
     return this._timer;
