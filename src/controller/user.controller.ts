@@ -16,8 +16,9 @@ import { InitialInformationRequestBody } from "@/models/user/InitialInformationR
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const requestBody = new InitialInformationRequestBody(req.body.userId);
-    console.log(JSON.stringify(requestBody));
+    const requestBody = new InitialInformationRequestBody(
+      <string>req.query.uid
+    );
     const isNewUser = await isExistUser(requestBody.userId);
     console.log(isNewUser[0]);
     res.status(200).send(isNewUser[0]);

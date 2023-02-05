@@ -22,7 +22,6 @@ export class UserStore {
 
   signOut = async () => {
     await auth.signOut();
-    console.log(auth.currentUser);
     if (auth.currentUser == null) this._isNewUser = undefined;
   };
 

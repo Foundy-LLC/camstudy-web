@@ -9,11 +9,8 @@ const HEADER = {
 export class UserService {
   public async isExistUser(uid: string) {
     try {
-      const requestBody = new InitialInformationRequestBody(uid);
-      console.log(JSON.stringify(requestBody));
-      const res = await fetch(`api/users/uid/init-info`, {
+      const res = await fetch(`api/users/${uid}/init-info`, {
         method: "GET",
-        body: JSON.stringify(requestBody),
         headers: HEADER,
       });
       const { exists } = await res.json();
