@@ -4,6 +4,7 @@ import { InvalidStateError } from "mediasoup-client/lib/errors";
 import { MediaKind } from "mediasoup-client/lib/RtpParameters";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { PomodoroTimerEvent } from "@/models/room/PomodoroTimerEvent";
+import { beep } from "@/service/SoundPlayer";
 
 const MEDIA_CONSTRAINTS = {
   audio: true,
@@ -236,6 +237,7 @@ export class RoomStore implements RoomViewModel {
 
   public onReceivedChat = (message: ChatMessage) => {
     this._chatMessages.push(message);
+    beep();
   };
 
   public onAddedConsumer = (
@@ -255,6 +257,7 @@ export class RoomStore implements RoomViewModel {
 
   public onPomodoroTimerEvent = (event: PomodoroTimerEvent) => {
     this._pomodoroTimerEventDate = new Date();
+    beep();
     switch (event) {
       case PomodoroTimerEvent.ON_START:
         this._pomodoroTimerState = PomodoroTimerState.STARTED;
