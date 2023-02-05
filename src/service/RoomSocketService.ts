@@ -14,6 +14,9 @@ import {
   OTHER_PEER_DISCONNECTED,
   PRODUCER_CLOSED,
   SEND_CHAT,
+  START_LONG_BREAK,
+  START_SHORT_BREAK,
+  START_TIMER,
   TRANSPORT_PRODUCER,
   TRANSPORT_PRODUCER_CONNECT,
   TRANSPORT_RECEIVER_CONNECT,
@@ -34,6 +37,7 @@ import { Consumer } from "mediasoup-client/lib/Consumer";
 import { uuidv4 } from "@firebase/util";
 import { Producer } from "mediasoup-client/lib/Producer";
 import { auth } from "@/service/firebase";
+import { PomodoroTimerEvent } from "@/models/room/PomodoroTimerEvent";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -161,6 +165,19 @@ export class RoomSocketService {
         return;
       }
       consumerTransport.consumer.close();
+    });
+    socket.on(START_TIMER, () => {
+      this._roomViewModel.onPomodoroTimerEvent(PomodoroTimerEvent.ON_START);
+    });
+    socket.on(START_SHORT_BREAK, () => {
+      this._roomViewModel.onPomodoroTimerEvent(
+        PomodoroTimerEvent.ON_SHORT_BREAK
+      );
+    });
+    socket.on(START_LONG_BREAK, () => {
+      this._roomViewModel.onPomodoroTimerEvent(
+        PomodoroTimerEvent.ON_LONG_BREAK
+      );
     });
   };
 
@@ -470,5 +487,9 @@ export class RoomSocketService {
 
   public sendChat = (message: string) => {
     this._requireSocket().emit(SEND_CHAT, message);
+  };
+
+  public startTimer = () => {
+    this._requireSocket().emit(START_TIMER);
   };
 }

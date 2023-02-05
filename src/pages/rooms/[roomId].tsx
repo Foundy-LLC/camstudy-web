@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { ChatMessage, RoomState, RoomStore } from "@/stores/RoomStore";
 import { useRouter } from "next/router";
+import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 
 const RoomScaffold: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
@@ -110,6 +111,13 @@ const Room: NextPage<{ roomStore: RoomStore }> = observer(({ roomStore }) => {
       >
         {enabledAudio ? "Mute Audio" : "Unmute Audio"}
       </button>
+      <div>
+        <PomodoroTimer
+          timerState={roomStore.pomodoroTimerState}
+          getElapsedSeconds={() => roomStore.pomodoroTimerElapsedSeconds}
+          onClickStart={() => roomStore.startTimer()}
+        />
+      </div>
     </div>
   );
 });
@@ -187,5 +195,63 @@ const ChatMessage: NextPage<{ messages: ChatMessage[] }> = observer(
     );
   }
 );
+
+const PomodoroTimer: NextPage<{
+  timerState: PomodoroTimerState;
+  getElapsedSeconds: () => number;
+  onClickStart: () => void;
+}> = ({ timerState, getElapsedSeconds, onClickStart }) => {
+  let backgroundColor: string;
+  switch (timerState) {
+    case PomodoroTimerState.STOPPED:
+      backgroundColor = "cyan";
+      break;
+    case PomodoroTimerState.STARTED:
+      backgroundColor = "red";
+      break;
+    case PomodoroTimerState.SHORT_BREAK:
+      backgroundColor = "lightblue";
+      break;
+    case PomodoroTimerState.LONG_BREAK:
+      backgroundColor = "yellow";
+      break;
+  }
+  return (
+    <div style={{ background: backgroundColor }}>
+      <button id="timerStartButton" onClick={() => onClickStart()}>
+        Start Timer!
+      </button>
+      <ElapsedTimeDisplay
+        getElapsedSeconds={getElapsedSeconds}
+        enableTicker={timerState !== PomodoroTimerState.STOPPED}
+      />
+    </div>
+  );
+};
+
+const ElapsedTimeDisplay: NextPage<{
+  getElapsedSeconds: () => number;
+  enableTicker: boolean;
+}> = ({ getElapsedSeconds, enableTicker }) => {
+  const [secondsWrapper, setSecondsWrapper] = useState({ seconds: 0 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSecondsWrapper({ seconds: getElapsedSeconds() });
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  });
+
+  const seconds = secondsWrapper.seconds;
+
+  return (
+    <>
+      {seconds >= 60 ? `${(seconds / 60).toFixed(0)}분 ` : undefined}
+      {(seconds % 60).toFixed(0)}초 지남
+    </>
+  );
+};
 
 export default RoomScaffold;

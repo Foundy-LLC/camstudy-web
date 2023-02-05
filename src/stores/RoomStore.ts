@@ -2,6 +2,8 @@ import { RoomSocketService } from "@/service/RoomSocketService";
 import { makeAutoObservable, observable, runInAction } from "mobx";
 import { InvalidStateError } from "mediasoup-client/lib/errors";
 import { MediaKind } from "mediasoup-client/lib/RtpParameters";
+import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
+import { PomodoroTimerEvent } from "@/models/room/PomodoroTimerEvent";
 
 const MEDIA_CONSTRAINTS = {
   audio: true,
@@ -33,6 +35,7 @@ export interface RoomViewModel {
     kind: MediaKind
   ) => void;
   onDisposedPeer: (disposedPeerId: string) => void;
+  onPomodoroTimerEvent: (event: PomodoroTimerEvent) => void;
 }
 
 export interface ChatMessage {
@@ -56,6 +59,8 @@ export class RoomStore implements RoomViewModel {
 
   private _chatInput: string = "";
   private readonly _chatMessages: ChatMessage[] = observable.array([]);
+  private _pomodoroTimerState: PomodoroTimerState = PomodoroTimerState.STOPPED;
+  private _pomodoroTimerEventDate?: Date;
 
   constructor() {
     makeAutoObservable(this);
@@ -97,6 +102,19 @@ export class RoomStore implements RoomViewModel {
     return this._chatInput.length > 0;
   }
 
+  public get pomodoroTimerState(): PomodoroTimerState {
+    return this._pomodoroTimerState;
+  }
+
+  public get pomodoroTimerElapsedSeconds(): number {
+    if (this._pomodoroTimerEventDate == null) {
+      return 0;
+    }
+    const currentTime = new Date().getTime();
+    const milliseconds = currentTime - this._pomodoroTimerEventDate.getTime();
+    return milliseconds / 1000;
+  }
+
   public connectSocket = () => {
     this._roomService.connect();
   };
@@ -128,6 +146,7 @@ export class RoomStore implements RoomViewModel {
     this._roomService.join(roomId, mediaStream);
   };
 
+  // TODO: 방의 타이머 상태를 가져와야함
   public onJoined = () => {
     this._state = RoomState.JOINED;
   };
@@ -191,6 +210,10 @@ export class RoomStore implements RoomViewModel {
     this._chatInput = "";
   };
 
+  public startTimer = () => {
+    this._roomService.startTimer();
+  };
+
   private fetchLocalMedia = async ({
     video = false,
     audio = false,
@@ -217,6 +240,21 @@ export class RoomStore implements RoomViewModel {
         break;
       case "video":
         this._remoteVideoStreamsByPeerId.set(peerId, new MediaStream([track]));
+        break;
+    }
+  };
+
+  public onPomodoroTimerEvent = (event: PomodoroTimerEvent) => {
+    this._pomodoroTimerEventDate = new Date();
+    switch (event) {
+      case PomodoroTimerEvent.ON_START:
+        this._pomodoroTimerState = PomodoroTimerState.STARTED;
+        break;
+      case PomodoroTimerEvent.ON_SHORT_BREAK:
+        this._pomodoroTimerState = PomodoroTimerState.SHORT_BREAK;
+        break;
+      case PomodoroTimerEvent.ON_LONG_BREAK:
+        this._pomodoroTimerState = PomodoroTimerState.LONG_BREAK;
         break;
     }
   };

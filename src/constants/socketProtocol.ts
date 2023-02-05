@@ -113,6 +113,14 @@ const OTHER_PEER_DISCONNECTED = "other-peer-disconnected";
  */
 const SEND_CHAT = "send-chat";
 
+/**
+ * 뽀모도로 타이머를 시작하라고 클라이언트가 서버에게 요청하고 서버가 방의 모든
+ * 클라이언트에게 브로드캐스트한다.
+ */
+const START_TIMER = "start-timer";
+const START_SHORT_BREAK = "start-short-break";
+const START_LONG_BREAK = "start-long-break";
+
 export {
   IP_ADDRESS,
   NAME_SPACE,
@@ -133,4 +141,7 @@ export {
   CLOSE_AUDIO_PRODUCER,
   OTHER_PEER_DISCONNECTED,
   SEND_CHAT,
+  START_TIMER,
+  START_SHORT_BREAK,
+  START_LONG_BREAK,
 };
