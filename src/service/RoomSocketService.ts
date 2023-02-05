@@ -38,6 +38,7 @@ import { uuidv4 } from "@firebase/util";
 import { Producer } from "mediasoup-client/lib/Producer";
 import { auth } from "@/service/firebase";
 import { PomodoroTimerEvent } from "@/models/room/PomodoroTimerEvent";
+import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -114,9 +115,13 @@ export class RoomSocketService {
         // TODO: 실제 회원 이름을 전달하기
         userName: uuidv4(),
       },
-      async (data: { rtpCapabilities: RtpCapabilities }) => {
+      async (data: {
+        rtpCapabilities: RtpCapabilities;
+        timerStartedDate?: string;
+        timerState: PomodoroTimerState;
+      }) => {
         console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`);
-        this._roomViewModel.onJoined();
+        this._roomViewModel.onJoined(data.timerStartedDate, data.timerState);
         try {
           // once we have rtpCapabilities from the Router, create Device
           const device = new Device();

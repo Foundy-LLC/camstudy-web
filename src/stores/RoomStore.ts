@@ -27,7 +27,10 @@ export enum RoomState {
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
-  onJoined: () => void;
+  onJoined: (
+    timerStartedDate: string | undefined,
+    timerState: PomodoroTimerState
+  ) => void;
   onReceivedChat: (message: ChatMessage) => void;
   onAddedConsumer: (
     peerId: string,
@@ -107,7 +110,7 @@ export class RoomStore implements RoomViewModel {
   }
 
   public get pomodoroTimerElapsedSeconds(): number {
-    if (this._pomodoroTimerEventDate == null) {
+    if (this._pomodoroTimerEventDate === undefined) {
       return 0;
     }
     const currentTime = new Date().getTime();
@@ -146,9 +149,15 @@ export class RoomStore implements RoomViewModel {
     this._roomService.join(roomId, mediaStream);
   };
 
-  // TODO: 방의 타이머 상태를 가져와야함
-  public onJoined = () => {
+  public onJoined = (
+    timerStartedDate: string | undefined,
+    timerState: PomodoroTimerState
+  ): void => {
     this._state = RoomState.JOINED;
+    this._pomodoroTimerState = timerState;
+    if (timerStartedDate !== undefined) {
+      this._pomodoroTimerEventDate = new Date(timerStartedDate);
+    }
   };
 
   public showVideo = async () => {

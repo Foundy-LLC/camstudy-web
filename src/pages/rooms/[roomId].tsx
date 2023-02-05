@@ -221,19 +221,17 @@ const PomodoroTimer: NextPage<{
       <button id="timerStartButton" onClick={() => onClickStart()}>
         Start Timer!
       </button>
-      <ElapsedTimeDisplay
-        getElapsedSeconds={getElapsedSeconds}
-        enableTicker={timerState !== PomodoroTimerState.STOPPED}
-      />
+      <ElapsedTimeDisplay getElapsedSeconds={getElapsedSeconds} />
     </div>
   );
 };
 
 const ElapsedTimeDisplay: NextPage<{
   getElapsedSeconds: () => number;
-  enableTicker: boolean;
-}> = ({ getElapsedSeconds, enableTicker }) => {
-  const [secondsWrapper, setSecondsWrapper] = useState({ seconds: 0 });
+}> = ({ getElapsedSeconds }) => {
+  const [secondsWrapper, setSecondsWrapper] = useState({
+    seconds: getElapsedSeconds(),
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -242,7 +240,7 @@ const ElapsedTimeDisplay: NextPage<{
     return () => {
       clearInterval(timer);
     };
-  });
+  }, []);
 
   const seconds = secondsWrapper.seconds;
 
