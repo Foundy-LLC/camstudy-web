@@ -33,6 +33,7 @@ import {
 import { Consumer } from "mediasoup-client/lib/Consumer";
 import { uuidv4 } from "@firebase/util";
 import { Producer } from "mediasoup-client/lib/Producer";
+import { auth } from "@/service/firebase";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -97,12 +98,15 @@ export class RoomSocketService {
 
   public join = (roomId: string, localMediaStream: MediaStream) => {
     const socket = this._requireSocket();
+    const user = auth.currentUser;
+    if (user == null) {
+      throw Error("회원 정보가 없이 방 참여를 시도했습니다.");
+    }
     socket.emit(
       JOIN_ROOM,
       {
         roomId: roomId,
-        // TODO: 실제 회원 ID를 전달하기
-        userId: uuidv4(),
+        userId: user.uid,
         // TODO: 실제 회원 이름을 전달하기
         userName: uuidv4(),
       },
