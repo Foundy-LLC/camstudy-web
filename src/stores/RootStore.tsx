@@ -1,9 +1,9 @@
-import { RoomStore } from "./RoomStore";
+import { RoomListStore } from "./RoomListStore";
 
-export class RootStore{
-    roomStore;
+export class RootStore {
+  roomListStore;
 
-    constructor(){
-        this.roomStore = new RoomStore(this);
-    }
+  constructor() {
+    this.roomListStore = new RoomListStore(this);
+  }
 }

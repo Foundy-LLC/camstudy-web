@@ -17,8 +17,9 @@ import { UserRequestBody } from "@/models/user/UserRequestBody";
 import { string } from "prop-types";
 import { RoomRequestGet } from "@/models/room/RoomRequestGet";
 import { findTagIdsByTagName } from "@/repository/tag.repository";
-import { FindRooms } from "@/repository/room.repository";
-
+import { findRooms } from "@/repository/room.repository";
+import client from "../../prisma/client";
+import { RoomRequestBody } from "@/models/room/RoomRequestBody";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -71,15 +72,27 @@ export const getRoomAvailability = async (
 export const getRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const roomFindBody = new RoomRequestGet(req.query.page);
-    return FindRooms(roomFindBody.pageNum);
+    await res.status(201).json(findRooms(roomFindBody.pageNum)); //roomOverview interface 만들어서 반환
   } catch (e) {
     if (e instanceof string) {
-      res.status(400).end(e);
-      return;
+      console.log("bad");
+      return res.status(400).end(e);
     }
-    res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
-    return;
+    console.log("bad2");
+    return res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
   }
 };
 
-export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {};
+export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const roomPostBody = new RoomRequestBody(req.body);
+    await res.status(200).json(roomPostBody);
+  } catch (e) {
+    if (e instanceof string) {
+      console.log("bad");
+      return res.status(400).end(e);
+    }
+    console.log("bad2");
+    return res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
+  }
+};

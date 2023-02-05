@@ -1,20 +1,4 @@
 import {
-  NO_ROOM_EXPIRED_AT_ERROR_MESSAGE,
-  NO_ROOM_ID_ERROR_MESSAGE,
-  NO_ROOM_LONG_BREAK_ERROR_MESSAGE,
-  NO_ROOM_LONG_BREAK_INTERVAL_ERROR_MESSAGE,
-  NO_ROOM_SHORT_BREAK_ERROR_MESSAGE,
-  NO_ROOM_TIMER_ERROR_MESSAGE,
-  NO_ROOM_TITLE_ERROR_MESSAGE,
-  NO_USER_NAME_ERROR_MESSAGE,
-  NO_USER_UID_ERROR_MESSAGE,
-} from "@/constants/message";
-import {
-  validateUserIntroduce,
-  validateUserName,
-  validateUserTags,
-} from "@/utils/user.validator";
-import {
   validateExpiredAt,
   validateId,
   validateLongBreak,
@@ -24,62 +8,69 @@ import {
   validateTimer,
   validateTitle,
 } from "@/utils/rooms.validator";
+import { Room } from "@/stores/RoomListStore";
 ~21;
 export class RoomRequestBody {
-  constructor(
-    readonly id: string,
-    readonly master_id: string,
-    readonly title: string,
-    readonly thumbnail: string | undefined,
-    readonly password: string | undefined,
-    readonly timer: number,
-    readonly short_break: number,
-    readonly long_break: number,
-    readonly long_break_interval: number,
-    readonly expired_at: string
-  ) {
-    // this._validateUid();
-    // this._validateName();
-    // this._validateIntroduce();
-    // this.tags = this._filterNotEmptyTags(this.tags);
-    // this.tags = this._filterDuplicatedTags(this.tags);
-    // this._validateTags();
+  private room: Room = new Room();
+  constructor(room: Room) {
+    this.room = room;
+    this._validateId();
+    this._validateMasterId();
+    this._validateTitle();
+    this._validateTimer();
+    this._validateShortBreak();
+    this._validateLongBreak();
+    this._validateLongBreakInterval();
+    this._validateExpiredAt();
   }
   /*
   - 필수 값 null 체크
   -
   */
-  private _validateId = () => {
-    validateId(this.id);
-  };
 
+  private _validateId = () => {
+    validateId(this.room.id);
+  };
   private _validateMasterId = () => {
-    validateMasterId(this.master_id);
+    validateMasterId(this.room.master_id);
   };
   private _validateTitle = () => {
-    validateTitle(this.title);
+    validateTitle(this.room.title);
   };
   private _validateTimer = () => {
-    validateTimer(this.timer);
+    validateTimer(this.room.timer);
   };
   private _validateShortBreak = () => {
-    validateShortBreak(this.short_break);
+    validateShortBreak(this.room.short_break);
   };
   private _validateLongBreak = () => {
-    validateLongBreak(this.long_break);
+    validateLongBreak(this.room.long_break);
   };
   private _validateLongBreakInterval = () => {
-    validateLongBreakInterval(this.long_break_interval);
+    validateLongBreakInterval(this.room.long_break_interval);
   };
   private _validateExpiredAt = () => {
-    validateExpiredAt(this.expired_at);
+    validateExpiredAt(this.room.expired_at);
   };
-
-  private _filterNotEmptyTags = (tags: string[]): string[] => {
-    return tags?.filter((tag) => tag.trim().length > 0);
-  };
-
-  private _filterDuplicatedTags = (tags: string[]): string[] => {
-    return [...new Set(tags)];
-  };
+  //   if (body.password && JSON.stringify(body.password).length - 2 < 4) {
+  //   //큰 따옴표 제외
+  //   res.status(400).end("비밀번호는 4자 이상으로 설정해야 합니다.");
+  // }
+  // if (body.timer && (body.timer < 20 || body.timer > 50)) {
+  //   res.status(400).end("공부 시간은 20~50분으로만 설정할 수 있습니다.");
+  // }
+  // if (body.short_break && (body.short_break < 3 || body.short_break > 10)) {
+  //   res
+  //       .status(400)
+  //       .end("짧은 쉬는 시간은 3~10분 범위로만 설정할 수 있습니다.");
+  // }
+  // if (body.long_break && (body.long_break < 10 || body.long_break > 30)) {
+  //   res.status(400).end("긴 쉬는 시간은 10~30분으로만 설정할 수 있습니다.");
+  // }
+  // if (
+  //     body.long_break_interval &&
+  //     (body.long_break_interval < 2 || body.long_break_interval > 6)
+  // ) {
+  //   res.status(400).end("쉬는 시간 인터벌은 2~6회로만 설정할 수 있습니다.");
+  // }
 }

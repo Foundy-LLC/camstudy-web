@@ -37,13 +37,42 @@ export const isUserBlockedAtRoom = async (
   return block != null;
 }
 
-export const FindRooms = async (pageNum: number) => {
-  const rooms = await client.room.findMany({
+export const findRooms = async (pageNum: number): Promise<Room[]> => {
+  var rooms: Room[] = [];
+  const result = await client.room.findMany({
     skip: pageNum * ROOM_NUM_PER_PAGE,
     take: ROOM_NUM_PER_PAGE,
   });
+  result.map((room) => {
+    const newRoom = new Room();
+    newRoom.set_room(room.id,
+        room.master_id,
+        room.title,
+        room.thumbnail ? room.thumbnail : undefined,
+        room.password ? room.password : undefined,
+        room.timer,
+        room.short_break,
+        room.long_break,
+        room.long_break_interval,
+        room.expired_at.toString())
+    rooms.push(newRoom);
+  });
   return rooms;
-  // if (rooms.length === 0)
-  //   return res.status(404).end("더 이상 공부방이 존재하지 않습니다.");
-  // else return res.status(200).json(rooms);
+};
+
+export const createRoom = () => {
+  const room = await client.room.create({
+    data: {
+      id: body.id,
+      master_id: body.master_id,
+      title: body.title,
+      thumbnail: body.thumbnail ? body.thumbnail : ,
+      password: body.password ? body.password : null,
+      timer: body.timer,
+      short_break: body.short_break,
+      long_break: body.long_break,
+      long_break_interval: body.long_break_interval,
+      expired_at: body.expired_at,
+    },
+  });
 };

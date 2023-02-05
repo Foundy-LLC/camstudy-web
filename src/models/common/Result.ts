@@ -2,7 +2,7 @@ import { ResponseBody } from "@/models/common/ResponseBody";
 
 export class Result<T> {
   private constructor(
-    private _data?: T,
+    readonly _data?: T,
     private _error?: Error,
     private _isError: boolean = false
   ) {}

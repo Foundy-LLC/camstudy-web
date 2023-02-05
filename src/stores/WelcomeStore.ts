@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import userService, { UserService } from "@/service/user.service";
-import { Room } from "@/stores/RoomStore";
+import { Room } from "@/stores/RoomListStore";
 import RoomService from "@/service/room.service";
 
 export class WelcomeStore {

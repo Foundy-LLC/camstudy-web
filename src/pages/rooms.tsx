@@ -4,12 +4,13 @@ import React, { useEffect, useState } from "react";
 import { useStores } from "@/stores/context";
 import { type } from "os";
 import { observer } from "mobx-react-lite";
+import { Room } from "@/stores/RoomListStore";
 const makeRoom: NextPage = observer(() => {
   const [RoomsInfo, setRoomInfo] = useState<string | null>();
   const [RoomName, setRoomName] = useState<string | null>();
   const [RoomPage, setRoomPage] = useState<string | number | null>(0);
-  const { roomStore } = useStores();
-
+  const { roomListStore } = useStores();
+  const [result, setResult] = useState<any>();
   // useEffect(()=>{
   //     getRooms();
   // },[])
@@ -46,7 +47,7 @@ const makeRoom: NextPage = observer(() => {
       long_break_interval,
       expired_at,
     } = resJson;
-    roomStore.createRoom(
+    roomListStore.createRoom(
       id,
       master_id,
       title,
@@ -61,23 +62,10 @@ const makeRoom: NextPage = observer(() => {
     console.log(id);
     if (resJson !== undefined) {
       setRoomInfo(
-        "생성된 방 id: " + roomStore.rooms[roomStore.rooms.length - 1].id
+        "생성된 방 id: " +
+          roomListStore.rooms[roomListStore.rooms.length - 1].id
       );
     }
-  };
-
-  const setName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { value },
-    } = e;
-    setRoomName(value);
-  };
-
-  const changePageNum = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {
-      target: { value },
-    } = e;
-    setRoomPage(value);
   };
 
   return (
@@ -87,18 +75,44 @@ const makeRoom: NextPage = observer(() => {
         <input
           id="pageNum"
           placeholder="페이지 번호"
-          onChange={(e) => roomStore.changeRoomNum(parseInt(e.target.value))}
+          onChange={(e) => {
+            console.log(e.target.value);
+            roomListStore.changeRoomNum(e.target.value);
+          }}
         ></input>
-        <button id="getBtn" onClick={(e) => roomStore.getRooms}>
+        <button
+          id="getBtn"
+          onClick={async (e) => {
+            await roomListStore.getRooms();
+            //
+          }}
+        >
           GET
         </button>
         <br />
-        <input id="roomName" placeholder="방 제목" onChange={setName}></input>
-        <button id="getBtn" onClick={createRoom}>
+        <input
+          id="roomName"
+          placeholder="방 제목"
+          onChange={(e) => {
+            console.log(e.target.value);
+            roomListStore.setRoomTitle(e.target.value);
+          }}
+        ></input>
+        <button
+          id="getBtn"
+          onClick={async (e) => {
+            await roomListStore.createRoom();
+            //
+          }}
+        >
           POST
         </button>
-        {roomStore &&
-          roomStore.rooms.map((room, key) => <p key={key}>{room.id}</p>)}
+
+        {roomListStore &&
+          roomListStore.rooms.map((room, key) => {
+            console.log(room.id, "fff");
+            return <p key={key}>{room.id}</p>;
+          })}
         {RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}
       </div>
     </>
