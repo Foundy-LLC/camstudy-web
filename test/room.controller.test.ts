@@ -14,7 +14,7 @@ describe("getRoomAvailability", () => {
     master_id: "",
     password: "1234",
     short_break: 0,
-    thumnail: "url here",
+    thumbnail: "url here",
     timer: 0,
     title: "",
   };
