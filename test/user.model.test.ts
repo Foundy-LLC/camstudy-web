@@ -17,7 +17,7 @@ describe("UserRequestBody", () => {
     expect(user).toBeDefined();
   });
 
-  it("should throw error when name is undefined", () => {
+  it("should throw error when name is undefined.", () => {
     // given
     const name: any = null;
 
