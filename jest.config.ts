@@ -19,8 +19,9 @@ const customJestConfig = {
     "^@/styles/(.*)$": "<rootDir>/src/styles/$1",
     "^@/stores/(.*)$": "<rootDir>/src/stores/$1",
     "^@/utils/(.*)$": "<rootDir>/src/utils/$1",
+    "./prisma/(.*)$": "<rootDir>/prisma/$1",
   },
-  moduleDirectories: ["node_modules", "<rootDir>/"],
+  moduleDirectories: ["node_modules", "<rootDir>/", "<rootDir>/test/"],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

@@ -15,3 +15,10 @@ export const TAG_COUNT_ERROR_MESSAGE: string = "태그는 최대 3개입니다."
 export const TAG_LENGTH_ERROR_MESSAGE: string = "태그는 최대 20자입니다.";
 export const NO_TAG_ERROR_MESSAGE: string =
   "태그가 없습니다. 태그는 필수 항목입니다.";
+
+export const NO_ROOM_ERROR_MESSAGE = "해당 방이 존재하지 않습니다.";
+export const ROOM_PASSWORD_NOT_CORRECT_ERROR_MESSAGE =
+  "방 비밀번호가 틀렸습니다.";
+export const ROOM_IS_FULL_ERROR_MESSAGE = "방 정원이 꽉 찼습니다.";
+export const INVALID_ROOM_PASSWORD_ERROR_MESSAGE = "방 비밀번호가 틀렸습니다.";
+export const ROOM_AVAILABLE_MESSAGE = "공부방 입장이 가능합니다.";
