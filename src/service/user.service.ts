@@ -1,6 +1,5 @@
 import { UserRequestBody } from "@/models/user/UserRequestBody";
 import { Result } from "@/models/common/Result";
-import { InitialInformationRequestBody } from "@/models/user/InitialInformationRequestBody";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -14,7 +13,6 @@ export class UserService {
         headers: HEADER,
       });
       const { exists } = await res.json();
-      console.log(exists);
       return exists;
     } catch (e) {
       return Result.errorCatch(e);

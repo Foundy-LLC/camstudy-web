@@ -20,8 +20,12 @@ export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
       <string>req.query.uid
     );
     const isNewUser = await isExistUser(requestBody.userId);
-    console.log(isNewUser[0]);
-    res.status(200).send(isNewUser[0]);
+    const { exists } = isNewUser[0];
+    if (exists) {
+      res.status(200).send(isNewUser[0]);
+    } else {
+      res.status(404).send(isNewUser[0]);
+    }
   } catch (e) {
     if (e instanceof string) {
       res.status(400).end(e);
