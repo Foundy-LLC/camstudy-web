@@ -3,7 +3,7 @@ import {
   createTagsIfNotExists,
   findTagIdsByTagName,
 } from "@/repository/tag.repository";
-import { createUser } from "@/repository/user.repository";
+import { createUser, isExistUser } from "@/repository/user.repository";
 import {
   PROFILE_CREATE_SUCCESS,
   ROOM_AVAILABLE_MESSAGE,
@@ -12,6 +12,24 @@ import {
 import { string } from "prop-types";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
+import { InitialInformationRequestBody } from "@/models/user/InitialInformationRequestBody";
+
+export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const requestBody = new InitialInformationRequestBody(req.body.userId);
+    console.log(JSON.stringify(requestBody));
+    const isNewUser = await isExistUser(requestBody.userId);
+    console.log(isNewUser[0]);
+    res.status(200).send(isNewUser[0]);
+  } catch (e) {
+    if (e instanceof string) {
+      res.status(400).end(e);
+      return;
+    }
+    res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
+    return;
+  }
+};
 
 export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: 로깅하기

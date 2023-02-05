@@ -1,7 +1,14 @@
-import { user_account } from ".prisma/client";
+import { Prisma, user_account } from ".prisma/client";
 import prisma from "../../prisma/client";
 import { UserStatus } from "@/models/user/UserStatus";
 
+export const isExistUser = async (
+  uid: string
+): Promise<{ exists: boolean }[]> => {
+  return await prisma?.$queryRaw(
+    Prisma.sql`SELECT EXISTS(SELECT * FROM user_account ua WHERE ua.id = ${uid})`
+  );
+};
 export const createUser = async (
   uid: string,
   name: string,

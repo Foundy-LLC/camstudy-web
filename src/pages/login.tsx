@@ -1,43 +1,38 @@
 import React from "react";
 import { NextPage } from "next";
-import { initFirebase } from "@/service/firebase";
-import {
-  GithubAuthProvider,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "@firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
-import { auth } from "src/service/firebase";
+import { observer } from "mobx-react";
+import userStore from "@/stores/UserStore";
+import { auth } from "@/service/firebase";
 
 const Login: NextPage = () => {
-  initFirebase();
-  const googleAuthProvider = new GoogleAuthProvider();
-  const githubAuthProvider = new GithubAuthProvider();
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
 
   if (loading) {
     return <div>Loading</div>;
   }
-  if (user) {
-    router.push({ pathname: "/welcome" }); //, query: {uid: user.uid}
+  if (user && userStore.isNewUser !== undefined) {
+    console.log(userStore.isNewUser);
+    if (userStore.isNewUser) {
+      router.push("/welcome").then(() => {});
+    } else {
+      router.push("/").then(() => {});
+    }
     return <div>Loading</div>;
   }
 
-  const GoogleSignIn = async () => {
-    const result = await signInWithPopup(auth, googleAuthProvider);
-  };
-  const GithubSignIn = async () => {
-    const result = await signInWithPopup(auth, githubAuthProvider);
-  };
-
   return (
     <div>
-      <button onClick={GoogleSignIn}>Google Sign In</button>
-      <button onClick={GithubSignIn}>Github Sign In</button>
+      <button onClick={() => userStore.signInWithGoogle()}>
+        Google Sign In
+      </button>
+      <button onClick={() => userStore.signInWithGithub()}>
+        Github Sign In
+      </button>
     </div>
   );
 };
 
-export default Login;
+export default observer(Login);
