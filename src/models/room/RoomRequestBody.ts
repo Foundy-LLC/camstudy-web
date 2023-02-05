@@ -27,7 +27,9 @@ export class RoomRequestBody {
   - 필수 값 null 체크
   -
   */
-
+  get_room = () => {
+    return this.room;
+  };
   private _validateId = () => {
     validateId(this.room.id);
   };

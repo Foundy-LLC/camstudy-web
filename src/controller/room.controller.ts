@@ -17,7 +17,7 @@ import { UserRequestBody } from "@/models/user/UserRequestBody";
 import { string } from "prop-types";
 import { RoomRequestGet } from "@/models/room/RoomRequestGet";
 import { findTagIdsByTagName } from "@/repository/tag.repository";
-import { findRooms } from "@/repository/room.repository";
+import { createRoom, findRooms } from "@/repository/room.repository";
 import client from "../../prisma/client";
 import { RoomRequestBody } from "@/models/room/RoomRequestBody";
 
@@ -86,7 +86,7 @@ export const getRoom = async (req: NextApiRequest, res: NextApiResponse) => {
 export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const roomPostBody = new RoomRequestBody(req.body);
-    await res.status(200).json(roomPostBody);
+    await res.status(200).json(createRoom(roomPostBody));
   } catch (e) {
     if (e instanceof string) {
       console.log("bad");

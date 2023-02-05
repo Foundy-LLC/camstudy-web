@@ -1,4 +1,4 @@
-import { RoomListStore } from "./RoomListStore";
+import { RoomListStore } from "@/stores/RoomListStore";
 
 export class RootStore {
   roomListStore;
