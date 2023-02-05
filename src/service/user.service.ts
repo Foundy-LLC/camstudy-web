@@ -12,7 +12,8 @@ export class UserService {
         method: "GET",
         headers: HEADER,
       });
-      const { exists } = await res.json();
+      const { exists, message } = await res.json();
+      console.log(message);
       return exists;
     } catch (e) {
       return Result.errorCatch(e);

@@ -5,6 +5,8 @@ import {
 } from "@/repository/tag.repository";
 import { createUser, isExistUser } from "@/repository/user.repository";
 import {
+  EXISTS_INITIAL_INFORMATION_MESSAGE,
+  NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
   PROFILE_CREATE_SUCCESS,
   ROOM_AVAILABLE_MESSAGE,
   SERVER_INTERNAL_ERROR_MESSAGE,
@@ -14,6 +16,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { InitialInformationRequestBody } from "@/models/user/InitialInformationRequestBody";
 
+interface response {
+  exists: boolean;
+  message: string;
+}
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const requestBody = new InitialInformationRequestBody(
@@ -21,10 +27,16 @@ export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
     );
     const isNewUser = await isExistUser(requestBody.userId);
     const { exists } = isNewUser[0];
+    const response: response = {
+      ...isNewUser[0],
+      message: "",
+    };
     if (exists) {
-      res.status(200).send(isNewUser[0]);
+      response["message"] = EXISTS_INITIAL_INFORMATION_MESSAGE;
+      res.status(200).send(response);
     } else {
-      res.status(404).send(isNewUser[0]);
+      response["message"] = NO_EXISTS_INITIAL_INFORMATION_MESSAGE;
+      res.status(404).send(response);
     }
   } catch (e) {
     if (e instanceof string) {

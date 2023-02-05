@@ -19,3 +19,7 @@ export const ROOM_PASSWORD_NOT_CORRECT_ERROR_MESSAGE =
 export const ROOM_IS_FULL_ERROR_MESSAGE = "방 정원이 꽉 찼습니다.";
 export const INVALID_ROOM_PASSWORD_ERROR_MESSAGE = "방 비밀번호가 틀렸습니다.";
 export const ROOM_AVAILABLE_MESSAGE = "공부방 입장이 가능합니다.";
+export const NO_EXISTS_INITIAL_INFORMATION_MESSAGE: string =
+  "초기 입력 정보가 없습니다.";
+export const EXISTS_INITIAL_INFORMATION_MESSAGE: string =
+  "초기 입력 정보가 있습니다.";
