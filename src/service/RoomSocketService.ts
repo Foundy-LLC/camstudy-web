@@ -100,7 +100,7 @@ export class RoomSocketService {
     socket.emit(
       JOIN_ROOM,
       {
-        roomName: roomId,
+        roomId: roomId,
         // TODO: 실제 회원 ID를 전달하기
         userId: uuidv4(),
         // TODO: 실제 회원 이름을 전달하기
