@@ -11,7 +11,7 @@ const RoomScaffold: NextPage = observer(() => {
 
   useEffect(() => {
     roomStore.connectSocket();
-  }, []);
+  }, [roomStore]);
 
   switch (roomStore.state) {
     case RoomState.CREATED:
