@@ -8,20 +8,7 @@ import { beep } from "@/service/SoundPlayer";
 import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import { ChatMessage } from "@/models/room/ChatMessage";
 import { RoomState } from "@/models/room/RoomState";
-
-const MEDIA_CONSTRAINTS = {
-  audio: true,
-  video: {
-    width: {
-      min: 640,
-      max: 1920,
-    },
-    height: {
-      min: 400,
-      max: 1080,
-    },
-  },
-};
+import { MediaUtil } from "@/utils/MediaUtil";
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
@@ -60,7 +47,7 @@ export class RoomStore implements RoomViewModel {
   private _pomodoroTimerEventDate?: Date = undefined;
   private _pomodoroProperty?: PomodoroTimerProperty = undefined;
 
-  constructor() {
+  constructor(private _mediaUtil: MediaUtil = new MediaUtil()) {
     makeAutoObservable(this);
   }
 
@@ -122,18 +109,16 @@ export class RoomStore implements RoomViewModel {
   };
 
   public onConnected = async (): Promise<void> => {
-    const mediaStream = await this.fetchLocalMedia({
+    const mediaStream = await this._mediaUtil.fetchLocalMedia({
       video: true,
       audio: true,
     });
     runInAction(() => {
       this._state = RoomState.CONNECTED;
-      this._localVideoStream = new MediaStream([
-        mediaStream.getVideoTracks()[0],
-      ]);
-      this._localAudioStream = new MediaStream([
-        mediaStream.getAudioTracks()[0],
-      ]);
+      this._localVideoStream =
+        this._mediaUtil.getMediaStreamUsingFirstVideoTrackOf(mediaStream);
+      this._localAudioStream =
+        this._mediaUtil.getMediaStreamUsingFirstAudioTrackOf(mediaStream);
     });
   };
 
@@ -167,7 +152,7 @@ export class RoomStore implements RoomViewModel {
         "로컬 비디오가 있는 상태에서 비디오를 생성하려 했습니다."
       );
     }
-    const media = await this.fetchLocalMedia({ video: true });
+    const media = await this._mediaUtil.fetchLocalMedia({ video: true });
     await runInAction(async () => {
       const track = media.getVideoTracks()[0];
       this._localVideoStream = new MediaStream([track]);
@@ -192,7 +177,7 @@ export class RoomStore implements RoomViewModel {
         "로컬 오디오가 있는 상태에서 오디오를 생성하려 했습니다."
       );
     }
-    const media = await this.fetchLocalMedia({ audio: true });
+    const media = await this._mediaUtil.fetchLocalMedia({ audio: true });
     await runInAction(async () => {
       const track = media.getAudioTracks()[0];
       this._localAudioStream = new MediaStream([track]);
@@ -232,17 +217,6 @@ export class RoomStore implements RoomViewModel {
     this._pomodoroTimerState = PomodoroTimerState.STOPPED;
     this._pomodoroTimerEventDate = undefined;
     this._pomodoroProperty = newProperty;
-  };
-
-  private fetchLocalMedia = async ({
-    video = false,
-    audio = false,
-  }): Promise<MediaStream> => {
-    return await navigator.mediaDevices.getUserMedia({
-      ...MEDIA_CONSTRAINTS,
-      video: video,
-      audio: audio,
-    });
   };
 
   public onReceivedChat = (message: ChatMessage) => {
