@@ -123,7 +123,7 @@ const Room: NextPage<{ roomStore: RoomStore }> = observer(({ roomStore }) => {
           getElapsedSeconds={() => roomStore.pomodoroTimerElapsedSeconds}
           onClickStart={() => roomStore.startTimer()}
         />
-        // TODO: 관리자인 경우만 타이머 편집 부분 보이기
+        {/* TODO: 관리자인 경우만 타이머 편집 부분 보이기*/}
         {roomStore.pomodoroTimerProperty !== undefined ? (
           <TimerEditInputGroup
             defaultTimerProperty={roomStore.pomodoroTimerProperty}
