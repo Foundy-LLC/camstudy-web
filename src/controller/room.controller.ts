@@ -19,7 +19,7 @@ import { RoomRequestGet } from "@/models/room/RoomRequestGet";
 import { findTagIdsByTagName } from "@/repository/tag.repository";
 import { createRoom, findRooms } from "@/repository/room.repository";
 import client from "../../prisma/client";
-import { RoomRequestBody } from "@/models/room/RoomRequestBody";
+import {RoomRequestBody} from "@/models/room/RoomRequestBody";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -71,8 +71,11 @@ export const getRoomAvailability = async (
 
 export const getRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const roomFindBody = new RoomRequestGet(req.query.page);
-    await res.status(201).json(findRooms(roomFindBody.pageNum)); //roomOverview interface 만들어서 반환
+    if (typeof req.query.page !== "string") {
+      throw Error("query 요청이 잘못되었습니다");
+    }
+    const roomsGetBody = new RoomRequestGet(req.query.page);
+    await res.status(201).json(findRooms(roomsGetBody.pageNum)); //roomOverview interface 만들어서 반환
   } catch (e) {
     if (e instanceof string) {
       console.log("bad");
@@ -85,14 +88,14 @@ export const getRoom = async (req: NextApiRequest, res: NextApiResponse) => {
 
 export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const roomPostBody = new RoomRequestBody(req.body);
-    await res.status(200).json(createRoom(roomPostBody));
+    const roomPostBody = new RoomRequestBody(req.body.room);
+    await res.status(201).json(createRoom(roomPostBody));
   } catch (e) {
-    if (e instanceof string) {
-      console.log("bad");
+    if (typeof e === 'string') {
+      console.log("error:400",e);
       return res.status(400).end(e);
     }
-    console.log("bad2");
+    console.log("error: 500");
     return res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
   }
 };

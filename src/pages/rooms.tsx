@@ -28,7 +28,7 @@ const makeRoom: NextPage = observer(() => {
         <button
           id="getBtn"
           onClick={async (e) => {
-            await roomListStore.getRooms();
+            await roomListStore.fetchRooms();
             //
           }}
         >
@@ -40,7 +40,7 @@ const makeRoom: NextPage = observer(() => {
           placeholder="방 제목"
           onChange={(e) => {
             console.log(e.target.value);
-            roomListStore.setRoomTitle(e.target.value);
+            roomListStore.setRoomTitleInput(e.target.value);
           }}
         ></input>
         <button

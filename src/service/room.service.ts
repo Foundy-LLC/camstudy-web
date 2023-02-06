@@ -17,7 +17,7 @@ export class RoomService {
         },
       });
       if (response.ok) {
-        return Result.success(response);
+        return Result.success(response); //TODO 아마 json --
       } else {
         console.log("not ok");
         return Result.errorResponse(response);
@@ -52,7 +52,7 @@ export class RoomService {
     // } else {
     // }
   }
-  public async createRoom(room: Room): Promise<Result<void>> {
+  public async createRoom(room: Room): Promise<Result<Response|string| undefined>> {
     try {
       const requestBody = new RoomRequestBody(room);
       const response = await fetch(`api/rooms`, {
@@ -61,7 +61,7 @@ export class RoomService {
         headers: HEADER,
       });
       if (response.ok) {
-        return Result.success(undefined);
+        return Result.success("방 개설을 성공했습니다.");
       } else {
         return await Result.errorResponse(response);
       }
