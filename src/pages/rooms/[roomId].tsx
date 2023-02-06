@@ -52,7 +52,12 @@ const RoomReady: NextPage<{
         {roomStore.enabledLocalAudio ? "Mute Audio" : "Unmute Audio"}
       </button>
       {typeof roomId === "string" ? (
-        <button onClick={() => roomStore.joinRoom(roomId)}>입장</button>
+        <button
+          disabled={roomStore.state === RoomState.CREATED}
+          onClick={() => roomStore.joinRoom(roomId)}
+        >
+          입장
+        </button>
       ) : undefined}
     </>
   );
