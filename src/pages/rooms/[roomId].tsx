@@ -257,7 +257,7 @@ const ElapsedTimeDisplay: NextPage<{
     return () => {
       clearInterval(timer);
     };
-  }, []);
+  }, [getElapsedSeconds]);
 
   const seconds =
     timerState === PomodoroTimerState.STOPPED ? 0 : secondsWrapper.seconds;

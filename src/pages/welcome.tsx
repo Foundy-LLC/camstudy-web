@@ -16,7 +16,7 @@ const Welcome: NextPage = () => {
     if (successToCreate) {
       router.push("/");
     }
-  }, [successToCreate]);
+  }, [successToCreate, router]);
 
   if (loading) {
     return <div>Loading</div>;
