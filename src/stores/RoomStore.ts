@@ -6,6 +6,8 @@ import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { PomodoroTimerEvent } from "@/models/room/PomodoroTimerEvent";
 import { beep } from "@/service/SoundPlayer";
 import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
+import { ChatMessage } from "@/models/room/ChatMessage";
+import { RoomState } from "@/models/room/RoomState";
 
 const MEDIA_CONSTRAINTS = {
   audio: true,
@@ -20,12 +22,6 @@ const MEDIA_CONSTRAINTS = {
     },
   },
 };
-
-export enum RoomState {
-  CREATED,
-  CONNECTED,
-  JOINED,
-}
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
@@ -43,12 +39,6 @@ export interface RoomViewModel {
   onDisposedPeer: (disposedPeerId: string) => void;
   onPomodoroTimerEvent: (event: PomodoroTimerEvent) => void;
   onUpdatedPomodoroTimer: (newProperty: PomodoroTimerProperty) => void;
-}
-
-export interface ChatMessage {
-  readonly id: string;
-  readonly authorName: string;
-  readonly content: string;
 }
 
 export class RoomStore implements RoomViewModel {

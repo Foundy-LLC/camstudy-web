@@ -1,10 +1,12 @@
 import { NextPage } from "next";
 import { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
-import { ChatMessage, RoomState, RoomStore } from "@/stores/RoomStore";
+import { RoomStore } from "@/stores/RoomStore";
 import { useRouter } from "next/router";
+import { ChatMessage } from "@/models/room/ChatMessage";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { TimerEditInputGroup } from "@/components/TimerEditInputGroup";
+import { RoomState } from "@/models/room/RoomState";
 
 const RoomScaffold: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());

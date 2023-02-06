@@ -1,4 +1,4 @@
-import { ChatMessage, RoomViewModel } from "@/stores/RoomStore";
+import { RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
   CLOSE_AUDIO_PRODUCER,
@@ -41,6 +41,7 @@ import { auth } from "@/service/firebase";
 import { PomodoroTimerEvent } from "@/models/room/PomodoroTimerEvent";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
+import { ChatMessage } from "@/models/room/ChatMessage";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
