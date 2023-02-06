@@ -15,11 +15,16 @@ import { string } from "prop-types";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { InitialInformationRequestBody } from "@/models/user/InitialInformationRequestBody";
+import multer from "multer";
+import { multipartUploader } from "@/service/imageUploader";
+import * as path from "path";
+import { auth } from "@/service/firebase";
 
 interface response {
   exists: boolean;
   message: string;
 }
+
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const requestBody = new InitialInformationRequestBody(
@@ -79,4 +84,53 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
       .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
+};
+
+function runMiddleware(
+  req: NextApiRequest & { [key: string]: any },
+  res: NextApiResponse,
+  fn: (...args: any[]) => void
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result: any) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+
+      return resolve(result);
+    });
+  });
+}
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+export const postProfileImage = async (
+  req: NextApiRequest & { [key: string]: any },
+  res: NextApiResponse
+) => {
+  const multerUpload = multer({
+    storage: multer.diskStorage({
+      destination: function (req, file, callback) {
+        callback(null, "uploads/");
+      },
+      filename: function (req, file, callback) {
+        const ext = path.extname(file.originalname);
+        callback(null, auth.currentUser?.uid + ext);
+      },
+    }),
+    limits: { fileSize: 5 * 1024 * 1024 },
+  });
+
+  await runMiddleware(req, res, multerUpload.single("profileImage"));
+  const file = req.file;
+  const others = req.body;
+  const ext = path.extname(file.originalname);
+  console.log(file);
+
+  const signedUrl = await multipartUploader(others.fileName + ext, file.path);
+
+  res.status(200).json({ profileImageUrl: signedUrl });
 };

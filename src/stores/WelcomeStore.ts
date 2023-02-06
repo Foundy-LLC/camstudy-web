@@ -7,10 +7,12 @@ import {
 } from "@/utils/user.validator";
 
 export class WelcomeStore {
+  private _profileImage?: File;
   private _name: string = "";
   private _introduce: string = "";
   private _tags: string = "";
 
+  private _profileImageUrlChanged: boolean = false;
   private _nameChanged: boolean = false;
   private _introduceChanged: boolean = false;
   private _tagsChanged: boolean = false;
@@ -40,6 +42,20 @@ export class WelcomeStore {
 
   public get successToCreate(): boolean {
     return this._successToCreate;
+  }
+
+  public get profileImageUrlErrorMessage(): string | undefined {
+    if (!this._profileImageUrlChanged) {
+      return undefined;
+    }
+    try {
+      validateUserName(this._name);
+    } catch (e) {
+      if (typeof e === "string") {
+        return e;
+      }
+    }
+    return undefined;
   }
 
   public get nameErrorMessage(): string | undefined {
@@ -84,6 +100,11 @@ export class WelcomeStore {
     return undefined;
   }
 
+  public changeProfileImage(file: File) {
+    this._profileImageUrlChanged = true;
+    this._profileImage = file;
+  }
+
   public changeName(name: string) {
     this._nameChanged = true;
     this._name = name;
@@ -110,6 +131,17 @@ export class WelcomeStore {
       this._successToCreate = true;
     } else {
       this._errorMessage = result.throwableOrNull()!!.message;
+    }
+
+    if (this._profileImageUrlChanged && this._profileImage != null) {
+      const formData = new FormData();
+      formData.append("fileName", uid);
+      formData.append("profileImage", this._profileImage);
+
+      const response = await this._userService.uploadProfileImage(
+        uid,
+        formData
+      );
     }
   };
 }

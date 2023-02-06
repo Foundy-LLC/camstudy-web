@@ -28,9 +28,22 @@ const Welcome: NextPage = () => {
   }
   const uid = user?.uid;
 
+  const inputOnChange = (e: any) => {
+    if (e.target.files[0]) {
+      const imageFile = e.target.files[0];
+      welcomeStore.changeProfileImage(imageFile);
+    }
+  };
+
   return (
     <div>
-      {/*<input type={"im"}></input>*/}
+      <input
+        id={"profileImage"}
+        type={"file"}
+        accept={"image/png, image/jpeg"}
+        onChange={(e) => inputOnChange(e)}
+      ></input>
+      <br />
       <input
         id={"name"}
         type={"text"}

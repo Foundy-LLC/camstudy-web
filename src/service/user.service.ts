@@ -20,6 +20,21 @@ export class UserService {
     }
   }
 
+  public async uploadProfileImage(fileName: string, formData: FormData) {
+    try {
+      const response = await fetch(`api/users/${fileName}/profile-image`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      const { profileImageUrl } = await response.json();
+      console.log(profileImageUrl);
+      if (response.ok) return profileImageUrl;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   public async createUser(
     uid: string,
     name: string,
@@ -46,3 +61,9 @@ export class UserService {
 
 const userService = new UserService();
 export default userService;
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
