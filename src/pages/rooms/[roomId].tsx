@@ -208,7 +208,7 @@ const PomodoroTimer: NextPage<{
   timerState: PomodoroTimerState;
   getElapsedSeconds: () => number;
   onClickStart: () => void;
-}> = ({ timerState, getElapsedSeconds, onClickStart }) => {
+}> = observer(({ timerState, getElapsedSeconds, onClickStart }) => {
   let backgroundColor: string;
   switch (timerState) {
     case PomodoroTimerState.STOPPED:
@@ -229,14 +229,18 @@ const PomodoroTimer: NextPage<{
       <button id="timerStartButton" onClick={() => onClickStart()}>
         Start Timer!
       </button>
-      <ElapsedTimeDisplay getElapsedSeconds={getElapsedSeconds} />
+      <ElapsedTimeDisplay
+        timerState={timerState}
+        getElapsedSeconds={getElapsedSeconds}
+      />
     </div>
   );
-};
+});
 
 const ElapsedTimeDisplay: NextPage<{
+  timerState: PomodoroTimerState;
   getElapsedSeconds: () => number;
-}> = ({ getElapsedSeconds }) => {
+}> = ({ timerState, getElapsedSeconds }) => {
   const [secondsWrapper, setSecondsWrapper] = useState({
     seconds: getElapsedSeconds(),
   });
@@ -250,7 +254,8 @@ const ElapsedTimeDisplay: NextPage<{
     };
   }, []);
 
-  const seconds = secondsWrapper.seconds;
+  const seconds =
+    timerState === PomodoroTimerState.STOPPED ? 0 : secondsWrapper.seconds;
 
   return (
     <>
