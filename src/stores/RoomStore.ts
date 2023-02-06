@@ -5,6 +5,7 @@ import { MediaKind } from "mediasoup-client/lib/RtpParameters";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { PomodoroTimerEvent } from "@/models/room/PomodoroTimerEvent";
 import { beep } from "@/service/SoundPlayer";
+import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 
 const MEDIA_CONSTRAINTS = {
   audio: true,
@@ -30,7 +31,8 @@ export interface RoomViewModel {
   onConnected: () => Promise<void>;
   onJoined: (
     timerStartedDate: string | undefined,
-    timerState: PomodoroTimerState
+    timerState: PomodoroTimerState,
+    timerProperty: PomodoroTimerProperty
   ) => void;
   onReceivedChat: (message: ChatMessage) => void;
   onAddedConsumer: (
@@ -40,6 +42,7 @@ export interface RoomViewModel {
   ) => void;
   onDisposedPeer: (disposedPeerId: string) => void;
   onPomodoroTimerEvent: (event: PomodoroTimerEvent) => void;
+  onUpdatedPomodoroTimer: (newProperty: PomodoroTimerProperty) => void;
 }
 
 export interface ChatMessage {
@@ -64,7 +67,8 @@ export class RoomStore implements RoomViewModel {
   private _chatInput: string = "";
   private readonly _chatMessages: ChatMessage[] = observable.array([]);
   private _pomodoroTimerState: PomodoroTimerState = PomodoroTimerState.STOPPED;
-  private _pomodoroTimerEventDate?: Date;
+  private _pomodoroTimerEventDate?: Date = undefined;
+  private _pomodoroProperty?: PomodoroTimerProperty = undefined;
 
   constructor() {
     makeAutoObservable(this);
@@ -119,6 +123,10 @@ export class RoomStore implements RoomViewModel {
     return milliseconds / 1000;
   }
 
+  public get pomodoroTimerProperty(): PomodoroTimerProperty | undefined {
+    return this._pomodoroProperty;
+  }
+
   public connectSocket = () => {
     this._roomService.connect();
   };
@@ -152,10 +160,12 @@ export class RoomStore implements RoomViewModel {
 
   public onJoined = (
     timerStartedDate: string | undefined,
-    timerState: PomodoroTimerState
+    timerState: PomodoroTimerState,
+    timerProperty: PomodoroTimerProperty
   ): void => {
     this._state = RoomState.JOINED;
     this._pomodoroTimerState = timerState;
+    this._pomodoroProperty = timerProperty;
     if (timerStartedDate !== undefined) {
       this._pomodoroTimerEventDate = new Date(timerStartedDate);
     }
@@ -222,6 +232,16 @@ export class RoomStore implements RoomViewModel {
 
   public startTimer = () => {
     this._roomService.startTimer();
+  };
+
+  public updateAndStopPomodoroTimer = (newProperty: PomodoroTimerProperty) => {
+    this._roomService.updateAndStopTimer(newProperty);
+  };
+
+  public onUpdatedPomodoroTimer = (newProperty: PomodoroTimerProperty) => {
+    this._pomodoroTimerState = PomodoroTimerState.STOPPED;
+    this._pomodoroTimerEventDate = undefined;
+    this._pomodoroProperty = newProperty;
   };
 
   private fetchLocalMedia = async ({

@@ -7,6 +7,7 @@ import {
   CONSUME,
   CONSUME_RESUME,
   CREATE_WEB_RTC_TRANSPORT,
+  EDIT_AND_STOP_TIMER,
   GET_PRODUCER_IDS,
   JOIN_ROOM,
   NAME_SPACE,
@@ -39,6 +40,7 @@ import { Producer } from "mediasoup-client/lib/Producer";
 import { auth } from "@/service/firebase";
 import { PomodoroTimerEvent } from "@/models/room/PomodoroTimerEvent";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
+import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -119,9 +121,14 @@ export class RoomSocketService {
         rtpCapabilities: RtpCapabilities;
         timerStartedDate?: string;
         timerState: PomodoroTimerState;
+        timerProperty: PomodoroTimerProperty;
       }) => {
         console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`);
-        this._roomViewModel.onJoined(data.timerStartedDate, data.timerState);
+        this._roomViewModel.onJoined(
+          data.timerStartedDate,
+          data.timerState,
+          data.timerProperty
+        );
         try {
           // once we have rtpCapabilities from the Router, create Device
           const device = new Device();
@@ -183,6 +190,9 @@ export class RoomSocketService {
       this._roomViewModel.onPomodoroTimerEvent(
         PomodoroTimerEvent.ON_LONG_BREAK
       );
+    });
+    socket.on(EDIT_AND_STOP_TIMER, (newProperty: PomodoroTimerProperty) => {
+      this._roomViewModel.onUpdatedPomodoroTimer(newProperty);
     });
   };
 
@@ -497,4 +507,8 @@ export class RoomSocketService {
   public startTimer = () => {
     this._requireSocket().emit(START_TIMER);
   };
+
+  public updateAndStopTimer(newProperty: PomodoroTimerProperty) {
+    this._requireSocket().emit(EDIT_AND_STOP_TIMER, newProperty);
+  }
 }

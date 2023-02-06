@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import { ChatMessage, RoomState, RoomStore } from "@/stores/RoomStore";
 import { useRouter } from "next/router";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
+import { TimerEditInputGroup } from "@/components/TimerEditInputGroup";
 
 const RoomScaffold: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
@@ -117,6 +118,13 @@ const Room: NextPage<{ roomStore: RoomStore }> = observer(({ roomStore }) => {
           getElapsedSeconds={() => roomStore.pomodoroTimerElapsedSeconds}
           onClickStart={() => roomStore.startTimer()}
         />
+        // TODO: 관리자인 경우만 타이머 편집 부분 보이기
+        {roomStore.pomodoroTimerProperty !== undefined ? (
+          <TimerEditInputGroup
+            defaultTimerProperty={roomStore.pomodoroTimerProperty}
+            onClickSave={roomStore.updateAndStopPomodoroTimer}
+          />
+        ) : undefined}
       </div>
     </div>
   );

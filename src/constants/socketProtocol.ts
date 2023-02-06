@@ -121,6 +121,11 @@ const START_TIMER = "start-timer";
 const START_SHORT_BREAK = "start-short-break";
 const START_LONG_BREAK = "start-long-break";
 
+/**
+ * 타이머 정보를 수정하는 프로토콜이다. 클라이언트가 서버에 요청한다.
+ */
+const EDIT_AND_STOP_TIMER = "edit-and-stop-timer";
+
 export {
   IP_ADDRESS,
   NAME_SPACE,
@@ -144,4 +149,5 @@ export {
   START_TIMER,
   START_SHORT_BREAK,
   START_LONG_BREAK,
+  EDIT_AND_STOP_TIMER,
 };
