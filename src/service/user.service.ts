@@ -22,10 +22,10 @@ export class UserService {
       if (response.ok) {
         return Result.success(undefined);
       } else {
-        return await Result.errorResponse(response);
+        return await Result.createErrorUsingResponseMessage(response);
       }
     } catch (e) {
-      return Result.errorCatch(e);
+      return Result.createErrorUsingException(e);
     }
   }
 }
