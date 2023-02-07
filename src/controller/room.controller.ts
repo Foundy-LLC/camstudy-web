@@ -4,7 +4,6 @@ import {
   NO_ROOM_ERROR_MESSAGE,
   ROOM_AVAILABLE_MESSAGE,
   ROOM_IS_FULL_ERROR_MESSAGE,
-  ROOM_PASSWORD_NOT_CORRECT_ERROR_MESSAGE,
   SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
 import { RoomAvailabilityRequestBody } from "@/models/room/RoomAvailabilityRequestBody";
@@ -24,20 +23,12 @@ export const getRoomAvailability = async (
       res.status(500).end("path에 roomId가 존재하지 않습니다.");
       return;
     }
-    const requestBody = new RoomAvailabilityRequestBody(
-      req.body.userId,
-      req.body.password
-    );
+    const requestBody = new RoomAvailabilityRequestBody(req.body.userId);
     const userId = requestBody.userId;
     const room = await findRoomById(roomId);
 
     if (room == null) {
       res.status(404).end(NO_ROOM_ERROR_MESSAGE);
-      return;
-    }
-
-    if (room.password !== requestBody.password) {
-      res.status(400).end(ROOM_PASSWORD_NOT_CORRECT_ERROR_MESSAGE);
       return;
     }
 
