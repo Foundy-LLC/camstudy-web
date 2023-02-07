@@ -15,6 +15,7 @@ export class Room {
   readonly _long_break: number = 20;
   readonly _long_break_interval: number = 3;
   readonly _expired_at: string = "2021-08-21T12:30:00.000Z";
+  readonly room_tag: string[] = [];
   constructor() {
     makeAutoObservable(this);
   }
@@ -59,7 +60,7 @@ export class RoomListStore {
     this._pageNum = parseInt(pageNum);
   }
   setRoomTitleInput(roomTitle: string) {
-    this.tempRoom =  {...this.tempRoom, _title: roomTitle, _id: roomTitle};
+    this.tempRoom = { ...this.tempRoom, _title: roomTitle, _id: roomTitle };
   }
   async fetchRooms() {
     const value = await this._roomService.getRooms(this._pageNum);
@@ -68,11 +69,10 @@ export class RoomListStore {
   }
   async createRoom() {
     const result = await this._roomService.createRoom(this.tempRoom);
-    if(result.isSuccess) {
+    if (result.isSuccess) {
       this.rooms.push(this.tempRoom);
       console.log(`(${this.tempRoom._id})방을 생성하였습니다`);
-    }
-    else {
+    } else {
       console.log(result.throwableOrNull());
     }
   }

@@ -1,6 +1,14 @@
 import { Room } from "@/stores/RoomListStore";
 
-export interface RoomOverview {
+export class RoomOverview {
   //방 제목, 패스워드
-  rooms: Room[];
+  constructor(
+    readonly id: string,
+    readonly title: string,
+    readonly password: string | null,
+    // readonly joinCount: number,
+    // readonly maxCount: number,
+    readonly thumbnail: string | null,
+    readonly tags?: Array<String>
+  ) {}
 }

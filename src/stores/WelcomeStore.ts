@@ -1,12 +1,20 @@
 import { makeAutoObservable } from "mobx";
 import userService, { UserService } from "@/service/user.service";
-import { Room } from "@/stores/RoomListStore";
-import RoomService from "@/service/room.service";
+import {
+  validateUserIntroduce,
+  validateUserName,
+  validateUserTags,
+} from "@/utils/user.validator";
 
 export class WelcomeStore {
   private _name: string = "";
   private _introduce: string = "";
   private _tags: string = "";
+
+  private _nameChanged: boolean = false;
+  private _introduceChanged: boolean = false;
+  private _tagsChanged: boolean = false;
+
   private _errorMessage?: string = undefined;
   private _successToCreate: boolean = false;
 
@@ -34,15 +42,60 @@ export class WelcomeStore {
     return this._successToCreate;
   }
 
+  public get nameErrorMessage(): string | undefined {
+    if (!this._nameChanged) {
+      return undefined;
+    }
+    try {
+      validateUserName(this._name);
+    } catch (e) {
+      if (typeof e === "string") {
+        return e;
+      }
+    }
+    return undefined;
+  }
+
+  public get introduceErrorMessage(): string | undefined {
+    if (!this._introduceChanged) {
+      return undefined;
+    }
+    try {
+      validateUserIntroduce(this._introduce);
+    } catch (e) {
+      if (typeof e === "string") {
+        return e;
+      }
+    }
+    return undefined;
+  }
+
+  public get tagsErrorMessage(): string | undefined {
+    if (!this._tagsChanged) {
+      return undefined;
+    }
+    try {
+      validateUserTags(this._tags.split(" "));
+    } catch (e) {
+      if (typeof e === "string") {
+        return e;
+      }
+    }
+    return undefined;
+  }
+
   public changeName(name: string) {
+    this._nameChanged = true;
     this._name = name;
   }
 
   public changeIntroduce(introduce: string) {
+    this._introduceChanged = true;
     this._introduce = introduce;
   }
 
   public changeTags(tags: string) {
+    this._tagsChanged = true;
     this._tags = tags;
   }
 

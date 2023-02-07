@@ -3,8 +3,6 @@ const fs = require("fs");
 import { useState } from "react";
 
 const img = () => {
-  const [imgFile, setImgFile] = useState<File>();
-
   const endpoint = new AWS.Endpoint(process.env.NEXT_PUBLIC_NC_ENDPOINT);
   const region = process.env.NEXT_PUBLIC_NC_REGION;
   const access_key = process.env.NEXT_PUBLIC_NC_ACCESSKEY;
@@ -25,7 +23,7 @@ const img = () => {
     var object_name = "test";
     // upload file
     await S3.putObject({
-      ucket: process.env.NEXT_PUBLIC_NC_BUCKETNAME,
+      Bucket: process.env.NEXT_PUBLIC_NC_BUCKETNAME,
       Key: object_name,
       ACL: "public-read",
       // ACL을 지우면 전체 공개되지 않습니다.
@@ -40,11 +38,11 @@ const img = () => {
     if (files !== null) {
       var file = files[0];
       console.log(file);
-      await setImgFile(file);
+      //await setImgFile(file);
       const profile = document.getElementById(
         "selected_img"
       ) as HTMLImageElement;
-      if (imgFile) await uploadImg(imgFile);
+      //if (imgFile) await uploadImg(imgFile);
       // if (profile !== null) profile.src = imgFile;
     }
   };

@@ -41,35 +41,31 @@ export const isUserBlockedAtRoom = async (
     },
   });
   return block != null;
-}
+};
 
 export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
   //roomOverview를 반환
-  var rooms: Room[] = [];
+  var roomOverviews: RoomOverview[] = [];
   const result = await client.room.findMany({
     skip: pageNum * ROOM_NUM_PER_PAGE,
     take: ROOM_NUM_PER_PAGE,
   });
   result.map((room) => {
-    const newRoom = new Room();
-    newRoom.set_room(
+    const roomOverview = new RoomOverview(
       room.id,
-      room.master_id,
       room.title,
-      room.thumbnail ? room.thumbnail : undefined,
-      room.password ? room.password : undefined,
-      room.timer,
-      room.short_break,
-      room.long_break,
-      room.long_break_interval,
-      room.expired_at.toString()
+      room.password,
+      room.thumbnail,
+      // room.joinCount,
+      // room.maxCount,
+      [] //room.room_tags
     );
-    rooms.push(newRoom);
+    roomOverviews.push(roomOverview);
   });
-  return rooms;
+  return roomOverviews;
 };
-export const createRoom = async (body: RoomRequestBody)=> {
-  const room :Room = body.get_room;
+export const createRoom = async (body: RoomRequestBody) => {
+  const room: Room = body.get_room;
   await client.room.create({
     data: {
       id: room._id,
