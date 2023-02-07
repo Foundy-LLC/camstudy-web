@@ -44,7 +44,7 @@ describe("WelcomeStore.createUser", () => {
     const stubService: UserService = mock(UserService);
     when(
       stubService.createUser(userId, name, introduce, deepEqual(tags))
-    ).thenResolve(Result.errorCatch(error));
+    ).thenResolve(Result.createErrorUsingException(error));
     const welcomeStore = new WelcomeStore(instance(stubService));
     expect(welcomeStore.errorMessage).toBeUndefined();
 
