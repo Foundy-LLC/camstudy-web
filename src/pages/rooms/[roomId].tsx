@@ -202,9 +202,12 @@ const ChatMessage: NextPage<{ messages: ChatMessage[] }> = observer(
       <>
         {messages.map((message) => {
           return (
-            <div style={{ paddingBottom: "8px", paddingTop: "8px" }}>
+            <div
+              key={message.id}
+              style={{ paddingBottom: "8px", paddingTop: "8px" }}
+            >
               <div>{new Date(message.sentAt).toLocaleString()}</div>
-              <div key={message.id}>
+              <div>
                 <UserProfileImage userId={message.authorId} />
                 {message.authorName}: {message.content}
               </div>
