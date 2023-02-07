@@ -7,6 +7,7 @@ import { ChatMessage } from "@/models/room/ChatMessage";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { TimerEditInputGroup } from "@/components/TimerEditInputGroup";
 import { RoomState } from "@/models/room/RoomState";
+import { UserProfileImage } from "@/components/UserProfileImage";
 
 const RoomScaffold: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
@@ -201,8 +202,12 @@ const ChatMessage: NextPage<{ messages: ChatMessage[] }> = observer(
       <>
         {messages.map((message) => {
           return (
-            <div key={message.id}>
-              {message.authorName}: {message.content}
+            <div style={{ paddingBottom: "8px", paddingTop: "8px" }}>
+              <div>{new Date(message.sentAt).toLocaleString()}</div>
+              <div key={message.id}>
+                <UserProfileImage userId={message.authorId} />
+                {message.authorName}: {message.content}
+              </div>
             </div>
           );
         })}
@@ -210,7 +215,6 @@ const ChatMessage: NextPage<{ messages: ChatMessage[] }> = observer(
     );
   }
 );
-
 const PomodoroTimer: NextPage<{
   timerState: PomodoroTimerState;
   getElapsedSeconds: () => number;
