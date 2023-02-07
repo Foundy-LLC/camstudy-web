@@ -12,6 +12,7 @@ import {
   isRoomFull,
   isUserBlockedAtRoom,
 } from "@/repository/room.repository";
+import { ResponseBody } from "@/models/common/ResponseBody";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -28,28 +29,36 @@ export const getRoomAvailability = async (
     const room = await findRoomById(roomId);
 
     if (room == null) {
-      res.status(404).end(NO_ROOM_ERROR_MESSAGE);
+      res.status(404).end(new ResponseBody({ message: NO_ROOM_ERROR_MESSAGE }));
       return;
     }
 
     if (room.master_id !== userId && (await isRoomFull(room.id))) {
-      res.status(400).end(ROOM_IS_FULL_ERROR_MESSAGE);
+      res
+        .status(400)
+        .end(new ResponseBody({ message: ROOM_IS_FULL_ERROR_MESSAGE }));
       return;
     }
 
     if (await isUserBlockedAtRoom(userId, room.id)) {
-      res.status(400).end(INVALID_ROOM_PASSWORD_ERROR_MESSAGE);
+      res
+        .status(400)
+        .end(
+          new ResponseBody({ message: INVALID_ROOM_PASSWORD_ERROR_MESSAGE })
+        );
       return;
     }
 
-    res.status(200).end(ROOM_AVAILABLE_MESSAGE);
+    res.status(200).end(new ResponseBody({ message: ROOM_AVAILABLE_MESSAGE }));
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).end(e);
       return;
     }
     console.log("ERROR: ", e);
-    res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };

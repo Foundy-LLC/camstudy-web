@@ -6,10 +6,12 @@ import {
 import { createUser } from "@/repository/user.repository";
 import {
   PROFILE_CREATE_SUCCESS,
+  ROOM_AVAILABLE_MESSAGE,
   SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
 import { string } from "prop-types";
 import { NextApiRequest, NextApiResponse } from "next";
+import { ResponseBody } from "@/models/common/ResponseBody";
 
 export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: 로깅하기
@@ -31,14 +33,15 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
       userCreateBody.introduce,
       tagIds
     );
-    res.status(201).json(PROFILE_CREATE_SUCCESS);
+    res.status(201).json(new ResponseBody({ message: PROFILE_CREATE_SUCCESS }));
   } catch (e) {
-    // TODO: typeof로 수정해야함!!
-    if (e instanceof string) {
+    if (typeof e === "string") {
       res.status(400).end(e);
       return;
     }
-    res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };

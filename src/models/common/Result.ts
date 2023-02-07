@@ -1,3 +1,5 @@
+import { ResponseBody } from "@/models/common/ResponseBody";
+
 export class Result<T> {
   private constructor(
     private _data?: T,
@@ -5,27 +7,55 @@ export class Result<T> {
     private _isError: boolean = false
   ) {}
 
-  static success<T>(data: T) {
+  static success<T>(data: T): Result<T> {
     return new Result(data, undefined, false);
   }
 
-  static async errorResponse(e: Response) {
-    return new Result(undefined, Error(await e.json()), true);
+  static error<T>(e: Error): Result<T> {
+    return new Result<any>(undefined, e, true);
   }
 
-  static errorCatch(e: unknown) {
+  public static async parseToResponseBody<T>(
+    e: Response
+  ): Promise<ResponseBody<T>> {
+    return (await e.json()) as ResponseBody<T>;
+  }
+
+  /**
+   * {@link ResponseBody}로부터 data만 포함하여 {@link Result.success}를 생성할때 사용하는 유틸함수입니다.
+   */
+  static async createSuccessUsingResponseData<T>(
+    response: Response
+  ): Promise<Result<T>> {
+    const responseWrapper = await Result.parseToResponseBody<T>(response);
+    return Result.success(responseWrapper.data);
+  }
+
+  /**
+   * {@link Result.error}를 만드는 유틸함수입니다.
+   */
+  static async createErrorUsingResponseMessage<T>(
+    response: Response
+  ): Promise<Result<T>> {
+    const responseWrapper = await Result.parseToResponseBody<undefined>(
+      response
+    );
+    const error = Error(responseWrapper.message);
+    return Result.error(error);
+  }
+
+  /**
+   * {@link Result.error}를 만드는 유틸함수입니다.
+   */
+  static createErrorUsingException<T>(e: unknown): Result<T> {
     if (e instanceof Error) {
-      return new Result(undefined, e, true);
+      return Result.error(e);
     }
     if (typeof e === "string") {
-      return new Result(undefined, Error(e), true);
+      return Result.error(Error(e));
     }
     console.log(e);
-    return new Result(
-      undefined,
-      Error("알 수 없는 에러가 발생했습니다."),
-      true
-    );
+    return Result.error(Error("알 수 없는 에러가 발생했습니다."));
   }
 
   public get isSuccess() {
