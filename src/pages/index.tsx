@@ -5,9 +5,11 @@ import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
 import { observer } from "mobx-react";
 import userStore from "@/stores/UserStore";
-import React from "react";
+import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
+import process from "process";
+import { IMAGE_SERVER_URL } from "@/constants/image.constant";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +23,9 @@ function Home() {
     router.replace("/login");
     return <div>Please sign in to continue</div>;
   }
+  const userProfileImageLoader = ({ src }: { src: string }): string => {
+    return `${IMAGE_SERVER_URL}/users/${src}.png`;
+  };
 
   return (
     <>
@@ -36,6 +41,13 @@ function Home() {
             Get started by editing&nbsp;
             <code className={styles.code}>pages/index.tsx</code>
           </p>
+          <Image
+            width={150}
+            height={150}
+            loader={userProfileImageLoader}
+            src={user.uid}
+            alt={"user profile image"}
+          ></Image>
           <button onClick={() => userStore.signOut()}>sign out</button>
           <div>
             <a

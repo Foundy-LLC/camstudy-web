@@ -1,9 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import userService, { UserService } from "@/service/user.service";
 import {
-  validateUserProfileImage,
   validateUserIntroduce,
   validateUserName,
+  validateUserProfileImage,
   validateUserTags,
 } from "@/utils/user.validator";
 

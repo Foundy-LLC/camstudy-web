@@ -124,9 +124,7 @@ export const postProfileImage = async (
           callback(null, "uploads/");
         },
         filename: function (req, file, callback) {
-          const ext = path.extname(file.originalname);
-          const uid = auth.currentUser?.uid;
-          callback(null, uuidv4() + ext);
+          callback(null, uuidv4() + ".png");
         },
       }),
       limits: { fileSize: 5 * 1024 * 1024 },
@@ -135,11 +133,10 @@ export const postProfileImage = async (
     await runMiddleware(req, res, multerUpload.single("profileImage"));
     const file = req.file;
     const others = req.body;
-    const ext = path.extname(file.originalname);
     console.log(file);
 
     const signedUrl = await multipartUploader(
-      "users/" + others.fileName + ext,
+      "users/" + others.fileName + ".png",
       file.path
     );
     const result = await insertProfileImage(others.fileName, signedUrl);
