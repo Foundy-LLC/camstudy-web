@@ -40,7 +40,6 @@ describe("getRoomAvailability", () => {
     const request = createMockRequest({
       body: {
         userId: "uid",
-        password: mockRoom.password,
       },
       query: {
         roomId: mockRoom.id,
@@ -69,7 +68,6 @@ describe("getRoomAvailability", () => {
     const request = createMockRequest({
       body: {
         userId: uid,
-        password: mockRoom.password,
       },
       query: {
         roomId: mockRoom.id,
@@ -86,31 +84,6 @@ describe("getRoomAvailability", () => {
     verify(response.status(200)).once();
   });
 
-  it("should return 400 when password is invalid", async () => {
-    // when
-    mockPrisma.room.findUnique.mockResolvedValue(mockRoom);
-    mockPrisma.study_history.findMany.mockResolvedValue([]);
-    mockPrisma.block.findUnique.mockResolvedValue(null);
-    const request = createMockRequest({
-      body: {
-        userId: "uid",
-        password: "wrong!",
-      },
-      query: {
-        roomId: mockRoom.id,
-      },
-    });
-    const response = mock<NextApiResponse>();
-    when(response.status(400)).thenReturn(response);
-
-    // when
-    await getRoomAvailability(instance(request), instance(response));
-
-    // then
-    expect(true).toBeTruthy();
-    verify(response.status(400)).once();
-  });
-
   it("should return 404 when there is no room", async () => {
     // when
     mockPrisma.room.findUnique.mockResolvedValue(null);
@@ -119,7 +92,6 @@ describe("getRoomAvailability", () => {
     const request = createMockRequest({
       body: {
         userId: "uid",
-        password: mockRoom.password,
       },
       query: {
         roomId: mockRoom.id,
@@ -146,7 +118,6 @@ describe("getRoomAvailability", () => {
     const request = createMockRequest({
       body: {
         userId: "uid",
-        password: mockRoom.password,
       },
       query: {
         roomId: mockRoom.id,
@@ -175,7 +146,6 @@ describe("getRoomAvailability", () => {
     const request = createMockRequest({
       body: {
         userId: uid,
-        password: mockRoom.password,
       },
       query: {
         roomId: mockRoom.id,

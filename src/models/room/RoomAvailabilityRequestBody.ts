@@ -1,7 +1,7 @@
 import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
 
 export class RoomAvailabilityRequestBody {
-  constructor(readonly userId: string, readonly password?: string) {
+  constructor(readonly userId: string) {
     this._validateUid();
   }
 
