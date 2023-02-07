@@ -1,22 +1,33 @@
 import { NextPage } from "next";
-import { getUserProfileImageUrl } from "@/models/room/ChatMessage";
-import { DEFAULT_PROFILE_IMAGE_URL } from "@/constants/user.constant";
+import Image from "next/image";
+import {
+  IMAGE_SERVER_URL,
+  USER_DEFAULT_IMAGE_SRC,
+} from "@/constants/image.constant";
+import { useState } from "react";
+
+const userProfileImageLoader = ({ src }: { src: string }): string => {
+  return `${IMAGE_SERVER_URL}/users/${src}.png`;
+};
 
 export const UserProfileImage: NextPage<{
   userId: string;
-  width?: number | string;
-  height?: number | string;
-}> = ({ userId, width = "40px", height = "40px" }) => {
+  width?: number;
+  height?: number;
+}> = ({ userId, width = 40, height = 40 }) => {
+  const [src, setSrc] = useState<string>(userId);
+
   return (
-    <img
+    <Image
       width={width}
       height={height}
-      src={getUserProfileImageUrl(userId)}
+      loader={userProfileImageLoader}
+      src={src}
       onError={(e) => {
         e.currentTarget.onerror = null;
-        e.currentTarget.src = DEFAULT_PROFILE_IMAGE_URL;
+        setSrc(USER_DEFAULT_IMAGE_SRC);
       }}
-      alt="userProfileImage"
+      alt="User profile image"
     />
   );
 };
