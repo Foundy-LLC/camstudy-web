@@ -55,6 +55,7 @@ export class RoomService {
   public async createRoom(room: Room): Promise<Result<Response|string| undefined>> {
     try {
       const requestBody = new RoomRequestBody(room);
+
       const response = await fetch(`api/rooms`, {
         method: "POST",
         body: JSON.stringify(requestBody),

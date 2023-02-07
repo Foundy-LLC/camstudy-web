@@ -31,7 +31,7 @@ export const validateThumbnail = (thumbnail: string | undefined) => {
 };
 export const validatePassword = (password: string | undefined) => {
   if (typeof password !== 'undefined') {
-    if (password.length <= 4) {
+    if (password.length < 4) {
       throw ROOM_PASSWORD_LENGTH_ERROR_MESSAGE;
     }
   }

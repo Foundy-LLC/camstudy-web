@@ -8,8 +8,8 @@ export class Room {
   readonly _id: string = "";
   readonly _master_id: string = "test";
   readonly _title: string = "test";
-  readonly _thumbnail: string | undefined = "test";
-  readonly _password: string | undefined = "test";
+  readonly _thumbnail?: string = "test";
+  readonly _password?: string = "test";
   readonly _timer: number = 40;
   readonly _short_break: number = 15;
   readonly _long_break: number = 20;
@@ -70,6 +70,10 @@ export class RoomListStore {
     const result = await this._roomService.createRoom(this.tempRoom);
     if(result.isSuccess) {
       this.rooms.push(this.tempRoom);
+      console.log(`(${this.tempRoom._id})방을 생성하였습니다`);
+    }
+    else {
+      console.log(result.throwableOrNull());
     }
   }
 
