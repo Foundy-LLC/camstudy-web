@@ -31,6 +31,7 @@ const Welcome: NextPage = () => {
   const inputOnChange = (e: any) => {
     if (e.target.files[0]) {
       const imageFile = e.target.files[0];
+      console.log(imageFile);
       welcomeStore.changeProfileImage(imageFile);
     }
   };
@@ -43,6 +44,7 @@ const Welcome: NextPage = () => {
         accept={"image/png, image/jpeg"}
         onChange={(e) => inputOnChange(e)}
       ></input>
+      <div>{welcomeStore.profileImageUrlErrorMessage}</div>
       <br />
       <input
         id={"name"}

@@ -1,7 +1,10 @@
 export const SERVER_INTERNAL_ERROR_MESSAGE: string =
   "서버 내부에 에러가 발생했습니다.";
 export const PROFILE_CREATE_SUCCESS = "프로필이 생성되었습니다.";
+export const PROFILE_IMAGE_UPDATE: string = "프로필 이미지가 설정되었습니다.";
 export const NO_USER_UID_ERROR_MESSAGE: string = "UID가 누락되었습니다.";
+export const PROFILE_IMAGE_INVALID_EXTENSION: string =
+  "이미지는 .jpg, .jpeg, png 만 가능합니다.";
 export const NO_USER_NAME_ERROR_MESSAGE: string =
   "이름이 없습니다. 이름은 필수 항목입니다.";
 export const USER_NAME_LENGTH_ERROR_MESSAGE: string =

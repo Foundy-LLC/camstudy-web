@@ -17,7 +17,10 @@ const s3 = new AWS.S3({
   },
 });
 
-export const multipartUploader = async (uid: string, profileImage: string) => {
+export const multipartUploader = async (
+  fileName: string,
+  profileImage: string
+) => {
   let options = {
     partSize: 5 * 1024 * 1024,
   };
@@ -25,29 +28,12 @@ export const multipartUploader = async (uid: string, profileImage: string) => {
     .upload(
       {
         Bucket: bucket_name,
-        Key: uid,
-        Body: profileImage, //fs.createReadStream(local_file_name),
+        Key: fileName,
+        Body: fs.createReadStream(profileImage),
+        ACL: "public-read-write",
       },
       options
     )
     .promise();
   return response.Location;
 };
-
-// const storage = multerS3({
-//   s3,
-//   bucket: bucket_name as string,
-//   contentType: multerS3.AUTO_CONTENT_TYPE,
-//   acl: "public-read",
-//
-//   key(req: Request, file, cb) {
-//     const originFilename = file.originalname;
-//     const extension = originFilename.substring(originFilename.lastIndexOf("."));
-//     cb(
-//       null,
-//       `uploads/profile-images/${new Date().getTime()}-${uuidv4()}${extension}`
-//     );
-//   },
-// });
-//
-// export default multer({ storage });

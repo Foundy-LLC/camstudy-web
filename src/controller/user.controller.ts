@@ -3,12 +3,17 @@ import {
   createTagsIfNotExists,
   findTagIdsByTagName,
 } from "@/repository/tag.repository";
-import { createUser, isExistUser } from "@/repository/user.repository";
+import {
+  createUser,
+  insertProfileImage,
+  isExistUser,
+} from "@/repository/user.repository";
 import {
   EXISTS_INITIAL_INFORMATION_MESSAGE,
   NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
   PROFILE_CREATE_SUCCESS,
   ROOM_AVAILABLE_MESSAGE,
+  PROFILE_IMAGE_UPDATE,
   SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
 import { string } from "prop-types";
@@ -19,6 +24,7 @@ import multer from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import * as path from "path";
 import { auth } from "@/service/firebase";
+import { uuidv4 } from "@firebase/util";
 
 interface response {
   exists: boolean;
@@ -111,26 +117,46 @@ export const postProfileImage = async (
   req: NextApiRequest & { [key: string]: any },
   res: NextApiResponse
 ) => {
-  const multerUpload = multer({
-    storage: multer.diskStorage({
-      destination: function (req, file, callback) {
-        callback(null, "uploads/");
-      },
-      filename: function (req, file, callback) {
-        const ext = path.extname(file.originalname);
-        callback(null, auth.currentUser?.uid + ext);
-      },
-    }),
-    limits: { fileSize: 5 * 1024 * 1024 },
-  });
+  try {
+    const multerUpload = multer({
+      storage: multer.diskStorage({
+        destination: function (req, file, callback) {
+          callback(null, "uploads/");
+        },
+        filename: function (req, file, callback) {
+          const ext = path.extname(file.originalname);
+          const uid = auth.currentUser?.uid;
+          callback(null, uuidv4() + ext);
+        },
+      }),
+      limits: { fileSize: 5 * 1024 * 1024 },
+    });
 
-  await runMiddleware(req, res, multerUpload.single("profileImage"));
-  const file = req.file;
-  const others = req.body;
-  const ext = path.extname(file.originalname);
-  console.log(file);
+    await runMiddleware(req, res, multerUpload.single("profileImage"));
+    const file = req.file;
+    const others = req.body;
+    const ext = path.extname(file.originalname);
+    console.log(file);
 
-  const signedUrl = await multipartUploader(others.fileName + ext, file.path);
+    const signedUrl = await multipartUploader(
+      "users/" + others.fileName + ext,
+      file.path
+    );
+    const result = await insertProfileImage(others.fileName, signedUrl);
+    console.log(result);
 
-  res.status(200).json({ profileImageUrl: signedUrl });
+    const sendData = {
+      message: PROFILE_IMAGE_UPDATE,
+      profileImage: signedUrl,
+    };
+
+    res.status(201).json(sendData);
+  } catch (e) {
+    if (e instanceof string) {
+      res.status(400).end(e);
+      return;
+    }
+    res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
+    return;
+  }
 };

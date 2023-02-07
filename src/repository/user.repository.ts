@@ -33,3 +33,14 @@ export const createUser = async (
     },
   });
 };
+
+export const insertProfileImage = async (uid: string, url: string) => {
+  return await prisma.user_account.update({
+    data: {
+      profile_image: url,
+    },
+    where: {
+      id: uid,
+    },
+  });
+};

@@ -27,11 +27,15 @@ export class UserService {
         body: formData,
         credentials: "include",
       });
-      const { profileImageUrl } = await response.json();
-      console.log(profileImageUrl);
-      if (response.ok) return profileImageUrl;
+      const { profileImage } = await response.json();
+      console.log(profileImage);
+      if (response.ok) {
+        return profileImage;
+      } else {
+        return await Result.errorResponse(response);
+      }
     } catch (e) {
-      console.log(e);
+      return Result.errorCatch(e);
     }
   }
 

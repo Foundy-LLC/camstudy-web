@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import userService, { UserService } from "@/service/user.service";
 import {
+  validateUserProfileImage,
   validateUserIntroduce,
   validateUserName,
   validateUserTags,
@@ -49,7 +50,9 @@ export class WelcomeStore {
       return undefined;
     }
     try {
-      validateUserName(this._name);
+      if (this._profileImage) {
+        validateUserProfileImage(this._profileImage);
+      }
     } catch (e) {
       if (typeof e === "string") {
         return e;
@@ -142,6 +145,7 @@ export class WelcomeStore {
         uid,
         formData
       );
+      console.log(response);
     }
   };
 }
