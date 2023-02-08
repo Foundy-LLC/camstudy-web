@@ -63,6 +63,18 @@ const WaitingRoom: NextPage<{
         입장
       </button>
       <div>{roomStore.waitingRoomMessage}</div>
+
+      <div>
+        <div>방 참여자 목록</div>
+        {roomStore.roomJoiners.map((joiner) => {
+          return (
+            <div key={joiner.id} style={{ padding: "8px" }}>
+              <UserProfileImage userId={joiner.id} />
+              {joiner.name}
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 });

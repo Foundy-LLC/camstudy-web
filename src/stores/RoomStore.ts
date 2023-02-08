@@ -11,10 +11,17 @@ import { RoomState } from "@/models/room/RoomState";
 import { MediaUtil } from "@/utils/MediaUtil";
 import { WaitingRoomData } from "@/models/room/WaitingRoomData";
 import { auth } from "@/service/firebase";
+import {
+  OtherPeerExitedRoomEvent,
+  OtherPeerJoinedRoomEvent,
+  WaitingRoomEvent,
+} from "@/models/room/WaitingRoomEvent";
+import { RoomJoiner } from "@/models/room/RoomJoiner";
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
   onConnectedWaitingRoom: (waitingRoomData: WaitingRoomData) => void;
+  onWaitingRoomEvent: (event: WaitingRoomEvent) => void;
   onJoined: (
     timerStartedDate: string | undefined,
     timerState: PomodoroTimerState,
@@ -96,6 +103,13 @@ export class RoomStore implements RoomViewModel {
     }
   }
 
+  public get roomJoiners(): RoomJoiner[] {
+    if (this._waitingRoomData === undefined) {
+      return [];
+    }
+    return this._waitingRoomData.joinerList;
+  }
+
   public get canJoinRoom(): boolean {
     const waitingRoomData = this._waitingRoomData;
     if (waitingRoomData === undefined) {
@@ -165,6 +179,30 @@ export class RoomStore implements RoomViewModel {
   public onConnectedWaitingRoom = (waitingRoomData: WaitingRoomData) => {
     this._state = RoomState.WAITING_ROOM;
     this._waitingRoomData = waitingRoomData;
+  };
+
+  public onWaitingRoomEvent = (event: WaitingRoomEvent) => {
+    const waitingRoomData = this._waitingRoomData;
+    if (waitingRoomData === undefined) {
+      throw Error(
+        "대기실 정보가 초기화되기 전에 대기실 이벤트를 수신했습니다."
+      );
+    }
+    if (event instanceof OtherPeerJoinedRoomEvent) {
+      this._waitingRoomData = {
+        ...waitingRoomData,
+        joinerList: [...waitingRoomData.joinerList, event.joiner],
+      };
+    } else if (event instanceof OtherPeerExitedRoomEvent) {
+      this._waitingRoomData = {
+        ...waitingRoomData,
+        joinerList: waitingRoomData.joinerList.filter(
+          (joiner) => joiner.id !== event.exitedUserId
+        ),
+      };
+    } else {
+      throw Error("지원되지 않는 event입니다.");
+    }
   };
 
   public joinRoom = () => {

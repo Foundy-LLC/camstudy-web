@@ -3,6 +3,7 @@ import { io, Socket } from "socket.io-client";
 import {
   CLOSE_AUDIO_PRODUCER,
   CLOSE_VIDEO_PRODUCER,
+  CONNECT_WAITING_ROOM,
   CONNECTION_SUCCESS,
   CONSUME,
   CONSUME_RESUME,
@@ -13,8 +14,9 @@ import {
   NAME_SPACE,
   NEW_PRODUCER,
   OTHER_PEER_DISCONNECTED,
+  OTHER_PEER_EXITED_ROOM,
+  OTHER_PEER_JOINED_ROOM,
   PRODUCER_CLOSED,
-  CONNECT_WAITING_ROOM,
   SEND_CHAT,
   START_LONG_BREAK,
   START_SHORT_BREAK,
@@ -43,8 +45,13 @@ import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import { ChatMessage } from "@/models/room/ChatMessage";
 import { uuidv4 } from "@firebase/util";
-import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { WaitingRoomData } from "@/models/room/WaitingRoomData";
+import {
+  OtherPeerExitedRoomEvent,
+  OtherPeerJoinedRoomEvent,
+  WaitingRoomEvent,
+} from "@/models/room/WaitingRoomEvent";
+import { RoomJoiner } from "@/models/room/RoomJoiner";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -114,8 +121,29 @@ export class RoomSocketService {
       roomId,
       (waitingRoomData: WaitingRoomData) => {
         this._roomViewModel.onConnectedWaitingRoom(waitingRoomData);
+        this._listenWaitingRoomEvents();
       }
     );
+  };
+
+  private _listenWaitingRoomEvents = () => {
+    const socket = this._requireSocket();
+    socket.on(OTHER_PEER_JOINED_ROOM, (joiner: RoomJoiner) => {
+      this._roomViewModel.onWaitingRoomEvent(
+        new OtherPeerJoinedRoomEvent(joiner)
+      );
+    });
+    socket.on(OTHER_PEER_EXITED_ROOM, (userId: string) => {
+      this._roomViewModel.onWaitingRoomEvent(
+        new OtherPeerExitedRoomEvent(userId)
+      );
+    });
+  };
+
+  private _removeWaitingRoomEventsListener = () => {
+    const socket = this._requireSocket();
+    socket.removeListener(OTHER_PEER_JOINED_ROOM);
+    socket.removeListener(OTHER_PEER_EXITED_ROOM);
   };
 
   public join = (localMediaStream: MediaStream) => {
@@ -138,6 +166,7 @@ export class RoomSocketService {
         timerProperty: PomodoroTimerProperty;
       }) => {
         console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`);
+        this._removeWaitingRoomEventsListener();
         this._roomViewModel.onJoined(
           data.timerStartedDate,
           data.timerState,
