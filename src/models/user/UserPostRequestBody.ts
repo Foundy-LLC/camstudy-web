@@ -7,13 +7,13 @@ import {
 } from "@/utils/user.validator";
 
 // TODO: CreateUserRequestBody 로 이름 바꾸기
-export class UserRequestBody {
+export class UserPostRequestBody {
   constructor(
     readonly userId: string,
     readonly name: string,
     readonly introduce: string | undefined,
     readonly tags: string[],
-    readonly profileImageUrl: string
+    readonly profileImageUrl: string | undefined
   ) {
     this._validateUid();
     this._validateName();

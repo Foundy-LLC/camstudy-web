@@ -5,19 +5,24 @@ import {
   signInWithPopup,
 } from "@firebase/auth";
 import { auth } from "@/service/firebase";
-import userService from "@/service/user.service";
+import userService, { UserService } from "@/service/user.service";
 
 export class UserStore {
   private _googleAuthProvider = new GoogleAuthProvider();
   private _githubAuthProvider = new GithubAuthProvider();
   private _isNewUser: boolean | undefined = undefined;
+  private _errorMessage?: string = undefined;
 
-  constructor() {
+  constructor(private readonly _userService: UserService = userService) {
     makeAutoObservable(this);
   }
 
   get isNewUser(): boolean | undefined {
     return this._isNewUser;
+  }
+
+  public get errorMessage(): string | undefined {
+    return this._errorMessage;
   }
 
   signOut = async () => {
@@ -26,12 +31,17 @@ export class UserStore {
   };
 
   private _fetchIsNewUser = async (uid: string) => {
-    const response = await userService.isExistUser(uid);
-    const isNewUser = !response.getOrNull();
-    console.log(isNewUser);
-    runInAction(() => {
-      this._isNewUser = isNewUser;
-    });
+    const result = await this._userService.isExistUser(uid);
+    if (result.isSuccess) {
+      runInAction(() => {
+        this._isNewUser = !result.getOrNull();
+      });
+    } else {
+      console.log(result.isSuccess);
+      runInAction(() => {
+        this._errorMessage = result.throwableOrNull()!!.message;
+      });
+    }
   };
 
   signInWithGoogle = async () => {

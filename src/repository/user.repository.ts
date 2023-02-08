@@ -15,7 +15,7 @@ export const createUser = async (
   name: string,
   introduce: string | undefined,
   tagIds: { id: string }[],
-  profileImageUrl: string
+  profileImageUrl: string | undefined
 ): Promise<user_account> => {
   const tagIdsDto: { tag_id: string }[] = tagIds.map((tag) => {
     return { tag_id: tag.id };

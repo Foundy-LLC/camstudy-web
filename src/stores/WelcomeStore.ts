@@ -9,7 +9,7 @@ import {
 
 export class WelcomeStore {
   private _profileImage?: File;
-  private _profileImageUrl: string | undefined = "";
+  private _profileImageUrl: string | undefined = undefined;
   private _name: string = "";
   private _introduce: string = "";
   private _tags: string = "";

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUser } from "@/controller/user.controller";
+import { getUserExistence } from "@/controller/user.controller";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,7 +9,7 @@ export default async function handler(
 
   switch (method) {
     case "GET":
-      await getUser(req, res);
+      await getUserExistence(req, res);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);

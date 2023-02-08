@@ -1,4 +1,4 @@
-import { UserRequestBody } from "@/models/user/UserRequestBody";
+import { UserPostRequestBody } from "@/models/user/UserPostRequestBody";
 import {
   createTagsIfNotExists,
   findTagIdsByTagName,
@@ -18,27 +18,23 @@ import multer from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import { uuidv4 } from "@firebase/util";
 
-export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
+export const getUserExistence = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   try {
     const requestBody = new InitialInformationRequestBody(
       <string>req.query.userId
     );
-    const newUser = await isUserExists(requestBody.userId);
-    if (newUser) {
-      res.status(200).send(
-        new ResponseBody({
-          message: EXISTS_INITIAL_INFORMATION_MESSAGE,
-          data: newUser,
-        })
-      );
-    } else {
-      res.status(404).send(
-        new ResponseBody({
-          message: NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
-          data: newUser,
-        })
-      );
-    }
+    const exists = await isUserExists(requestBody.userId);
+    res.status(200).send(
+      new ResponseBody({
+        message: exists
+          ? EXISTS_INITIAL_INFORMATION_MESSAGE
+          : NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
+        data: exists,
+      })
+    );
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).end(new ResponseBody({ message: e }));
@@ -54,7 +50,7 @@ export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
 export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
   // TODO: 로깅하기
   try {
-    const userCreateBody = new UserRequestBody(
+    const userCreateBody = new UserPostRequestBody(
       req.body.userId,
       req.body.name,
       req.body.introduce,

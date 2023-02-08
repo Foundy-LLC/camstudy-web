@@ -1,4 +1,4 @@
-import { UserRequestBody } from "@/models/user/UserRequestBody";
+import { UserPostRequestBody } from "@/models/user/UserPostRequestBody";
 import { Result } from "@/models/common/Result";
 
 const HEADER = {
@@ -12,7 +12,11 @@ export class UserService {
         method: "GET",
         headers: HEADER,
       });
-      return await Result.createSuccessUsingResponseData(response);
+      if (response.ok) {
+        return await Result.createSuccessUsingResponseData(response);
+      } else {
+        return await Result.createErrorUsingResponseMessage(response);
+      }
     } catch (e) {
       return Result.createErrorUsingException(e);
     }
@@ -43,10 +47,10 @@ export class UserService {
     name: string,
     introduce: string,
     tags: string[],
-    profileImageUrl: string = ""
+    profileImageUrl: string | undefined
   ): Promise<Result<void>> {
     try {
-      const requestBody = new UserRequestBody(
+      const requestBody = new UserPostRequestBody(
         uid,
         name,
         introduce,
