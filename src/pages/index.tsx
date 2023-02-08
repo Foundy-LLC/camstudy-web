@@ -4,12 +4,11 @@ import { Inter } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
 import { observer } from "mobx-react";
-import userStore from "@/stores/UserStore";
-import React, { useState } from "react";
+import React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
-import process from "process";
 import { IMAGE_SERVER_URL } from "@/constants/image.constant";
+import userStore from "@/stores/UserStore";
 
 const inter = Inter({ subsets: ["latin"] });
 

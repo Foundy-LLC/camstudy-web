@@ -26,9 +26,11 @@ export class UserStore {
   };
 
   private _fetchIsNewUser = async (uid: string) => {
-    const exist: boolean = await userService.isExistUser(uid);
+    const response = await userService.isExistUser(uid);
+    const isNewUser = !response.getOrNull();
+    console.log(isNewUser);
     runInAction(() => {
-      this._isNewUser = !exist;
+      this._isNewUser = isNewUser;
     });
   };
 

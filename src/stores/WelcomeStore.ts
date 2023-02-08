@@ -9,11 +9,12 @@ import {
 
 export class WelcomeStore {
   private _profileImage?: File;
+  private _profileImageUrl: string | undefined = "";
   private _name: string = "";
   private _introduce: string = "";
   private _tags: string = "";
 
-  private _profileImageUrlChanged: boolean = false;
+  private _profileImageChanged: boolean = false;
   private _nameChanged: boolean = false;
   private _introduceChanged: boolean = false;
   private _tagsChanged: boolean = false;
@@ -46,7 +47,7 @@ export class WelcomeStore {
   }
 
   public get profileImageUrlErrorMessage(): string | undefined {
-    if (!this._profileImageUrlChanged) {
+    if (!this._profileImageChanged) {
       return undefined;
     }
     try {
@@ -104,7 +105,7 @@ export class WelcomeStore {
   }
 
   public changeProfileImage(file: File) {
-    this._profileImageUrlChanged = true;
+    this._profileImageChanged = true;
     this._profileImage = file;
   }
 
@@ -124,28 +125,31 @@ export class WelcomeStore {
   }
 
   public createUser = async (uid: string) => {
-    const result = await this._userService.createUser(
-      uid,
-      this._name,
-      this._introduce,
-      this._tags.split(" ")
-    );
-    if (result.isSuccess) {
-      this._successToCreate = true;
-    } else {
-      this._errorMessage = result.throwableOrNull()!!.message;
-    }
-
-    if (this._profileImageUrlChanged && this._profileImage != null) {
+    if (this._profileImageChanged && this._profileImage != null) {
       const formData = new FormData();
       formData.append("fileName", uid);
       formData.append("profileImage", this._profileImage);
 
-      const response = await this._userService.uploadProfileImage(
-        uid,
-        formData
-      );
-      console.log(response);
+      const uploadProfileImageResult =
+        await this._userService.uploadProfileImage(uid, formData);
+      if (uploadProfileImageResult.isSuccess) {
+        this._profileImageUrl = uploadProfileImageResult.getOrNull();
+      } else {
+        this._errorMessage =
+          uploadProfileImageResult.throwableOrNull()!!.message;
+      }
+    }
+    const createUserResult = await this._userService.createUser(
+      uid,
+      this._name,
+      this._introduce,
+      this._tags.split(" "),
+      this._profileImageUrl
+    );
+    if (createUserResult.isSuccess) {
+      this._successToCreate = true;
+    } else {
+      this._errorMessage = createUserResult.throwableOrNull()!!.message;
     }
   };
 }

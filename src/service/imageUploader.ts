@@ -6,7 +6,7 @@ const endpoint = new AWS.Endpoint(process.env.NEXT_PUBLIC_NC_ENDPOINT);
 const region = process.env.NEXT_PUBLIC_NC_REGION;
 const access_key = process.env.NEXT_PUBLIC_NC_ACCESS_KEY;
 const secret_key = process.env.NEXT_PUBLIC_NC_SECRET_KEY;
-const bucket_name = process.env.NEXT_PUBLIC_NC_BUCKET_NAME;
+const bucket_name = process.env.NEXT_PUBLIC_NC_BUCKETNAME;
 
 const s3 = new AWS.S3({
   endpoint,

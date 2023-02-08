@@ -3,58 +3,50 @@ import {
   createTagsIfNotExists,
   findTagIdsByTagName,
 } from "@/repository/tag.repository";
-import {
-  createUser,
-  insertProfileImage,
-  isExistUser,
-} from "@/repository/user.repository";
+import { createUser, isUserExists } from "@/repository/user.repository";
 import {
   EXISTS_INITIAL_INFORMATION_MESSAGE,
   NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
   PROFILE_CREATE_SUCCESS,
-  ROOM_AVAILABLE_MESSAGE,
   PROFILE_IMAGE_UPDATE,
   SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
-import { string } from "prop-types";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { InitialInformationRequestBody } from "@/models/user/InitialInformationRequestBody";
 import multer from "multer";
 import { multipartUploader } from "@/service/imageUploader";
-import * as path from "path";
-import { auth } from "@/service/firebase";
 import { uuidv4 } from "@firebase/util";
-
-interface response {
-  exists: boolean;
-  message: string;
-}
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const requestBody = new InitialInformationRequestBody(
-      <string>req.query.uid
+      <string>req.query.userId
     );
-    const isNewUser = await isExistUser(requestBody.userId);
-    const { exists } = isNewUser[0];
-    const response: response = {
-      ...isNewUser[0],
-      message: "",
-    };
-    if (exists) {
-      response["message"] = EXISTS_INITIAL_INFORMATION_MESSAGE;
-      res.status(200).send(response);
+    const newUser = await isUserExists(requestBody.userId);
+    if (newUser) {
+      res.status(200).send(
+        new ResponseBody({
+          message: EXISTS_INITIAL_INFORMATION_MESSAGE,
+          data: newUser,
+        })
+      );
     } else {
-      response["message"] = NO_EXISTS_INITIAL_INFORMATION_MESSAGE;
-      res.status(404).send(response);
+      res.status(404).send(
+        new ResponseBody({
+          message: NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
+          data: newUser,
+        })
+      );
     }
   } catch (e) {
-    if (e instanceof string) {
-      res.status(400).end(e);
+    if (typeof e === "string") {
+      res.status(400).end(new ResponseBody({ message: e }));
       return;
     }
-    res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };
@@ -66,7 +58,8 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
       req.body.userId,
       req.body.name,
       req.body.introduce,
-      req.body.tags
+      req.body.tags,
+      req.body.profileImageUrl
     );
 
     await createTagsIfNotExists(userCreateBody.tags);
@@ -77,7 +70,8 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
       userCreateBody.userId,
       userCreateBody.name,
       userCreateBody.introduce,
-      tagIds
+      tagIds,
+      userCreateBody.profileImageUrl
     );
     res.status(201).json(new ResponseBody({ message: PROFILE_CREATE_SUCCESS }));
   } catch (e) {
@@ -102,7 +96,6 @@ function runMiddleware(
       if (result instanceof Error) {
         return reject(result);
       }
-
       return resolve(result);
     });
   });
@@ -139,21 +132,22 @@ export const postProfileImage = async (
       "users/" + others.fileName + ".png",
       file.path
     );
-    const result = await insertProfileImage(others.fileName, signedUrl);
-    console.log(result);
-
-    const sendData = {
-      message: PROFILE_IMAGE_UPDATE,
-      profileImage: signedUrl,
-    };
-
-    res.status(201).json(sendData);
+    // const result = await insertUserProfileImage(others.fileName, signedUrl);
+    // console.log(result);
+    res.status(201).send(
+      new ResponseBody({
+        message: PROFILE_IMAGE_UPDATE,
+        data: signedUrl,
+      })
+    );
   } catch (e) {
-    if (e instanceof string) {
-      res.status(400).end(e);
+    if (typeof e === "string") {
+      res.status(400).end(new ResponseBody({ message: e }));
       return;
     }
-    res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };

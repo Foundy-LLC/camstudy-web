@@ -1,19 +1,21 @@
-import { Prisma, user_account } from ".prisma/client";
+import { user_account } from ".prisma/client";
 import prisma from "../../prisma/client";
 import { UserStatus } from "@/models/user/UserStatus";
 
-export const isExistUser = async (
-  uid: string
-): Promise<{ exists: boolean }[]> => {
-  return await prisma?.$queryRaw(
-    Prisma.sql`SELECT EXISTS(SELECT * FROM user_account ua WHERE ua.id = ${uid})`
-  );
+export const isUserExists = async (uid: string): Promise<boolean> => {
+  const result = await prisma.user_account.findUnique({
+    where: {
+      id: uid,
+    },
+  });
+  return result !== null;
 };
 export const createUser = async (
   uid: string,
   name: string,
   introduce: string | undefined,
-  tagIds: { id: string }[]
+  tagIds: { id: string }[],
+  profileImageUrl: string
 ): Promise<user_account> => {
   const tagIdsDto: { tag_id: string }[] = tagIds.map((tag) => {
     return { tag_id: tag.id };
@@ -30,11 +32,12 @@ export const createUser = async (
           data: [...tagIdsDto],
         },
       },
+      profile_image: profileImageUrl,
     },
   });
 };
 
-export const insertProfileImage = async (uid: string, url: string) => {
+export const insertUserProfileImage = async (uid: string, url: string) => {
   return await prisma.user_account.update({
     data: {
       profile_image: url,

@@ -2,6 +2,7 @@ import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
 import {
   validateUserIntroduce,
   validateUserName,
+  validateUserProfileImage,
   validateUserTags,
 } from "@/utils/user.validator";
 
@@ -11,7 +12,8 @@ export class UserRequestBody {
     readonly userId: string,
     readonly name: string,
     readonly introduce: string | undefined,
-    readonly tags: string[]
+    readonly tags: string[],
+    readonly profileImageUrl: string
   ) {
     this._validateUid();
     this._validateName();

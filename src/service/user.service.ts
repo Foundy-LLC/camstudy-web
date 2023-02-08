@@ -6,36 +6,35 @@ const HEADER = {
 };
 
 export class UserService {
-  public async isExistUser(uid: string) {
+  public async isExistUser(userId: string): Promise<Result<boolean>> {
     try {
-      const res = await fetch(`api/users/${uid}/init-info`, {
+      const response = await fetch(`api/users/${userId}/exists`, {
         method: "GET",
         headers: HEADER,
       });
-      const { exists, message } = await res.json();
-      console.log(message);
-      return exists;
+      return await Result.createSuccessUsingResponseData(response);
     } catch (e) {
-      return Result.errorCatch(e);
+      return Result.createErrorUsingException(e);
     }
   }
 
-  public async uploadProfileImage(fileName: string, formData: FormData) {
+  public async uploadProfileImage(
+    fileName: string,
+    formData: FormData
+  ): Promise<Result<string>> {
     try {
       const response = await fetch(`api/users/${fileName}/profile-image`, {
         method: "POST",
         body: formData,
         credentials: "include",
       });
-      const { profileImage } = await response.json();
-      console.log(profileImage);
       if (response.ok) {
-        return profileImage;
+        return await Result.createSuccessUsingResponseData(response);
       } else {
-        return await Result.errorResponse(response);
+        return await Result.createErrorUsingResponseMessage(response);
       }
     } catch (e) {
-      return Result.errorCatch(e);
+      return Result.createErrorUsingException(e);
     }
   }
 
@@ -43,10 +42,17 @@ export class UserService {
     uid: string,
     name: string,
     introduce: string,
-    tags: string[]
+    tags: string[],
+    profileImageUrl: string = ""
   ): Promise<Result<void>> {
     try {
-      const requestBody = new UserRequestBody(uid, name, introduce, tags);
+      const requestBody = new UserRequestBody(
+        uid,
+        name,
+        introduce,
+        tags,
+        profileImageUrl
+      );
       const response = await fetch(`api/users`, {
         method: "POST",
         body: JSON.stringify(requestBody),
