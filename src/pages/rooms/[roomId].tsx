@@ -62,6 +62,7 @@ const WaitingRoom: NextPage<{
       >
         입장
       </button>
+      <div>{roomStore.waitingRoomMessage}</div>
     </>
   );
 });

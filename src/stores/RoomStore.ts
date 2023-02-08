@@ -72,16 +72,39 @@ export class RoomStore implements RoomViewModel {
     return this._localAudioStream !== undefined;
   }
 
+  private _isCurrentUserMaster = (
+    waitingRoomData: WaitingRoomData
+  ): boolean => {
+    // TODO: auth대신 UserStore로 변경하기
+    return waitingRoomData.masterId === auth.currentUser?.uid;
+  };
+
+  private _isRoomFull = (waitingRoomData: WaitingRoomData): boolean => {
+    return waitingRoomData.joinerList.length >= waitingRoomData.capacity;
+  };
+
+  public get waitingRoomMessage(): string | undefined {
+    const waitingRoomData = this._waitingRoomData;
+    if (waitingRoomData === undefined) {
+      return "연결 중...";
+    }
+    if (this._isCurrentUserMaster(waitingRoomData)) {
+      return undefined;
+    }
+    if (this._isRoomFull(waitingRoomData)) {
+      return "방 정원이 가득 찼습니다.";
+    }
+  }
+
   public get canJoinRoom(): boolean {
     const waitingRoomData = this._waitingRoomData;
     if (waitingRoomData === undefined) {
       return false;
     }
-    // TODO: auth대신 UserStore로 변경하기
-    if (waitingRoomData.masterId === auth.currentUser?.uid) {
+    if (this._isCurrentUserMaster(waitingRoomData)) {
       return true;
     }
-    return waitingRoomData.joinerList.length < waitingRoomData.capacity;
+    return !this._isRoomFull(waitingRoomData);
   }
 
   public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {
