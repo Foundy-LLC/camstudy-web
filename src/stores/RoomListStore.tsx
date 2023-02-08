@@ -64,7 +64,6 @@ export class RoomListStore {
   }
   async fetchRooms() {
     const value = await this._roomService.getRooms(this._pageNum);
-    console.log("value", value._data);
     return value;
   }
   async createRoom() {

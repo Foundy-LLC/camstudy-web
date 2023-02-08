@@ -69,18 +69,15 @@ export const getRoomAvailability = async (
 
 export const getRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    console.log("Good");
     if (typeof req.query.page !== "string") {
       throw Error("query 요청이 잘못되었습니다");
     }
     const roomsGetBody = new RoomsRequestGet(req.query.page);
-    res.status(201).json(findRooms(roomsGetBody.pageNum)); //roomOverview interface 만들어서 반환
+    res.status(201).json(await findRooms(roomsGetBody.pageNum));
   } catch (e) {
     if (e instanceof string) {
-      console.log("bad");
       res.status(400).end(e);
     }
-    console.log("bad2");
     res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
   }
 };
@@ -88,13 +85,13 @@ export const getRoom = async (req: NextApiRequest, res: NextApiResponse) => {
 export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const roomPostBody = new RoomRequestBody(req.body.room);
-    await res.status(201).json(createRoom(roomPostBody));
+    res.status(201).json(await createRoom(roomPostBody));
   } catch (e) {
     if (typeof e === "string") {
       console.log("error:400", e);
-      return res.status(400).end(e);
+      res.status(400).end(e);
     }
     console.log("error: 500");
-    return res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
+    res.status(500).end(SERVER_INTERNAL_ERROR_MESSAGE);
   }
 };
