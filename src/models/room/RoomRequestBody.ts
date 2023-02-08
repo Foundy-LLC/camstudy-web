@@ -3,7 +3,8 @@ import {
   validateId,
   validateLongBreak,
   validateLongBreakInterval,
-  validateMasterId, validatePassword,
+  validateMasterId,
+  validatePassword,
   validateShortBreak,
   validateThumbnail,
   validateTimer,
@@ -12,9 +13,9 @@ import {
 import { Room } from "@/stores/RoomListStore";
 ~21;
 export class RoomRequestBody {
-  private room: Room
+  private _room: Room;
   constructor(room: Room) {
-    this.room = room;
+    this._room = room;
     this._validateId();
     this._validateMasterId();
     this._validateThumbnail();
@@ -30,37 +31,37 @@ export class RoomRequestBody {
   - 필수 값 null 체크
   -
   */
-  get get_room (){
-    return this.room;
-  };
+  get room() {
+    return this._room;
+  }
   private _validateId = () => {
-    validateId(this.room._id);
+    validateId(this._room.id);
   };
   private _validateMasterId = () => {
-    validateMasterId(this.room._master_id);
+    validateMasterId(this._room.masterId);
   };
   private _validateThumbnail = () => {
-    validateThumbnail(this.room._thumbnail);
+    validateThumbnail(this._room.thumbnail);
   };
   private _validatePassword = () => {
-    validatePassword(this.room._password);
+    validatePassword(this._room.password);
   };
   private _validateTitle = () => {
-    validateTitle(this.room._title);
+    validateTitle(this._room.title);
   };
   private _validateTimer = () => {
-    validateTimer(this.room._timer);
+    validateTimer(this._room.timer);
   };
   private _validateShortBreak = () => {
-    validateShortBreak(this.room._short_break);
+    validateShortBreak(this._room.shortBreak);
   };
   private _validateLongBreak = () => {
-    validateLongBreak(this.room._long_break);
+    validateLongBreak(this._room.longBreak);
   };
   private _validateLongBreakInterval = () => {
-    validateLongBreakInterval(this.room._long_break_interval);
+    validateLongBreakInterval(this._room.longBreakInterval);
   };
   private _validateExpiredAt = () => {
-    validateExpiredAt(this.room._expired_at);
+    validateExpiredAt(this._room.expiredAt);
   };
 }

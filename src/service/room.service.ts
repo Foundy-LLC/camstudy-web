@@ -2,6 +2,7 @@ import { Result } from "@/models/common/Result";
 import { RoomRequestBody } from "@/models/room/RoomRequestBody";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { Room } from "@/stores/RoomListStore";
+import { ROOM_CREATE_SUCCESS } from "@/constants/roomMessage";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -27,15 +28,14 @@ export class RoomService {
   }
   public async createRoom(room: Room): Promise<Result<string>> {
     try {
-      const requestBody = new RoomRequestBody(room);
-
+      const requestBody = await new RoomRequestBody(room);
       const response = await fetch(`api/rooms`, {
         method: "POST",
         body: JSON.stringify(requestBody),
         headers: HEADER,
       });
       if (response.ok) {
-        return Result.success("방 개설을 성공했습니다.");
+        return Result.success(ROOM_CREATE_SUCCESS);
       } else {
         return await Result.createErrorUsingResponseMessage(response);
       }

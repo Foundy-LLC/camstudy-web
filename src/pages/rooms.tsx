@@ -1,28 +1,30 @@
-import { async } from "@firebase/util";
 import { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import React, { Key } from "react";
 import { useStores } from "@/stores/context";
-import { type } from "os";
 import { observer } from "mobx-react-lite";
 import { RoomOverview } from "@/models/room/RoomOverview";
-const makeRoom: NextPage = observer(() => {
-  const { roomListStore } = useStores();
-  const [isSuccessCreate, setIsSuccessCreate] = useState<boolean>(false);
-  const successToCreate = roomListStore.get_roomOverviews();
-  const printRoomTitles = (): JSX.Element[] => {
-    const roomTitles = roomListStore
-      .get_roomOverviews()
-      .map((room, key) => <p key={key}>{room.title}</p>);
-    return roomTitles;
-  };
-  const printCreatedRoomTitle = (): JSX.Element => {
+
+const RoomItem: NextPage<{ roomOverview: RoomOverview; key: Key }> = observer(
+  ({ roomOverview, key }) => {
+    return <p key={key}>{roomOverview.title}</p>;
+  }
+);
+
+const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
+  ({ items }) => {
     return (
-      <div>
-        <h3>생성한 방:</h3>
-        <p>{roomListStore.get_created_title()}</p>
-      </div>
+      <>
+        {items.map((item) => (
+          <RoomItem roomOverview={item} key={item.id} />
+        ))}
+      </>
     );
-  };
+  }
+);
+
+const RoomList: NextPage = observer(() => {
+  const { roomListStore } = useStores();
+
   return (
     <>
       <div>
@@ -55,17 +57,23 @@ const makeRoom: NextPage = observer(() => {
         <button
           id="PostBtn"
           onClick={async () => {
-            const result = await roomListStore.createRoom();
-            if (result === true) setIsSuccessCreate(true);
+            await roomListStore.createRoom();
           }}
         >
           POST
         </button>
-        {printRoomTitles()}
-        {isSuccessCreate && printCreatedRoomTitle()}
+        <RoomItemGroup items={roomListStore.roomOverviews} />
+        <div>
+          <h3>생성한 방:</h3>
+          <p>{roomListStore.createdTitle}</p>
+        </div>
+
+        {roomListStore.errorMessage === "" ? null : (
+          <h3>{roomListStore.errorMessage}</h3>
+        )}
         {/*{RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}*/}
       </div>
     </>
   );
 });
-export default makeRoom;
+export default RoomList;

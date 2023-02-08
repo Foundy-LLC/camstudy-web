@@ -1,5 +1,6 @@
 export const SERVER_INTERNAL_ERROR_MESSAGE: string =
   "서버 내부에 에러가 발생했습니다.";
+export const REQUEST_QUERY_ERROR = "query 요청이 잘못되었습니다";
 export const PROFILE_CREATE_SUCCESS = "프로필이 생성되었습니다.";
 export const NO_USER_UID_ERROR_MESSAGE: string = "UID가 누락되었습니다.";
 export const NO_USER_NAME_ERROR_MESSAGE: string =
@@ -19,13 +20,3 @@ export const ROOM_PASSWORD_NOT_CORRECT_ERROR_MESSAGE =
 export const ROOM_IS_FULL_ERROR_MESSAGE = "방 정원이 꽉 찼습니다.";
 export const INVALID_ROOM_PASSWORD_ERROR_MESSAGE = "방 비밀번호가 틀렸습니다.";
 export const ROOM_AVAILABLE_MESSAGE = "공부방 입장이 가능합니다.";
-export const ROOM_PASSWORD_LENGTH_ERROR_MESSAGE: string =
-  "비밀번호는 4자 이상으로 설정해야 합니다.";
-export const STUDYING_TIME_RANGE_ERROR: string =
-  "공부 시간은 20~50분으로만 설정할 수 있습니다.";
-export const SHORT_STUDYING_TIME_RANGE_ERROR: string =
-  "짧은 쉬는 시간은 3~10분 범위로만 설정할 수 있습니다.";
-export const LONG_STUDYING_TIME_RANGE_ERROR: string =
-  "긴 쉬는 시간은 10~30분으로만 설정할 수 있습니다.";
-export const BREAK_TIME_INTERVAL_RANGE_ERROR: string =
-  "쉬는 시간 인터벌은 2~6회로만 설정할 수 있습니다.";

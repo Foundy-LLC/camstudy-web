@@ -6,10 +6,8 @@ import {
 import { createUser } from "@/repository/user.repository";
 import {
   PROFILE_CREATE_SUCCESS,
-  ROOM_AVAILABLE_MESSAGE,
   SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
-import { string } from "prop-types";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
 

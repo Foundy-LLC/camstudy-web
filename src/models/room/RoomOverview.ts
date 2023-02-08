@@ -6,6 +6,7 @@ export class RoomOverview {
     readonly id: string,
     readonly title: string,
     readonly password: string | null,
+    //TODO
     // readonly joinCount: number,
     // readonly maxCount: number,
     readonly thumbnail: string | null,

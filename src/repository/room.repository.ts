@@ -3,8 +3,6 @@ import { room } from "@prisma/client";
 import { MAX_ROOM_PEOPLE_NUMBER } from "@/constants/room.constant";
 import client from "prisma/client";
 import { RoomOverview } from "@/models/room/RoomOverview";
-import rooms from "@/pages/rooms";
-
 import { RoomRequestBody } from "@/models/room/RoomRequestBody";
 import { Room } from "@/stores/RoomListStore";
 
@@ -56,8 +54,8 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
       room.title,
       room.password,
       room.thumbnail,
-      // room.joinCount, //스터디 히스토리 방 id 일치하면서 나간 시간이 없는 사람 갯수
-      // room.maxCount,  //MAX_ROOM_PEOPLE_NUMBER
+      // room.joinCount, //TODO 스터디 히스토리 방 id 일치하면서 나간 시간이 없는 사람 갯수
+      // room.maxCount,  //TODO MAX_ROOM_PEOPLE_NUMBER
       [] //room.room_tags
     );
     roomOverviews.push(roomOverview);
@@ -65,19 +63,19 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
   return roomOverviews;
 };
 export const createRoom = async (body: RoomRequestBody) => {
-  const room: Room = body.get_room;
+  const room: Room = body.room;
   await client.room.create({
     data: {
-      id: room._id,
-      master_id: room._master_id,
-      title: room._title,
-      thumbnail: room._thumbnail,
-      password: room._password,
-      timer: room._timer,
-      short_break: room._short_break,
-      long_break: room._long_break,
-      long_break_interval: room._long_break_interval,
-      expired_at: room._expired_at,
+      id: room.id,
+      master_id: room.masterId,
+      title: room.title,
+      thumbnail: room.thumbnail,
+      password: room.password,
+      timer: room.timer,
+      short_break: room.shortBreak,
+      long_break: room.longBreak,
+      long_break_interval: room.longBreakInterval,
+      expired_at: room.expiredAt,
     },
   });
 };

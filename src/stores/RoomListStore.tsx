@@ -1,77 +1,103 @@
-import { makeAutoObservable, makeObservable } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { RootStore } from "@/stores/RootStore";
 import RoomService from "@/service/room.service";
-import { DEFAULT_PASSWORD, DEFAULT_THUMBNAIL } from "@/constants/default";
-import roomService from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
+import React from "react";
 
 export class Room {
-  readonly _id: string = "";
-  readonly _master_id: string = "test";
-  readonly _title: string = "test";
-  readonly _thumbnail?: string = "test";
-  readonly _password?: string = "test";
-  readonly _timer: number = 40;
-  readonly _short_break: number = 15;
-  readonly _long_break: number = 20;
-  readonly _long_break_interval: number = 3;
-  readonly _expired_at: string = "2021-08-21T12:30:00.000Z";
-  readonly _room_tag: string[] = [];
+  //TODO(건우) 값을 임시로 할당하여 수정 필요
+  readonly id: string = "";
+  readonly masterId: string = "test";
+  readonly title: string = "test";
+  readonly thumbnail?: string = "test";
+  readonly password?: string = "test";
+  readonly timer: number = 40;
+  readonly shortBreak: number = 15;
+  readonly longBreak: number = 20;
+  readonly longBreakInterval: number = 3;
+  readonly expiredAt: string = "2021-08-21T12:30:00.000Z";
+  readonly tags: string[] = [];
+
   constructor() {
     makeAutoObservable(this);
   }
 }
 
 export class RoomListStore {
-  //TODO 방이 만들어지고 나서 tempRoom을 초기화 해야함
-  private _pageNum: number = 0;
+  //TODO(건우) 방이 만들어지고 나서 tempRoom을 초기화 해야함
   private readonly _roomService: RoomService = new RoomService();
   readonly rootStore: RootStore;
+  private _createdRoomTitle: string = "";
 
-  private rooms: Room[] = [];
-  private tempRoom: Room = new Room();
-  private roomOverviews: RoomOverview[] = [];
+  private _rooms: Room[] = [];
+  private _tempRoom: Room = new Room();
+  private _roomOverviews: RoomOverview[] = [];
+  private _pageNum: number = 0;
+  private _isSuccessCreate: boolean = false;
+  private _isSuccessGet: boolean = false;
+  private _errorMessage: string = "";
   constructor(root: RootStore) {
     makeAutoObservable(this);
     this.rootStore = root;
   }
 
-  get_created_title() {
-    return this.tempRoom._title;
+  get errorMessage() {
+    return this._errorMessage;
   }
-  get_roomOverviews() {
-    return this.roomOverviews;
+  get createdTitle() {
+    return this._createdRoomTitle;
   }
+
+  get roomOverviews() {
+    return this._roomOverviews;
+  }
+
+  get isSuccessCreate() {
+    return this._isSuccessCreate;
+  }
+  get isSuccessGet() {
+    return this._isSuccessGet;
+  }
+
+  private _initRoomOverviews() {
+    this._roomOverviews = [];
+  }
+
   changeRoomNum(pageNum: string) {
     this._pageNum = parseInt(pageNum);
   }
+
   setRoomTitleInput(roomTitle: string) {
-    this.tempRoom = { ...this.tempRoom, _title: roomTitle, _id: roomTitle };
-  }
-  async fetchRooms() {
-    const result = await this._roomService.getRooms(this._pageNum);
-    if (result.isSuccess) {
-      this.roomOverviews = [];
-      result._data?.map((roomOverview) => {
-        this.roomOverviews.push(roomOverview);
-      });
-    } else {
-      console.log(result.throwableOrNull());
-    }
-  }
-  async createRoom(): Promise<boolean> {
-    const result = await this._roomService.createRoom(this.tempRoom);
-    if (result.isSuccess) {
-      this.rooms.push(this.tempRoom);
-      console.log(`(${this.tempRoom._id})방을 생성하였습니다`);
-      return true;
-    } else {
-      console.log(result.throwableOrNull());
-      return false;
-    }
+    this._tempRoom = { ...this._tempRoom, title: roomTitle, id: roomTitle };
   }
 
+  fetchRooms = async (): Promise<void> => {
+    const result = await this._roomService.getRooms(this._pageNum);
+    if (result.isSuccess) {
+      this._isSuccessGet = true;
+      this._roomOverviews = result.getOrNull()!!;
+    } else {
+      console.log(result.throwableOrNull());
+      this._errorMessage = result.throwableOrNull()!!.message;
+      this._isSuccessGet = false;
+    }
+  };
+
+  createRoom = async (): Promise<void> => {
+    const result = await this._roomService.createRoom(this._tempRoom);
+    if (result.isSuccess) {
+      this._isSuccessCreate = true;
+      this._rooms.push(this._tempRoom);
+      this._createdRoomTitle = this._tempRoom.title;
+      console.log(`(${this._tempRoom.id})방을 생성하였습니다`);
+    } else {
+      console.log(result.throwableOrNull());
+      this._errorMessage = result.throwableOrNull()!!.message;
+      this._isSuccessCreate = false;
+    }
+  };
+
   deleteRoom(id: string) {
-    this.rooms = this.rooms.filter((room) => room._id !== id);
+    this._rooms = this._rooms.filter((room) => room.id !== id);
   }
 }
