@@ -1,6 +1,6 @@
 import prisma from "../../prisma/client";
 import { room } from "@prisma/client";
-import { MAX_ROOM_PEOPLE_NUMBER } from "@/constants/room.constant";
+import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
 
 export const findRoomById = async (roomId: string): Promise<room | null> => {
   return await prisma.room.findUnique({
@@ -17,7 +17,7 @@ export const isRoomFull = async (roomId: string): Promise<boolean> => {
       exit_at: undefined,
     },
   });
-  return histories.length === MAX_ROOM_PEOPLE_NUMBER;
+  return histories.length === MAX_ROOM_CAPACITY;
 };
 
 export const isUserBlockedAtRoom = async (

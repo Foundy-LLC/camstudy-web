@@ -9,9 +9,12 @@ import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import { ChatMessage } from "@/models/room/ChatMessage";
 import { RoomState } from "@/models/room/RoomState";
 import { MediaUtil } from "@/utils/MediaUtil";
+import { WaitingRoomData } from "@/models/room/WaitingRoomData";
+import { auth } from "@/service/firebase";
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
+  onConnectedWaitingRoom: (waitingRoomData: WaitingRoomData) => void;
   onJoined: (
     timerStartedDate: string | undefined,
     timerState: PomodoroTimerState,
@@ -35,6 +38,8 @@ export class RoomStore implements RoomViewModel {
 
   private _localVideoStream?: MediaStream = undefined;
   private _localAudioStream?: MediaStream = undefined;
+
+  private _waitingRoomData?: WaitingRoomData = undefined;
 
   private readonly _remoteVideoStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
@@ -65,6 +70,18 @@ export class RoomStore implements RoomViewModel {
 
   public get enabledLocalAudio(): boolean {
     return this._localAudioStream !== undefined;
+  }
+
+  public get canJoinRoom(): boolean {
+    const waitingRoomData = this._waitingRoomData;
+    if (waitingRoomData === undefined) {
+      return false;
+    }
+    // TODO: auth대신 UserStore로 변경하기
+    if (waitingRoomData.masterId === auth.currentUser?.uid) {
+      return true;
+    }
+    return waitingRoomData.joinerList.length < waitingRoomData.capacity;
   }
 
   public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {
@@ -104,8 +121,8 @@ export class RoomStore implements RoomViewModel {
     return this._pomodoroProperty;
   }
 
-  public connectSocket = () => {
-    this._roomService.connect();
+  public connectSocket = (roomId: string) => {
+    this._roomService.connect(roomId);
   };
 
   public onConnected = async (): Promise<void> => {
@@ -122,7 +139,12 @@ export class RoomStore implements RoomViewModel {
     });
   };
 
-  public joinRoom = (roomId: string) => {
+  public onConnectedWaitingRoom = (waitingRoomData: WaitingRoomData) => {
+    this._state = RoomState.WAITING_ROOM;
+    this._waitingRoomData = waitingRoomData;
+  };
+
+  public joinRoom = () => {
     const mediaStream: MediaStream = new MediaStream();
     if (this._localVideoStream !== undefined) {
       mediaStream.addTrack(this._localVideoStream.getVideoTracks()[0]);
@@ -130,7 +152,7 @@ export class RoomStore implements RoomViewModel {
     if (this._localAudioStream !== undefined) {
       mediaStream.addTrack(this._localAudioStream.getAudioTracks()[0]);
     }
-    this._roomService.join(roomId, mediaStream);
+    this._roomService.join(mediaStream);
   };
 
   public onJoined = (

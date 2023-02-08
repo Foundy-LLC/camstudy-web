@@ -14,6 +14,7 @@ import {
   NEW_PRODUCER,
   OTHER_PEER_DISCONNECTED,
   PRODUCER_CLOSED,
+  CONNECT_WAITING_ROOM,
   SEND_CHAT,
   START_LONG_BREAK,
   START_SHORT_BREAK,
@@ -42,6 +43,8 @@ import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import { ChatMessage } from "@/models/room/ChatMessage";
 import { uuidv4 } from "@firebase/util";
+import { RoomJoiner } from "@/models/room/RoomJoiner";
+import { WaitingRoomData } from "@/models/room/WaitingRoomData";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -90,7 +93,7 @@ export class RoomSocketService {
     return this._socket;
   };
 
-  public connect = () => {
+  public connect = (roomId: string) => {
     if (this._socket != null) {
       return;
     }
@@ -100,11 +103,22 @@ export class RoomSocketService {
       async ({ socketId }: { socketId: string }) => {
         console.log("Connected: ", socketId);
         await this._roomViewModel.onConnected();
+        this._connectWaitingRoom(roomId);
       }
     );
   };
 
-  public join = (roomId: string, localMediaStream: MediaStream) => {
+  private _connectWaitingRoom = (roomId: string) => {
+    this._requireSocket().emit(
+      CONNECT_WAITING_ROOM,
+      roomId,
+      (waitingRoomData: WaitingRoomData) => {
+        this._roomViewModel.onConnectedWaitingRoom(waitingRoomData);
+      }
+    );
+  };
+
+  public join = (localMediaStream: MediaStream) => {
     const socket = this._requireSocket();
     const user = auth.currentUser;
     if (user == null) {
@@ -113,7 +127,6 @@ export class RoomSocketService {
     socket.emit(
       JOIN_ROOM,
       {
-        roomId: roomId,
         userId: user.uid,
         // TODO: 실제 회원 이름을 전달하기
         userName: uuidv4(),

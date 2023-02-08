@@ -11,26 +11,28 @@ import { UserProfileImage } from "@/components/UserProfileImage";
 
 const RoomScaffold: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
+  const router = useRouter();
+  const roomId = router.query.roomId;
 
   useEffect(() => {
-    roomStore.connectSocket();
-  }, [roomStore]);
+    if (typeof roomId === "string") {
+      roomStore.connectSocket(roomId);
+    }
+  }, [roomStore, roomId]);
 
   switch (roomStore.state) {
     case RoomState.CREATED:
     case RoomState.CONNECTED:
-      return <RoomReady roomStore={roomStore} />;
+    case RoomState.WAITING_ROOM:
+      return <WaitingRoom roomStore={roomStore} />;
     case RoomState.JOINED:
-      return <Room roomStore={roomStore} />;
+      return <StudyRoom roomStore={roomStore} />;
   }
 });
 
-const RoomReady: NextPage<{
+const WaitingRoom: NextPage<{
   roomStore: RoomStore;
 }> = observer(({ roomStore }) => {
-  const router = useRouter();
-  const roomId = router.query.roomId;
-
   return (
     <>
       <Video id="localVideo" videoStream={roomStore.localVideoStream} />
@@ -54,89 +56,92 @@ const RoomReady: NextPage<{
       >
         {roomStore.enabledLocalAudio ? "Mute Audio" : "Unmute Audio"}
       </button>
-      {typeof roomId === "string" ? (
-        <button
-          disabled={roomStore.state === RoomState.CREATED}
-          onClick={() => roomStore.joinRoom(roomId)}
-        >
-          입장
-        </button>
-      ) : undefined}
+      <button
+        disabled={!roomStore.canJoinRoom}
+        onClick={() => roomStore.joinRoom()}
+      >
+        입장
+      </button>
     </>
   );
 });
 
-const Room: NextPage<{ roomStore: RoomStore }> = observer(({ roomStore }) => {
-  const enabledVideo = roomStore.enabledLocalVideo;
-  const enabledAudio = roomStore.enabledLocalAudio;
+const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
+  ({ roomStore }) => {
+    const enabledVideo = roomStore.enabledLocalVideo;
+    const enabledAudio = roomStore.enabledLocalAudio;
 
-  return (
-    <div>
-      <table className="mainTable">
-        <tbody>
-          <tr>
-            <td className="localColumn">
-              <Video id="localVideo" videoStream={roomStore.localVideoStream} />
-            </td>
-            <td className="remoteColumn">
-              <RemoteMediaGroup
-                remoteVideoStreamByPeerIdEntries={
-                  roomStore.remoteVideoStreamByPeerIdEntries
-                }
-                remoteAudioStreamByPeerIdEntries={
-                  roomStore.remoteAudioStreamByPeerIdEntries
-                }
-              />
-            </td>
-            <td className="chatMessageColumn">
-              <ChatMessage messages={roomStore.chatMessages} />
-              <input
-                value={roomStore.chatInput}
-                onChange={(e) => roomStore.updateChatInput(e.target.value)}
-              />
-              <button
-                disabled={!roomStore.enabledChatSendButton}
-                onClick={() => roomStore.sendChat()}
-              >
-                전송
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <button
-        id="videoToggle"
-        onClick={() =>
-          enabledVideo ? roomStore.hideVideo() : roomStore.showVideo()
-        }
-      >
-        {enabledVideo ? "Hide Video" : "Show Video"}
-      </button>
-      <button
-        id="audioToggle"
-        onClick={() =>
-          enabledAudio ? roomStore.muteAudio() : roomStore.unmuteAudio()
-        }
-      >
-        {enabledAudio ? "Mute Audio" : "Unmute Audio"}
-      </button>
+    return (
       <div>
-        <PomodoroTimer
-          timerState={roomStore.pomodoroTimerState}
-          getElapsedSeconds={() => roomStore.pomodoroTimerElapsedSeconds}
-          onClickStart={() => roomStore.startTimer()}
-        />
-        {/* TODO: 관리자인 경우만 타이머 편집 부분 보이기*/}
-        {roomStore.pomodoroTimerProperty !== undefined ? (
-          <TimerEditInputGroup
-            defaultTimerProperty={roomStore.pomodoroTimerProperty}
-            onClickSave={roomStore.updateAndStopPomodoroTimer}
+        <table className="mainTable">
+          <tbody>
+            <tr>
+              <td className="localColumn">
+                <Video
+                  id="localVideo"
+                  videoStream={roomStore.localVideoStream}
+                />
+              </td>
+              <td className="remoteColumn">
+                <RemoteMediaGroup
+                  remoteVideoStreamByPeerIdEntries={
+                    roomStore.remoteVideoStreamByPeerIdEntries
+                  }
+                  remoteAudioStreamByPeerIdEntries={
+                    roomStore.remoteAudioStreamByPeerIdEntries
+                  }
+                />
+              </td>
+              <td className="chatMessageColumn">
+                <ChatMessage messages={roomStore.chatMessages} />
+                <input
+                  value={roomStore.chatInput}
+                  onChange={(e) => roomStore.updateChatInput(e.target.value)}
+                />
+                <button
+                  disabled={!roomStore.enabledChatSendButton}
+                  onClick={() => roomStore.sendChat()}
+                >
+                  전송
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button
+          id="videoToggle"
+          onClick={() =>
+            enabledVideo ? roomStore.hideVideo() : roomStore.showVideo()
+          }
+        >
+          {enabledVideo ? "Hide Video" : "Show Video"}
+        </button>
+        <button
+          id="audioToggle"
+          onClick={() =>
+            enabledAudio ? roomStore.muteAudio() : roomStore.unmuteAudio()
+          }
+        >
+          {enabledAudio ? "Mute Audio" : "Unmute Audio"}
+        </button>
+        <div>
+          <PomodoroTimer
+            timerState={roomStore.pomodoroTimerState}
+            getElapsedSeconds={() => roomStore.pomodoroTimerElapsedSeconds}
+            onClickStart={() => roomStore.startTimer()}
           />
-        ) : undefined}
+          {/* TODO: 관리자인 경우만 타이머 편집 부분 보이기*/}
+          {roomStore.pomodoroTimerProperty !== undefined ? (
+            <TimerEditInputGroup
+              defaultTimerProperty={roomStore.pomodoroTimerProperty}
+              onClickSave={roomStore.updateAndStopPomodoroTimer}
+            />
+          ) : undefined}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 const RemoteMediaGroup: NextPage<{
   remoteVideoStreamByPeerIdEntries: [string, MediaStream][];
