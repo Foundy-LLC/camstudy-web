@@ -1,4 +1,4 @@
-import { Room } from "@/stores/RoomListStore";
+import { makeAutoObservable } from "mobx";
 
 export class RoomOverview {
   //방 제목, 패스워드
@@ -10,5 +10,7 @@ export class RoomOverview {
     // readonly maxCount: number,
     readonly thumbnail: string | null,
     readonly tags?: Array<String>
-  ) {}
+  ) {
+    makeAutoObservable(this);
+  }
 }

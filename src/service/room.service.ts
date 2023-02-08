@@ -1,17 +1,14 @@
-import { UserRequestBody } from "@/models/user/UserRequestBody";
 import { Result } from "@/models/common/Result";
 import { RoomRequestBody } from "@/models/room/RoomRequestBody";
-import { Room } from "@/stores/RoomListStore";
 import { RoomOverview } from "@/models/room/RoomOverview";
+import { Room } from "@/stores/RoomListStore";
 
 const HEADER = {
   "Content-Type": "application/json",
 };
 
 export class RoomService {
-  public async getRooms(
-    page: number
-  ): Promise<Result<RoomOverview[]> {
+  public async getRooms(page: number): Promise<Result<RoomOverview[]>> {
     try {
       const response = await fetch(`api/rooms?page=${page}`, {
         method: "GET",
@@ -20,19 +17,15 @@ export class RoomService {
         },
       });
       if (response.ok) {
-        await response.json().then((data: RoomOverview[]) => {
-          return Result.success(data);
-        });
+        return Result.createSuccessUsingResponseData(response);
       } else {
-        return Result.errorResponse(response);
+        return Result.createErrorUsingResponseMessage(response);
       }
     } catch (e) {
-      return Result.errorCatch(e);
+      return Result.createErrorUsingException(e);
     }
   }
-  public async createRoom(
-    room: Room
-  ): Promise<Result<Response | string | undefined>> {
+  public async createRoom(room: Room): Promise<Result<string>> {
     try {
       const requestBody = new RoomRequestBody(room);
 
@@ -44,10 +37,10 @@ export class RoomService {
       if (response.ok) {
         return Result.success("방 개설을 성공했습니다.");
       } else {
-        return await Result.errorResponse(response);
+        return await Result.createErrorUsingResponseMessage(response);
       }
     } catch (e) {
-      return Result.errorCatch(e);
+      return Result.createErrorUsingException(e);
     }
   }
 }

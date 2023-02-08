@@ -56,8 +56,8 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
       room.title,
       room.password,
       room.thumbnail,
-      // room.joinCount,
-      // room.maxCount,
+      // room.joinCount, //스터디 히스토리 방 id 일치하면서 나간 시간이 없는 사람 갯수
+      // room.maxCount,  //MAX_ROOM_PEOPLE_NUMBER
       [] //room.room_tags
     );
     roomOverviews.push(roomOverview);
