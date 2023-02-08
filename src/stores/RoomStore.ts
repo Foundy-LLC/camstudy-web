@@ -197,6 +197,7 @@ export class RoomStore implements RoomViewModel {
       this._waitingRoomData = {
         ...waitingRoomData,
         joinerList: waitingRoomData.joinerList.filter(
+          // TODO: 현재 동일한 회원이 하나의 방에 여러번 접속하는 경우 퇴장할 때 대기실의 동일한 참여자 목록이 제거되는 버그 존재. CFRS-84 에서 해결 될 것임
           (joiner) => joiner.id !== event.exitedUserId
         ),
       };
