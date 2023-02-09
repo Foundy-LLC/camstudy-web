@@ -47,7 +47,7 @@ export interface RoomViewModel {
 export class RoomStore implements RoomViewModel {
   private readonly _roomService = new RoomSocketService(this);
 
-  private _failedToSigneIn: boolean = false;
+  private _failedToSignIn: boolean = false;
 
   private _state: RoomState = RoomState.CREATED;
 
@@ -78,8 +78,8 @@ export class RoomStore implements RoomViewModel {
     return this._state;
   }
 
-  public get failedToSigneIn(): boolean {
-    return this._failedToSigneIn;
+  public get failedToSignIn(): boolean {
+    return this._failedToSignIn;
   }
 
   public get localVideoStream(): MediaStream | undefined {
@@ -209,7 +209,7 @@ export class RoomStore implements RoomViewModel {
       if (state != null) {
         this._roomService.connect(roomId);
       } else {
-        this._failedToSigneIn = true;
+        this._failedToSignIn = true;
       }
     });
   };

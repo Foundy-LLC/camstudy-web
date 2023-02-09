@@ -20,7 +20,7 @@ const RoomScaffold: NextPage = observer(() => {
     }
   }, [roomStore, roomId]);
 
-  if (roomStore.failedToSigneIn) {
+  if (roomStore.failedToSignIn) {
     router.replace("/login");
     return <></>;
   }
