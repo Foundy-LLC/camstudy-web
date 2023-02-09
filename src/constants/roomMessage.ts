@@ -19,6 +19,8 @@ export const ROOM_IS_FULL_MESSAGE: string = "방 정원이 가득 찼습니다."
 export const CONNECTING_ROOM_MESSAGE: string = "연결 중...";
 export const ALREADY_JOINED_ROOM_MESSAGE: string =
   "이미 해당 방에 접속해 있습니다.";
+export const BLACKLIST_CANNOT_JOIN_ROOM_MESSAGE: string =
+  "방 접근이 차단되어 입장할 수 없습니다.";
 
 export const NO_ROOM_ID_ERROR_MESSAGE: string = "방 아이디가 누락 되었습니다";
 export const NO_ROOM_MASTER_ID_ERROR_MESSAGE: string =

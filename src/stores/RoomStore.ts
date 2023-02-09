@@ -19,6 +19,7 @@ import {
 import { RoomJoiner } from "@/models/room/RoomJoiner";
 import {
   ALREADY_JOINED_ROOM_MESSAGE,
+  BLACKLIST_CANNOT_JOIN_ROOM_MESSAGE,
   CONNECTING_ROOM_MESSAGE,
   ROOM_IS_FULL_MESSAGE,
 } from "@/constants/roomMessage";
@@ -122,6 +123,11 @@ export class RoomStore implements RoomViewModel {
     );
   };
 
+  private _isCurrentUserBlocked = (waitingRoomData: WaitingRoomData) => {
+    const currentUserId = this._requireCurrentUserId();
+    return waitingRoomData.blacklist.some((id) => id === currentUserId);
+  };
+
   public get waitingRoomMessage(): string | undefined {
     const waitingRoomData = this._waitingRoomData;
     if (waitingRoomData === undefined) {
@@ -135,6 +141,9 @@ export class RoomStore implements RoomViewModel {
     }
     if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
       return ALREADY_JOINED_ROOM_MESSAGE;
+    }
+    if (this._isCurrentUserBlocked(waitingRoomData)) {
+      return BLACKLIST_CANNOT_JOIN_ROOM_MESSAGE;
     }
     return undefined;
   }
@@ -155,6 +164,9 @@ export class RoomStore implements RoomViewModel {
       return true;
     }
     if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
+      return false;
+    }
+    if (this._isCurrentUserBlocked(waitingRoomData)) {
       return false;
     }
     return !this._isRoomFull(waitingRoomData);
