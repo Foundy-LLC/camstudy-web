@@ -136,8 +136,8 @@ export class WelcomeStore {
       if (uploadProfileImageResult.isSuccess) {
         profileImageUrl = uploadProfileImageResult.getOrNull();
       } else {
-        this._errorMessage =
-          uploadProfileImageResult.throwableOrNull()!!.message;
+        return (this._errorMessage =
+          uploadProfileImageResult.throwableOrNull()!!.message);
       }
     }
     const createUserResult = await this._userService.createUser(
