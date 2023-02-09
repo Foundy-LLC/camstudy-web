@@ -15,13 +15,16 @@ import {
   USER_TAG_MAX_COUNT,
   USER_TAG_MAX_LENGTH,
 } from "@/constants/user.constant";
+import {
+  ALLOWED_EXTENSIONS,
+  MAX_IMAGE_BYTE_SIZE,
+} from "@/constants/image.constant";
 
 export const validateUserProfileImage = (file: File) => {
-  const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
-  if (!allowedExtensions.exec(file.name)) {
+  if (!ALLOWED_EXTENSIONS.exec(file.name)) {
     throw PROFILE_IMAGE_INVALID_EXTENSION;
   }
-  if (file.size >= 5 * 1024 * 1024) {
+  if (file.size >= MAX_IMAGE_BYTE_SIZE) {
     throw PROFILE_IMAGE_SIZE_ERROR_MESSAGE;
   }
 };

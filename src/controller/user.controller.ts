@@ -18,7 +18,6 @@ import { InitialInformationRequestBody } from "@/models/user/InitialInformationR
 import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import { uuidv4 } from "@firebase/util";
-import { Prisma } from ".prisma/client";
 
 export const getUserExistence = async (
   req: NextApiRequest,
