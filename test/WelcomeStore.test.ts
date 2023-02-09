@@ -187,7 +187,7 @@ describe("WelcomeStore.profileImageUrlErrorMessage", () => {
     expect(welcomeStore.profileImageUrlErrorMessage).toBeUndefined();
   });
 
-  it("should have error message profile image invalid extension", () => {
+  it("should have error message profile when image invalid extension", () => {
     //given
     const mockFile = mock<File>();
     when(mockFile.name).thenReturn("mock.gif");
@@ -204,7 +204,7 @@ describe("WelcomeStore.profileImageUrlErrorMessage", () => {
     );
   });
 
-  it("should have error message profile image size more than 5MB ", () => {
+  it("should have error message profile when image size more than 5MB ", () => {
     //given
     const mockFile = mock<File>();
     when(mockFile.name).thenReturn("mock.png");
