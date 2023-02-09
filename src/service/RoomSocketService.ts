@@ -49,7 +49,6 @@ import { WaitingRoomData } from "@/models/room/WaitingRoomData";
 import {
   OtherPeerExitedRoomEvent,
   OtherPeerJoinedRoomEvent,
-  WaitingRoomEvent,
 } from "@/models/room/WaitingRoomEvent";
 import { RoomJoiner } from "@/models/room/RoomJoiner";
 

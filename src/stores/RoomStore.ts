@@ -17,6 +17,11 @@ import {
   WaitingRoomEvent,
 } from "@/models/room/WaitingRoomEvent";
 import { RoomJoiner } from "@/models/room/RoomJoiner";
+import {
+  ALREADY_JOINED_ROOM_MESSAGE,
+  CONNECTING_ROOM_MESSAGE,
+  ROOM_IS_FULL_MESSAGE,
+} from "@/constants/roomMessage";
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
@@ -40,6 +45,8 @@ export interface RoomViewModel {
 
 export class RoomStore implements RoomViewModel {
   private readonly _roomService = new RoomSocketService(this);
+
+  private _failedToSigneIn: boolean = false;
 
   private _state: RoomState = RoomState.CREATED;
 
@@ -67,6 +74,10 @@ export class RoomStore implements RoomViewModel {
     return this._state;
   }
 
+  public get failedToSigneIn(): boolean {
+    return this._failedToSigneIn;
+  }
+
   public get localVideoStream(): MediaStream | undefined {
     return this._localVideoStream;
   }
@@ -79,28 +90,49 @@ export class RoomStore implements RoomViewModel {
     return this._localAudioStream !== undefined;
   }
 
+  private _requireCurrentUserId(): string {
+    if (auth.currentUser?.uid == null) {
+      throw Error(
+        "로그인 하지 않고 공부방 접속을 시도했습니다. 리다이렉트가 되어야 합니다."
+      );
+    }
+    return auth.currentUser.uid;
+  }
+
   private _isCurrentUserMaster = (
     waitingRoomData: WaitingRoomData
   ): boolean => {
-    // TODO: auth대신 UserStore로 변경하기
-    return waitingRoomData.masterId === auth.currentUser?.uid;
+    return waitingRoomData.masterId === this._requireCurrentUserId();
   };
 
   private _isRoomFull = (waitingRoomData: WaitingRoomData): boolean => {
     return waitingRoomData.joinerList.length >= waitingRoomData.capacity;
   };
 
+  private _isCurrentUserAlreadyJoined = (
+    waitingRoomData: WaitingRoomData
+  ): boolean => {
+    const currentUserId = this._requireCurrentUserId();
+    return waitingRoomData.joinerList.some(
+      (joiner) => joiner.id === currentUserId
+    );
+  };
+
   public get waitingRoomMessage(): string | undefined {
     const waitingRoomData = this._waitingRoomData;
     if (waitingRoomData === undefined) {
-      return "연결 중...";
+      return CONNECTING_ROOM_MESSAGE;
     }
     if (this._isCurrentUserMaster(waitingRoomData)) {
       return undefined;
     }
     if (this._isRoomFull(waitingRoomData)) {
-      return "방 정원이 가득 찼습니다.";
+      return ROOM_IS_FULL_MESSAGE;
     }
+    if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
+      return ALREADY_JOINED_ROOM_MESSAGE;
+    }
+    return undefined;
   }
 
   public get roomJoiners(): RoomJoiner[] {
@@ -117,6 +149,9 @@ export class RoomStore implements RoomViewModel {
     }
     if (this._isCurrentUserMaster(waitingRoomData)) {
       return true;
+    }
+    if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
+      return false;
     }
     return !this._isRoomFull(waitingRoomData);
   }
@@ -159,7 +194,19 @@ export class RoomStore implements RoomViewModel {
   }
 
   public connectSocket = (roomId: string) => {
-    this._roomService.connect(roomId);
+    // 이미 로그인 되어있으면 곧바로 소켓에 연결
+    if (auth.currentUser != null) {
+      this._roomService.connect(roomId);
+      return;
+    }
+    // 아니라면 연결 되고나서 소켓에 연결
+    auth.onAuthStateChanged((state) => {
+      if (state != null) {
+        this._roomService.connect(roomId);
+      } else {
+        this._failedToSigneIn = true;
+      }
+    });
   };
 
   public onConnected = async (): Promise<void> => {
@@ -197,7 +244,6 @@ export class RoomStore implements RoomViewModel {
       this._waitingRoomData = {
         ...waitingRoomData,
         joinerList: waitingRoomData.joinerList.filter(
-          // TODO: 현재 동일한 회원이 하나의 방에 여러번 접속하는 경우 퇴장할 때 대기실의 동일한 참여자 목록이 제거되는 버그 존재. CFRS-84 에서 해결 될 것임
           (joiner) => joiner.id !== event.exitedUserId
         ),
       };
