@@ -2,16 +2,18 @@ import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
 import {
   validateUserIntroduce,
   validateUserName,
+  validateUserProfileImage,
   validateUserTags,
 } from "@/utils/user.validator";
 
 // TODO: CreateUserRequestBody 로 이름 바꾸기
-export class UserRequestBody {
+export class UserPostRequestBody {
   constructor(
     readonly userId: string,
     readonly name: string,
     readonly introduce: string | undefined,
-    readonly tags: string[]
+    readonly tags: string[],
+    readonly profileImageUrl: string | undefined
   ) {
     this._validateUid();
     this._validateName();
