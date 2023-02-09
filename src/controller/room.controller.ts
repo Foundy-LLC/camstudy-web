@@ -2,17 +2,22 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {
   INVALID_ROOM_PASSWORD_ERROR_MESSAGE,
   NO_ROOM_ERROR_MESSAGE,
+  REQUEST_QUERY_ERROR,
   ROOM_AVAILABLE_MESSAGE,
   ROOM_IS_FULL_ERROR_MESSAGE,
   SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
 import { RoomAvailabilityRequestBody } from "@/models/room/RoomAvailabilityRequestBody";
 import {
+  createRoom,
   findRoomById,
+  findRooms,
   isRoomFull,
   isUserBlockedAtRoom,
 } from "@/repository/room.repository";
 import { ResponseBody } from "@/models/common/ResponseBody";
+import { RoomRequestBody } from "@/models/room/RoomRequestBody";
+import { RoomsRequestGet } from "@/models/room/RoomsRequestGet";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -56,6 +61,48 @@ export const getRoomAvailability = async (
       return;
     }
     console.log("ERROR: ", e);
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+  }
+};
+
+export const getRooms = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    if (typeof req.query.page !== "string") {
+      res.status(400).end(new ResponseBody({ message: REQUEST_QUERY_ERROR }));
+      return;
+    }
+    const roomsGetBody = new RoomsRequestGet(req.query.page);
+    const result = await findRooms(roomsGetBody.pageNum);
+    res.status(201).json(
+      new ResponseBody({
+        data: result,
+        message: "공부방 목록을 성공적으로 얻었습니다",
+      })
+    );
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).end(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+  }
+};
+
+export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    await createRoom(new RoomRequestBody(req.body._room));
+    res.status(201).end();
+  } catch (e) {
+    if (typeof e === "string") {
+      console.log("error:400", e);
+      res.status(400).end(new ResponseBody({ message: e }));
+      return;
+    }
+    console.log("error: 500");
     res
       .status(500)
       .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));

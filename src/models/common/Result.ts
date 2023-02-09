@@ -16,9 +16,9 @@ export class Result<T> {
   }
 
   public static async parseToResponseBody<T>(
-    e: Response
+    response: Response
   ): Promise<ResponseBody<T>> {
-    return (await e.json()) as ResponseBody<T>;
+    return (await response.json()) as ResponseBody<T>;
   }
 
   /**
