@@ -9,7 +9,6 @@ import {
 
 export class WelcomeStore {
   private _profileImage?: File;
-  private _profileImageUrl: string | undefined = undefined;
   private _name: string = "";
   private _introduce: string = "";
   private _tags: string = "";
@@ -125,6 +124,8 @@ export class WelcomeStore {
   }
 
   public createUser = async (uid: string) => {
+    let profileImageUrl: string | undefined = undefined;
+
     if (this._profileImageChanged && this._profileImage != null) {
       const formData = new FormData();
       formData.append("fileName", uid);
@@ -133,7 +134,7 @@ export class WelcomeStore {
       const uploadProfileImageResult =
         await this._userService.uploadProfileImage(uid, formData);
       if (uploadProfileImageResult.isSuccess) {
-        this._profileImageUrl = uploadProfileImageResult.getOrNull();
+        profileImageUrl = uploadProfileImageResult.getOrNull();
       } else {
         this._errorMessage =
           uploadProfileImageResult.throwableOrNull()!!.message;
@@ -144,7 +145,7 @@ export class WelcomeStore {
       this._name,
       this._introduce,
       this._tags.split(" "),
-      this._profileImageUrl
+      profileImageUrl
     );
     if (createUserResult.isSuccess) {
       this._successToCreate = true;
