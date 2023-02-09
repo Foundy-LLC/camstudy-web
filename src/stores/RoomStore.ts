@@ -274,6 +274,7 @@ export class RoomStore implements RoomViewModel {
     timerProperty: PomodoroTimerProperty
   ): void => {
     this._state = RoomState.JOINED;
+    this._waitingRoomData = undefined;
     this._pomodoroTimerState = timerState;
     this._pomodoroProperty = timerProperty;
     if (timerStartedDate !== undefined) {
