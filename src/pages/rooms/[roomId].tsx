@@ -20,6 +20,11 @@ const RoomScaffold: NextPage = observer(() => {
     }
   }, [roomStore, roomId]);
 
+  if (roomStore.failedToSignIn) {
+    router.replace("/login");
+    return <></>;
+  }
+
   switch (roomStore.state) {
     case RoomState.CREATED:
     case RoomState.CONNECTED:
