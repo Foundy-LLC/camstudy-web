@@ -41,7 +41,7 @@ const Welcome: NextPage = () => {
       <input
         id={"profileImage"}
         type={"file"}
-        accept={"image/png, image/jpeg"}
+        accept={"image/png, image/jpeg, image/jpg"}
         onChange={(e) => inputOnChange(e)}
       ></input>
       <div>{welcomeStore.profileImageUrlErrorMessage}</div>

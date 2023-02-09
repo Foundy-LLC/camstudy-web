@@ -8,15 +8,17 @@ import {
   EXISTS_INITIAL_INFORMATION_MESSAGE,
   NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
   PROFILE_CREATE_SUCCESS,
+  PROFILE_IMAGE_SIZE_ERROR_MESSAGE,
   PROFILE_IMAGE_UPDATE,
   SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { InitialInformationRequestBody } from "@/models/user/InitialInformationRequestBody";
-import multer from "multer";
+import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import { uuidv4 } from "@firebase/util";
+import { Prisma } from ".prisma/client";
 
 export const getUserExistence = async (
   req: NextApiRequest,
@@ -128,8 +130,6 @@ export const postProfileImage = async (
       "users/" + others.fileName + ".png",
       file.path
     );
-    // const result = await insertUserProfileImage(others.fileName, signedUrl);
-    // console.log(result);
     res.status(201).send(
       new ResponseBody({
         message: PROFILE_IMAGE_UPDATE,
@@ -137,8 +137,14 @@ export const postProfileImage = async (
       })
     );
   } catch (e) {
+    if (e instanceof MulterError && e.code === "LIMIT_FILE_SIZE") {
+      res
+        .status(400)
+        .send(new ResponseBody({ message: PROFILE_IMAGE_SIZE_ERROR_MESSAGE }));
+      return;
+    }
     if (typeof e === "string") {
-      res.status(400).end(new ResponseBody({ message: e }));
+      res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
     res
