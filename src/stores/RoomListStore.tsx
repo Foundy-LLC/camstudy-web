@@ -1,8 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import { RootStore } from "@/stores/RootStore";
-import RoomService from "@/service/room.service";
+import { RoomService } from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import React from "react";
+import roomService from "@/service/room.service";
 
 export class Room {
   //TODO(건우) 값을 임시로 할당하여 수정 필요
@@ -11,7 +12,7 @@ export class Room {
   readonly title: string = "test";
   readonly thumbnail?: string = "test";
   readonly password?: string = "test";
-  readonly timer: number = 40;
+  readonly timer: number = 2000;
   readonly shortBreak: number = 15;
   readonly longBreak: number = 20;
   readonly longBreakInterval: number = 3;
@@ -22,13 +23,13 @@ export class Room {
     makeAutoObservable(this);
   }
 }
-
+//TODO(건우) 방이 만들어지고 나서 tempRoom을 초기화 해야함
 export class RoomListStore {
-  //TODO(건우) 방이 만들어지고 나서 tempRoom을 초기화 해야함
-  private readonly _roomService: RoomService = new RoomService();
   readonly rootStore: RootStore;
   private _createdRoomTitle: string = "";
-
+  private _selectedImageFile?: File = undefined;
+  private _imageUrl: string = "";
+  private _uploadedImgUrl?: string = "";
   private _rooms: Room[] = [];
   private _tempRoom: Room = new Room();
   private _roomOverviews: RoomOverview[] = [];
@@ -36,32 +37,55 @@ export class RoomListStore {
   private _isSuccessCreate: boolean = false;
   private _isSuccessGet: boolean = false;
   private _errorMessage: string = "";
-  constructor(root: RootStore) {
+
+  constructor(
+    root: RootStore,
+    private readonly _roomService: RoomService = roomService
+  ) {
     makeAutoObservable(this);
     this.rootStore = root;
   }
 
-  get errorMessage() {
+  get errorMessage(): string {
     return this._errorMessage;
   }
-  get createdTitle() {
+
+  get createdTitle(): string {
     return this._createdRoomTitle;
   }
 
-  get roomOverviews() {
+  get roomOverviews(): RoomOverview[] {
     return this._roomOverviews;
   }
 
-  get isSuccessCreate() {
+  get imageUrl(): string {
+    return this._imageUrl;
+  }
+
+  get isSuccessCreate(): boolean {
     return this._isSuccessCreate;
   }
-  get isSuccessGet() {
+
+  get isSuccessGet(): boolean {
     return this._isSuccessGet;
+  }
+
+  get isSuccessImportImage(): boolean {
+    return this._imageUrl !== "";
   }
 
   private _initRoomOverviews() {
     this._roomOverviews = [];
   }
+
+  importRoomThumbnail = (thumbnail: File) => {
+    this._selectedImageFile = thumbnail;
+    this._imageUrl = URL.createObjectURL(thumbnail);
+  };
+
+  changeRoomThumbnail = (uploadedImgUrl: string) => {
+    this._tempRoom = { ...this._tempRoom, thumbnail: uploadedImgUrl };
+  };
 
   changeRoomNum(pageNum: string) {
     this._pageNum = parseInt(pageNum);
@@ -84,17 +108,36 @@ export class RoomListStore {
   };
 
   createRoom = async (): Promise<void> => {
+    if (this.isSuccessImportImage) {
+      const formData = new FormData();
+      formData.append("roomId", this._tempRoom.id);
+      formData.append("roomThumbnail", this._selectedImageFile!!);
+
+      const uploadThumbnailImgResult =
+        await this._roomService.uploadThumbnailImage(
+          this._tempRoom.id,
+          formData
+        );
+      if (!uploadThumbnailImgResult.isSuccess) {
+        this._errorMessage =
+          uploadThumbnailImgResult.throwableOrNull()!!.message;
+        return;
+      }
+      this._uploadedImgUrl = uploadThumbnailImgResult.getOrNull();
+      this.changeRoomThumbnail(this._uploadedImgUrl!!);
+    }
+
     const result = await this._roomService.createRoom(this._tempRoom);
-    if (result.isSuccess) {
-      this._isSuccessCreate = true;
-      this._rooms.push(this._tempRoom);
-      this._createdRoomTitle = this._tempRoom.title;
-      console.log(`(${this._tempRoom.id})방을 생성하였습니다`);
-    } else {
+    if (!result.isSuccess) {
       console.log(result.throwableOrNull());
       this._errorMessage = result.throwableOrNull()!!.message;
       this._isSuccessCreate = false;
+      return;
     }
+    this._rooms.push(this._tempRoom);
+    this._isSuccessCreate = true;
+    this._createdRoomTitle = this._tempRoom.title;
+    console.log(`(${this._tempRoom.id})방을 생성하였습니다`);
   };
 
   deleteRoom(id: string) {

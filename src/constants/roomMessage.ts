@@ -27,6 +27,8 @@ export const NO_ROOM_MASTER_ID_ERROR_MESSAGE: string =
   "방장 아이디가 누락 되었습니다";
 export const NO_ROOM_TITLE_ERROR_MESSAGE: string =
   "방 제목이 입력되지 않았습니다";
+export const SET_ROOM_THUMBNAIL_SUCCESS: string =
+  "방 썸네일 이미지가 설정되었습니다.";
 export const NO_ROOM_TIMER_ERROR_MESSAGE: string =
   "타이머 값이 입력되지 않았습니다";
 export const NO_ROOM_SHORT_BREAK_ERROR_MESSAGE: string =

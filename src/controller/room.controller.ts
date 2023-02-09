@@ -18,6 +18,11 @@ import {
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { RoomRequestBody } from "@/models/room/RoomRequestBody";
 import { RoomsRequestGet } from "@/models/room/RoomsRequestGet";
+import multer from "multer";
+import { multipartUploader } from "@/service/imageUploader";
+import { SET_ROOM_THUMBNAIL_SUCCESS } from "@/constants/roomMessage";
+import * as path from "path";
+import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -97,15 +102,77 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
     await createRoom(new RoomRequestBody(req.body._room));
     res.status(201).end();
   } catch (e) {
+    console.log(e);
     if (typeof e === "string") {
       console.log("error:400", e);
-      res.status(400).end(new ResponseBody({ message: e }));
+      res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
     console.log("error: 500");
     res
       .status(500)
-      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+    return;
+  }
+};
+
+function runMiddleware(
+  req: NextApiRequest & { [key: string]: any },
+  res: NextApiResponse,
+  fn: (...args: any[]) => void
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result: any) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+      return resolve(result);
+    });
+  });
+}
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+export const postRoomThumbnail = async (
+  req: NextApiRequest & { [key: string]: any },
+  res: NextApiResponse
+) => {
+  try {
+    const multerUpload = multer({
+      storage: multer.diskStorage({
+        filename: function (req, file, callback) {
+          const ext = path.extname(file.originalname);
+          callback(null, "test" + ext);
+        },
+      }),
+      limits: { fileSize: MAX_IMAGE_BYTE_SIZE },
+    });
+    await runMiddleware(req, res, multerUpload.single("roomThumbnail"));
+    const file = req.file;
+    const others = req.body;
+    const signedUrl: string = await multipartUploader(
+      "rooms/" + others.roomId + ".png",
+      file.path
+    );
+
+    res.status(201).send(
+      new ResponseBody({
+        message: SET_ROOM_THUMBNAIL_SUCCESS,
+        data: signedUrl,
+      })
+    );
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };

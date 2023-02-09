@@ -28,7 +28,7 @@ export class RoomService {
   }
   public async createRoom(room: Room): Promise<Result<string>> {
     try {
-      const requestBody = await new RoomRequestBody(room);
+      const requestBody = new RoomRequestBody(room);
       const response = await fetch(`api/rooms`, {
         method: "POST",
         body: JSON.stringify(requestBody),
@@ -43,7 +43,25 @@ export class RoomService {
       return Result.createErrorUsingException(e);
     }
   }
-}
 
+  public async uploadThumbnailImage(
+    roomId: string,
+    formData: FormData
+  ): Promise<Result<string>> {
+    try {
+      const response = await fetch(`api/rooms/${roomId}/thumbnail`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      if (!response.ok) {
+        return await Result.createErrorUsingResponseMessage(response);
+      }
+      return Result.createSuccessUsingResponseData(response);
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  }
+}
 const roomService = new RoomService();
-export default RoomService;
+export default roomService;
