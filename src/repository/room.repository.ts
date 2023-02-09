@@ -1,11 +1,10 @@
 import prisma from "../../prisma/client";
 import { room } from "@prisma/client";
-import { MAX_ROOM_PEOPLE_NUMBER } from "@/constants/room.constant";
 import client from "prisma/client";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { RoomRequestBody } from "@/models/room/RoomRequestBody";
 import { Room } from "@/stores/RoomListStore";
-
+import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
 const ROOM_NUM_PER_PAGE = 30 as const;
 
 export const findRoomById = async (roomId: string): Promise<room | null> => {
@@ -23,7 +22,7 @@ export const isRoomFull = async (roomId: string): Promise<boolean> => {
       exit_at: undefined,
     },
   });
-  return histories.length === MAX_ROOM_PEOPLE_NUMBER;
+  return histories.length === MAX_ROOM_CAPACITY;
 };
 
 export const isUserBlockedAtRoom = async (

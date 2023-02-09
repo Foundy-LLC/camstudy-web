@@ -3,14 +3,17 @@ import userService, { UserService } from "@/service/user.service";
 import {
   validateUserIntroduce,
   validateUserName,
+  validateUserProfileImage,
   validateUserTags,
 } from "@/utils/user.validator";
 
 export class WelcomeStore {
+  private _profileImage?: File;
   private _name: string = "";
   private _introduce: string = "";
   private _tags: string = "";
 
+  private _profileImageChanged: boolean = false;
   private _nameChanged: boolean = false;
   private _introduceChanged: boolean = false;
   private _tagsChanged: boolean = false;
@@ -40,6 +43,22 @@ export class WelcomeStore {
 
   public get successToCreate(): boolean {
     return this._successToCreate;
+  }
+
+  public get profileImageUrlErrorMessage(): string | undefined {
+    if (!this._profileImageChanged) {
+      return undefined;
+    }
+    try {
+      if (this._profileImage) {
+        validateUserProfileImage(this._profileImage);
+      }
+    } catch (e) {
+      if (typeof e === "string") {
+        return e;
+      }
+    }
+    return undefined;
   }
 
   public get nameErrorMessage(): string | undefined {
@@ -84,6 +103,11 @@ export class WelcomeStore {
     return undefined;
   }
 
+  public changeProfileImage(file: File) {
+    this._profileImageChanged = true;
+    this._profileImage = file;
+  }
+
   public changeName(name: string) {
     this._nameChanged = true;
     this._name = name;
@@ -100,16 +124,34 @@ export class WelcomeStore {
   }
 
   public createUser = async (uid: string) => {
-    const result = await this._userService.createUser(
+    let profileImageUrl: string | undefined = undefined;
+
+    if (this._profileImageChanged && this._profileImage != null) {
+      const formData = new FormData();
+      formData.append("fileName", uid);
+      formData.append("profileImage", this._profileImage);
+
+      const uploadProfileImageResult =
+        await this._userService.uploadProfileImage(uid, formData);
+      if (uploadProfileImageResult.isSuccess) {
+        profileImageUrl = uploadProfileImageResult.getOrNull();
+      } else {
+        this._errorMessage =
+          uploadProfileImageResult.throwableOrNull()!!.message;
+        return;
+      }
+    }
+    const createUserResult = await this._userService.createUser(
       uid,
       this._name,
       this._introduce,
-      this._tags.split(" ")
+      this._tags.split(" "),
+      profileImageUrl
     );
-    if (result.isSuccess) {
+    if (createUserResult.isSuccess) {
       this._successToCreate = true;
     } else {
-      this._errorMessage = result.throwableOrNull()!!.message;
+      this._errorMessage = createUserResult.throwableOrNull()!!.message;
     }
   };
 }

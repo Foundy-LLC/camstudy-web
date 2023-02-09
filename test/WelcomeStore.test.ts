@@ -19,7 +19,13 @@ describe("WelcomeStore.createUser", () => {
     const tags = ["tag"];
     const stubService: UserService = mock(UserService);
     when(
-      stubService.createUser(userId, name, introduce, deepEqual(tags))
+      stubService.createUser(
+        userId,
+        name,
+        introduce,
+        deepEqual(tags),
+        undefined
+      )
     ).thenResolve(Result.success(undefined));
     const welcomeStore = new WelcomeStore(instance(stubService));
     expect(welcomeStore.successToCreate).toBe(false);
@@ -43,7 +49,13 @@ describe("WelcomeStore.createUser", () => {
     const error = Error("failed");
     const stubService: UserService = mock(UserService);
     when(
-      stubService.createUser(userId, name, introduce, deepEqual(tags))
+      stubService.createUser(
+        userId,
+        name,
+        introduce,
+        deepEqual(tags),
+        undefined
+      )
     ).thenResolve(Result.createErrorUsingException(error));
     const welcomeStore = new WelcomeStore(instance(stubService));
     expect(welcomeStore.errorMessage).toBeUndefined();

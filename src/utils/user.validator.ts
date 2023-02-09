@@ -1,10 +1,11 @@
 import {
+  NO_TAG_ERROR_MESSAGE,
+  NO_USER_NAME_ERROR_MESSAGE,
+  PROFILE_IMAGE_INVALID_EXTENSION,
+  TAG_COUNT_ERROR_MESSAGE,
+  TAG_LENGTH_ERROR_MESSAGE,
   USER_INTRODUCE_LENGTH_ERROR_MESSAGE,
   USER_NAME_LENGTH_ERROR_MESSAGE,
-  NO_USER_NAME_ERROR_MESSAGE,
-  NO_TAG_ERROR_MESSAGE,
-  TAG_LENGTH_ERROR_MESSAGE,
-  TAG_COUNT_ERROR_MESSAGE,
 } from "@/constants/message";
 import {
   USER_INTRODUCE_MAX_LENGTH,
@@ -14,6 +15,12 @@ import {
   USER_TAG_MAX_LENGTH,
 } from "@/constants/user.constant";
 
+export const validateUserProfileImage = (file: File) => {
+  const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+  if (!allowedExtensions.exec(file.name)) {
+    throw PROFILE_IMAGE_INVALID_EXTENSION;
+  }
+};
 export const validateUserName = (name: string) => {
   if (name == null) {
     throw NO_USER_NAME_ERROR_MESSAGE;

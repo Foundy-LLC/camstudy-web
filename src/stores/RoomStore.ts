@@ -9,9 +9,19 @@ import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import { ChatMessage } from "@/models/room/ChatMessage";
 import { RoomState } from "@/models/room/RoomState";
 import { MediaUtil } from "@/utils/MediaUtil";
+import { WaitingRoomData } from "@/models/room/WaitingRoomData";
+import { auth } from "@/service/firebase";
+import {
+  OtherPeerExitedRoomEvent,
+  OtherPeerJoinedRoomEvent,
+  WaitingRoomEvent,
+} from "@/models/room/WaitingRoomEvent";
+import { RoomJoiner } from "@/models/room/RoomJoiner";
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
+  onConnectedWaitingRoom: (waitingRoomData: WaitingRoomData) => void;
+  onWaitingRoomEvent: (event: WaitingRoomEvent) => void;
   onJoined: (
     timerStartedDate: string | undefined,
     timerState: PomodoroTimerState,
@@ -35,6 +45,8 @@ export class RoomStore implements RoomViewModel {
 
   private _localVideoStream?: MediaStream = undefined;
   private _localAudioStream?: MediaStream = undefined;
+
+  private _waitingRoomData?: WaitingRoomData = undefined;
 
   private readonly _remoteVideoStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
@@ -65,6 +77,48 @@ export class RoomStore implements RoomViewModel {
 
   public get enabledLocalAudio(): boolean {
     return this._localAudioStream !== undefined;
+  }
+
+  private _isCurrentUserMaster = (
+    waitingRoomData: WaitingRoomData
+  ): boolean => {
+    // TODO: auth대신 UserStore로 변경하기
+    return waitingRoomData.masterId === auth.currentUser?.uid;
+  };
+
+  private _isRoomFull = (waitingRoomData: WaitingRoomData): boolean => {
+    return waitingRoomData.joinerList.length >= waitingRoomData.capacity;
+  };
+
+  public get waitingRoomMessage(): string | undefined {
+    const waitingRoomData = this._waitingRoomData;
+    if (waitingRoomData === undefined) {
+      return "연결 중...";
+    }
+    if (this._isCurrentUserMaster(waitingRoomData)) {
+      return undefined;
+    }
+    if (this._isRoomFull(waitingRoomData)) {
+      return "방 정원이 가득 찼습니다.";
+    }
+  }
+
+  public get roomJoiners(): RoomJoiner[] {
+    if (this._waitingRoomData === undefined) {
+      return [];
+    }
+    return this._waitingRoomData.joinerList;
+  }
+
+  public get canJoinRoom(): boolean {
+    const waitingRoomData = this._waitingRoomData;
+    if (waitingRoomData === undefined) {
+      return false;
+    }
+    if (this._isCurrentUserMaster(waitingRoomData)) {
+      return true;
+    }
+    return !this._isRoomFull(waitingRoomData);
   }
 
   public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {
@@ -104,8 +158,8 @@ export class RoomStore implements RoomViewModel {
     return this._pomodoroProperty;
   }
 
-  public connectSocket = () => {
-    this._roomService.connect();
+  public connectSocket = (roomId: string) => {
+    this._roomService.connect(roomId);
   };
 
   public onConnected = async (): Promise<void> => {
@@ -122,7 +176,37 @@ export class RoomStore implements RoomViewModel {
     });
   };
 
-  public joinRoom = (roomId: string) => {
+  public onConnectedWaitingRoom = (waitingRoomData: WaitingRoomData) => {
+    this._state = RoomState.WAITING_ROOM;
+    this._waitingRoomData = waitingRoomData;
+  };
+
+  public onWaitingRoomEvent = (event: WaitingRoomEvent) => {
+    const waitingRoomData = this._waitingRoomData;
+    if (waitingRoomData === undefined) {
+      throw Error(
+        "대기실 정보가 초기화되기 전에 대기실 이벤트를 수신했습니다."
+      );
+    }
+    if (event instanceof OtherPeerJoinedRoomEvent) {
+      this._waitingRoomData = {
+        ...waitingRoomData,
+        joinerList: [...waitingRoomData.joinerList, event.joiner],
+      };
+    } else if (event instanceof OtherPeerExitedRoomEvent) {
+      this._waitingRoomData = {
+        ...waitingRoomData,
+        joinerList: waitingRoomData.joinerList.filter(
+          // TODO: 현재 동일한 회원이 하나의 방에 여러번 접속하는 경우 퇴장할 때 대기실의 동일한 참여자 목록이 제거되는 버그 존재. CFRS-84 에서 해결 될 것임
+          (joiner) => joiner.id !== event.exitedUserId
+        ),
+      };
+    } else {
+      throw Error("지원되지 않는 event입니다.");
+    }
+  };
+
+  public joinRoom = () => {
     const mediaStream: MediaStream = new MediaStream();
     if (this._localVideoStream !== undefined) {
       mediaStream.addTrack(this._localVideoStream.getVideoTracks()[0]);
@@ -130,7 +214,7 @@ export class RoomStore implements RoomViewModel {
     if (this._localAudioStream !== undefined) {
       mediaStream.addTrack(this._localAudioStream.getAudioTracks()[0]);
     }
-    this._roomService.join(roomId, mediaStream);
+    this._roomService.join(mediaStream);
   };
 
   public onJoined = (
