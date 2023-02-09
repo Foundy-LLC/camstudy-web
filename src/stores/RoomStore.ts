@@ -204,7 +204,8 @@ export class RoomStore implements RoomViewModel {
       return;
     }
     // 아니라면 연결 되고나서 소켓에 연결
-    this._auth.onAuthStateChanged((state) => {
+    const unsubscribe = this._auth.onAuthStateChanged((state) => {
+      unsubscribe();
       if (state != null) {
         this._roomService.connect(roomId);
       } else {
