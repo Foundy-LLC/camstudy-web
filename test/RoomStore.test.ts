@@ -3,6 +3,12 @@ import { deepEqual, instance, mock, when } from "ts-mockito";
 import { RoomState } from "@/models/room/RoomState";
 import { MediaUtil } from "@/utils/MediaUtil";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
+import {
+  OtherPeerExitedRoomEvent,
+  OtherPeerJoinedRoomEvent,
+} from "@/models/room/WaitingRoomEvent";
+import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
+import { RoomJoiner } from "@/models/room/RoomJoiner";
 
 describe("RoomStore.onConnected", () => {
   it("should set state to CONNECTED", async () => {
@@ -61,6 +67,45 @@ describe("after invoking RoomStore.onUpdatedPomodoroTimer", () => {
 
     // then
     expect(roomStore.pomodoroTimerElapsedSeconds).toBe(0);
+  });
+});
+
+describe("RoomStore.onWaitingRoomEvent", () => {
+  let roomStore: RoomStore;
+
+  beforeAll(() => {
+    roomStore = new RoomStore();
+    roomStore.onConnectedWaitingRoom({
+      joinerList: [],
+      masterId: "masterId",
+      capacity: MAX_ROOM_CAPACITY,
+    });
+  });
+
+  it("should add joiner when event is OtherPeerJoinedRoomEvent", () => {
+    // given
+    const joiner: RoomJoiner = { id: "id", name: "name" };
+    const event = new OtherPeerJoinedRoomEvent(joiner);
+
+    // when
+    roomStore.onWaitingRoomEvent(event);
+
+    // then
+    expect(roomStore.roomJoiners.toString()).toBe([joiner].toString());
+  });
+
+  it("should remove joiner when event is OtherPeerExitedRoomEvent", () => {
+    // given
+    const joiner: RoomJoiner = { id: "id", name: "name" };
+    const joinEvent = new OtherPeerJoinedRoomEvent(joiner);
+    const exitEvent = new OtherPeerExitedRoomEvent(joiner.id);
+    roomStore.onWaitingRoomEvent(joinEvent);
+
+    // when
+    roomStore.onWaitingRoomEvent(exitEvent);
+
+    // then
+    expect(roomStore.roomJoiners.length).toBe(0);
   });
 });
 

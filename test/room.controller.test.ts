@@ -3,7 +3,7 @@ import { room } from "@prisma/client";
 import { getRoomAvailability } from "@/controller/room.controller";
 import { NextApiRequest, NextApiResponse } from "next";
 import { instance, mock, verify, when } from "ts-mockito";
-import { MAX_ROOM_PEOPLE_NUMBER } from "@/constants/room.constant";
+import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
 
 describe("getRoomAvailability", () => {
   const mockRoom: room = {
@@ -62,7 +62,7 @@ describe("getRoomAvailability", () => {
     const room = { ...mockRoom, master_id: uid };
     mockPrisma.room.findUnique.mockResolvedValue(room);
     mockPrisma.study_history.findMany.mockResolvedValue([
-      ...Array(MAX_ROOM_PEOPLE_NUMBER),
+      ...Array(MAX_ROOM_CAPACITY),
     ]);
     mockPrisma.block.findUnique.mockResolvedValue(null);
     const request = createMockRequest({
@@ -112,7 +112,7 @@ describe("getRoomAvailability", () => {
     // when
     mockPrisma.room.findUnique.mockResolvedValue(mockRoom);
     mockPrisma.study_history.findMany.mockResolvedValue([
-      ...new Array(MAX_ROOM_PEOPLE_NUMBER),
+      ...new Array(MAX_ROOM_CAPACITY),
     ]);
     mockPrisma.block.findUnique.mockResolvedValue(null);
     const request = createMockRequest({
