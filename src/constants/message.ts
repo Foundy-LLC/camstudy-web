@@ -3,6 +3,8 @@ export const SERVER_INTERNAL_ERROR_MESSAGE: string =
 export const REQUEST_QUERY_ERROR = "query 요청이 잘못되었습니다";
 export const PROFILE_CREATE_SUCCESS = "프로필이 생성되었습니다.";
 export const PROFILE_IMAGE_UPDATE: string = "프로필 이미지가 설정되었습니다.";
+export const PROFILE_IMAGE_SIZE_ERROR_MESSAGE: string =
+  "파일 사이즈가이 너무 큽니다. 파일 사이즈는 최대 5MB 입니다.";
 export const NO_USER_UID_ERROR_MESSAGE: string = "UID가 누락되었습니다.";
 export const PROFILE_IMAGE_INVALID_EXTENSION: string =
   "이미지는 .jpg, .jpeg, .png 만 가능합니다.";

@@ -3,12 +3,15 @@ import { deepEqual, instance, mock, when } from "ts-mockito";
 import { Result } from "@/models/common/Result";
 import { UserService } from "@/service/user.service";
 import {
+  PROFILE_IMAGE_INVALID_EXTENSION,
+  PROFILE_IMAGE_SIZE_ERROR_MESSAGE,
   TAG_COUNT_ERROR_MESSAGE,
   TAG_LENGTH_ERROR_MESSAGE,
   USER_INTRODUCE_LENGTH_ERROR_MESSAGE,
   USER_NAME_LENGTH_ERROR_MESSAGE,
 } from "@/constants/message";
 import { USER_INTRODUCE_MAX_LENGTH } from "@/constants/user.constant";
+import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 
 describe("WelcomeStore.createUser", () => {
   it("success", async () => {
@@ -165,6 +168,57 @@ describe("WelcomeStore.tagsErrorMessage", () => {
 
     // then
     expect(welcomeStore.tagsErrorMessage).toBe(TAG_LENGTH_ERROR_MESSAGE);
+  });
+});
+
+describe("WelcomeStore.profileImageUrlErrorMessage", () => {
+  it("no error", () => {
+    //given
+    const mockFile = mock<File>();
+    when(mockFile.name).thenReturn("mock.png");
+    when(mockFile.size).thenReturn(MAX_IMAGE_BYTE_SIZE - 1);
+    const welcomeStore = new WelcomeStore();
+    expect(welcomeStore.profileImageUrlErrorMessage).toBeUndefined();
+
+    //when
+    welcomeStore.changeProfileImage(instance(mockFile));
+
+    //then
+    expect(welcomeStore.profileImageUrlErrorMessage).toBeUndefined();
+  });
+
+  it("should have error message profile when image invalid extension", () => {
+    //given
+    const mockFile = mock<File>();
+    when(mockFile.name).thenReturn("mock.gif");
+    when(mockFile.size).thenReturn(MAX_IMAGE_BYTE_SIZE - 1);
+    const welcomeStore = new WelcomeStore();
+    expect(welcomeStore.profileImageUrlErrorMessage).toBeUndefined();
+
+    //when
+    welcomeStore.changeProfileImage(instance(mockFile));
+
+    //then
+    expect(welcomeStore.profileImageUrlErrorMessage).toBe(
+      PROFILE_IMAGE_INVALID_EXTENSION
+    );
+  });
+
+  it("should have error message profile when image size more than 5MB ", () => {
+    //given
+    const mockFile = mock<File>();
+    when(mockFile.name).thenReturn("mock.png");
+    when(mockFile.size).thenReturn(MAX_IMAGE_BYTE_SIZE + 1);
+    const welcomeStore = new WelcomeStore();
+    expect(welcomeStore.profileImageUrlErrorMessage).toBeUndefined();
+
+    //when
+    welcomeStore.changeProfileImage(instance(mockFile));
+
+    //then
+    expect(welcomeStore.profileImageUrlErrorMessage).toBe(
+      PROFILE_IMAGE_SIZE_ERROR_MESSAGE
+    );
   });
 });
 

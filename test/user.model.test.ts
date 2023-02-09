@@ -11,7 +11,13 @@ import { USER_INTRODUCE_MAX_LENGTH } from "@/constants/user.constant";
 describe("UserRequestBody", () => {
   it("success", () => {
     // when
-    const user = new UserPostRequestBody("uid", "name", "intro", ["tag"]);
+    const user = new UserPostRequestBody(
+      "uid",
+      "name",
+      "intro",
+      ["tag"],
+      undefined
+    );
 
     // then
     expect(user).toBeDefined();
@@ -23,7 +29,7 @@ describe("UserRequestBody", () => {
 
     // when
     const createUser = () => {
-      return new UserPostRequestBody("uid", name, "intro", ["tag"]);
+      return new UserPostRequestBody("uid", name, "intro", ["tag"], undefined);
     };
 
     // then
@@ -38,7 +44,7 @@ describe("UserRequestBody", () => {
 
     // when
     const createUser = () => {
-      return new UserPostRequestBody("uid", name, "intro", ["tag"]);
+      return new UserPostRequestBody("uid", name, "intro", ["tag"], undefined);
     };
 
     // then
@@ -56,7 +62,13 @@ describe("UserRequestBody", () => {
 
     // when
     const createUser = () => {
-      return new UserPostRequestBody("uid", "name", introduce, ["tag"]);
+      return new UserPostRequestBody(
+        "uid",
+        "name",
+        introduce,
+        ["tag"],
+        undefined
+      );
     };
 
     // then
@@ -71,7 +83,7 @@ describe("UserRequestBody", () => {
 
     // when
     const createUser = () => {
-      return new UserPostRequestBody("uid", "name", "intro", tags);
+      return new UserPostRequestBody("uid", "name", "intro", tags, undefined);
     };
 
     // then
@@ -86,7 +98,7 @@ describe("UserRequestBody", () => {
 
     // when
     const createUser = () => {
-      return new UserPostRequestBody("uid", "name", "intro", tags);
+      return new UserPostRequestBody("uid", "name", "intro", tags, undefined);
     };
 
     // then
@@ -101,7 +113,7 @@ describe("UserRequestBody", () => {
 
     // when
     const createUser = () => {
-      return new UserPostRequestBody("uid", "name", "intro", tags);
+      return new UserPostRequestBody("uid", "name", "intro", tags, undefined);
     };
 
     // then
@@ -115,7 +127,13 @@ describe("UserRequestBody", () => {
     const tags = [" ", "  ", "hi"];
 
     // when
-    const user = new UserPostRequestBody("uid", "name", "intro", tags);
+    const user = new UserPostRequestBody(
+      "uid",
+      "name",
+      "intro",
+      tags,
+      undefined
+    );
 
     // then
     expect(user.tags.length).toBe(1);
@@ -126,7 +144,13 @@ describe("UserRequestBody", () => {
     const tags = ["hi", "bye", "hi"];
 
     // when
-    const user = new UserPostRequestBody("uid", "name", "intro", tags);
+    const user = new UserPostRequestBody(
+      "uid",
+      "name",
+      "intro",
+      tags,
+      undefined
+    );
 
     // then
     expect(user.tags.length).toBe(2);
