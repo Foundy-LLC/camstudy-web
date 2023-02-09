@@ -22,6 +22,7 @@ import {
   CONNECTING_ROOM_MESSAGE,
   ROOM_IS_FULL_MESSAGE,
 } from "@/constants/roomMessage";
+import { Auth } from "@firebase/auth";
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
@@ -66,7 +67,10 @@ export class RoomStore implements RoomViewModel {
   private _pomodoroTimerEventDate?: Date = undefined;
   private _pomodoroProperty?: PomodoroTimerProperty = undefined;
 
-  constructor(private _mediaUtil: MediaUtil = new MediaUtil()) {
+  constructor(
+    private _mediaUtil: MediaUtil = new MediaUtil(),
+    private readonly _auth: Auth = auth
+  ) {
     makeAutoObservable(this);
   }
 
@@ -91,12 +95,12 @@ export class RoomStore implements RoomViewModel {
   }
 
   private _requireCurrentUserId(): string {
-    if (auth.currentUser?.uid == null) {
+    if (this._auth.currentUser?.uid == null) {
       throw Error(
         "로그인 하지 않고 공부방 접속을 시도했습니다. 리다이렉트가 되어야 합니다."
       );
     }
-    return auth.currentUser.uid;
+    return this._auth.currentUser.uid;
   }
 
   private _isCurrentUserMaster = (
@@ -195,12 +199,12 @@ export class RoomStore implements RoomViewModel {
 
   public connectSocket = (roomId: string) => {
     // 이미 로그인 되어있으면 곧바로 소켓에 연결
-    if (auth.currentUser != null) {
+    if (this._auth.currentUser != null) {
       this._roomService.connect(roomId);
       return;
     }
     // 아니라면 연결 되고나서 소켓에 연결
-    auth.onAuthStateChanged((state) => {
+    this._auth.onAuthStateChanged((state) => {
       if (state != null) {
         this._roomService.connect(roomId);
       } else {

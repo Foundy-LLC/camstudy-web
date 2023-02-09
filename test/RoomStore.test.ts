@@ -9,6 +9,7 @@ import {
 } from "@/models/room/WaitingRoomEvent";
 import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
 import { RoomJoiner } from "@/models/room/RoomJoiner";
+import { Auth, User } from "@firebase/auth";
 
 describe("RoomStore.onConnected", () => {
   it("should set state to CONNECTED", async () => {
@@ -106,6 +107,48 @@ describe("RoomStore.onWaitingRoomEvent", () => {
 
     // then
     expect(roomStore.roomJoiners.length).toBe(0);
+  });
+});
+
+describe("RoomStore.canJoinRoom", () => {
+  it("should be true when current user did not joined room", () => {
+    // given
+    const id = "id";
+    const mockAuth = mock<Auth>();
+    const mockUser = mock<User>();
+    when(mockUser.uid).thenReturn(id);
+    when(mockAuth.currentUser).thenReturn(instance(mockUser));
+    const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
+
+    // when
+    roomStore.onConnectedWaitingRoom({
+      joinerList: [],
+      masterId: "masterId",
+      capacity: MAX_ROOM_CAPACITY,
+    });
+
+    // then
+    expect(roomStore.canJoinRoom).toBe(true);
+  });
+
+  it("should be false when current user already joined room", () => {
+    // given
+    const id = "id";
+    const mockAuth = mock<Auth>();
+    const mockUser = mock<User>();
+    when(mockUser.uid).thenReturn(id);
+    when(mockAuth.currentUser).thenReturn(instance(mockUser));
+    const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
+
+    // when
+    roomStore.onConnectedWaitingRoom({
+      joinerList: [{ id: id, name: "name" }],
+      masterId: "masterId",
+      capacity: MAX_ROOM_CAPACITY,
+    });
+
+    // then
+    expect(roomStore.canJoinRoom).toBe(false);
   });
 });
 
