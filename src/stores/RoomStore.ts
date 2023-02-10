@@ -95,6 +95,8 @@ export class RoomStore implements RoomViewModel {
     return this._localAudioStream !== undefined;
   }
 
+  // ================================ 대기실 getter 시작 ================================
+
   private _requireCurrentUserId(): string {
     if (this._auth.currentUser?.uid == null) {
       throw Error(
@@ -148,6 +150,13 @@ export class RoomStore implements RoomViewModel {
     return undefined;
   }
 
+  public get hasPassword(): boolean {
+    if (this._waitingRoomData === undefined) {
+      return false;
+    }
+    return this._waitingRoomData.hasPassword;
+  }
+
   public get roomJoiners(): RoomJoiner[] {
     if (this._waitingRoomData === undefined) {
       return [];
@@ -171,6 +180,8 @@ export class RoomStore implements RoomViewModel {
     }
     return !this._isRoomFull(waitingRoomData);
   }
+
+  // ================================ 대기실 getter 끝 ================================
 
   public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {
     return [...this._remoteVideoStreamsByPeerId.entries()];

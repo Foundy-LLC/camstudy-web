@@ -61,12 +61,17 @@ const WaitingRoom: NextPage<{
       >
         {roomStore.enabledLocalAudio ? "Mute Audio" : "Unmute Audio"}
       </button>
-      <button
-        disabled={!roomStore.canJoinRoom}
-        onClick={() => roomStore.joinRoom()}
-      >
-        입장
-      </button>
+      <div>
+        {roomStore.hasPassword ? (
+          <input type="password" placeholder="비밀번호 입력..." />
+        ) : undefined}
+        <button
+          disabled={!roomStore.canJoinRoom}
+          onClick={() => roomStore.joinRoom()}
+        >
+          입장
+        </button>
+      </div>
       <div>{roomStore.waitingRoomMessage}</div>
 
       <div>
