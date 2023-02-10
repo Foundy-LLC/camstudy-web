@@ -3,7 +3,7 @@ import { io, Socket } from "socket.io-client";
 import {
   CLOSE_AUDIO_PRODUCER,
   CLOSE_VIDEO_PRODUCER,
-  CONNECT_WAITING_ROOM,
+  JOIN_WAITING_ROOM,
   CONNECTION_SUCCESS,
   CONSUME,
   CONSUME_RESUME,
@@ -116,7 +116,7 @@ export class RoomSocketService {
 
   private _connectWaitingRoom = (roomId: string) => {
     this._requireSocket().emit(
-      CONNECT_WAITING_ROOM,
+      JOIN_WAITING_ROOM,
       roomId,
       (waitingRoomData: WaitingRoomData) => {
         this._roomViewModel.onConnectedWaitingRoom(waitingRoomData);
