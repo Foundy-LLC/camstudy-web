@@ -80,6 +80,7 @@ describe("RoomStore.onWaitingRoomEvent", () => {
       joinerList: [],
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
+      blacklist: [],
     });
   });
 
@@ -111,7 +112,7 @@ describe("RoomStore.onWaitingRoomEvent", () => {
 });
 
 describe("RoomStore.canJoinRoom", () => {
-  it("should be true when current user did not joined room", () => {
+  it("true", () => {
     // given
     const id = "id";
     const mockAuth = mock<Auth>();
@@ -125,6 +126,7 @@ describe("RoomStore.canJoinRoom", () => {
       joinerList: [],
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
+      blacklist: [],
     });
 
     // then
@@ -145,6 +147,28 @@ describe("RoomStore.canJoinRoom", () => {
       joinerList: [{ id: id, name: "name" }],
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
+      blacklist: [],
+    });
+
+    // then
+    expect(roomStore.canJoinRoom).toBe(false);
+  });
+
+  it("should be false when current user was blocked", () => {
+    // given
+    const uid = "id";
+    const mockAuth = mock<Auth>();
+    const mockUser = mock<User>();
+    when(mockUser.uid).thenReturn(uid);
+    when(mockAuth.currentUser).thenReturn(instance(mockUser));
+    const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
+
+    // when
+    roomStore.onConnectedWaitingRoom({
+      joinerList: [],
+      masterId: "masterId",
+      capacity: MAX_ROOM_CAPACITY,
+      blacklist: [uid],
     });
 
     // then
