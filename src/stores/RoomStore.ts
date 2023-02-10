@@ -29,6 +29,7 @@ export interface RoomViewModel {
   onConnected: () => Promise<void>;
   onConnectedWaitingRoom: (waitingRoomData: WaitingRoomData) => void;
   onWaitingRoomEvent: (event: WaitingRoomEvent) => void;
+  onFailedToJoin: (message: string) => void;
   onJoined: (
     timerStartedDate: string | undefined,
     timerState: PomodoroTimerState,
@@ -55,7 +56,11 @@ export class RoomStore implements RoomViewModel {
   private _localVideoStream?: MediaStream = undefined;
   private _localAudioStream?: MediaStream = undefined;
 
+  // ======================= 대기실 관련 =======================
   private _waitingRoomData?: WaitingRoomData = undefined;
+  private _passwordInput: string = "";
+  private _failedToJoinMessage?: string = undefined;
+  // ========================================================
 
   private readonly _remoteVideoStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
@@ -95,6 +100,7 @@ export class RoomStore implements RoomViewModel {
     return this._localAudioStream !== undefined;
   }
 
+  // ================================ 대기실 getter 시작 ================================
   private _requireCurrentUserId(): string {
     if (this._auth.currentUser?.uid == null) {
       throw Error(
@@ -128,6 +134,10 @@ export class RoomStore implements RoomViewModel {
     return waitingRoomData.blacklist.some((id) => id === currentUserId);
   };
 
+  public get failedToJoinMessage(): string | undefined {
+    return this._failedToJoinMessage;
+  }
+
   public get waitingRoomMessage(): string | undefined {
     const waitingRoomData = this._waitingRoomData;
     if (waitingRoomData === undefined) {
@@ -148,6 +158,13 @@ export class RoomStore implements RoomViewModel {
     return undefined;
   }
 
+  public get hasPassword(): boolean {
+    if (this._waitingRoomData === undefined) {
+      return false;
+    }
+    return this._waitingRoomData.hasPassword;
+  }
+
   public get roomJoiners(): RoomJoiner[] {
     if (this._waitingRoomData === undefined) {
       return [];
@@ -155,7 +172,15 @@ export class RoomStore implements RoomViewModel {
     return this._waitingRoomData.joinerList;
   }
 
-  public get canJoinRoom(): boolean {
+  public get passwordInput(): string {
+    return this._passwordInput;
+  }
+
+  public updatePasswordInput = (password: string) => {
+    this._passwordInput = password;
+  };
+
+  public get enableJoinButton(): boolean {
     const waitingRoomData = this._waitingRoomData;
     if (waitingRoomData === undefined) {
       return false;
@@ -169,8 +194,13 @@ export class RoomStore implements RoomViewModel {
     if (this._isCurrentUserBlocked(waitingRoomData)) {
       return false;
     }
+    if (waitingRoomData.hasPassword && this._passwordInput.length === 0) {
+      return false;
+    }
     return !this._isRoomFull(waitingRoomData);
   }
+
+  // ==============================================================================
 
   public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {
     return [...this._remoteVideoStreamsByPeerId.entries()];
@@ -277,7 +307,12 @@ export class RoomStore implements RoomViewModel {
     if (this._localAudioStream !== undefined) {
       mediaStream.addTrack(this._localAudioStream.getAudioTracks()[0]);
     }
-    this._roomService.join(mediaStream);
+    this._roomService.join(mediaStream, this._passwordInput);
+  };
+
+  public onFailedToJoin = (message: string) => {
+    this._failedToJoinMessage = message;
+    this._passwordInput = "";
   };
 
   public onJoined = (

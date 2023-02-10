@@ -81,6 +81,7 @@ describe("RoomStore.onWaitingRoomEvent", () => {
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
       blacklist: [],
+      hasPassword: false,
     });
   });
 
@@ -111,7 +112,7 @@ describe("RoomStore.onWaitingRoomEvent", () => {
   });
 });
 
-describe("RoomStore.canJoinRoom", () => {
+describe("RoomStore.enabledJoinRoomButton", () => {
   it("true", () => {
     // given
     const id = "id";
@@ -127,10 +128,11 @@ describe("RoomStore.canJoinRoom", () => {
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
       blacklist: [],
+      hasPassword: false,
     });
 
     // then
-    expect(roomStore.canJoinRoom).toBe(true);
+    expect(roomStore.enableJoinButton).toBe(true);
   });
 
   it("should be false when current user already joined room", () => {
@@ -148,10 +150,11 @@ describe("RoomStore.canJoinRoom", () => {
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
       blacklist: [],
+      hasPassword: false,
     });
 
     // then
-    expect(roomStore.canJoinRoom).toBe(false);
+    expect(roomStore.enableJoinButton).toBe(false);
   });
 
   it("should be false when current user was blocked", () => {
@@ -169,10 +172,34 @@ describe("RoomStore.canJoinRoom", () => {
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
       blacklist: [uid],
+      hasPassword: false,
     });
 
     // then
-    expect(roomStore.canJoinRoom).toBe(false);
+    expect(roomStore.enableJoinButton).toBe(false);
+  });
+});
+
+describe("RoomStore.onFailedToJoin", () => {
+  it("should update failedToJoinMessage", () => {
+    const roomStore = new RoomStore();
+    const message = "message";
+    expect(roomStore.failedToJoinMessage).toBeUndefined();
+
+    roomStore.onFailedToJoin(message);
+
+    expect(roomStore.failedToJoinMessage).toBe(message);
+  });
+
+  it("should clear passwordInput", () => {
+    const roomStore = new RoomStore();
+    const passwordInput = "password";
+    roomStore.updatePasswordInput(passwordInput);
+    expect(roomStore.passwordInput).toBe(passwordInput);
+
+    roomStore.onFailedToJoin("message");
+
+    expect(roomStore.passwordInput).toBe("");
   });
 });
 
