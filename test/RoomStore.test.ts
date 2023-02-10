@@ -180,4 +180,27 @@ describe("RoomStore.enabledJoinRoomButton", () => {
   });
 });
 
+describe("RoomStore.onFailedToJoin", () => {
+  it("should update failedToJoinMessage", () => {
+    const roomStore = new RoomStore();
+    const message = "message";
+    expect(roomStore.failedToJoinMessage).toBeUndefined();
+
+    roomStore.onFailedToJoin(message);
+
+    expect(roomStore.failedToJoinMessage).toBe(message);
+  });
+
+  it("should clear passwordInput", () => {
+    const roomStore = new RoomStore();
+    const passwordInput = "password";
+    roomStore.updatePasswordInput(passwordInput);
+    expect(roomStore.passwordInput).toBe(passwordInput);
+
+    roomStore.onFailedToJoin("message");
+
+    expect(roomStore.passwordInput).toBe("");
+  });
+});
+
 export {};
