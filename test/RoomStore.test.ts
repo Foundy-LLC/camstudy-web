@@ -81,6 +81,7 @@ describe("RoomStore.onWaitingRoomEvent", () => {
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
       blacklist: [],
+      hasPassword: false,
     });
   });
 
@@ -111,7 +112,7 @@ describe("RoomStore.onWaitingRoomEvent", () => {
   });
 });
 
-describe("RoomStore.canJoinRoom", () => {
+describe("RoomStore.enabledJoinRoomButton", () => {
   it("true", () => {
     // given
     const id = "id";
@@ -127,6 +128,7 @@ describe("RoomStore.canJoinRoom", () => {
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
       blacklist: [],
+      hasPassword: false,
     });
 
     // then
@@ -148,6 +150,7 @@ describe("RoomStore.canJoinRoom", () => {
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
       blacklist: [],
+      hasPassword: false,
     });
 
     // then
@@ -169,6 +172,7 @@ describe("RoomStore.canJoinRoom", () => {
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
       blacklist: [uid],
+      hasPassword: false,
     });
 
     // then
