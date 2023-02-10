@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {
   INVALID_ROOM_PASSWORD_ERROR_MESSAGE,
   NO_ROOM_ERROR_MESSAGE,
+  PROFILE_IMAGE_SIZE_ERROR_MESSAGE,
   REQUEST_QUERY_ERROR,
   ROOM_AVAILABLE_MESSAGE,
   ROOM_IS_FULL_ERROR_MESSAGE,
@@ -18,7 +19,7 @@ import {
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { RoomRequestBody } from "@/models/room/RoomRequestBody";
 import { RoomsRequestGet } from "@/models/room/RoomsRequestGet";
-import multer from "multer";
+import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import { SET_ROOM_THUMBNAIL_SUCCESS } from "@/constants/roomMessage";
 import * as path from "path";
@@ -166,6 +167,12 @@ export const postRoomThumbnail = async (
       })
     );
   } catch (e) {
+    if (e instanceof MulterError && e.code === "LIMIT_FILE_SIZE") {
+      res
+        .status(400)
+        .send(new ResponseBody({ message: PROFILE_IMAGE_SIZE_ERROR_MESSAGE }));
+      return;
+    }
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
       return;

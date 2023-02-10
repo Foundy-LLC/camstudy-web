@@ -1,16 +1,19 @@
 import {
   validateExpiredAt,
   validateId,
-  validateLongBreak,
-  validateLongBreakInterval,
   validateMasterId,
   validatePassword,
-  validateShortBreak,
   validateThumbnail,
-  validateTimer,
   validateTitle,
 } from "@/utils/rooms.validator";
 import { Room } from "@/stores/RoomListStore";
+import {
+  validateLongBreak,
+  validateLongInterval,
+  validateShortBreak,
+  validateTimerLength,
+} from "@/utils/room.validator";
+
 ~21;
 export class RoomRequestBody {
   private _room: Room;
@@ -24,7 +27,7 @@ export class RoomRequestBody {
     this._validateTimer();
     this._validateShortBreak();
     this._validateLongBreak();
-    this._validateLongBreakInterval();
+    this._validateLongInterval();
     this._validateExpiredAt();
   }
   /*
@@ -50,7 +53,7 @@ export class RoomRequestBody {
     validateTitle(this._room.title);
   };
   private _validateTimer = () => {
-    validateTimer(this._room.timer);
+    validateTimerLength(this._room.timer);
   };
   private _validateShortBreak = () => {
     validateShortBreak(this._room.shortBreak);
@@ -58,8 +61,8 @@ export class RoomRequestBody {
   private _validateLongBreak = () => {
     validateLongBreak(this._room.longBreak);
   };
-  private _validateLongBreakInterval = () => {
-    validateLongBreakInterval(this._room.longBreakInterval);
+  private _validateLongInterval = () => {
+    validateLongInterval(this._room.longBreakInterval);
   };
   private _validateExpiredAt = () => {
     validateExpiredAt(this._room.expiredAt);

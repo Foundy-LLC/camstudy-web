@@ -83,7 +83,7 @@ const RoomList: NextPage = observer(() => {
             }
           }}
         ></input>
-        <SelectedThumbnailImage imageUrl={roomListStore.imgUrl} />
+        <SelectedThumbnailImage imageUrl={roomListStore.imageUrl} />
         <RoomItemGroup items={roomListStore.roomOverviews} />
         <div>
           <br />

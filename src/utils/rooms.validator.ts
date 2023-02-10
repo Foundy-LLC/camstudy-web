@@ -40,26 +40,6 @@ export const validateTitle = (title: string) => {
     throw NO_ROOM_TITLE_ERROR_MESSAGE;
   }
 };
-export const validateTimer = (timer: number) => {
-  if (timer < 20 || timer > 50) {
-    throw STUDYING_TIME_RANGE_ERROR;
-  }
-};
-export const validateShortBreak = (short_break: number) => {
-  if (short_break < 3 || short_break > 10) {
-    throw SHORT_STUDYING_TIME_RANGE_ERROR;
-  }
-};
-export const validateLongBreak = (long_break: number) => {
-  if (long_break < 10 || long_break > 30) {
-    throw LONG_STUDYING_TIME_RANGE_ERROR;
-  }
-};
-export const validateLongBreakInterval = (long_break_interval: number) => {
-  if (long_break_interval < 2 || long_break_interval > 6) {
-    throw BREAK_TIME_INTERVAL_RANGE_ERROR;
-  }
-};
 
 export const validateExpiredAt = (expired_at: string) => {
   if (expired_at == null) {
