@@ -7,7 +7,7 @@ import {
 
 export const validateTimerLength = (timerLengthMinutes: number) => {
   if (!POMODORO_TIMER_RANGE.isInRange(timerLengthMinutes)) {
-    throw `타이버의 길이는 ${POMODORO_TIMER_RANGE}분 사이만 가능합니다.`;
+    throw `타이머의 길이는 ${POMODORO_TIMER_RANGE}분 사이만 가능합니다.`;
   }
 };
 

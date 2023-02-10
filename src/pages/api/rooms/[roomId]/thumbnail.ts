@@ -1,19 +1,22 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getRooms, postRoom } from "@/controller/room.controller";
+import { postRoomThumbnail } from "@/controller/room.controller";
 
-export default async function userHandler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const { method } = req;
+
   switch (method) {
-    case "GET":
-      await getRooms(req, res);
-      break;
     case "POST":
-      await postRoom(req, res);
+      await postRoomThumbnail(req, res);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);
   }
 }
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};

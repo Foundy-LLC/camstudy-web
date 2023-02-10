@@ -3,6 +3,7 @@ import React, { Key } from "react";
 import { useStores } from "@/stores/context";
 import { observer } from "mobx-react-lite";
 import { RoomOverview } from "@/models/room/RoomOverview";
+import Image from "next/image";
 
 const RoomItem: NextPage<{ roomOverview: RoomOverview; key: Key }> = observer(
   ({ roomOverview, key }) => {
@@ -18,6 +19,16 @@ const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
           <RoomItem roomOverview={item} key={item.id} />
         ))}
       </>
+    );
+  }
+);
+
+const SelectedThumbnailImage: NextPage<{ imageUrl: string }> = observer(
+  ({ imageUrl }) => {
+    if (imageUrl === "") return <></>;
+    console.log(imageUrl);
+    return (
+      <Image src={imageUrl} alt="방 썸네일 사진" width={100} height={100} />
     );
   }
 );
@@ -50,7 +61,6 @@ const RoomList: NextPage = observer(() => {
           id="roomName"
           placeholder="방 제목"
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            console.log(e.target.value);
             roomListStore.setRoomTitleInput(e.target.value);
           }}
         ></input>
@@ -62,8 +72,21 @@ const RoomList: NextPage = observer(() => {
         >
           POST
         </button>
+        <br />
+        <input
+          id="roomThumbnail"
+          type="file"
+          accept="image/png, image/jpeg"
+          onChange={(e) => {
+            if (e.target.files) {
+              roomListStore.importRoomThumbnail(e.target.files[0]);
+            }
+          }}
+        ></input>
+        <SelectedThumbnailImage imageUrl={roomListStore.imageUrl} />
         <RoomItemGroup items={roomListStore.roomOverviews} />
         <div>
+          <br />
           <h3>생성한 방:</h3>
           <p>{roomListStore.createdTitle}</p>
         </div>
