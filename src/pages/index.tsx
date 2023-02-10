@@ -26,6 +26,9 @@ function Home() {
     return `${IMAGE_SERVER_URL}/users/${src}.png`;
   };
 
+  const loggingUserInformation = () => {
+    console.log(JSON.stringify(userStore.currentUser));
+  };
   return (
     <>
       <Head>
@@ -47,7 +50,11 @@ function Home() {
             src={user.uid}
             alt={"user profile image"}
           ></Image>
+          <button onClick={() => loggingUserInformation()}>
+            getUserInformation
+          </button>
           <button onClick={() => userStore.signOut()}>sign out</button>
+          <div>{userStore.errorMessage}</div>
           <div>
             <a
               href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"

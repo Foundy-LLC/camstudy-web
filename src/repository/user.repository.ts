@@ -1,17 +1,29 @@
 import { user_account } from ".prisma/client";
 import prisma from "../../prisma/client";
 import { UserStatus } from "@/models/user/UserStatus";
+import { User } from "@/models/user/User";
 
-export const isUserExists = async (uid: string): Promise<boolean> => {
+export const findUser = async (userId: string): Promise<User | null> => {
+  return await prisma.user_account.findUnique({
+    select: {
+      id: true,
+      name: true,
+    },
+    where: {
+      id: userId,
+    },
+  });
+};
+export const isUserExists = async (userId: string): Promise<boolean> => {
   const result = await prisma.user_account.findUnique({
     where: {
-      id: uid,
+      id: userId,
     },
   });
   return result !== null;
 };
 export const createUser = async (
-  uid: string,
+  userId: string,
   name: string,
   introduce: string | undefined,
   tagIds: { id: string }[],
@@ -22,7 +34,7 @@ export const createUser = async (
   });
   return await prisma.user_account.create({
     data: {
-      id: uid,
+      id: userId,
       name: name,
       introduce: introduce,
       score: 0,
@@ -37,13 +49,13 @@ export const createUser = async (
   });
 };
 
-export const insertUserProfileImage = async (uid: string, url: string) => {
+export const insertUserProfileImage = async (userId: string, url: string) => {
   return await prisma.user_account.update({
     data: {
       profile_image: url,
     },
     where: {
-      id: uid,
+      id: userId,
     },
   });
 };

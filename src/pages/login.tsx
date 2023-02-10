@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { NextPage } from "next";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from "next/router";
 import { observer } from "mobx-react";
-import { UserStore } from "@/stores/UserStore";
 import { auth } from "@/service/firebase";
+import userStore from "@/stores/UserStore";
 
 const Login: NextPage = () => {
-  const [userStore] = useState(new UserStore());
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
 

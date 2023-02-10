@@ -3,7 +3,11 @@ import {
   createTagsIfNotExists,
   findTagIdsByTagName,
 } from "@/repository/tag.repository";
-import { createUser, isUserExists } from "@/repository/user.repository";
+import {
+  createUser,
+  isUserExists,
+  findUser,
+} from "@/repository/user.repository";
 import {
   EXISTS_INITIAL_INFORMATION_MESSAGE,
   NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
@@ -18,7 +22,32 @@ import { InitialInformationRequestBody } from "@/models/user/InitialInformationR
 import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import { uuidv4 } from "@firebase/util";
+import { USER_INFORMATION_LOOKUP_SUCCESS } from "@/constants/user.constant";
 
+export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const requestBody = new InitialInformationRequestBody(
+      <string>req.query.userId
+    );
+    const userInformation = await findUser(requestBody.userId);
+    console.log(userInformation);
+    res.status(200).send(
+      new ResponseBody({
+        message: USER_INFORMATION_LOOKUP_SUCCESS,
+        data: userInformation,
+      })
+    );
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).end(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+    return;
+  }
+};
 export const getUserExistence = async (
   req: NextApiRequest,
   res: NextApiResponse
