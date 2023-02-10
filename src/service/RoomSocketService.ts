@@ -3,7 +3,6 @@ import { io, Socket } from "socket.io-client";
 import {
   CLOSE_AUDIO_PRODUCER,
   CLOSE_VIDEO_PRODUCER,
-  JOIN_WAITING_ROOM,
   CONNECTION_SUCCESS,
   CONSUME,
   CONSUME_RESUME,
@@ -11,6 +10,7 @@ import {
   EDIT_AND_STOP_TIMER,
   GET_PRODUCER_IDS,
   JOIN_ROOM,
+  JOIN_WAITING_ROOM,
   NAME_SPACE,
   NEW_PRODUCER,
   OTHER_PEER_DISCONNECTED,
@@ -25,11 +25,7 @@ import {
   TRANSPORT_PRODUCER_CONNECT,
   TRANSPORT_RECEIVER_CONNECT,
 } from "@/constants/socketProtocol";
-import {
-  MediaKind,
-  RtpCapabilities,
-  RtpParameters,
-} from "mediasoup-client/lib/RtpParameters";
+import { MediaKind, RtpParameters } from "mediasoup-client/lib/RtpParameters";
 import { Device } from "mediasoup-client";
 import {
   DtlsParameters,
@@ -41,7 +37,6 @@ import { Consumer } from "mediasoup-client/lib/Consumer";
 import { Producer } from "mediasoup-client/lib/Producer";
 import { auth } from "@/service/firebase";
 import { PomodoroTimerEvent } from "@/models/room/PomodoroTimerEvent";
-import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import { ChatMessage } from "@/models/room/ChatMessage";
 import { uuidv4 } from "@firebase/util";
@@ -51,6 +46,8 @@ import {
   OtherPeerJoinedRoomEvent,
 } from "@/models/room/WaitingRoomEvent";
 import { RoomJoiner } from "@/models/room/RoomJoiner";
+import { JoinRoomSuccessCallbackProperty } from "@/models/room/JoinRoomSuccessCallbackProperty";
+import { JoinRoomFailureCallbackProperty } from "@/models/room/JoinRoomFailureCallbackProperty";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -145,7 +142,7 @@ export class RoomSocketService {
     socket.removeListener(OTHER_PEER_EXITED_ROOM);
   };
 
-  public join = (localMediaStream: MediaStream) => {
+  public join = (localMediaStream: MediaStream, password: string) => {
     const socket = this._requireSocket();
     const user = auth.currentUser;
     if (user == null) {
@@ -157,13 +154,15 @@ export class RoomSocketService {
         userId: user.uid,
         // TODO: 실제 회원 이름을 전달하기
         userName: uuidv4(),
+        roomPasswordInput: password,
       },
-      async (data: {
-        rtpCapabilities: RtpCapabilities;
-        timerStartedDate?: string;
-        timerState: PomodoroTimerState;
-        timerProperty: PomodoroTimerProperty;
-      }) => {
+      async (
+        data: JoinRoomSuccessCallbackProperty | JoinRoomFailureCallbackProperty
+      ) => {
+        if (data.type === "failure") {
+          this._roomViewModel.onFailedToJoin(data.message);
+          return;
+        }
         console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`);
         this._removeWaitingRoomEventsListener();
         this._roomViewModel.onJoined(

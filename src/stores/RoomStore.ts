@@ -29,6 +29,7 @@ export interface RoomViewModel {
   onConnected: () => Promise<void>;
   onConnectedWaitingRoom: (waitingRoomData: WaitingRoomData) => void;
   onWaitingRoomEvent: (event: WaitingRoomEvent) => void;
+  onFailedToJoin: (message: string) => void;
   onJoined: (
     timerStartedDate: string | undefined,
     timerState: PomodoroTimerState,
@@ -58,6 +59,7 @@ export class RoomStore implements RoomViewModel {
   // ======================= 대기실 관련 =======================
   private _waitingRoomData?: WaitingRoomData = undefined;
   private _passwordInput: string = "";
+  private _failedToJoinMessage?: string = undefined;
   // ========================================================
 
   private readonly _remoteVideoStreamsByPeerId: Map<string, MediaStream> =
@@ -131,6 +133,10 @@ export class RoomStore implements RoomViewModel {
     const currentUserId = this._requireCurrentUserId();
     return waitingRoomData.blacklist.some((id) => id === currentUserId);
   };
+
+  public get failedToJoinMessage(): string | undefined {
+    return this._failedToJoinMessage;
+  }
 
   public get waitingRoomMessage(): string | undefined {
     const waitingRoomData = this._waitingRoomData;
@@ -301,7 +307,12 @@ export class RoomStore implements RoomViewModel {
     if (this._localAudioStream !== undefined) {
       mediaStream.addTrack(this._localAudioStream.getAudioTracks()[0]);
     }
-    this._roomService.join(mediaStream);
+    this._roomService.join(mediaStream, this._passwordInput);
+  };
+
+  public onFailedToJoin = (message: string) => {
+    this._failedToJoinMessage = message;
+    this._passwordInput = "";
   };
 
   public onJoined = (

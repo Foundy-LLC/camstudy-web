@@ -61,7 +61,10 @@ const WaitingRoom: NextPage<{
       >
         {roomStore.enabledLocalAudio ? "Mute Audio" : "Unmute Audio"}
       </button>
-      <div>
+      <div style={{ padding: "16px" }}>
+        {roomStore.failedToJoinMessage !== undefined ? (
+          <div>{roomStore.failedToJoinMessage}</div>
+        ) : undefined}
         {roomStore.hasPassword ? (
           <input
             type="password"
