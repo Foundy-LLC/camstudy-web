@@ -174,7 +174,7 @@ export class RoomStore implements RoomViewModel {
     this._passwordInput = password;
   };
 
-  public get canJoinRoom(): boolean {
+  public get enableJoinButton(): boolean {
     const waitingRoomData = this._waitingRoomData;
     if (waitingRoomData === undefined) {
       return false;

@@ -71,7 +71,7 @@ const WaitingRoom: NextPage<{
           />
         ) : undefined}
         <button
-          disabled={!roomStore.canJoinRoom}
+          disabled={!roomStore.enableJoinButton}
           onClick={() => roomStore.joinRoom()}
         >
           입장

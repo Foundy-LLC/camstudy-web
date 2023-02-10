@@ -130,7 +130,7 @@ describe("RoomStore.canJoinRoom", () => {
     });
 
     // then
-    expect(roomStore.canJoinRoom).toBe(true);
+    expect(roomStore.enableJoinButton).toBe(true);
   });
 
   it("should be false when current user already joined room", () => {
@@ -151,7 +151,7 @@ describe("RoomStore.canJoinRoom", () => {
     });
 
     // then
-    expect(roomStore.canJoinRoom).toBe(false);
+    expect(roomStore.enableJoinButton).toBe(false);
   });
 
   it("should be false when current user was blocked", () => {
@@ -172,7 +172,7 @@ describe("RoomStore.canJoinRoom", () => {
     });
 
     // then
-    expect(roomStore.canJoinRoom).toBe(false);
+    expect(roomStore.enableJoinButton).toBe(false);
   });
 });
 
