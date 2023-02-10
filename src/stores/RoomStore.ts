@@ -55,7 +55,10 @@ export class RoomStore implements RoomViewModel {
   private _localVideoStream?: MediaStream = undefined;
   private _localAudioStream?: MediaStream = undefined;
 
+  // ======================= 대기실 관련 =======================
   private _waitingRoomData?: WaitingRoomData = undefined;
+  private _passwordInput: string = "";
+  // ========================================================
 
   private readonly _remoteVideoStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
@@ -96,7 +99,6 @@ export class RoomStore implements RoomViewModel {
   }
 
   // ================================ 대기실 getter 시작 ================================
-
   private _requireCurrentUserId(): string {
     if (this._auth.currentUser?.uid == null) {
       throw Error(
@@ -164,6 +166,14 @@ export class RoomStore implements RoomViewModel {
     return this._waitingRoomData.joinerList;
   }
 
+  public get passwordInput(): string {
+    return this._passwordInput;
+  }
+
+  public updatePasswordInput = (password: string) => {
+    this._passwordInput = password;
+  };
+
   public get canJoinRoom(): boolean {
     const waitingRoomData = this._waitingRoomData;
     if (waitingRoomData === undefined) {
@@ -178,10 +188,13 @@ export class RoomStore implements RoomViewModel {
     if (this._isCurrentUserBlocked(waitingRoomData)) {
       return false;
     }
+    if (waitingRoomData.hasPassword && this._passwordInput.length === 0) {
+      return false;
+    }
     return !this._isRoomFull(waitingRoomData);
   }
 
-  // ================================ 대기실 getter 끝 ================================
+  // ==============================================================================
 
   public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {
     return [...this._remoteVideoStreamsByPeerId.entries()];

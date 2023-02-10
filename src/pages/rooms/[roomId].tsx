@@ -63,7 +63,12 @@ const WaitingRoom: NextPage<{
       </button>
       <div>
         {roomStore.hasPassword ? (
-          <input type="password" placeholder="비밀번호 입력..." />
+          <input
+            type="password"
+            placeholder="비밀번호 입력..."
+            value={roomStore.passwordInput}
+            onChange={(e) => roomStore.updatePasswordInput(e.target.value)}
+          />
         ) : undefined}
         <button
           disabled={!roomStore.canJoinRoom}
