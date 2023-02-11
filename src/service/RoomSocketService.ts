@@ -67,6 +67,14 @@ interface ConsumeParams {
   readonly serverConsumerId: string;
 }
 
+interface ReceiveTransportWrapper {
+  receiveTransport: Transport;
+  serverReceiveTransportId: string;
+  producerId: string;
+  userId: string;
+  consumer: Consumer;
+}
+
 interface ErrorParams {
   error: any;
 }
@@ -79,13 +87,7 @@ export class RoomSocketService {
   private _videoProducer?: Producer;
 
   private readonly _consumingTransportIds: Set<string> = new Set();
-  private _receiveTransports: {
-    receiveTransport: Transport;
-    serverReceiveTransportId: string;
-    producerId: string;
-    userId: string;
-    consumer: Consumer;
-  }[] = [];
+  private _receiveTransportWrappers: ReceiveTransportWrapper[] = [];
 
   constructor(private readonly _roomViewModel: RoomViewModel) {}
 
@@ -211,7 +213,7 @@ export class RoomSocketService {
     socket.on(PRODUCER_CLOSED, ({ remoteProducerId }) => {
       // server notification is received when a producer is closed
       // we need to close the client-side consumer and associated transport
-      const receiveTransport = this._receiveTransports.find(
+      const receiveTransport = this._receiveTransportWrappers.find(
         (transportData) => transportData.producerId === remoteProducerId
       );
       if (receiveTransport === undefined) {
@@ -481,8 +483,8 @@ export class RoomSocketService {
         // then consume with the local consumer transport
         // which creates a consumer
         const consumer = await receiveTransport.consume(params);
-        this._receiveTransports = [
-          ...this._receiveTransports,
+        this._receiveTransportWrappers = [
+          ...this._receiveTransportWrappers,
           {
             userId,
             receiveTransport,
