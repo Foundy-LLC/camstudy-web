@@ -208,6 +208,9 @@ export class RoomSocketService {
       OTHER_PEER_DISCONNECTED,
       ({ disposedPeerId }: { disposedPeerId: string }) => {
         this._roomViewModel.onDisposedPeer(disposedPeerId);
+        this._receiveTransportWrappers = this._receiveTransportWrappers.filter(
+          (wrapper) => wrapper.userId !== disposedPeerId
+        );
       }
     );
     socket.on(PRODUCER_CLOSED, ({ remoteProducerId }) => {
