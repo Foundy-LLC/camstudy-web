@@ -403,10 +403,24 @@ export class RoomSocketService {
     }
     this._consumingTransportIds.add(remoteProducerId);
 
-    await this._requireSocket().emit(
+    const receiveTransportWrapper = this._receiveTransportWrappers.find(
+      (w) => w.userId === userId
+    );
+    if (receiveTransportWrapper?.receiveTransport !== undefined) {
+      await this._consumeRecvTransport(
+        receiveTransportWrapper.receiveTransport,
+        remoteProducerId,
+        receiveTransportWrapper.serverReceiveTransportId,
+        userId,
+        device
+      );
+      return;
+    }
+
+    this._requireSocket().emit(
       CREATE_WEB_RTC_TRANSPORT,
       { isConsumer: true },
-      ({ params }: { params: CreateWebRtcTransportParams }) => {
+      async ({ params }: { params: CreateWebRtcTransportParams }) => {
         console.log(`PARAMS... ${params}`);
 
         let receiveTransport: Transport;
@@ -444,7 +458,7 @@ export class RoomSocketService {
           }
         );
 
-        this._connectRecvTransport(
+        await this._consumeRecvTransport(
           receiveTransport,
           remoteProducerId,
           params.id,
@@ -455,7 +469,7 @@ export class RoomSocketService {
     );
   };
 
-  private _connectRecvTransport = async (
+  private _consumeRecvTransport = async (
     receiveTransport: Transport,
     remoteProducerId: string,
     serverReceiveTransportId: string,
@@ -489,7 +503,7 @@ export class RoomSocketService {
           {
             userId,
             receiveTransport,
-            serverReceiveTransportId: params.id,
+            serverReceiveTransportId,
             producerId: remoteProducerId,
             consumer,
           },
