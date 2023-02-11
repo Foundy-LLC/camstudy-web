@@ -366,7 +366,8 @@ export class RoomSocketService {
           // server side producer's id.
           callback({ id });
           // if producers exist, then join room
-          if (producersExist) this._getProducersAndConsume(device);
+          if (producersExist)
+            this._getRemoteProducersAndCreateReceiveTransport(device);
         }
       );
     } catch (error: any) {
@@ -374,7 +375,7 @@ export class RoomSocketService {
     }
   };
 
-  private _getProducersAndConsume = (device: Device) => {
+  private _getRemoteProducersAndCreateReceiveTransport = (device: Device) => {
     this._requireSocket().emit(
       GET_PRODUCER_IDS,
       (userProducerIds: { producerId: string; userId: string }[]) => {
