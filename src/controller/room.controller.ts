@@ -103,7 +103,6 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
     await createRoom(new RoomRequestBody(req.body._room));
     res.status(201).end();
   } catch (e) {
-    console.log(e);
     if (typeof e === "string") {
       console.log("error:400", e);
       res.status(400).send(new ResponseBody({ message: e }));
