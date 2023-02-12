@@ -12,7 +12,7 @@ describe("Result", () => {
     const error = Error("ERROR");
     const result = Result.error(error);
 
-    expect(result.getOrNull()).toBe(undefined);
+    expect(result.getOrNull()).toBeUndefined();
     expect(result.throwableOrNull()).toBe(error);
   });
 });
