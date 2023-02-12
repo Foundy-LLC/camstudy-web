@@ -1,18 +1,18 @@
 import { ResponseBody } from "@/models/common/ResponseBody";
 
+class Failure {
+  constructor(public error: Error) {}
+}
+
 export class Result<T> {
-  private constructor(
-    private _data?: T,
-    private _error?: Error,
-    private _isError: boolean = false
-  ) {}
+  private constructor(private _data?: T) {}
 
   static success<T>(data: T): Result<T> {
-    return new Result(data, undefined, false);
+    return new Result(data);
   }
 
   static error<T>(e: Error): Result<T> {
-    return new Result<any>(undefined, e, true);
+    return new Result<any>(new Failure(e));
   }
 
   public static async parseToResponseBody<T>(
@@ -58,15 +58,25 @@ export class Result<T> {
     return Result.error(Error("알 수 없는 에러가 발생했습니다."));
   }
 
-  public get isSuccess() {
-    return !this._isError;
+  public get isSuccess(): boolean {
+    return !this.isFailure;
+  }
+
+  public get isFailure(): boolean {
+    return this._data instanceof Failure;
   }
 
   public getOrNull = (): T | undefined => {
-    return this._data;
+    if (this.isSuccess) {
+      return this._data;
+    }
+    return undefined;
   };
 
   public throwableOrNull = (): Error | undefined => {
-    return this._error;
+    if (this._data instanceof Failure) {
+      return this._data.error;
+    }
+    return undefined;
   };
 }
