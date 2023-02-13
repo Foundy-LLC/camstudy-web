@@ -5,6 +5,7 @@ import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { Room } from "@/stores/RoomListStore";
 import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
 import { room } from "@prisma/client";
+
 const ROOM_NUM_PER_PAGE = 30 as const;
 
 export const findRoomById = async (roomId: string): Promise<room | null> => {
@@ -39,22 +40,28 @@ export const isUserBlockedAtRoom = async (
   });
   return block != null;
 };
-
 export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
   //roomOverview를 반환
   var roomOverviews: RoomOverview[] = [];
-  const result = await client.room.findMany({
+  const rooms = await client.room.findMany({
     skip: pageNum * ROOM_NUM_PER_PAGE,
     take: ROOM_NUM_PER_PAGE,
+    include: {
+      study_history: {
+        where: {
+          exit_at: null,
+        },
+      },
+    },
   });
-  result.map((room) => {
+  await rooms.map(async (room) => {
     const roomOverview = new RoomOverview(
       room.id,
       room.title,
       room.password,
       room.thumbnail,
-      // room.joinCount, //TODO 스터디 히스토리 방 id 일치하면서 나간 시간이 없는 사람 갯수
-      // room.maxCount,  //TODO MAX_ROOM_PEOPLE_NUMBER
+      room.study_history.length,
+      MAX_ROOM_CAPACITY,
       [] //room.room_tags
     );
     roomOverviews.push(roomOverview);

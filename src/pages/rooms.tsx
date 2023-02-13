@@ -7,7 +7,11 @@ import Image from "next/image";
 
 const RoomItem: NextPage<{ roomOverview: RoomOverview; key: Key }> = observer(
   ({ roomOverview, key }) => {
-    return <p key={key}>{roomOverview.title}</p>;
+    return (
+      <p key={key}>
+        {roomOverview.title}:{roomOverview.joinCount}/{roomOverview.maxCount}
+      </p>
+    );
   }
 );
 
