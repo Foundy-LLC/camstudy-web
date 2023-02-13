@@ -380,7 +380,6 @@ export class RoomSocketService {
         ({ id }: { id: string }) => {
           callback({ id });
           if (!this._didGetOtherProducers) {
-            console.log("뭐지????????");
             this._didGetOtherProducers = true;
             this._getRemoteProducersAndCreateReceiveTransport(device);
           }
