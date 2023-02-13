@@ -67,6 +67,14 @@ interface ConsumeParams {
   readonly serverConsumerId: string;
 }
 
+interface ReceiveTransportWrapper {
+  receiveTransport: Transport;
+  serverReceiveTransportId: string;
+  producerId: string;
+  userId: string;
+  consumer: Consumer;
+}
+
 interface ErrorParams {
   error: any;
 }
@@ -79,13 +87,7 @@ export class RoomSocketService {
   private _videoProducer?: Producer;
 
   private readonly _consumingTransportIds: Set<string> = new Set();
-  private _consumerTransports: {
-    consumerTransport: Transport;
-    serverConsumerTransportId: string;
-    producerId: string;
-    userId: string;
-    consumer: Consumer;
-  }[] = [];
+  private _receiveTransportWrappers: ReceiveTransportWrapper[] = [];
 
   constructor(private readonly _roomViewModel: RoomViewModel) {}
 
@@ -196,7 +198,7 @@ export class RoomSocketService {
         producerId: string;
         userId: string;
       }) => {
-        await this._addConsumeTransport(producerId, userId, device);
+        await this._createReceiveTransport(producerId, userId, device);
       }
     );
     socket.on(SEND_CHAT, (message: ChatMessage) => {
@@ -206,18 +208,21 @@ export class RoomSocketService {
       OTHER_PEER_DISCONNECTED,
       ({ disposedPeerId }: { disposedPeerId: string }) => {
         this._roomViewModel.onDisposedPeer(disposedPeerId);
+        this._receiveTransportWrappers = this._receiveTransportWrappers.filter(
+          (wrapper) => wrapper.userId !== disposedPeerId
+        );
       }
     );
     socket.on(PRODUCER_CLOSED, ({ remoteProducerId }) => {
       // server notification is received when a producer is closed
       // we need to close the client-side consumer and associated transport
-      const consumerTransport = this._consumerTransports.find(
+      const receiveTransport = this._receiveTransportWrappers.find(
         (transportData) => transportData.producerId === remoteProducerId
       );
-      if (consumerTransport === undefined) {
+      if (receiveTransport === undefined) {
         return;
       }
-      consumerTransport.consumer.close();
+      receiveTransport.consumer?.close();
     });
     socket.on(START_TIMER, () => {
       this._roomViewModel.onPomodoroTimerEvent(PomodoroTimerEvent.ON_START);
@@ -364,7 +369,8 @@ export class RoomSocketService {
           // server side producer's id.
           callback({ id });
           // if producers exist, then join room
-          if (producersExist) this._getProducersAndConsume(device);
+          if (producersExist)
+            this._getRemoteProducersAndCreateReceiveTransport(device);
         }
       );
     } catch (error: any) {
@@ -372,7 +378,7 @@ export class RoomSocketService {
     }
   };
 
-  private _getProducersAndConsume = (device: Device) => {
+  private _getRemoteProducersAndCreateReceiveTransport = (device: Device) => {
     this._requireSocket().emit(
       GET_PRODUCER_IDS,
       (userProducerIds: { producerId: string; userId: string }[]) => {
@@ -380,7 +386,7 @@ export class RoomSocketService {
         // for each of the producer create a consumer
         // producerIds.forEach(id => signalNewConsumerTransport(id))
         userProducerIds.forEach(async (userProducerIdSet) => {
-          await this._addConsumeTransport(
+          await this._createReceiveTransport(
             userProducerIdSet.producerId,
             userProducerIdSet.userId,
             device
@@ -390,7 +396,7 @@ export class RoomSocketService {
     );
   };
 
-  private _addConsumeTransport = async (
+  private _createReceiveTransport = async (
     remoteProducerId: string,
     userId: string,
     device: Device
@@ -400,15 +406,29 @@ export class RoomSocketService {
     }
     this._consumingTransportIds.add(remoteProducerId);
 
-    await this._requireSocket().emit(
+    const receiveTransportWrapper = this._receiveTransportWrappers.find(
+      (w) => w.userId === userId
+    );
+    if (receiveTransportWrapper?.receiveTransport !== undefined) {
+      await this._consumeRecvTransport(
+        receiveTransportWrapper.receiveTransport,
+        remoteProducerId,
+        receiveTransportWrapper.serverReceiveTransportId,
+        userId,
+        device
+      );
+      return;
+    }
+
+    this._requireSocket().emit(
       CREATE_WEB_RTC_TRANSPORT,
       { isConsumer: true },
-      ({ params }: { params: CreateWebRtcTransportParams }) => {
+      async ({ params }: { params: CreateWebRtcTransportParams }) => {
         console.log(`PARAMS... ${params}`);
 
-        let consumerTransport: Transport;
+        let receiveTransport: Transport;
         try {
-          consumerTransport = device.createRecvTransport(params);
+          receiveTransport = device.createRecvTransport(params);
         } catch (error) {
           // exceptions:
           // {InvalidStateError} if not loaded
@@ -417,7 +437,7 @@ export class RoomSocketService {
           return;
         }
 
-        consumerTransport.on(
+        receiveTransport.on(
           "connect",
           async (
             { dtlsParameters }: { dtlsParameters: DtlsParameters },
@@ -429,7 +449,7 @@ export class RoomSocketService {
               // see server's socket.on('transport-recv-connect', ...)
               await this._requireSocket().emit(TRANSPORT_RECEIVER_CONNECT, {
                 dtlsParameters,
-                serverConsumerTransportId: params.id,
+                serverReceiveTransportId: params.id,
               });
 
               // Tell the transport that parameters were transmitted.
@@ -441,8 +461,8 @@ export class RoomSocketService {
           }
         );
 
-        this._connectRecvTransport(
-          consumerTransport,
+        await this._consumeRecvTransport(
+          receiveTransport,
           remoteProducerId,
           params.id,
           userId,
@@ -452,10 +472,10 @@ export class RoomSocketService {
     );
   };
 
-  private _connectRecvTransport = async (
-    consumerTransport: Transport,
+  private _consumeRecvTransport = async (
+    receiveTransport: Transport,
     remoteProducerId: string,
-    serverConsumerTransportId: string,
+    serverReceiveTransportId: string,
     userId: string,
     device: Device
   ) => {
@@ -467,7 +487,7 @@ export class RoomSocketService {
       {
         rtpCapabilities: device.rtpCapabilities,
         remoteProducerId,
-        serverConsumerTransportId,
+        serverReceiveTransportId: serverReceiveTransportId,
       },
       async ({ params }: { params: ConsumeParams | ErrorParams }) => {
         if ((params as ErrorParams).error !== undefined) {
@@ -480,13 +500,13 @@ export class RoomSocketService {
         console.log(`Consumer Params ${params}`);
         // then consume with the local consumer transport
         // which creates a consumer
-        const consumer = await consumerTransport.consume(params);
-        this._consumerTransports = [
-          ...this._consumerTransports,
+        const consumer = await receiveTransport.consume(params);
+        this._receiveTransportWrappers = [
+          ...this._receiveTransportWrappers,
           {
             userId,
-            consumerTransport,
-            serverConsumerTransportId: params.id,
+            receiveTransport,
+            serverReceiveTransportId,
             producerId: remoteProducerId,
             consumer,
           },
