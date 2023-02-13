@@ -1,6 +1,7 @@
 import { RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
+  CLOSE_AUDIO_CONSUMERS,
   CLOSE_AUDIO_PRODUCER,
   CLOSE_VIDEO_PRODUCER,
   CONNECTION_SUCCESS,
@@ -90,6 +91,8 @@ export class RoomSocketService {
   private _receiveTransportWrappers: ReceiveTransportWrapper[] = [];
 
   private _didGetOtherProducers: boolean = false;
+
+  private _mutedHeadset: boolean = false;
 
   constructor(private readonly _roomViewModel: RoomViewModel) {}
 
@@ -498,6 +501,10 @@ export class RoomSocketService {
         }
         params = params as ConsumeParams;
 
+        if (params.kind === "audio" && this._mutedHeadset) {
+          return;
+        }
+
         console.log(`Consumer Params ${params}`);
         // then consume with the local consumer transport
         // which creates a consumer
@@ -560,6 +567,20 @@ export class RoomSocketService {
     producer.close();
     this._audioProducer = undefined;
     this._requireSocket().emit(CLOSE_AUDIO_PRODUCER);
+  };
+
+  public muteHeadset = () => {
+    this._mutedHeadset = true;
+    this._receiveTransportWrappers = this._receiveTransportWrappers.filter(
+      (wrapper) => {
+        if (wrapper.consumer.kind === "audio") {
+          wrapper.consumer.close();
+          return false;
+        }
+        return true;
+      }
+    );
+    this._requireSocket().emit(CLOSE_AUDIO_CONSUMERS);
   };
 
   public sendChat = (message: string) => {
