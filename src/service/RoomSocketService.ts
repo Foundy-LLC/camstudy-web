@@ -95,7 +95,7 @@ export class RoomSocketService {
 
   private _receiveTransportWrappers: ReceiveTransportWrapper[] = [];
 
-  private _didGetOtherProducers: boolean = false;
+  private _didGetInitialProducers: boolean = false;
 
   private _mutedHeadset: boolean = false;
   private _device?: Device;
@@ -379,8 +379,8 @@ export class RoomSocketService {
         },
         ({ id }: { id: string }) => {
           callback({ id });
-          if (!this._didGetOtherProducers) {
-            this._didGetOtherProducers = true;
+          if (!this._didGetInitialProducers) {
+            this._didGetInitialProducers = true;
             this._getRemoteProducersAndCreateReceiveTransport(device);
           }
         }
