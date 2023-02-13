@@ -1,28 +1,28 @@
 import { makeAutoObservable } from "mobx";
 import { RootStore } from "@/stores/RootStore";
-import { RoomService } from "@/service/room.service";
+import roomService, { RoomService } from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import React from "react";
-import roomService from "@/service/room.service";
 
+//TODO(건우) 값을 임시로 할당하여 수정 필요
 export class Room {
-  //TODO(건우) 값을 임시로 할당하여 수정 필요
-  readonly id: string = "";
-  readonly masterId: string = "test";
-  readonly title: string = "test";
-  readonly thumbnail?: string = "test";
-  readonly password?: string = "test";
-  readonly timer: number = 2000;
-  readonly shortBreak: number = 15;
-  readonly longBreak: number = 20;
-  readonly longBreakInterval: number = 3;
-  readonly expiredAt: string = "2021-08-21T12:30:00.000Z";
-  readonly tags: string[] = [];
-
-  constructor() {
+  constructor(
+    readonly id: string = "",
+    readonly masterId: string = "test",
+    readonly title: string = "",
+    readonly thumbnail: string | undefined = undefined,
+    readonly password: string | undefined = undefined,
+    readonly timer: number = 30,
+    readonly shortBreak: number = 10,
+    readonly longBreak: number = 20,
+    readonly longBreakInterval: number = 3,
+    readonly expiredAt: string = "2021-08-21T12:30:00.000Z",
+    readonly tags: string[] = []
+  ) {
     makeAutoObservable(this);
   }
 }
+
 //TODO(건우) 방이 만들어지고 나서 tempRoom을 초기화 해야함
 export class RoomListStore {
   readonly rootStore: RootStore;
@@ -31,12 +31,12 @@ export class RoomListStore {
   private _imageUrl: string = "";
   private _uploadedImgUrl?: string = "";
   private _rooms: Room[] = [];
-  private _tempRoom: Room = new Room();
   private _roomOverviews: RoomOverview[] = [];
   private _pageNum: number = 0;
   private _isSuccessCreate: boolean = false;
   private _isSuccessGet: boolean = false;
   private _errorMessage: string = "";
+  private _tempRoom: Room = new Room();
 
   constructor(
     root: RootStore,
@@ -48,6 +48,10 @@ export class RoomListStore {
 
   get errorMessage(): string {
     return this._errorMessage;
+  }
+
+  get tempRoom(): Room {
+    return this._tempRoom;
   }
 
   get createdTitle(): string {
@@ -91,6 +95,7 @@ export class RoomListStore {
     this._pageNum = parseInt(pageNum);
   }
 
+  //TODO(건우): RoomId를 임시적으로 title로 설정하도록 함. 수정 필요
   setRoomTitleInput(roomTitle: string) {
     this._tempRoom = { ...this._tempRoom, title: roomTitle, id: roomTitle };
   }
@@ -129,7 +134,6 @@ export class RoomListStore {
 
     const result = await this._roomService.createRoom(this._tempRoom);
     if (!result.isSuccess) {
-      console.log(result.throwableOrNull());
       this._errorMessage = result.throwableOrNull()!!.message;
       this._isSuccessCreate = false;
       return;

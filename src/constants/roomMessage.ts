@@ -10,11 +10,6 @@ export const ROOM_CREATE_FAILED: string = "방 생성에 실패하였습니다";
 export const GET_ROOMS_FAILED: string = "방 조회에 실패하였습니다";
 export const ROOM_PASSWORD_LENGTH_ERROR_MESSAGE: string =
   "비밀번호는 4자 이상으로 설정해야 합니다.";
-export const STUDYING_TIME_RANGE_ERROR: string = `공부 시간은 ${POMODORO_TIMER_RANGE}분으로만 설정할 수 있습니다.`;
-export const SHORT_STUDYING_TIME_RANGE_ERROR: string = `짧은 쉬는 시간은 ${POMODORO_SHORT_BREAK_RANGE}분 범위로만 설정할 수 있습니다.`;
-export const LONG_STUDYING_TIME_RANGE_ERROR: string = `긴 쉬는 시간은 ${POMODORO_LONG_BREAK_RANGE}분으로만 설정할 수 있습니다.`;
-export const BREAK_TIME_INTERVAL_RANGE_ERROR: string = `쉬는 시간 인터벌은 ${POMODORO_LONG_INTERVAL_RANGE}회로만 설정할 수 있습니다.`;
-
 export const ROOM_IS_FULL_MESSAGE: string = "방 정원이 가득 찼습니다.";
 export const CONNECTING_ROOM_MESSAGE: string = "연결 중...";
 export const ALREADY_JOINED_ROOM_MESSAGE: string =
