@@ -33,8 +33,8 @@ export const validatePassword = (password: string | undefined) => {
   }
 };
 
-export const validateExpiredAt = (expired_at: string) => {
-  if (expired_at === "") {
+export const validateExpiredAt = (expired_at: Date) => {
+  if (expired_at === undefined) {
     throw NO_ROOM_EXPIRED_AT_ERROR_MESSAGE;
   }
 };

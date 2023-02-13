@@ -3,6 +3,7 @@ import { RootStore } from "@/stores/RootStore";
 import roomService, { RoomService } from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import React from "react";
+import expect from "expect";
 
 //TODO(건우) 값을 임시로 할당하여 수정 필요
 export class Room {
@@ -16,7 +17,7 @@ export class Room {
     readonly shortBreak: number = 10,
     readonly longBreak: number = 20,
     readonly longBreakInterval: number = 3,
-    readonly expiredAt: string = "2021-08-21T12:30:00.000Z",
+    readonly expiredAt: Date = new Date(),
     readonly tags: string[] = []
   ) {
     makeAutoObservable(this);
@@ -37,6 +38,7 @@ export class RoomListStore {
   private _isSuccessGet: boolean = false;
   private _errorMessage: string = "";
   private _tempRoom: Room = new Room();
+  private _roomExpirate: number = 2;
 
   constructor(
     root: RootStore,
@@ -78,29 +80,31 @@ export class RoomListStore {
     return this._imageUrl !== "";
   }
 
-  private _initRoomOverviews() {
-    this._roomOverviews = [];
+  private _setRoomExpirationDate() {
+    const date = new Date();
+    date.setDate(date.getDate() + this._roomExpirate);
+    this._tempRoom = { ...this._tempRoom, expiredAt: date };
   }
 
-  importRoomThumbnail = (thumbnail: File) => {
+  public importRoomThumbnail = (thumbnail: File) => {
     this._selectedImageFile = thumbnail;
     this._imageUrl = URL.createObjectURL(thumbnail);
   };
 
-  changeRoomThumbnail = (uploadedImgUrl: string) => {
+  public changeRoomThumbnail = (uploadedImgUrl: string) => {
     this._tempRoom = { ...this._tempRoom, thumbnail: uploadedImgUrl };
   };
 
-  changeRoomNum(pageNum: string) {
+  public changeRoomNum(pageNum: string) {
     this._pageNum = parseInt(pageNum);
   }
 
   //TODO(건우): RoomId를 임시적으로 title로 설정하도록 함. 수정 필요
-  setRoomTitleInput(roomTitle: string) {
+  public setRoomTitleInput(roomTitle: string) {
     this._tempRoom = { ...this._tempRoom, title: roomTitle, id: roomTitle };
   }
 
-  fetchRooms = async (): Promise<void> => {
+  public fetchRooms = async (): Promise<void> => {
     const result = await this._roomService.getRooms(this._pageNum);
     if (result.isSuccess) {
       this._isSuccessGet = true;
@@ -112,7 +116,8 @@ export class RoomListStore {
     }
   };
 
-  createRoom = async (): Promise<void> => {
+  public createRoom = async (): Promise<void> => {
+    // 사용자가 선택한 이미지를 업로드
     if (this.isSuccessImportImage) {
       const formData = new FormData();
       formData.append("roomId", this._tempRoom.id);
@@ -123,14 +128,17 @@ export class RoomListStore {
           this._tempRoom.id,
           formData
         );
+      //실패 시 에러 메세지 출력
       if (!uploadThumbnailImgResult.isSuccess) {
         this._errorMessage =
           uploadThumbnailImgResult.throwableOrNull()!!.message;
         return;
       }
+      //성공 시 tempRoom의 썸네일을 해당 url로 변경
       this._uploadedImgUrl = uploadThumbnailImgResult.getOrNull();
       this.changeRoomThumbnail(this._uploadedImgUrl!!);
     }
+    this._setRoomExpirationDate();
 
     const result = await this._roomService.createRoom(this._tempRoom);
     if (!result.isSuccess) {
@@ -144,7 +152,7 @@ export class RoomListStore {
     console.log(`(${this._tempRoom.id})방을 생성하였습니다`);
   };
 
-  deleteRoom(id: string) {
+  public deleteRoom(id: string) {
     this._rooms = this._rooms.filter((room) => room.id !== id);
   }
 }

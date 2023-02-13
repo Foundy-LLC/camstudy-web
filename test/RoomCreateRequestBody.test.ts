@@ -27,7 +27,7 @@ describe("RoomCreateRequestBody success validation", () => {
       5,
       10,
       2,
-      "2021-08-21T12:30:00.000Z",
+      new Date(),
       []
     );
     //when
@@ -176,7 +176,7 @@ describe("RoomCreateRequestBody Error validation", () => {
       3,
       10,
       2,
-      ""
+      undefined
     );
     //when
     await expect(() => {
