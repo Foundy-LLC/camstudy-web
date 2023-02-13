@@ -42,6 +42,10 @@ export class UserStore {
     if (auth.currentUser == null) this._isNewUser = undefined;
   };
 
+  refreshUser = async () => {
+    await this._checkAuth();
+  };
+
   //TODO: 함수명 맘에 안듬
   private _checkAuth = async () => {
     if (this._auth.currentUser != null) {

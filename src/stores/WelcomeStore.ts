@@ -6,6 +6,7 @@ import {
   validateUserProfileImage,
   validateUserTags,
 } from "@/utils/user.validator";
+import userStore from "@/stores/UserStore";
 
 export class WelcomeStore {
   private _profileImage?: File;
@@ -150,6 +151,8 @@ export class WelcomeStore {
     );
     if (createUserResult.isSuccess) {
       this._successToCreate = true;
+      // TODO: 회원가입 후 유저 정보를 가지고 올 수 없다. 따라서 유저 생성이 성공이라면 유저정보를 가지고 오게 설정했다. 다른 방법 생각해볼 것
+      await userStore.refreshUser();
     } else {
       this._errorMessage = createUserResult.throwableOrNull()!!.message;
     }
