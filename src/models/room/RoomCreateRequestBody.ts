@@ -13,7 +13,7 @@ import {
   validateTimerLength,
 } from "@/utils/room.validator";
 
-export class RoomRequestBody {
+export class RoomCreateRequestBody {
   private readonly _room: Room;
   constructor(room: Room) {
     this._room = room;

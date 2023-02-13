@@ -17,7 +17,7 @@ import {
   isUserBlockedAtRoom,
 } from "@/repository/room.repository";
 import { ResponseBody } from "@/models/common/ResponseBody";
-import { RoomRequestBody } from "@/models/room/RoomRequestBody";
+import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { RoomsRequestGet } from "@/models/room/RoomsRequestGet";
 import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
@@ -100,7 +100,7 @@ export const getRooms = async (req: NextApiRequest, res: NextApiResponse) => {
 
 export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    await createRoom(new RoomRequestBody(req.body._room));
+    await createRoom(new RoomCreateRequestBody(req.body._room));
     res.status(201).end();
   } catch (e) {
     if (typeof e === "string") {

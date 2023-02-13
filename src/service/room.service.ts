@@ -1,5 +1,5 @@
 import { Result } from "@/models/common/Result";
-import { RoomRequestBody } from "@/models/room/RoomRequestBody";
+import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { Room } from "@/stores/RoomListStore";
 import { ROOM_CREATE_SUCCESS } from "@/constants/roomMessage";
@@ -28,7 +28,7 @@ export class RoomService {
   }
   public async createRoom(room: Room): Promise<Result<string>> {
     try {
-      const requestBody = new RoomRequestBody(room);
+      const requestBody = new RoomCreateRequestBody(room);
       const response = await fetch(`api/rooms`, {
         method: "POST",
         body: JSON.stringify(requestBody),

@@ -36,10 +36,10 @@ export class RoomListStore {
   private _isSuccessCreate: boolean = false;
   private _isSuccessGet: boolean = false;
   private _errorMessage: string = "";
+  private _tempRoom: Room = new Room();
   constructor(
     root: RootStore,
-    private readonly _roomService: RoomService = roomService,
-    private _tempRoom: Room = new Room()
+    private readonly _roomService: RoomService = roomService
   ) {
     makeAutoObservable(this);
     this.rootStore = root;
@@ -138,8 +138,6 @@ export class RoomListStore {
       this.changeRoomThumbnail(this._uploadedImgUrl!!);
     }
 
-    this.setThumbnailUndefined();
-    this.setPasswordUndefined();
     const result = await this._roomService.createRoom(this._tempRoom);
     if (!result.isSuccess) {
       this._errorMessage = result.throwableOrNull()!!.message;

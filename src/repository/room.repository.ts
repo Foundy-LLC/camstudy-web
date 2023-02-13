@@ -1,10 +1,10 @@
 import prisma from "../../prisma/client";
-import { room } from "@prisma/client";
 import client from "prisma/client";
 import { RoomOverview } from "@/models/room/RoomOverview";
-import { RoomRequestBody } from "@/models/room/RoomRequestBody";
+import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { Room } from "@/stores/RoomListStore";
 import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
+import { room } from "@prisma/client";
 const ROOM_NUM_PER_PAGE = 30 as const;
 
 export const findRoomById = async (roomId: string): Promise<room | null> => {
@@ -61,7 +61,7 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
   });
   return roomOverviews;
 };
-export const createRoom = async (body: RoomRequestBody) => {
+export const createRoom = async (body: RoomCreateRequestBody) => {
   const room: Room = body.room;
   await client.room.create({
     data: {
