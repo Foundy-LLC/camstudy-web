@@ -15,17 +15,8 @@ import {
 } from "@/constants/room.constant";
 import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 
-const RequestBodyTest = (room: Room) => {
-  try {
-    new RoomCreateRequestBody(room);
-  } catch (e) {
-    return e;
-  }
-  return "No error";
-};
-
 describe("RoomCreateRequestBody success validation", () => {
-  it("success", () => {
+  it("success", async () => {
     const room: Room = new Room(
       "id",
       "masterid",
@@ -40,12 +31,12 @@ describe("RoomCreateRequestBody success validation", () => {
       []
     );
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe("No error");
+    await expect(async () => {
+      new RoomCreateRequestBody(room);
+    }).not.toThrow(); //then
   });
 
-  it("should success even if thumbnail and password are undefined", () => {
+  it("should success even if thumbnail and password are undefined", async () => {
     const room: Room = new Room(
       "id",
       "masterid",
@@ -54,50 +45,50 @@ describe("RoomCreateRequestBody success validation", () => {
       undefined
     );
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe("No error");
+    await expect(async () => {
+      await new RoomCreateRequestBody(room);
+    }).not.toThrow(); //then
   });
 });
 
 describe("RoomCreateRequestBody Error validation", () => {
-  it("should throw error when roomId is null", () => {
+  it("should throw error when roomId is null", async () => {
     //given
     const room: Room = new Room("");
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe(NO_ROOM_ID_ERROR_MESSAGE);
+    await expect(() => {
+      new RoomCreateRequestBody(room);
+    }).toThrow(NO_ROOM_ID_ERROR_MESSAGE); //then
   });
 
-  it("should throw error when masterId is null", () => {
+  it("should throw error when masterId is null", async () => {
     //given
     const room: Room = new Room("123", "");
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe(NO_ROOM_MASTER_ID_ERROR_MESSAGE);
+    await expect(() => {
+      new RoomCreateRequestBody(room);
+    }).toThrow(NO_ROOM_MASTER_ID_ERROR_MESSAGE); //then
   });
 
-  it("should throw error when title is null", () => {
+  it("should throw error when title is null", async () => {
     //given
     const room: Room = new Room("123", "123", "");
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe(NO_ROOM_TITLE_ERROR_MESSAGE);
+    await expect(() => {
+      new RoomCreateRequestBody(room);
+    }).toThrow(NO_ROOM_TITLE_ERROR_MESSAGE); //then
   });
 
-  it("should throw error when password is shorter than 4", () => {
+  it("should throw error when password is shorter than 4", async () => {
     //given
     const room: Room = new Room("123", "123", "title", "thumbnail", "123");
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe(ROOM_PASSWORD_LENGTH_ERROR_MESSAGE);
+    await expect(() => {
+      new RoomCreateRequestBody(room);
+    }).toThrow(ROOM_PASSWORD_LENGTH_ERROR_MESSAGE); //then
   });
 
-  it("should throw error when timer is out of rance", async () => {
+  it("should throw error when timer is out of range", async () => {
     //given
     const room: Room = new Room(
       "123",
@@ -108,14 +99,12 @@ describe("RoomCreateRequestBody Error validation", () => {
       10
     );
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe(
-      `타이머의 길이는 ${POMODORO_TIMER_RANGE}분 사이만 가능합니다.`
-    );
+    await expect(() => {
+      new RoomCreateRequestBody(room);
+    }).toThrow(`타이머의 길이는 ${POMODORO_TIMER_RANGE}분 사이만 가능합니다.`); //then
   });
 
-  it("should throw error when short-breaktime is out of range", () => {
+  it("should throw error when short-breaktime is out of range", async () => {
     //given
     const room: Room = new Room(
       "123",
@@ -127,14 +116,14 @@ describe("RoomCreateRequestBody Error validation", () => {
       2
     );
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe(
+    await expect(() => {
+      new RoomCreateRequestBody(room);
+    }).toThrow(
       `짧은 휴식의 길이는 ${POMODORO_SHORT_BREAK_RANGE}분 사이만 가능합니다.`
-    );
+    ); //then
   });
 
-  it("should throw error when Long-breaktime is out of range", () => {
+  it("should throw error when Long-breaktime is out of range", async () => {
     //given
     const room: Room = new Room(
       "123",
@@ -147,14 +136,14 @@ describe("RoomCreateRequestBody Error validation", () => {
       5
     );
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe(
+    await expect(() => {
+      new RoomCreateRequestBody(room);
+    }).toThrow(
       `긴 휴식의 길이는 ${POMODORO_LONG_BREAK_RANGE}분 사이만 가능합니다.`
-    );
+    ); //then
   });
 
-  it("should throw error when Long-breaktime is out of range", () => {
+  it("should throw error when Long-breaktime interval is out of range", async () => {
     //given
     const room: Room = new Room(
       "123",
@@ -168,14 +157,14 @@ describe("RoomCreateRequestBody Error validation", () => {
       1
     );
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe(
+    await expect(() => {
+      new RoomCreateRequestBody(room);
+    }).toThrow(
       `긴 휴식 주기는 ${POMODORO_LONG_INTERVAL_RANGE}회 사이만 가능합니다.`
-    );
+    ); //then
   });
 
-  it("should throw error when ExpiredAt is null", () => {
+  it("should throw error when ExpiredAt is null", async () => {
     //given
     const room: Room = new Room(
       "123",
@@ -190,8 +179,8 @@ describe("RoomCreateRequestBody Error validation", () => {
       ""
     );
     //when
-    const errorMessage = RequestBodyTest(room);
-    //then
-    expect(errorMessage).toBe(NO_ROOM_EXPIRED_AT_ERROR_MESSAGE);
+    await expect(() => {
+      new RoomCreateRequestBody(room);
+    }).toThrow(NO_ROOM_EXPIRED_AT_ERROR_MESSAGE); //then
   });
 });

@@ -1,9 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { RootStore } from "@/stores/RootStore";
-import { RoomService } from "@/service/room.service";
+import roomService, { RoomService } from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import React from "react";
-import roomService from "@/service/room.service";
 
 //TODO(건우) 값을 임시로 할당하여 수정 필요
 export class Room {
@@ -23,6 +22,7 @@ export class Room {
     makeAutoObservable(this);
   }
 }
+
 //TODO(건우) 방이 만들어지고 나서 tempRoom을 초기화 해야함
 export class RoomListStore {
   readonly rootStore: RootStore;
@@ -37,6 +37,7 @@ export class RoomListStore {
   private _isSuccessGet: boolean = false;
   private _errorMessage: string = "";
   private _tempRoom: Room = new Room();
+
   constructor(
     root: RootStore,
     private readonly _roomService: RoomService = roomService
@@ -81,14 +82,6 @@ export class RoomListStore {
     this._roomOverviews = [];
   }
 
-  setThumbnailUndefined = () => {
-    this._tempRoom = { ...this.tempRoom, thumbnail: undefined };
-  };
-
-  setPasswordUndefined = () => {
-    this._tempRoom = { ...this.tempRoom, password: undefined };
-  };
-
   importRoomThumbnail = (thumbnail: File) => {
     this._selectedImageFile = thumbnail;
     this._imageUrl = URL.createObjectURL(thumbnail);
@@ -101,6 +94,7 @@ export class RoomListStore {
   changeRoomNum(pageNum: string) {
     this._pageNum = parseInt(pageNum);
   }
+
   //TODO(건우): RoomId를 임시적으로 title로 설정하도록 함. 수정 필요
   setRoomTitleInput(roomTitle: string) {
     this._tempRoom = { ...this._tempRoom, title: roomTitle, id: roomTitle };
