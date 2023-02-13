@@ -89,6 +89,8 @@ export class RoomSocketService {
   private readonly _consumingTransportIds: Set<string> = new Set();
   private _receiveTransportWrappers: ReceiveTransportWrapper[] = [];
 
+  private _didGetOtherProducers: boolean = false;
+
   constructor(private readonly _roomViewModel: RoomViewModel) {}
 
   private _requireSocket = (): Socket => {
@@ -364,13 +366,12 @@ export class RoomSocketService {
           rtpParameters: parameters.rtpParameters,
           appData: parameters.appData,
         },
-        ({ id, producersExist }: { id: string; producersExist: boolean }) => {
-          // Tell the transport that parameters were transmitted and provide it with the
-          // server side producer's id.
+        ({ id }: { id: string }) => {
           callback({ id });
-          // if producers exist, then join room
-          if (producersExist)
+          if (!this._didGetOtherProducers) {
+            this._didGetOtherProducers = true;
             this._getRemoteProducersAndCreateReceiveTransport(device);
+          }
         }
       );
     } catch (error: any) {
