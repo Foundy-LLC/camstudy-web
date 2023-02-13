@@ -18,7 +18,7 @@ import {
 } from "@/constants/message";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
-import { InitialInformationRequestBody } from "@/models/user/InitialInformationRequestBody";
+import { UserGetRequestBody } from "@/models/user/UserGetRequestBody";
 import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import { uuidv4 } from "@firebase/util";
@@ -26,15 +26,13 @@ import { USER_INFORMATION_LOOKUP_SUCCESS } from "@/constants/user.constant";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const requestBody = new InitialInformationRequestBody(
-      <string>req.query.userId
-    );
-    const userInformation = await findUser(requestBody.userId);
-    console.log(userInformation);
+    const requestBody = new UserGetRequestBody(<string>req.query.userId);
+    const user = await findUser(requestBody.userId);
+    console.log(user);
     res.status(200).send(
       new ResponseBody({
         message: USER_INFORMATION_LOOKUP_SUCCESS,
-        data: userInformation,
+        data: user,
       })
     );
   } catch (e) {
@@ -53,9 +51,7 @@ export const getUserExistence = async (
   res: NextApiResponse
 ) => {
   try {
-    const requestBody = new InitialInformationRequestBody(
-      <string>req.query.userId
-    );
+    const requestBody = new UserGetRequestBody(<string>req.query.userId);
     const exists = await isUserExists(requestBody.userId);
     res.status(200).send(
       new ResponseBody({

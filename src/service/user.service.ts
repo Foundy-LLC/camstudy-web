@@ -20,6 +20,7 @@ export class UserService {
       return Result.createErrorUsingException(e);
     }
   }
+
   public async isExistUser(userId: string): Promise<Result<boolean>> {
     try {
       const response = await fetch(`api/users/${userId}/exists`, {

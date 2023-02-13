@@ -5,15 +5,6 @@ import { User } from "@/models/user/User";
 import { Prisma } from "@prisma/client";
 
 export const findUser = async (userId: string): Promise<User | null> => {
-  // return await prisma.user_account.findUnique({
-  //   select: {
-  //     id: true,
-  //     name: true,
-  //   },
-  //   where: {
-  //     id: userId,
-  //   },
-  // });
   return await prisma.$queryRaw(Prisma.sql`select ua.id, ua."name", ua.introduce, organization.organizations, tag.tags, ranking.ranking, times.totalStudyMinute
      from user_account ua , 
     (select array_to_json(array_agg(t2."name")) as tags 

@@ -29,7 +29,7 @@ export class UserStore {
     return this._isNewUser;
   }
 
-  get currentUser() {
+  get currentUser(): User | undefined {
     return this._currentUser;
   }
 
