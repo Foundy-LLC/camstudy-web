@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import { RootStore } from "@/stores/RootStore";
 import roomService, { RoomService } from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
@@ -105,14 +105,17 @@ export class RoomListStore {
   }
 
   public fetchRooms = async (): Promise<void> => {
-    const result = await this._roomService.getRooms(this._pageNum);
-    if (result.isSuccess) {
-      this._isSuccessGet = true;
-      this._roomOverviews = result.getOrNull()!!;
+    const getRoomsResult = await this._roomService.getRooms(this._pageNum);
+    if (getRoomsResult.isSuccess) {
+      runInAction(() => {
+        this._isSuccessGet = true;
+        this._roomOverviews = getRoomsResult.getOrNull()!!;
+      });
     } else {
-      console.log(result.throwableOrNull());
-      this._errorMessage = result.throwableOrNull()!!.message;
-      this._isSuccessGet = false;
+      runInAction(() => {
+        this._errorMessage = getRoomsResult.throwableOrNull()!!.message;
+        this._isSuccessGet = false;
+      });
     }
   };
 
@@ -130,25 +133,34 @@ export class RoomListStore {
         );
       //실패 시 에러 메세지 출력
       if (!uploadThumbnailImgResult.isSuccess) {
-        this._errorMessage =
-          uploadThumbnailImgResult.throwableOrNull()!!.message;
+        runInAction(() => {
+          this._errorMessage =
+            uploadThumbnailImgResult.throwableOrNull()!!.message;
+        });
         return;
       }
+      runInAction(() => {
+        this._uploadedImgUrl = uploadThumbnailImgResult.getOrNull();
+        this.changeRoomThumbnail(this._uploadedImgUrl!!);
+      });
       //성공 시 tempRoom의 썸네일을 해당 url로 변경
-      this._uploadedImgUrl = uploadThumbnailImgResult.getOrNull();
-      this.changeRoomThumbnail(this._uploadedImgUrl!!);
     }
-    this._setRoomExpirationDate();
-
+    runInAction(() => {
+      this._setRoomExpirationDate();
+    });
     const result = await this._roomService.createRoom(this._tempRoom);
     if (!result.isSuccess) {
-      this._errorMessage = result.throwableOrNull()!!.message;
-      this._isSuccessCreate = false;
+      runInAction(() => {
+        this._errorMessage = result.throwableOrNull()!!.message;
+        this._isSuccessCreate = false;
+      });
       return;
     }
-    this._rooms.push(this._tempRoom);
-    this._isSuccessCreate = true;
-    this._createdRoomTitle = this._tempRoom.title;
+    runInAction(() => {
+      this._rooms.push(this._tempRoom);
+      this._isSuccessCreate = true;
+      this._createdRoomTitle = this._tempRoom.title;
+    });
     console.log(`(${this._tempRoom.id})방을 생성하였습니다`);
   };
 

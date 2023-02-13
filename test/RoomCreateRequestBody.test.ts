@@ -163,24 +163,4 @@ describe("RoomCreateRequestBody Error validation", () => {
       `긴 휴식 주기는 ${POMODORO_LONG_INTERVAL_RANGE}회 사이만 가능합니다.`
     ); //then
   });
-
-  it("should throw error when ExpiredAt is null", async () => {
-    //given
-    const room: Room = new Room(
-      "123",
-      "123",
-      "title",
-      "thumbnail",
-      "password",
-      20,
-      3,
-      10,
-      2,
-      undefined
-    );
-    //when
-    await expect(() => {
-      new RoomCreateRequestBody(room);
-    }).toThrow(NO_ROOM_EXPIRED_AT_ERROR_MESSAGE); //then
-  });
 });

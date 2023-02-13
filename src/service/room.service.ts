@@ -40,7 +40,6 @@ export class RoomService {
         return await Result.createErrorUsingResponseMessage(response);
       }
     } catch (e) {
-      console.log(e);
       return Result.createErrorUsingException(e);
     }
   }

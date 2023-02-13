@@ -40,7 +40,7 @@ export const validateExpiredAt = (expired_at: Date) => {
 };
 
 export const validatePageNum = (page_num: number | null) => {
-  if (page_num == null) {
+  if (page_num === null) {
     throw ROOM_PAGE_NUM_TYPE_ERROR;
   }
 };
