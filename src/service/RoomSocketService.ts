@@ -9,6 +9,7 @@ import {
   CONSUME_RESUME,
   CREATE_WEB_RTC_TRANSPORT,
   EDIT_AND_STOP_TIMER,
+  GET_AUDIO_PRODUCER_IDS,
   GET_PRODUCER_IDS,
   JOIN_ROOM,
   JOIN_WAITING_ROOM,
@@ -80,6 +81,11 @@ interface ErrorParams {
   error: any;
 }
 
+interface UserAndProducerId {
+  producerId: string;
+  userId: string;
+}
+
 export class RoomSocketService {
   private _socket?: Socket;
 
@@ -87,12 +93,12 @@ export class RoomSocketService {
   private _audioProducer?: Producer;
   private _videoProducer?: Producer;
 
-  private readonly _consumingTransportIds: Set<string> = new Set();
   private _receiveTransportWrappers: ReceiveTransportWrapper[] = [];
 
   private _didGetOtherProducers: boolean = false;
 
   private _mutedHeadset: boolean = false;
+  private _device?: Device;
 
   constructor(private readonly _roomViewModel: RoomViewModel) {}
 
@@ -179,12 +185,14 @@ export class RoomSocketService {
         );
         try {
           // once we have rtpCapabilities from the Router, create Device
-          const device = new Device();
-          await device.load({ routerRtpCapabilities: data.rtpCapabilities });
+          this._device = new Device();
+          await this._device.load({
+            routerRtpCapabilities: data.rtpCapabilities,
+          });
 
-          this._createSendTransport(device, localMediaStream);
+          this._createSendTransport(this._device, localMediaStream);
 
-          this._listenRoomEvents(device);
+          this._listenRoomEvents(this._device);
         } catch (e) {
           // TODO
         }
@@ -372,6 +380,7 @@ export class RoomSocketService {
         ({ id }: { id: string }) => {
           callback({ id });
           if (!this._didGetOtherProducers) {
+            console.log("뭐지????????");
             this._didGetOtherProducers = true;
             this._getRemoteProducersAndCreateReceiveTransport(device);
           }
@@ -385,7 +394,7 @@ export class RoomSocketService {
   private _getRemoteProducersAndCreateReceiveTransport = (device: Device) => {
     this._requireSocket().emit(
       GET_PRODUCER_IDS,
-      (userProducerIds: { producerId: string; userId: string }[]) => {
+      (userProducerIds: UserAndProducerId[]) => {
         console.log(userProducerIds);
         // for each of the producer create a consumer
         // producerIds.forEach(id => signalNewConsumerTransport(id))
@@ -405,11 +414,6 @@ export class RoomSocketService {
     userId: string,
     device: Device
   ) => {
-    if (this._consumingTransportIds.has(remoteProducerId)) {
-      return;
-    }
-    this._consumingTransportIds.add(remoteProducerId);
-
     const receiveTransportWrapper = this._receiveTransportWrappers.find(
       (w) => w.userId === userId
     );
@@ -581,6 +585,25 @@ export class RoomSocketService {
       }
     );
     this._requireSocket().emit(CLOSE_AUDIO_CONSUMERS);
+  };
+
+  public unmuteHeadset = () => {
+    this._mutedHeadset = false;
+    this._requireSocket().emit(
+      GET_AUDIO_PRODUCER_IDS,
+      async (userAndProducerIds: UserAndProducerId[]) => {
+        if (this._device === undefined) {
+          throw Error("Device 필드가 초기화 되지 않았습니다.");
+        }
+        for (const userAndProducerId of userAndProducerIds) {
+          await this._createReceiveTransport(
+            userAndProducerId.producerId,
+            userAndProducerId.userId,
+            this._device
+          );
+        }
+      }
+    );
   };
 
   public sendChat = (message: string) => {

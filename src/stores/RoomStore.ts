@@ -55,6 +55,7 @@ export class RoomStore implements RoomViewModel {
 
   private _localVideoStream?: MediaStream = undefined;
   private _localAudioStream?: MediaStream = undefined;
+  private _enabledHeadset: boolean = true;
 
   // ======================= 대기실 관련 =======================
   private _waitingRoomData?: WaitingRoomData = undefined;
@@ -98,6 +99,10 @@ export class RoomStore implements RoomViewModel {
 
   public get enabledLocalAudio(): boolean {
     return this._localAudioStream !== undefined;
+  }
+
+  public get enabledHeadset(): boolean {
+    return this._enabledHeadset;
   }
 
   // ================================ 대기실 getter 시작 ================================
@@ -360,7 +365,9 @@ export class RoomStore implements RoomViewModel {
         "로컬 오디오가 있는 상태에서 오디오를 생성하려 했습니다."
       );
     }
-    this.unmuteHeadset();
+    if (!this.enabledHeadset) {
+      this.unmuteHeadset();
+    }
     const media = await this._mediaUtil.fetchLocalMedia({ audio: true });
     await runInAction(async () => {
       const track = media.getAudioTracks()[0];
@@ -381,7 +388,8 @@ export class RoomStore implements RoomViewModel {
   };
 
   public unmuteHeadset = () => {
-    // TODO: 구현하기
+    this._roomService.unmuteHeadset();
+    this._enabledHeadset = true;
   };
 
   public muteHeadset = () => {
@@ -392,6 +400,7 @@ export class RoomStore implements RoomViewModel {
       remoteAudioStream.getAudioTracks().forEach((audio) => audio.stop());
     }
     this._roomService.muteHeadset();
+    this._enabledHeadset = false;
   };
 
   public updateChatInput = (message: string) => {
