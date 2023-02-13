@@ -91,7 +91,7 @@ export class UserStore {
       const firebaseApp = await signInWithPopup(auth, this._googleAuthProvider);
       await this._fetchIsNewUser(firebaseApp.user.uid);
       //TODO 로그인 후 유저 정보를 조회할 수 없음, 그래서 로그인 후 _checkAuth() 호출함. 좋은 방법은 아닌거 같음. 다른 방법 생각해 볼 것.
-      await this._checkAuth();
+      if (!this.isNewUser) await this._checkAuth();
     } catch (e) {
       console.log(e);
     }
@@ -101,7 +101,7 @@ export class UserStore {
     try {
       const firebaseApp = await signInWithPopup(auth, this._githubAuthProvider);
       await this._fetchIsNewUser(firebaseApp.user.uid);
-      await this._checkAuth();
+      if (!this.isNewUser) await this._checkAuth();
     } catch (e) {
       console.log(e);
     }
