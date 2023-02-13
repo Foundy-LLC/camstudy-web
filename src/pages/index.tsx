@@ -4,10 +4,13 @@ import { Inter } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
-import { IMAGE_SERVER_URL } from "@/constants/image.constant";
+import {
+  IMAGE_SERVER_URL,
+  USER_DEFAULT_IMAGE_SRC,
+} from "@/constants/image.constant";
 import userStore from "@/stores/UserStore";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -15,6 +18,7 @@ const inter = Inter({ subsets: ["latin"] });
 function Home() {
   const router = useRouter();
   const [user, loading] = useAuthState(auth);
+  const [src, setSrc] = useState<string>(user?.uid || "");
   if (loading) {
     return <div>Loading</div>;
   }
@@ -47,8 +51,12 @@ function Home() {
             width={150}
             height={150}
             loader={userProfileImageLoader}
-            src={user.uid}
+            src={src}
             alt={"user profile image"}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              setSrc(USER_DEFAULT_IMAGE_SRC);
+            }}
           ></Image>
           <button onClick={() => loggingUserInformation()}>
             getUserInformation
