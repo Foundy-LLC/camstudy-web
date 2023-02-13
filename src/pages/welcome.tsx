@@ -12,6 +12,14 @@ const Welcome: NextPage = () => {
   const [user, loading] = useAuthState(auth);
   const successToCreate = welcomeStore.successToCreate;
   const router = useRouter();
+  /**
+   * Welcome 페이지에서는 이동 못하도록 설정
+   */
+  useEffect(() => {
+    router.events.on("routeChangeStart", () => {
+      router.events.emit("routeChangeError");
+    });
+  }, [router.events]);
 
   useEffect(() => {
     if (successToCreate) {
