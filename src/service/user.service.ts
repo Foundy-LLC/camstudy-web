@@ -1,11 +1,26 @@
 import { UserPostRequestBody } from "@/models/user/UserPostRequestBody";
 import { Result } from "@/models/common/Result";
+import { User } from "@/models/user/User";
 
 const HEADER = {
   "Content-Type": "application/json",
 };
 
 export class UserService {
+  public async getUser(userId: string): Promise<Result<User>> {
+    try {
+      const response = await fetch(`api/users/${userId}`, {
+        headers: HEADER,
+        method: "GET",
+      });
+      if (response.ok)
+        return await Result.createSuccessUsingResponseData(response);
+      else return await Result.createErrorUsingResponseMessage(response);
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  }
+
   public async isExistUser(userId: string): Promise<Result<boolean>> {
     try {
       const response = await fetch(`api/users/${userId}/exists`, {

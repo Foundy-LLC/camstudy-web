@@ -3,7 +3,11 @@ import {
   createTagsIfNotExists,
   findTagIdsByTagName,
 } from "@/repository/tag.repository";
-import { createUser, isUserExists } from "@/repository/user.repository";
+import {
+  createUser,
+  findUser,
+  isUserExists,
+} from "@/repository/user.repository";
 import {
   EXISTS_INITIAL_INFORMATION_MESSAGE,
   NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
@@ -14,19 +18,40 @@ import {
 } from "@/constants/message";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
-import { InitialInformationRequestBody } from "@/models/user/InitialInformationRequestBody";
+import { UserGetRequestBody } from "@/models/user/UserGetRequestBody";
 import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import { uuidv4 } from "@firebase/util";
+import { USER_INFORMATION_LOOKUP_SUCCESS } from "@/constants/user.constant";
 
+export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const requestBody = new UserGetRequestBody(<string>req.query.userId);
+    const user = await findUser(requestBody.userId);
+    console.log(user);
+    res.status(200).send(
+      new ResponseBody({
+        message: USER_INFORMATION_LOOKUP_SUCCESS,
+        data: user,
+      })
+    );
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+    return;
+  }
+};
 export const getUserExistence = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
   try {
-    const requestBody = new InitialInformationRequestBody(
-      <string>req.query.userId
-    );
+    const requestBody = new UserGetRequestBody(<string>req.query.userId);
     const exists = await isUserExists(requestBody.userId);
     res.status(200).send(
       new ResponseBody({
@@ -38,7 +63,7 @@ export const getUserExistence = async (
     );
   } catch (e) {
     if (typeof e === "string") {
-      res.status(400).end(new ResponseBody({ message: e }));
+      res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
     res
@@ -73,7 +98,7 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(201).json(new ResponseBody({ message: PROFILE_CREATE_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
-      res.status(400).end(e);
+      res.status(400).send(e);
       return;
     }
     res

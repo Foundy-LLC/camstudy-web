@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { postProfileImage } from "@/controller/user.controller";
 
-export default async function handler(
+export default async function profileImageHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {

@@ -1,6 +1,6 @@
 import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
-
-export class InitialInformationRequestBody {
+//TODO: 클래스명 바꾸기
+export class UserGetRequestBody {
   constructor(readonly userId: string) {
     this._validateUid();
   }
