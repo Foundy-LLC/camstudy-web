@@ -1,5 +1,10 @@
 export interface User {
   readonly id: string;
   readonly name: string;
-  //TODO: 추가될 정보들 구현
+  readonly introduce: string;
+  //TODO: 랭킹 산정 방식 나오면 다시 계산
+  readonly rankingScore: number;
+  readonly totalStudyMinute: number;
+  readonly organizations: Array<string>;
+  readonly tags: Array<string>;
 }

@@ -5,8 +5,8 @@ import {
 } from "@/repository/tag.repository";
 import {
   createUser,
-  isUserExists,
   findUser,
+  isUserExists,
 } from "@/repository/user.repository";
 import {
   EXISTS_INITIAL_INFORMATION_MESSAGE,
@@ -39,7 +39,7 @@ export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
     );
   } catch (e) {
     if (typeof e === "string") {
-      res.status(400).end(new ResponseBody({ message: e }));
+      res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
     res
@@ -67,7 +67,7 @@ export const getUserExistence = async (
     );
   } catch (e) {
     if (typeof e === "string") {
-      res.status(400).end(new ResponseBody({ message: e }));
+      res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
     res
@@ -102,7 +102,7 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(201).json(new ResponseBody({ message: PROFILE_CREATE_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
-      res.status(400).end(e);
+      res.status(400).send(e);
       return;
     }
     res
