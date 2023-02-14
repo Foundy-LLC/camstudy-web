@@ -9,7 +9,7 @@ import expect from "expect";
 export class Room {
   constructor(
     readonly id: string = "",
-    readonly masterId: string = "test",
+    readonly masterId: string = "",
     readonly title: string = "",
     readonly thumbnail: string | undefined = undefined,
     readonly password: string | undefined = undefined,
@@ -85,7 +85,9 @@ export class RoomListStore {
     date.setDate(date.getDate() + this._roomExpirate);
     this._tempRoom = { ...this._tempRoom, expiredAt: date };
   }
-
+  public setMasterId = (masterId: string) => {
+    this._tempRoom = { ...this._tempRoom, masterId: masterId };
+  };
   public importRoomThumbnail = (thumbnail: File) => {
     this._selectedImageFile = thumbnail;
     this._imageUrl = URL.createObjectURL(thumbnail);
