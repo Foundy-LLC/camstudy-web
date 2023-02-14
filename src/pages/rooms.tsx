@@ -1,16 +1,50 @@
 import { NextPage } from "next";
-import React, { Key } from "react";
+import React, { Key, useEffect } from "react";
 import { useStores } from "@/stores/context";
 import { observer } from "mobx-react-lite";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import Image from "next/image";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/service/firebase";
+import { useRouter } from "next/router";
+import userStore from "@/stores/UserStore";
 
-const RoomItem: NextPage<{ roomOverview: RoomOverview; key: Key }> = observer(
-  ({ roomOverview, key }) => {
+//TODO(건우) 삭제시 한번 더 확인하는 절차 추가 필요
+const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
+  ({ roomOverview }) => {
+    const { roomListStore } = useStores();
+    const [user] = useAuthState(auth);
     return (
-      <p key={key}>
-        {roomOverview.title}:{roomOverview.joinCount}/{roomOverview.maxCount}
-      </p>
+      <div>
+        {!roomOverview.hasPassword ? null : (
+          <Image
+            src={
+              "https://uxwing.com/wp-content/themes/uxwing/download/editing-user-action/padlock-black-icon.png"
+            }
+            width={7}
+            height={10}
+            alt="locked"
+            style={{ display: "inline" }}
+          />
+        )}
+        <h3 style={{ display: "inline" }}>{roomOverview.title}</h3>
+        <p style={{ display: "inline" }}>
+          :{roomOverview.joinCount}/{roomOverview.maxCount}
+        </p>
+        {roomOverview.masterId === user?.uid ? (
+          <Image
+            src={
+              "https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/red-x-icon.png"
+            }
+            width={13}
+            height={13}
+            alt="locked"
+            onClick={() => {
+              roomListStore.deleteRoom(roomOverview.id);
+            }}
+          />
+        ) : null}
+      </div>
     );
   }
 );
@@ -38,12 +72,42 @@ const SelectedThumbnailImage: NextPage<{ imageUrl: string }> = observer(
 );
 
 const RoomList: NextPage = observer(() => {
+  const router = useRouter();
   const { roomListStore } = useStores();
+  const [user, loading] = useAuthState(auth);
 
+  useEffect(() => {
+    if (user) {
+      roomListStore.setMasterId(user.uid);
+    }
+  }, [user]);
+
+  if (loading) {
+    return <div>Loading</div>;
+  }
+  if (!user) {
+    router.replace("/login");
+    return <div>Please sign in to continue</div>;
+  }
   return (
     <>
       <div>
+        <button
+          id="sign-out"
+          style={{
+            float: "right",
+            marginRight: "30px",
+            width: "100px",
+            height: "30px",
+          }}
+          onClick={() => userStore.signOut()}
+        >
+          sign out
+        </button>
+      </div>
+      <div>
         <h1>rooms page</h1>
+
         <input
           id="pageNum"
           placeholder="페이지 번호"

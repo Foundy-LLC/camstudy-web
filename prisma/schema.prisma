@@ -82,6 +82,7 @@ model room {
   long_break          Int
   long_break_interval Int
   expired_at          DateTime        @db.Timestamp(6)
+  deleted_at          DateTime?       @db.Timestamp(6)
   block               block[]
   room_tag            room_tag[]
   study_history       study_history[]

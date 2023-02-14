@@ -6,6 +6,7 @@ import {
 } from "@/constants/room.constant";
 
 export const ROOM_CREATE_SUCCESS: string = "방 개설을 성공했습니다.";
+export const ROOM_DELETE_SUCCESS: string = "방을 삭제되었습니다";
 export const ROOM_CREATE_FAILED: string = "방 생성에 실패하였습니다";
 export const GET_ROOMS_FAILED: string = "방 조회에 실패하였습니다";
 export const ROOM_PASSWORD_LENGTH_ERROR_MESSAGE: string =
@@ -35,5 +36,6 @@ export const NO_ROOM_LONG_BREAK_INTERVAL_ERROR_MESSAGE: string =
 export const NO_ROOM_EXPIRED_AT_ERROR_MESSAGE: string =
   "방의 유효 기간이 입력되지 않았습니다";
 export const ROOM_PAGE_NUM_TYPE_ERROR: string = "잘못된 페이지네이션 값입니다";
+export const ROOM_PAGE_NUM_NULL_ERROR: string = "페이지네이션 값이 NULL 입니다";
 export const ROOM_PAGE_OVER_ERROR: string =
   "더이상 공부방이 존재하지 않습니다.";

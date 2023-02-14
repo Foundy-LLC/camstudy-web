@@ -2,7 +2,11 @@ import { Result } from "@/models/common/Result";
 import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { Room } from "@/stores/RoomListStore";
-import { ROOM_CREATE_SUCCESS } from "@/constants/roomMessage";
+import {
+  ROOM_CREATE_SUCCESS,
+  ROOM_DELETE_SUCCESS,
+} from "@/constants/roomMessage";
+import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -35,7 +39,25 @@ export class RoomService {
         headers: HEADER,
       });
       if (response.ok) {
-        return Result.success(ROOM_CREATE_SUCCESS);
+        return Result.createSuccessUsingResponseData(response);
+      } else {
+        return await Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  }
+
+  public async deleteRoom(roomId: string) {
+    try {
+      const requestBody = new RoomDeleteRequestBody(roomId);
+      const response = await fetch(`api/rooms/${roomId}`, {
+        method: "DELETE",
+        body: JSON.stringify(requestBody),
+        headers: HEADER,
+      });
+      if (response.ok) {
+        return Result.createSuccessUsingResponseData(response);
       } else {
         return await Result.createErrorUsingResponseMessage(response);
       }

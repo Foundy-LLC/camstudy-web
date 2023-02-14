@@ -4,12 +4,13 @@ import roomService, { RoomService } from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import React from "react";
 import expect from "expect";
+import roomId from "@/pages/rooms/[roomId]";
 
 //TODO(건우) 값을 임시로 할당하여 수정 필요
 export class Room {
   constructor(
     readonly id: string = "",
-    readonly masterId: string = "test",
+    readonly masterId: string = "",
     readonly title: string = "",
     readonly thumbnail: string | undefined = undefined,
     readonly password: string | undefined = undefined,
@@ -18,6 +19,7 @@ export class Room {
     readonly longBreak: number = 20,
     readonly longBreakInterval: number = 3,
     readonly expiredAt: Date = new Date(),
+    readonly deleted_at: Date | undefined = undefined,
     readonly tags: string[] = []
   ) {
     makeAutoObservable(this);
@@ -36,6 +38,7 @@ export class RoomListStore {
   private _pageNum: number = 0;
   private _isSuccessCreate: boolean = false;
   private _isSuccessGet: boolean = false;
+  private _isSuccessDelete: boolean = false;
   private _errorMessage: string = "";
   private _tempRoom: Room = new Room();
   private _roomExpirate: number = 2;
@@ -80,12 +83,18 @@ export class RoomListStore {
     return this._imageUrl !== "";
   }
 
+  private _initErrorMessage() {
+    this._errorMessage = "";
+  }
+
   private _setRoomExpirationDate() {
     const date = new Date();
     date.setDate(date.getDate() + this._roomExpirate);
     this._tempRoom = { ...this._tempRoom, expiredAt: date };
   }
-
+  public setMasterId = (masterId: string) => {
+    this._tempRoom = { ...this._tempRoom, masterId: masterId };
+  };
   public importRoomThumbnail = (thumbnail: File) => {
     this._selectedImageFile = thumbnail;
     this._imageUrl = URL.createObjectURL(thumbnail);
@@ -108,6 +117,7 @@ export class RoomListStore {
     const getRoomsResult = await this._roomService.getRooms(this._pageNum);
     if (getRoomsResult.isSuccess) {
       runInAction(() => {
+        this._initErrorMessage();
         this._isSuccessGet = true;
         this._roomOverviews = getRoomsResult.getOrNull()!!;
       });
@@ -157,6 +167,7 @@ export class RoomListStore {
       return;
     }
     runInAction(() => {
+      this._initErrorMessage();
       this._rooms.push(this._tempRoom);
       this._isSuccessCreate = true;
       this._createdRoomTitle = this._tempRoom.title;
@@ -164,7 +175,21 @@ export class RoomListStore {
     console.log(`(${this._tempRoom.id})방을 생성하였습니다`);
   };
 
-  public deleteRoom(id: string) {
-    this._rooms = this._rooms.filter((room) => room.id !== id);
-  }
+  public deleteRoom = async (id: string) => {
+    const deleteRoomResult = await this._roomService.deleteRoom(id);
+    if (!deleteRoomResult.isSuccess) {
+      runInAction(() => {
+        this._errorMessage = deleteRoomResult.throwableOrNull()!!.message;
+        this._isSuccessDelete = false;
+      });
+    } else {
+      runInAction(() => {
+        this._initErrorMessage();
+        this._isSuccessDelete = true;
+        this._roomOverviews = this._roomOverviews.filter(
+          (roomOverview) => roomOverview.id !== id
+        );
+      });
+    }
+  };
 }
