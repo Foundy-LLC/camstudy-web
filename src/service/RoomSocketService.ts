@@ -1,7 +1,7 @@
 import { RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
-  CLOSE_AUDIO_CONSUMERS,
+  MUTE_HEADSET,
   CLOSE_AUDIO_PRODUCER,
   CLOSE_VIDEO_PRODUCER,
   CONNECTION_SUCCESS,
@@ -9,7 +9,6 @@ import {
   CONSUME_RESUME,
   CREATE_WEB_RTC_TRANSPORT,
   EDIT_AND_STOP_TIMER,
-  GET_AUDIO_PRODUCER_IDS,
   GET_PRODUCER_IDS,
   JOIN_ROOM,
   JOIN_WAITING_ROOM,
@@ -18,6 +17,7 @@ import {
   OTHER_PEER_DISCONNECTED,
   OTHER_PEER_EXITED_ROOM,
   OTHER_PEER_JOINED_ROOM,
+  PEER_STATE_CHANGED,
   PRODUCER_CLOSED,
   SEND_CHAT,
   START_LONG_BREAK,
@@ -26,6 +26,7 @@ import {
   TRANSPORT_PRODUCER,
   TRANSPORT_PRODUCER_CONNECT,
   TRANSPORT_RECEIVER_CONNECT,
+  UNMUTE_HEADSET,
 } from "@/constants/socketProtocol";
 import { MediaKind, RtpParameters } from "mediasoup-client/lib/RtpParameters";
 import { Device } from "mediasoup-client";
@@ -50,6 +51,7 @@ import {
 import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { JoinRoomSuccessCallbackProperty } from "@/models/room/JoinRoomSuccessCallbackProperty";
 import { JoinRoomFailureCallbackProperty } from "@/models/room/JoinRoomFailureCallbackProperty";
+import { PeerState } from "@/models/room/PeerState";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -179,6 +181,7 @@ export class RoomSocketService {
         console.log(`Router RTP Capabilities... ${data.rtpCapabilities}`);
         this._removeWaitingRoomEventsListener();
         this._roomViewModel.onJoined(
+          data.peerStates,
           data.timerStartedDate,
           data.timerState,
           data.timerProperty
@@ -236,6 +239,9 @@ export class RoomSocketService {
         return;
       }
       receiveTransport.consumer?.close();
+    });
+    socket.on(PEER_STATE_CHANGED, (state: PeerState) => {
+      this._roomViewModel.onChangePeerState(state);
     });
     socket.on(START_TIMER, () => {
       this._roomViewModel.onPomodoroTimerEvent(PomodoroTimerEvent.ON_START);
@@ -583,13 +589,16 @@ export class RoomSocketService {
         return true;
       }
     );
-    this._requireSocket().emit(CLOSE_AUDIO_CONSUMERS);
+    this._requireSocket().emit(MUTE_HEADSET);
   };
 
   public unmuteHeadset = () => {
+    const socket = this._requireSocket();
+
     this._mutedHeadset = false;
-    this._requireSocket().emit(
-      GET_AUDIO_PRODUCER_IDS,
+
+    socket.emit(
+      UNMUTE_HEADSET,
       async (userAndProducerIds: UserAndProducerId[]) => {
         if (this._device === undefined) {
           throw Error("Device 필드가 초기화 되지 않았습니다.");

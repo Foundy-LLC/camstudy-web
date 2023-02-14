@@ -8,6 +8,7 @@ import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { TimerEditInputGroup } from "@/components/TimerEditInputGroup";
 import { RoomState } from "@/models/room/RoomState";
 import { UserProfileImage } from "@/components/UserProfileImage";
+import { PeerState } from "@/models/room/PeerState";
 
 const RoomScaffold: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
@@ -123,9 +124,12 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
                   id="localVideo"
                   videoStream={roomStore.localVideoStream}
                 />
+                {!enabledHeadset ? "헤드셋 꺼짐!" : ""}
+                {!enabledAudio ? "마이크 꺼짐!" : ""}
               </td>
               <td className="remoteColumn">
                 <RemoteMediaGroup
+                  peerStates={roomStore.peerStates}
                   remoteVideoStreamByPeerIdEntries={
                     roomStore.remoteVideoStreamByPeerIdEntries
                   }
@@ -196,16 +200,31 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
 );
 
 const RemoteMediaGroup: NextPage<{
+  peerStates: PeerState[];
   remoteVideoStreamByPeerIdEntries: [string, MediaStream][];
   remoteAudioStreamByPeerIdEntries: [string, MediaStream][];
 }> = observer(
-  ({ remoteVideoStreamByPeerIdEntries, remoteAudioStreamByPeerIdEntries }) => {
+  ({
+    peerStates,
+    remoteVideoStreamByPeerIdEntries,
+    remoteAudioStreamByPeerIdEntries,
+  }) => {
     return (
       <>
         <div>
           {remoteVideoStreamByPeerIdEntries.map((entry) => {
             const [peerId, mediaStream] = entry;
-            return <Video key={peerId} id={peerId} videoStream={mediaStream} />;
+            const peerState = peerStates.find((p) => p.uid === peerId);
+            if (peerState === undefined) {
+              throw Error("피어 상태가 존재하지 않습니다.");
+            }
+            return (
+              <div key={peerId}>
+                <Video id={peerId} videoStream={mediaStream} />
+                {peerState.enabledMicrophone ? "" : "마이크 끔!"}
+                {peerState.enabledHeadset ? "" : "헤드셋 끔!"}
+              </div>
+            );
           })}
         </div>
         <div>
