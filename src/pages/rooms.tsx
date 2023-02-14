@@ -9,12 +9,41 @@ import { auth } from "@/service/firebase";
 import { useRouter } from "next/router";
 import userStore from "@/stores/UserStore";
 
-const RoomItem: NextPage<{ roomOverview: RoomOverview; key: Key }> = observer(
-  ({ roomOverview, key }) => {
+const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
+  ({ roomOverview }) => {
+    const { roomListStore } = useStores();
+    const [user] = useAuthState(auth);
     return (
-      <p key={key}>
-        {roomOverview.title}:{roomOverview.joinCount}/{roomOverview.maxCount}
-      </p>
+      <div>
+        {!roomOverview.hasPassword ? null : (
+          <Image
+            src={
+              "https://uxwing.com/wp-content/themes/uxwing/download/editing-user-action/padlock-black-icon.png"
+            }
+            width={7}
+            height={10}
+            alt="locked"
+            style={{ display: "inline" }}
+          />
+        )}
+        <h3 style={{ display: "inline" }}>{roomOverview.title}</h3>
+        <p style={{ display: "inline" }}>
+          :{roomOverview.joinCount}/{roomOverview.maxCount}
+        </p>
+        {roomOverview.masterId === user?.uid ? (
+          <Image
+            src={
+              "https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/red-x-icon.png"
+            }
+            width={13}
+            height={13}
+            alt="locked"
+            onClick={() => {
+              roomListStore.deleteRoom(roomOverview.id);
+            }}
+          />
+        ) : null}
+      </div>
     );
   }
 );

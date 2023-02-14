@@ -6,6 +6,7 @@ import {
   ROOM_PAGE_NUM_TYPE_ERROR,
   ROOM_PASSWORD_LENGTH_ERROR_MESSAGE,
 } from "@/constants/roomMessage";
+import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
 
 export const validateId = (id: string) => {
   if (id === "") {
@@ -36,6 +37,12 @@ export const validatePassword = (password: string | undefined) => {
 export const validateExpiredAt = (expired_at: Date) => {
   if (expired_at === undefined) {
     throw NO_ROOM_EXPIRED_AT_ERROR_MESSAGE;
+  }
+};
+
+export const validatePage = (page: string | null) => {
+  if (page == null) {
+    throw NO_USER_UID_ERROR_MESSAGE;
   }
 };
 

@@ -1,7 +1,7 @@
-import { validatePageNum } from "@/utils/rooms.validator";
+import { validatePage, validatePageNum } from "@/utils/rooms.validator";
 import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
 
-export class RoomsRequestGet {
+export class RoomsGetRequest {
   readonly pageNum: number;
   constructor(readonly page: string) {
     this._validatePage();
@@ -9,9 +9,7 @@ export class RoomsRequestGet {
     this._validatePageNum();
   }
   private _validatePage = () => {
-    if (this.page == null) {
-      throw NO_USER_UID_ERROR_MESSAGE;
-    }
+    validatePage(this.page);
   };
   private _convertPageToInt = (page: string): number => {
     return parseInt(page);

@@ -11,6 +11,7 @@ import {
 import { RoomAvailabilityRequestBody } from "@/models/room/RoomAvailabilityRequestBody";
 import {
   createRoom,
+  deleteRoomReq,
   findRoomById,
   findRooms,
   isRoomFull,
@@ -18,12 +19,13 @@ import {
 } from "@/repository/room.repository";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
-import { RoomsRequestGet } from "@/models/room/RoomsRequestGet";
+import { RoomsGetRequest } from "@/models/room/RoomsGetRequest";
 import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import { SET_ROOM_THUMBNAIL_SUCCESS } from "@/constants/roomMessage";
 import * as path from "path";
 import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
+import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -79,7 +81,7 @@ export const getRooms = async (req: NextApiRequest, res: NextApiResponse) => {
       res.status(400).send(new ResponseBody({ message: REQUEST_QUERY_ERROR }));
       return;
     }
-    const roomsGetBody = new RoomsRequestGet(req.query.page);
+    const roomsGetBody = new RoomsGetRequest(req.query.page);
     const result = await findRooms(roomsGetBody.pageNum);
     res.status(201).json(
       new ResponseBody({
@@ -94,13 +96,31 @@ export const getRooms = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     res
       .status(500)
-      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
   }
 };
 
 export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     await createRoom(new RoomCreateRequestBody(req.body._room));
+    res.status(201).end();
+  } catch (e) {
+    if (typeof e === "string") {
+      console.log("error:400", e);
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    console.log("error: 500");
+    res
+      .status(500)
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+    return;
+  }
+};
+
+export const deleteRoom = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    await deleteRoomReq(new RoomDeleteRequestBody(req.body.roomId));
     res.status(201).end();
   } catch (e) {
     if (typeof e === "string") {

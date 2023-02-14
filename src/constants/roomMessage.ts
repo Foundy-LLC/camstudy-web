@@ -6,6 +6,7 @@ import {
 } from "@/constants/room.constant";
 
 export const ROOM_CREATE_SUCCESS: string = "방 개설을 성공했습니다.";
+export const ROOM_DELETE_SUCCESS: string = "방을 삭제되었습니다";
 export const ROOM_CREATE_FAILED: string = "방 생성에 실패하였습니다";
 export const GET_ROOMS_FAILED: string = "방 조회에 실패하였습니다";
 export const ROOM_PASSWORD_LENGTH_ERROR_MESSAGE: string =

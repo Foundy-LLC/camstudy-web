@@ -5,6 +5,7 @@ import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { Room } from "@/stores/RoomListStore";
 import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
 import { room } from "@prisma/client";
+import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
 
 const ROOM_NUM_PER_PAGE = 30 as const;
 
@@ -44,6 +45,7 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
   //roomOverview를 반환
   var roomOverviews: RoomOverview[] = [];
   const rooms = await client.room.findMany({
+    where: { deleted_at: null },
     skip: pageNum * ROOM_NUM_PER_PAGE,
     take: ROOM_NUM_PER_PAGE,
     include: {
@@ -57,8 +59,9 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
   await rooms.map(async (room) => {
     const roomOverview = new RoomOverview(
       room.id,
+      room.master_id,
       room.title,
-      room.password,
+      room.password ? true : false,
       room.thumbnail,
       room.study_history.length,
       MAX_ROOM_CAPACITY,
@@ -83,5 +86,13 @@ export const createRoom = async (body: RoomCreateRequestBody) => {
       long_break_interval: room.longBreakInterval,
       expired_at: room.expiredAt,
     },
+  });
+};
+
+export const deleteRoomReq = async (body: RoomDeleteRequestBody) => {
+  const roomId: string = body.roomId;
+  await client.room.update({
+    where: { id: roomId },
+    data: { deleted_at: new Date() },
   });
 };
