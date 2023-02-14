@@ -40,7 +40,7 @@ describe("RoomStore.onJoined", () => {
     const roomStore = new RoomStore();
 
     // when
-    roomStore.onJoined(new Date().toISOString(), mock(), mock());
+    roomStore.onJoined([], new Date().toISOString(), mock(), mock());
 
     // then
     expect(roomStore.state).toBe(RoomState.JOINED);
