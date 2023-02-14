@@ -22,7 +22,11 @@ import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { RoomsGetRequest } from "@/models/room/RoomsGetRequest";
 import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
-import { SET_ROOM_THUMBNAIL_SUCCESS } from "@/constants/roomMessage";
+import {
+  ROOM_CREATE_SUCCESS,
+  ROOM_DELETE_SUCCESS,
+  SET_ROOM_THUMBNAIL_SUCCESS,
+} from "@/constants/roomMessage";
 import * as path from "path";
 import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
@@ -103,7 +107,7 @@ export const getRooms = async (req: NextApiRequest, res: NextApiResponse) => {
 export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     await createRoom(new RoomCreateRequestBody(req.body._room));
-    res.status(201).end();
+    res.status(201).send(ROOM_CREATE_SUCCESS);
   } catch (e) {
     if (typeof e === "string") {
       console.log("error:400", e);
@@ -121,7 +125,7 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
 export const deleteRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     await deleteRoomReq(new RoomDeleteRequestBody(req.body.roomId));
-    res.status(201).end();
+    res.status(201).send(ROOM_DELETE_SUCCESS);
   } catch (e) {
     if (typeof e === "string") {
       console.log("error:400", e);

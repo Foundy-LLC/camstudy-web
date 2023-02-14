@@ -39,7 +39,7 @@ export class RoomService {
         headers: HEADER,
       });
       if (response.ok) {
-        return Result.success(ROOM_CREATE_SUCCESS);
+        return Result.createSuccessUsingResponseData(response);
       } else {
         return await Result.createErrorUsingResponseMessage(response);
       }
@@ -57,7 +57,7 @@ export class RoomService {
         headers: HEADER,
       });
       if (response.ok) {
-        return Result.success(ROOM_DELETE_SUCCESS);
+        return Result.createSuccessUsingResponseData(response);
       } else {
         return await Result.createErrorUsingResponseMessage(response);
       }

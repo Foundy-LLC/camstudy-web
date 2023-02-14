@@ -9,6 +9,7 @@ import { auth } from "@/service/firebase";
 import { useRouter } from "next/router";
 import userStore from "@/stores/UserStore";
 
+//TODO(건우) 삭제시 한번 더 확인하는 절차 추가 필요
 const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
   ({ roomOverview }) => {
     const { roomListStore } = useStores();

@@ -36,5 +36,6 @@ export const NO_ROOM_LONG_BREAK_INTERVAL_ERROR_MESSAGE: string =
 export const NO_ROOM_EXPIRED_AT_ERROR_MESSAGE: string =
   "방의 유효 기간이 입력되지 않았습니다";
 export const ROOM_PAGE_NUM_TYPE_ERROR: string = "잘못된 페이지네이션 값입니다";
+export const ROOM_PAGE_NUM_NULL_ERROR: string = "페이지네이션 값이 NULL 입니다";
 export const ROOM_PAGE_OVER_ERROR: string =
   "더이상 공부방이 존재하지 않습니다.";
