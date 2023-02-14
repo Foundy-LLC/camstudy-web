@@ -24,6 +24,7 @@ import {
   ROOM_IS_FULL_MESSAGE,
 } from "@/constants/roomMessage";
 import { Auth } from "@firebase/auth";
+import { PeerState } from "@/models/room/PeerState";
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
@@ -31,10 +32,12 @@ export interface RoomViewModel {
   onWaitingRoomEvent: (event: WaitingRoomEvent) => void;
   onFailedToJoin: (message: string) => void;
   onJoined: (
+    peerStates: PeerState[],
     timerStartedDate: string | undefined,
     timerState: PomodoroTimerState,
     timerProperty: PomodoroTimerProperty
   ) => void;
+  onChangePeerState: (state: PeerState) => void;
   onReceivedChat: (message: ChatMessage) => void;
   onAddedConsumer: (
     peerId: string,
@@ -68,6 +71,7 @@ export class RoomStore implements RoomViewModel {
   private readonly _remoteAudioStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
 
+  private _peerStates: PeerState[] = [];
   private _chatInput: string = "";
   private readonly _chatMessages: ChatMessage[] = observable.array([]);
   private _pomodoroTimerState: PomodoroTimerState = PomodoroTimerState.STOPPED;
@@ -207,6 +211,14 @@ export class RoomStore implements RoomViewModel {
 
   // ==============================================================================
 
+  public get peerStates(): PeerState[] {
+    return this._peerStates;
+  }
+
+  public get currentUserPeerState(): PeerState | undefined {
+    return this.peerStates.find((p) => p.uid === auth.currentUser?.uid);
+  }
+
   public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {
     return [...this._remoteVideoStreamsByPeerId.entries()];
   }
@@ -321,10 +333,12 @@ export class RoomStore implements RoomViewModel {
   };
 
   public onJoined = (
+    peerStates: PeerState[],
     timerStartedDate: string | undefined,
     timerState: PomodoroTimerState,
     timerProperty: PomodoroTimerProperty
   ): void => {
+    this._peerStates = peerStates;
     this._state = RoomState.JOINED;
     this._waitingRoomData = undefined;
     this._pomodoroTimerState = timerState;
@@ -401,6 +415,11 @@ export class RoomStore implements RoomViewModel {
     }
     this._roomService.muteHeadset();
     this._enabledHeadset = false;
+  };
+
+  public onChangePeerState = (state: PeerState) => {
+    this._peerStates = this._peerStates.filter((s) => state.uid !== s.uid);
+    this._peerStates.push(state);
   };
 
   public updateChatInput = (message: string) => {
