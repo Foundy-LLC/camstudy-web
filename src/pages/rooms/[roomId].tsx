@@ -113,7 +113,6 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
     const enabledVideo = roomStore.enabledLocalVideo;
     const enabledAudio = roomStore.enabledLocalAudio;
     const enabledHeadset = roomStore.enabledHeadset;
-    const currentPeerState = roomStore.currentUserPeerState;
 
     return (
       <div>
@@ -125,12 +124,8 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
                   id="localVideo"
                   videoStream={roomStore.localVideoStream}
                 />
-                {currentPeerState?.enabledHeadset === false
-                  ? "헤드셋 꺼짐!"
-                  : ""}
-                {currentPeerState?.enabledMicrophone === false
-                  ? "마이크 꺼짐!"
-                  : ""}
+                {!enabledHeadset ? "헤드셋 꺼짐!" : ""}
+                {!enabledAudio ? "마이크 꺼짐!" : ""}
               </td>
               <td className="remoteColumn">
                 <RemoteMediaGroup

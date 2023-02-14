@@ -215,10 +215,6 @@ export class RoomStore implements RoomViewModel {
     return this._peerStates;
   }
 
-  public get currentUserPeerState(): PeerState | undefined {
-    return this.peerStates.find((p) => p.uid === auth.currentUser?.uid);
-  }
-
   public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {
     return [...this._remoteVideoStreamsByPeerId.entries()];
   }
