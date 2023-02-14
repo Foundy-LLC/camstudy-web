@@ -55,11 +55,21 @@ const WaitingRoom: NextPage<{
         id="audioToggle"
         onClick={() =>
           roomStore.enabledLocalAudio
-            ? roomStore.muteAudio()
-            : roomStore.unmuteAudio()
+            ? roomStore.muteMicrophone()
+            : roomStore.unmuteMicrophone()
         }
       >
         {roomStore.enabledLocalAudio ? "Mute Audio" : "Unmute Audio"}
+      </button>
+      <button
+        id="headphoneToggle"
+        onClick={() =>
+          roomStore.enabledHeadset
+            ? roomStore.muteHeadset()
+            : roomStore.unmuteHeadset()
+        }
+      >
+        {roomStore.enabledHeadset ? "Mute Headset" : "Unmute Headset"}
       </button>
       <div style={{ padding: "16px" }}>
         {roomStore.failedToJoinMessage !== undefined ? (
@@ -101,6 +111,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
   ({ roomStore }) => {
     const enabledVideo = roomStore.enabledLocalVideo;
     const enabledAudio = roomStore.enabledLocalAudio;
+    const enabledHeadset = roomStore.enabledHeadset;
 
     return (
       <div>
@@ -148,12 +159,22 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
           {enabledVideo ? "Hide Video" : "Show Video"}
         </button>
         <button
-          id="audioToggle"
+          id="microphoneToggle"
           onClick={() =>
-            enabledAudio ? roomStore.muteAudio() : roomStore.unmuteAudio()
+            enabledAudio
+              ? roomStore.muteMicrophone()
+              : roomStore.unmuteMicrophone()
           }
         >
-          {enabledAudio ? "Mute Audio" : "Unmute Audio"}
+          {enabledAudio ? "Mute Mic" : "Unmute Mic"}
+        </button>
+        <button
+          id="headphoneToggle"
+          onClick={() =>
+            enabledHeadset ? roomStore.muteHeadset() : roomStore.unmuteHeadset()
+          }
+        >
+          {enabledHeadset ? "Mute Headset" : "Unmute Headset"}
         </button>
         <div>
           <PomodoroTimer

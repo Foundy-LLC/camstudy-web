@@ -1,6 +1,7 @@
 import { RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
+  CLOSE_AUDIO_CONSUMERS,
   CLOSE_AUDIO_PRODUCER,
   CLOSE_VIDEO_PRODUCER,
   CONNECTION_SUCCESS,
@@ -8,6 +9,7 @@ import {
   CONSUME_RESUME,
   CREATE_WEB_RTC_TRANSPORT,
   EDIT_AND_STOP_TIMER,
+  GET_AUDIO_PRODUCER_IDS,
   GET_PRODUCER_IDS,
   JOIN_ROOM,
   JOIN_WAITING_ROOM,
@@ -79,6 +81,11 @@ interface ErrorParams {
   error: any;
 }
 
+interface UserAndProducerId {
+  producerId: string;
+  userId: string;
+}
+
 export class RoomSocketService {
   private _socket?: Socket;
 
@@ -86,8 +93,12 @@ export class RoomSocketService {
   private _audioProducer?: Producer;
   private _videoProducer?: Producer;
 
-  private readonly _consumingTransportIds: Set<string> = new Set();
   private _receiveTransportWrappers: ReceiveTransportWrapper[] = [];
+
+  private _didGetInitialProducers: boolean = false;
+
+  private _mutedHeadset: boolean = false;
+  private _device?: Device;
 
   constructor(private readonly _roomViewModel: RoomViewModel) {}
 
@@ -174,12 +185,14 @@ export class RoomSocketService {
         );
         try {
           // once we have rtpCapabilities from the Router, create Device
-          const device = new Device();
-          await device.load({ routerRtpCapabilities: data.rtpCapabilities });
+          this._device = new Device();
+          await this._device.load({
+            routerRtpCapabilities: data.rtpCapabilities,
+          });
 
-          this._createSendTransport(device, localMediaStream);
+          this._createSendTransport(this._device, localMediaStream);
 
-          this._listenRoomEvents(device);
+          this._listenRoomEvents(this._device);
         } catch (e) {
           // TODO
         }
@@ -364,13 +377,12 @@ export class RoomSocketService {
           rtpParameters: parameters.rtpParameters,
           appData: parameters.appData,
         },
-        ({ id, producersExist }: { id: string; producersExist: boolean }) => {
-          // Tell the transport that parameters were transmitted and provide it with the
-          // server side producer's id.
+        ({ id }: { id: string }) => {
           callback({ id });
-          // if producers exist, then join room
-          if (producersExist)
+          if (!this._didGetInitialProducers) {
+            this._didGetInitialProducers = true;
             this._getRemoteProducersAndCreateReceiveTransport(device);
+          }
         }
       );
     } catch (error: any) {
@@ -381,7 +393,7 @@ export class RoomSocketService {
   private _getRemoteProducersAndCreateReceiveTransport = (device: Device) => {
     this._requireSocket().emit(
       GET_PRODUCER_IDS,
-      (userProducerIds: { producerId: string; userId: string }[]) => {
+      (userProducerIds: UserAndProducerId[]) => {
         console.log(userProducerIds);
         // for each of the producer create a consumer
         // producerIds.forEach(id => signalNewConsumerTransport(id))
@@ -401,11 +413,6 @@ export class RoomSocketService {
     userId: string,
     device: Device
   ) => {
-    if (this._consumingTransportIds.has(remoteProducerId)) {
-      return;
-    }
-    this._consumingTransportIds.add(remoteProducerId);
-
     const receiveTransportWrapper = this._receiveTransportWrappers.find(
       (w) => w.userId === userId
     );
@@ -497,6 +504,10 @@ export class RoomSocketService {
         }
         params = params as ConsumeParams;
 
+        if (params.kind === "audio" && this._mutedHeadset) {
+          return;
+        }
+
         console.log(`Consumer Params ${params}`);
         // then consume with the local consumer transport
         // which creates a consumer
@@ -559,6 +570,39 @@ export class RoomSocketService {
     producer.close();
     this._audioProducer = undefined;
     this._requireSocket().emit(CLOSE_AUDIO_PRODUCER);
+  };
+
+  public muteHeadset = () => {
+    this._mutedHeadset = true;
+    this._receiveTransportWrappers = this._receiveTransportWrappers.filter(
+      (wrapper) => {
+        if (wrapper.consumer.kind === "audio") {
+          wrapper.consumer.close();
+          return false;
+        }
+        return true;
+      }
+    );
+    this._requireSocket().emit(CLOSE_AUDIO_CONSUMERS);
+  };
+
+  public unmuteHeadset = () => {
+    this._mutedHeadset = false;
+    this._requireSocket().emit(
+      GET_AUDIO_PRODUCER_IDS,
+      async (userAndProducerIds: UserAndProducerId[]) => {
+        if (this._device === undefined) {
+          throw Error("Device 필드가 초기화 되지 않았습니다.");
+        }
+        for (const userAndProducerId of userAndProducerIds) {
+          await this._createReceiveTransport(
+            userAndProducerId.producerId,
+            userAndProducerId.userId,
+            this._device
+          );
+        }
+      }
+    );
   };
 
   public sendChat = (message: string) => {

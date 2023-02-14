@@ -55,6 +55,7 @@ export class RoomStore implements RoomViewModel {
 
   private _localVideoStream?: MediaStream = undefined;
   private _localAudioStream?: MediaStream = undefined;
+  private _enabledHeadset: boolean = true;
 
   // ======================= 대기실 관련 =======================
   private _waitingRoomData?: WaitingRoomData = undefined;
@@ -98,6 +99,10 @@ export class RoomStore implements RoomViewModel {
 
   public get enabledLocalAudio(): boolean {
     return this._localAudioStream !== undefined;
+  }
+
+  public get enabledHeadset(): boolean {
+    return this._enabledHeadset;
   }
 
   // ================================ 대기실 getter 시작 ================================
@@ -354,11 +359,14 @@ export class RoomStore implements RoomViewModel {
     this._localVideoStream = undefined;
   };
 
-  public unmuteAudio = async () => {
+  public unmuteMicrophone = async () => {
     if (this._localAudioStream !== undefined) {
       throw new InvalidStateError(
         "로컬 오디오가 있는 상태에서 오디오를 생성하려 했습니다."
       );
+    }
+    if (!this.enabledHeadset) {
+      this.unmuteHeadset();
     }
     const media = await this._mediaUtil.fetchLocalMedia({ audio: true });
     await runInAction(async () => {
@@ -368,7 +376,7 @@ export class RoomStore implements RoomViewModel {
     });
   };
 
-  public muteAudio = () => {
+  public muteMicrophone = () => {
     if (this._localAudioStream === undefined) {
       throw new InvalidStateError(
         "로컬 오디오가 없는 상태에서 오디오를 끄려 했습니다."
@@ -377,6 +385,22 @@ export class RoomStore implements RoomViewModel {
     this._roomService.closeAudioProducer();
     this._localAudioStream.getTracks().forEach((track) => track.stop());
     this._localAudioStream = undefined;
+  };
+
+  public unmuteHeadset = () => {
+    this._roomService.unmuteHeadset();
+    this._enabledHeadset = true;
+  };
+
+  public muteHeadset = () => {
+    if (this.enabledLocalAudio) {
+      this.muteMicrophone();
+    }
+    for (const remoteAudioStream of this._remoteAudioStreamsByPeerId.values()) {
+      remoteAudioStream.getAudioTracks().forEach((audio) => audio.stop());
+    }
+    this._roomService.muteHeadset();
+    this._enabledHeadset = false;
   };
 
   public updateChatInput = (message: string) => {
