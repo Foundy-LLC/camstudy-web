@@ -57,8 +57,8 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
       },
     },
   });
-  await rooms.map(async (room) => {
-    const roomOverview = new RoomOverview(
+  return rooms.map((room) => {
+    return new RoomOverview(
       room.id,
       room.master_id,
       room.title,
@@ -68,9 +68,7 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
       MAX_ROOM_CAPACITY,
       [] //room.room_tags
     );
-    roomOverviews.push(roomOverview);
   });
-  return roomOverviews;
 };
 
 export const findRecentRooms = async (userId: string) => {
@@ -84,8 +82,8 @@ export const findRecentRooms = async (userId: string) => {
       room: { include: { study_history: { where: { exit_at: null } } } },
     },
   });
-  await rooms.map(async (rooms) => {
-    const roomOverview = new RoomOverview(
+  return rooms.map((rooms) => {
+    return new RoomOverview(
       rooms.room.id,
       rooms.room.master_id,
       rooms.room.title,
@@ -95,9 +93,7 @@ export const findRecentRooms = async (userId: string) => {
       MAX_ROOM_CAPACITY,
       [] //room.room_tags
     );
-    roomOverviews.push(roomOverview);
   });
-  return roomOverviews;
 };
 
 export const createRoom = async (body: RoomCreateRequestBody) => {
