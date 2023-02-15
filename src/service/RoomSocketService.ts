@@ -1,7 +1,6 @@
 import { RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
-  MUTE_HEADSET,
   CLOSE_AUDIO_PRODUCER,
   CLOSE_VIDEO_PRODUCER,
   CONNECTION_SUCCESS,
@@ -12,6 +11,8 @@ import {
   GET_PRODUCER_IDS,
   JOIN_ROOM,
   JOIN_WAITING_ROOM,
+  KICK_USER,
+  MUTE_HEADSET,
   NAME_SPACE,
   NEW_PRODUCER,
   OTHER_PEER_DISCONNECTED,
@@ -27,7 +28,6 @@ import {
   TRANSPORT_PRODUCER_CONNECT,
   TRANSPORT_RECEIVER_CONNECT,
   UNMUTE_HEADSET,
-  KICK_USER,
 } from "@/constants/socketProtocol";
 import { MediaKind, RtpParameters } from "mediasoup-client/lib/RtpParameters";
 import { Device } from "mediasoup-client";
@@ -39,11 +39,9 @@ import {
 } from "mediasoup-client/lib/Transport";
 import { Consumer } from "mediasoup-client/lib/Consumer";
 import { Producer } from "mediasoup-client/lib/Producer";
-import { auth } from "@/service/firebase";
 import { PomodoroTimerEvent } from "@/models/room/PomodoroTimerEvent";
 import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import { ChatMessage } from "@/models/room/ChatMessage";
-import { uuidv4 } from "@firebase/util";
 import { WaitingRoomData } from "@/models/room/WaitingRoomData";
 import {
   OtherPeerExitedRoomEvent,
@@ -53,6 +51,7 @@ import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { JoinRoomSuccessCallbackProperty } from "@/models/room/JoinRoomSuccessCallbackProperty";
 import { JoinRoomFailureCallbackProperty } from "@/models/room/JoinRoomFailureCallbackProperty";
 import { PeerState } from "@/models/room/PeerState";
+import userStore from "@/stores/UserStore";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -160,16 +159,15 @@ export class RoomSocketService {
 
   public join = (localMediaStream: MediaStream, password: string) => {
     const socket = this._requireSocket();
-    const user = auth.currentUser;
+    const user = userStore.currentUser;
     if (user == null) {
       throw Error("회원 정보가 없이 방 참여를 시도했습니다.");
     }
     socket.emit(
       JOIN_ROOM,
       {
-        userId: user.uid,
-        // TODO: 실제 회원 이름을 전달하기
-        userName: uuidv4(),
+        userId: user.id,
+        userName: user.name,
         roomPasswordInput: password,
       },
       async (

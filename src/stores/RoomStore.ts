@@ -501,9 +501,13 @@ export class RoomStore implements RoomViewModel {
     }
   };
 
-  public kickUser(userId: string) {
+  public getUserNameBy = (userId: string): string | undefined => {
+    return this._peerStates.find((state) => state.uid === userId)?.name;
+  };
+
+  public kickUser = (userId: string) => {
     this._roomService.kickUser(userId);
-  }
+  };
 
   public onKicked = (userId: string) => {
     const isMe = userId === this._auth.currentUser!!.uid;
@@ -512,8 +516,13 @@ export class RoomStore implements RoomViewModel {
       this._localAudioStream?.getTracks().forEach((t) => t.stop());
       this._localVideoStream?.getTracks().forEach((t) => t.stop());
     } else {
-      // TODO(민성): 강퇴된 회원 이름까지 보이기
-      this._userMessage = "~~ 회원이 강퇴되었습니다.";
+      const kickedPeerState = this._peerStates.find(
+        (peer) => peer.uid === userId
+      );
+      if (kickedPeerState == null) {
+        throw Error("강퇴시킬 피어의 정보가 없습니다.");
+      }
+      this._userMessage = `${kickedPeerState.name}님이 강퇴되었습니다.`;
     }
   };
 
@@ -524,5 +533,6 @@ export class RoomStore implements RoomViewModel {
   public onDisposedPeer = (peerId: string): void => {
     this._remoteVideoStreamsByPeerId.delete(peerId);
     this._remoteAudioStreamsByPeerId.delete(peerId);
+    this._peerStates = this._peerStates.filter((peer) => peer.uid !== peerId);
   };
 }

@@ -137,7 +137,11 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
     }, [roomStore.kicked, router]);
 
     const handleKickButtonClick = (userId: string) => {
-      const confirmed = confirm("정말로 해당 회원을 강퇴할까요?");
+      const targetUserName = roomStore.getUserNameBy(userId);
+      if (targetUserName == null) {
+        throw Error("해당 회원 이름을 찾을 수 없습니다.");
+      }
+      const confirmed = confirm(`정말로 ${targetUserName}님을 강퇴할까요?`);
       if (confirmed) {
         roomStore.kickUser(userId);
       }
