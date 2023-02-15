@@ -27,6 +27,7 @@ import {
   TRANSPORT_PRODUCER_CONNECT,
   TRANSPORT_RECEIVER_CONNECT,
   UNMUTE_HEADSET,
+  KICK_USER,
 } from "@/constants/socketProtocol";
 import { MediaKind, RtpParameters } from "mediasoup-client/lib/RtpParameters";
 import { Device } from "mediasoup-client";
@@ -259,6 +260,7 @@ export class RoomSocketService {
     socket.on(EDIT_AND_STOP_TIMER, (newProperty: PomodoroTimerProperty) => {
       this._roomViewModel.onUpdatedPomodoroTimer(newProperty);
     });
+    socket.on(KICK_USER, this._roomViewModel.onKicked);
   };
 
   private _createSendTransport = (
@@ -624,5 +626,9 @@ export class RoomSocketService {
 
   public updateAndStopTimer(newProperty: PomodoroTimerProperty) {
     this._requireSocket().emit(EDIT_AND_STOP_TIMER, newProperty);
+  }
+
+  public kickUser(userId: string) {
+    this._requireSocket().emit(KICK_USER, userId);
   }
 }
