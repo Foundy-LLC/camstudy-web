@@ -152,14 +152,14 @@ export class RoomStore implements RoomViewModel {
     if (waitingRoomData === undefined) {
       return CONNECTING_ROOM_MESSAGE;
     }
+    if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
+      return ALREADY_JOINED_ROOM_MESSAGE;
+    }
     if (this._isCurrentUserMaster(waitingRoomData)) {
       return undefined;
     }
     if (this._isRoomFull(waitingRoomData)) {
       return ROOM_IS_FULL_MESSAGE;
-    }
-    if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
-      return ALREADY_JOINED_ROOM_MESSAGE;
     }
     if (this._isCurrentUserBlocked(waitingRoomData)) {
       return BLACKLIST_CANNOT_JOIN_ROOM_MESSAGE;
@@ -194,11 +194,11 @@ export class RoomStore implements RoomViewModel {
     if (waitingRoomData === undefined) {
       return false;
     }
-    if (this._isCurrentUserMaster(waitingRoomData)) {
-      return true;
-    }
     if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
       return false;
+    }
+    if (this._isCurrentUserMaster(waitingRoomData)) {
+      return true;
     }
     if (this._isCurrentUserBlocked(waitingRoomData)) {
       return false;
