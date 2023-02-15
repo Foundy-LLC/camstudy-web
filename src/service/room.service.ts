@@ -2,10 +2,6 @@ import { Result } from "@/models/common/Result";
 import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { Room } from "@/stores/RoomListStore";
-import {
-  ROOM_CREATE_SUCCESS,
-  ROOM_DELETE_SUCCESS,
-} from "@/constants/roomMessage";
 import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
 
 const HEADER = {
@@ -30,6 +26,25 @@ export class RoomService {
       return Result.createErrorUsingException(e);
     }
   }
+
+  public async getRecentRooms(userId: string): Promise<Result<RoomOverview[]>> {
+    try {
+      const response = await fetch(`api/users/${userId}/recent-rooms`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        return Result.createSuccessUsingResponseData(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  }
+
   public async createRoom(room: Room): Promise<Result<string>> {
     try {
       const requestBody = new RoomCreateRequestBody(room);
@@ -85,5 +100,6 @@ export class RoomService {
     }
   }
 }
+
 const roomService = new RoomService();
 export default roomService;

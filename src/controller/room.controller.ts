@@ -12,6 +12,7 @@ import { RoomAvailabilityRequestBody } from "@/models/room/RoomAvailabilityReque
 import {
   createRoom,
   deleteRoomReq,
+  findRecentRooms,
   findRoomById,
   findRooms,
   isRoomFull,
@@ -23,6 +24,8 @@ import { RoomsGetRequest } from "@/models/room/RoomsGetRequest";
 import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import {
+  GET_RECENT_ROOM_SUCCESS,
+  GET_ROOMS_SUCCESS,
   ROOM_CREATE_SUCCESS,
   ROOM_DELETE_SUCCESS,
   SET_ROOM_THUMBNAIL_SUCCESS,
@@ -30,6 +33,7 @@ import {
 import * as path from "path";
 import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
+import { RecentRoomsGetRequest } from "@/models/room/RecentRoomsGetRequest";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -90,7 +94,35 @@ export const getRooms = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(201).json(
       new ResponseBody({
         data: result,
-        message: "공부방 목록을 성공적으로 얻었습니다",
+        message: GET_ROOMS_SUCCESS,
+      })
+    );
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+  }
+};
+
+export const getRecentRooms = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  try {
+    if (typeof req.query.userId !== "string") {
+      res.status(400).send(new ResponseBody({ message: REQUEST_QUERY_ERROR }));
+      return;
+    }
+    const roomsGetBody = new RecentRoomsGetRequest(req.query.userId);
+    const result = await findRecentRooms(roomsGetBody.userId);
+    res.status(201).json(
+      new ResponseBody({
+        data: result,
+        message: GET_RECENT_ROOM_SUCCESS,
       })
     );
   } catch (e) {
@@ -107,7 +139,7 @@ export const getRooms = async (req: NextApiRequest, res: NextApiResponse) => {
 export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     await createRoom(new RoomCreateRequestBody(req.body._room));
-    res.status(201).send(ROOM_CREATE_SUCCESS);
+    res.status(201).send(new ResponseBody({ message: ROOM_CREATE_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
       console.log("error:400", e);
@@ -125,7 +157,7 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
 export const deleteRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     await deleteRoomReq(new RoomDeleteRequestBody(req.body.roomId));
-    res.status(201).send(ROOM_DELETE_SUCCESS);
+    res.status(201).send(new ResponseBody({ message: ROOM_DELETE_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
       console.log("error:400", e);

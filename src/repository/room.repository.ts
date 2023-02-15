@@ -3,11 +3,13 @@ import client from "prisma/client";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { Room } from "@/stores/RoomListStore";
-import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
+import {
+  MAX_RECENT_ROOM_NUM,
+  MAX_ROOM_CAPACITY,
+  ROOM_NUM_PER_PAGE,
+} from "@/constants/room.constant";
 import { room } from "@prisma/client";
 import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
-
-const ROOM_NUM_PER_PAGE = 30 as const;
 
 export const findRoomById = async (roomId: string): Promise<room | null> => {
   return await prisma.room.findUnique({
@@ -42,7 +44,6 @@ export const isUserBlockedAtRoom = async (
   return block != null;
 };
 export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
-  //roomOverview를 반환
   var roomOverviews: RoomOverview[] = [];
   const rooms = await client.room.findMany({
     where: { deleted_at: null },
@@ -56,8 +57,8 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
       },
     },
   });
-  await rooms.map(async (room) => {
-    const roomOverview = new RoomOverview(
+  return rooms.map((room) => {
+    return new RoomOverview(
       room.id,
       room.master_id,
       room.title,
@@ -67,10 +68,34 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
       MAX_ROOM_CAPACITY,
       [] //room.room_tags
     );
-    roomOverviews.push(roomOverview);
   });
-  return roomOverviews;
 };
+
+export const findRecentRooms = async (userId: string) => {
+  var roomOverviews: RoomOverview[] = [];
+  const rooms = await client.study_history.findMany({
+    where: { user_id: userId, room: { deleted_at: null } },
+    distinct: "room_id",
+    take: MAX_RECENT_ROOM_NUM,
+    orderBy: { join_at: "desc" },
+    include: {
+      room: { include: { study_history: { where: { exit_at: null } } } },
+    },
+  });
+  return rooms.map((rooms) => {
+    return new RoomOverview(
+      rooms.room.id,
+      rooms.room.master_id,
+      rooms.room.title,
+      rooms.room.password ? true : false,
+      rooms.room.thumbnail,
+      rooms.room.study_history.length,
+      MAX_ROOM_CAPACITY,
+      [] //room.room_tags
+    );
+  });
+};
+
 export const createRoom = async (body: RoomCreateRequestBody) => {
   const room: Room = body.room;
   await client.room.create({

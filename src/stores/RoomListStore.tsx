@@ -129,6 +129,22 @@ export class RoomListStore {
     }
   };
 
+  public fetchRecentRooms = async (userId: string): Promise<void> => {
+    const getRecentRoomsResult = await this._roomService.getRecentRooms(userId);
+    if (getRecentRoomsResult.isSuccess) {
+      runInAction(() => {
+        this._initErrorMessage();
+        this._isSuccessGet = true;
+        this._roomOverviews = getRecentRoomsResult.getOrNull()!!;
+      });
+    } else {
+      runInAction(() => {
+        this._errorMessage = getRecentRoomsResult.throwableOrNull()!!.message;
+        this._isSuccessGet = false;
+      });
+    }
+  };
+
   public createRoom = async (): Promise<void> => {
     // 사용자가 선택한 이미지를 업로드
     if (this.isSuccessImportImage) {
@@ -156,11 +172,13 @@ export class RoomListStore {
       //성공 시 tempRoom의 썸네일을 해당 url로 변경
     }
     runInAction(() => {
+      //방의 유효기간을 현재로 설정
       this._setRoomExpirationDate();
     });
     const result = await this._roomService.createRoom(this._tempRoom);
     if (!result.isSuccess) {
       runInAction(() => {
+        console.log("fail");
         this._errorMessage = result.throwableOrNull()!!.message;
         this._isSuccessCreate = false;
       });

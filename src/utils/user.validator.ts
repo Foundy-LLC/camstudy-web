@@ -1,6 +1,7 @@
 import {
   NO_TAG_ERROR_MESSAGE,
   NO_USER_NAME_ERROR_MESSAGE,
+  NO_USER_UID_ERROR_MESSAGE,
   PROFILE_IMAGE_INVALID_EXTENSION,
   PROFILE_IMAGE_SIZE_ERROR_MESSAGE,
   TAG_COUNT_ERROR_MESSAGE,
@@ -28,6 +29,13 @@ export const validateUserProfileImage = (file: File) => {
     throw PROFILE_IMAGE_SIZE_ERROR_MESSAGE;
   }
 };
+
+export const validateUid = (userId: string) => {
+  if (userId == null) {
+    throw NO_USER_UID_ERROR_MESSAGE;
+  }
+};
+
 export const validateUserName = (name: string) => {
   if (name == null) {
     throw NO_USER_NAME_ERROR_MESSAGE;
