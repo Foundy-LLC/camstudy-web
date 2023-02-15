@@ -9,7 +9,6 @@ import { auth } from "@/service/firebase";
 import { useRouter } from "next/router";
 import userStore from "@/stores/UserStore";
 
-//TODO(건우) 삭제시 한번 더 확인하는 절차 추가 필요
 const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
   ({ roomOverview }) => {
     const { roomListStore } = useStores();
@@ -40,7 +39,13 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
             height={13}
             alt="locked"
             onClick={() => {
-              roomListStore.deleteRoom(roomOverview.id);
+              if (
+                confirm(`"${roomOverview.title}"방을 삭제하시겠습니까?`) ===
+                true
+              ) {
+                console.log(`${roomOverview.title}방이 삭제되었습니다`);
+                roomListStore.deleteRoom(roomOverview.id);
+              } else return;
             }}
           />
         ) : null}
@@ -123,6 +128,14 @@ const RoomList: NextPage = observer(() => {
           }}
         >
           GET
+        </button>
+        <button
+          id="recentRoomBtn"
+          onClick={async () => {
+            await roomListStore.fetchRecentRooms(user.uid);
+          }}
+        >
+          최근 방 조회
         </button>
         <br />
         <input
