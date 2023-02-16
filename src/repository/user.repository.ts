@@ -2,10 +2,7 @@ import { user_account } from ".prisma/client";
 import prisma from "../../prisma/client";
 import { UserStatus } from "@/models/user/UserStatus";
 import { User } from "@/models/user/User";
-
-const getMinutesDiff = (a: Date, b: Date) => {
-  return a.getTime() - b.getTime() / 60 / 1000;
-};
+import { getMinutesDiff } from "@/utils/DateUtil";
 
 export const findUser = async (userId: string): Promise<User | null> => {
   const userAccount = await prisma.user_account.findUnique({
