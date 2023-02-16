@@ -501,12 +501,24 @@ export class RoomStore implements RoomViewModel {
     }
   };
 
-  public getUserNameBy = (userId: string): string | undefined => {
+  private getUserNameBy = (userId: string): string | undefined => {
     return this._peerStates.find((state) => state.uid === userId)?.name;
+  };
+
+  public requireUserNameBy = (userId: string): string => {
+    const userName = this.getUserNameBy(userId);
+    if (userName == null) {
+      throw Error("해당 회원 이름을 찾을 수 없습니다.");
+    }
+    return userName;
   };
 
   public kickUser = (userId: string) => {
     this._roomService.kickUser(userId);
+  };
+
+  public blockUser = (userId: string) => {
+    this._roomService.blockUser(userId);
   };
 
   public onKicked = (userId: string) => {

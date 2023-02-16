@@ -19,6 +19,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const [src, setSrc] = useState(props.uid);
   const [errorMessage, setErrorMessage] = useState("");
+  // TODO(민성): UserProfileImage와 중복되는 코드 제거하기.
   const userProfileImageLoader = ({ src }: { src: string }): string => {
     return `${IMAGE_SERVER_URL}/users/${src}.png`;
   };
@@ -34,6 +35,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
   return (
     <div>
+      {/* TODO(민성): UserProfileImage와 중복되는 코드 제거하기. */}
       <Image
         width={150}
         height={150}
