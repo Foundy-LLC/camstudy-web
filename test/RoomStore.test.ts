@@ -203,4 +203,43 @@ describe("RoomStore.onFailedToJoin", () => {
   });
 });
 
+describe("RoomStore.onKicked", () => {
+  it("should set kicked to true when kicked user is me", () => {
+    // given
+    const uid = "uid";
+    const mockAuth = mock<Auth>();
+    const mockUser = mock<User>();
+    when(mockUser.uid).thenReturn(uid);
+    when(mockAuth.currentUser).thenReturn(instance(mockUser));
+    const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
+    expect(roomStore.kicked).toBe(false);
+
+    // when
+    roomStore.onKicked(uid);
+
+    expect(roomStore.kicked).toBe(true);
+  });
+
+  it("should not set kicked to true when kicked user is other", () => {
+    // given
+    const mockAuth = mock<Auth>();
+    const mockUser = mock<User>();
+    when(mockUser.uid).thenReturn("uid");
+    when(mockAuth.currentUser).thenReturn(instance(mockUser));
+    const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
+    roomStore.onChangePeerState({
+      uid: "other",
+      name: "name",
+      enabledMicrophone: true,
+      enabledHeadset: true,
+    });
+    expect(roomStore.kicked).toBe(false);
+
+    // when
+    roomStore.onKicked("other");
+
+    expect(roomStore.kicked).toBe(false);
+  });
+});
+
 export {};
