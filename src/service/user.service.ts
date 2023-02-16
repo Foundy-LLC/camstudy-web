@@ -9,10 +9,13 @@ const HEADER = {
 export class UserService {
   public async getUser(userId: string): Promise<Result<User>> {
     try {
-      const response = await fetch(`api/users/${userId}`, {
-        headers: HEADER,
-        method: "GET",
-      });
+      const response = await fetch(
+        `http://localhost:3000/api/users/${userId}`,
+        {
+          headers: HEADER,
+          method: "GET",
+        }
+      );
       if (response.ok)
         return await Result.createSuccessUsingResponseData(response);
       else return await Result.createErrorUsingResponseMessage(response);

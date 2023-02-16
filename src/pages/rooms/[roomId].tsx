@@ -11,6 +11,7 @@ import { UserProfileImage } from "@/components/UserProfileImage";
 import { PeerState } from "@/models/room/PeerState";
 import PopupMenu from "@/components/PopupMenu";
 import { getEnumKeyByEnumValue } from "@/utils/EnumUtil";
+import { useAuth } from "@/components/AuthProvider";
 
 enum MasterPopupMenus {
   Kick = "강퇴",
@@ -137,13 +138,18 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
     }, [roomStore.kicked, router]);
 
     const handleKickButtonClick = (userId: string) => {
-      const targetUserName = roomStore.getUserNameBy(userId);
-      if (targetUserName == null) {
-        throw Error("해당 회원 이름을 찾을 수 없습니다.");
-      }
+      const targetUserName = roomStore.requireUserNameBy(userId);
       const confirmed = confirm(`정말로 ${targetUserName}님을 강퇴할까요?`);
       if (confirmed) {
         roomStore.kickUser(userId);
+      }
+    };
+
+    const handleBlockButtonClick = (userId: string) => {
+      const targetUserName = roomStore.requireUserNameBy(userId);
+      const confirmed = confirm(`정말로 ${targetUserName}님을 차단할까요?`);
+      if (confirmed) {
+        roomStore.blockUser(userId);
       }
     };
 
@@ -171,6 +177,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
                     roomStore.remoteAudioStreamByPeerIdEntries
                   }
                   onKickClick={handleKickButtonClick}
+                  onBlockClick={handleBlockButtonClick}
                 />
               </td>
               <td className="chatMessageColumn">
@@ -240,6 +247,7 @@ const RemoteMediaGroup: NextPage<{
   remoteVideoStreamByPeerIdEntries: [string, MediaStream][];
   remoteAudioStreamByPeerIdEntries: [string, MediaStream][];
   onKickClick: (userId: string) => void;
+  onBlockClick: (userId: string) => void;
 }> = observer(
   ({
     isCurrentUserMaster,
@@ -247,6 +255,7 @@ const RemoteMediaGroup: NextPage<{
     remoteVideoStreamByPeerIdEntries,
     remoteAudioStreamByPeerIdEntries,
     onKickClick,
+    onBlockClick,
   }) => {
     const masterPopupMenus = Object.values(MasterPopupMenus);
 
@@ -257,7 +266,7 @@ const RemoteMediaGroup: NextPage<{
           onKickClick(userId);
           break;
         case "Block":
-          // TODO(민성): 구현하기
+          onBlockClick(userId);
           break;
       }
     };

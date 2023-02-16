@@ -1,6 +1,7 @@
 import { RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
+  BLOCK_USER,
   CLOSE_AUDIO_PRODUCER,
   CLOSE_VIDEO_PRODUCER,
   CONNECTION_SUCCESS,
@@ -259,6 +260,7 @@ export class RoomSocketService {
       this._roomViewModel.onUpdatedPomodoroTimer(newProperty);
     });
     socket.on(KICK_USER, this._roomViewModel.onKicked);
+    socket.on(BLOCK_USER, this._roomViewModel.onKicked);
   };
 
   private _createSendTransport = (
@@ -622,11 +624,15 @@ export class RoomSocketService {
     this._requireSocket().emit(START_TIMER);
   };
 
-  public updateAndStopTimer(newProperty: PomodoroTimerProperty) {
+  public updateAndStopTimer = (newProperty: PomodoroTimerProperty) => {
     this._requireSocket().emit(EDIT_AND_STOP_TIMER, newProperty);
-  }
+  };
 
-  public kickUser(userId: string) {
+  public kickUser = (userId: string) => {
     this._requireSocket().emit(KICK_USER, userId);
-  }
+  };
+
+  public blockUser = (userId: string) => {
+    this._requireSocket().emit(BLOCK_USER, userId);
+  };
 }
