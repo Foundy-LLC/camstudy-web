@@ -10,7 +10,6 @@ import { ChatMessage } from "@/models/room/ChatMessage";
 import { RoomState } from "@/models/room/RoomState";
 import { MediaUtil } from "@/utils/MediaUtil";
 import { WaitingRoomData } from "@/models/room/WaitingRoomData";
-import { auth } from "@/service/firebase";
 import {
   OtherPeerExitedRoomEvent,
   OtherPeerJoinedRoomEvent,
@@ -25,6 +24,7 @@ import {
 } from "@/constants/roomMessage";
 import { Auth } from "@firebase/auth";
 import { PeerState } from "@/models/room/PeerState";
+import { auth } from "@/service/firebase";
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
@@ -47,6 +47,7 @@ export interface RoomViewModel {
   onDisposedPeer: (disposedPeerId: string) => void;
   onPomodoroTimerEvent: (event: PomodoroTimerEvent) => void;
   onUpdatedPomodoroTimer: (newProperty: PomodoroTimerProperty) => void;
+  onKicked: (userId: string) => void;
 }
 
 export class RoomStore implements RoomViewModel {
@@ -71,12 +72,19 @@ export class RoomStore implements RoomViewModel {
   private readonly _remoteAudioStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
 
+  private _masterId?: string = undefined;
   private _peerStates: PeerState[] = [];
   private _chatInput: string = "";
   private readonly _chatMessages: ChatMessage[] = observable.array([]);
   private _pomodoroTimerState: PomodoroTimerState = PomodoroTimerState.STOPPED;
   private _pomodoroTimerEventDate?: Date = undefined;
   private _pomodoroProperty?: PomodoroTimerProperty = undefined;
+  private _kicked: boolean = false;
+
+  /**
+   * 회원에게 알림을 보내기위한 메시지이다.
+   */
+  private _userMessage?: string = undefined;
 
   constructor(
     private _mediaUtil: MediaUtil = new MediaUtil(),
@@ -152,14 +160,14 @@ export class RoomStore implements RoomViewModel {
     if (waitingRoomData === undefined) {
       return CONNECTING_ROOM_MESSAGE;
     }
+    if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
+      return ALREADY_JOINED_ROOM_MESSAGE;
+    }
     if (this._isCurrentUserMaster(waitingRoomData)) {
       return undefined;
     }
     if (this._isRoomFull(waitingRoomData)) {
       return ROOM_IS_FULL_MESSAGE;
-    }
-    if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
-      return ALREADY_JOINED_ROOM_MESSAGE;
     }
     if (this._isCurrentUserBlocked(waitingRoomData)) {
       return BLACKLIST_CANNOT_JOIN_ROOM_MESSAGE;
@@ -194,11 +202,11 @@ export class RoomStore implements RoomViewModel {
     if (waitingRoomData === undefined) {
       return false;
     }
-    if (this._isCurrentUserMaster(waitingRoomData)) {
-      return true;
-    }
     if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
       return false;
+    }
+    if (this._isCurrentUserMaster(waitingRoomData)) {
+      return true;
     }
     if (this._isCurrentUserBlocked(waitingRoomData)) {
       return false;
@@ -210,6 +218,13 @@ export class RoomStore implements RoomViewModel {
   }
 
   // ==============================================================================
+
+  public get isCurrentUserMaster(): boolean {
+    if (this._auth.currentUser?.uid === undefined) {
+      return false;
+    }
+    return this._masterId === this._auth.currentUser?.uid;
+  }
 
   public get peerStates(): PeerState[] {
     return this._peerStates;
@@ -252,6 +267,14 @@ export class RoomStore implements RoomViewModel {
     return this._pomodoroProperty;
   }
 
+  public get kicked(): boolean {
+    return this._kicked;
+  }
+
+  public get userMessage(): string | undefined {
+    return this._userMessage;
+  }
+
   public connectSocket = (roomId: string) => {
     // 이미 로그인 되어있으면 곧바로 소켓에 연결
     if (this._auth.currentUser != null) {
@@ -286,6 +309,7 @@ export class RoomStore implements RoomViewModel {
   public onConnectedWaitingRoom = (waitingRoomData: WaitingRoomData) => {
     this._state = RoomState.WAITING_ROOM;
     this._waitingRoomData = waitingRoomData;
+    this._masterId = waitingRoomData.masterId;
   };
 
   public onWaitingRoomEvent = (event: WaitingRoomEvent) => {
@@ -477,8 +501,38 @@ export class RoomStore implements RoomViewModel {
     }
   };
 
+  public getUserNameBy = (userId: string): string | undefined => {
+    return this._peerStates.find((state) => state.uid === userId)?.name;
+  };
+
+  public kickUser = (userId: string) => {
+    this._roomService.kickUser(userId);
+  };
+
+  public onKicked = (userId: string) => {
+    const isMe = userId === this._auth.currentUser!!.uid;
+    if (isMe) {
+      this._kicked = true;
+      this._localAudioStream?.getTracks().forEach((t) => t.stop());
+      this._localVideoStream?.getTracks().forEach((t) => t.stop());
+    } else {
+      const kickedPeerState = this._peerStates.find(
+        (peer) => peer.uid === userId
+      );
+      if (kickedPeerState == null) {
+        throw Error("강퇴시킬 피어의 정보가 없습니다.");
+      }
+      this._userMessage = `${kickedPeerState.name}님이 강퇴되었습니다.`;
+    }
+  };
+
+  public clearUserMessage = () => {
+    this._userMessage = undefined;
+  };
+
   public onDisposedPeer = (peerId: string): void => {
     this._remoteVideoStreamsByPeerId.delete(peerId);
     this._remoteAudioStreamsByPeerId.delete(peerId);
+    this._peerStates = this._peerStates.filter((peer) => peer.uid !== peerId);
   };
 }

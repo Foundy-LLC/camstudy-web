@@ -11,10 +11,12 @@ import {
 import {
   EXISTS_INITIAL_INFORMATION_MESSAGE,
   NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
+  NOT_FOUND_USER_MESSAGE,
   PROFILE_CREATE_SUCCESS,
   PROFILE_IMAGE_SIZE_ERROR_MESSAGE,
   PROFILE_IMAGE_UPDATE,
   SERVER_INTERNAL_ERROR_MESSAGE,
+  USER_INFORMATION_LOOKUP_SUCCESS,
 } from "@/constants/message";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
@@ -22,13 +24,19 @@ import { UserGetRequestBody } from "@/models/user/UserGetRequestBody";
 import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import { uuidv4 } from "@firebase/util";
-import { USER_INFORMATION_LOOKUP_SUCCESS } from "@/constants/user.constant";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const requestBody = new UserGetRequestBody(<string>req.query.userId);
     const user = await findUser(requestBody.userId);
-    console.log(user);
+
+    if (user == null) {
+      res
+        .status(404)
+        .send(new ResponseBody({ message: NOT_FOUND_USER_MESSAGE }));
+      return;
+    }
+
     res.status(200).send(
       new ResponseBody({
         message: USER_INFORMATION_LOOKUP_SUCCESS,

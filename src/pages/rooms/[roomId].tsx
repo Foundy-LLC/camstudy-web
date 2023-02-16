@@ -9,6 +9,13 @@ import { TimerEditInputGroup } from "@/components/TimerEditInputGroup";
 import { RoomState } from "@/models/room/RoomState";
 import { UserProfileImage } from "@/components/UserProfileImage";
 import { PeerState } from "@/models/room/PeerState";
+import PopupMenu from "@/components/PopupMenu";
+import { getEnumKeyByEnumValue } from "@/utils/EnumUtil";
+
+enum MasterPopupMenus {
+  Kick = "강퇴",
+  Block = "차단",
+}
 
 const RoomScaffold: NextPage = observer(() => {
   const [roomStore] = useState(new RoomStore());
@@ -113,6 +120,32 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
     const enabledVideo = roomStore.enabledLocalVideo;
     const enabledAudio = roomStore.enabledLocalAudio;
     const enabledHeadset = roomStore.enabledHeadset;
+    const router = useRouter();
+
+    useEffect(() => {
+      if (roomStore.userMessage != null) {
+        alert(roomStore.userMessage);
+        roomStore.clearUserMessage();
+      }
+    }, [roomStore.userMessage]);
+
+    useEffect(() => {
+      if (roomStore.kicked) {
+        alert("방장에 의해 강퇴되었습니다.");
+        router.replace("/");
+      }
+    }, [roomStore.kicked, router]);
+
+    const handleKickButtonClick = (userId: string) => {
+      const targetUserName = roomStore.getUserNameBy(userId);
+      if (targetUserName == null) {
+        throw Error("해당 회원 이름을 찾을 수 없습니다.");
+      }
+      const confirmed = confirm(`정말로 ${targetUserName}님을 강퇴할까요?`);
+      if (confirmed) {
+        roomStore.kickUser(userId);
+      }
+    };
 
     return (
       <div>
@@ -129,6 +162,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
               </td>
               <td className="remoteColumn">
                 <RemoteMediaGroup
+                  isCurrentUserMaster={roomStore.isCurrentUserMaster}
                   peerStates={roomStore.peerStates}
                   remoteVideoStreamByPeerIdEntries={
                     roomStore.remoteVideoStreamByPeerIdEntries
@@ -136,6 +170,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
                   remoteAudioStreamByPeerIdEntries={
                     roomStore.remoteAudioStreamByPeerIdEntries
                   }
+                  onKickClick={handleKickButtonClick}
                 />
               </td>
               <td className="chatMessageColumn">
@@ -200,15 +235,33 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
 );
 
 const RemoteMediaGroup: NextPage<{
+  isCurrentUserMaster: boolean;
   peerStates: PeerState[];
   remoteVideoStreamByPeerIdEntries: [string, MediaStream][];
   remoteAudioStreamByPeerIdEntries: [string, MediaStream][];
+  onKickClick: (userId: string) => void;
 }> = observer(
   ({
+    isCurrentUserMaster,
     peerStates,
     remoteVideoStreamByPeerIdEntries,
     remoteAudioStreamByPeerIdEntries,
+    onKickClick,
   }) => {
+    const masterPopupMenus = Object.values(MasterPopupMenus);
+
+    const handleMasterPopupMenuClick = (item: string, userId: string) => {
+      const menuEnum = getEnumKeyByEnumValue(MasterPopupMenus, item);
+      switch (menuEnum) {
+        case "Kick":
+          onKickClick(userId);
+          break;
+        case "Block":
+          // TODO(민성): 구현하기
+          break;
+      }
+    };
+
     return (
       <>
         <div>
@@ -223,6 +276,15 @@ const RemoteMediaGroup: NextPage<{
                 <Video id={peerId} videoStream={mediaStream} />
                 {peerState.enabledMicrophone ? "" : "마이크 끔!"}
                 {peerState.enabledHeadset ? "" : "헤드셋 끔!"}
+                {isCurrentUserMaster && (
+                  <PopupMenu
+                    label={"더보기"}
+                    menuItems={masterPopupMenus}
+                    onMenuItemClick={(item) =>
+                      handleMasterPopupMenuClick(item, peerId)
+                    }
+                  />
+                )}
               </div>
             );
           })}
