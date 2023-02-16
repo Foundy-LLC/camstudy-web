@@ -1,12 +1,12 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import React from "react";
-import ProtectedRoutes from "@/components/ProtectedRoutes";
+import { AuthProvider } from "@/components/AuthProvider";
 
-export default function App({ Component, pageProps, router }: AppProps) {
+export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ProtectedRoutes router={router}>
+    <AuthProvider>
       <Component {...pageProps} />
-    </ProtectedRoutes>
+    </AuthProvider>
   );
 }

@@ -5,10 +5,10 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "@firebase/auth";
-import { auth } from "@/service/firebase";
 import userService, { UserService } from "@/service/user.service";
-import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
 import { User } from "@/models/user/User";
+import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
+import { auth } from "@/service/firebase";
 
 export class UserStore {
   private _currentUser: User | undefined;
@@ -38,8 +38,11 @@ export class UserStore {
   }
 
   signOut = async () => {
-    await auth.signOut();
-    if (auth.currentUser == null) this._isNewUser = undefined;
+    await this._auth.signOut();
+    if (this._auth.currentUser == null) {
+      console.log(this._auth.currentUser);
+      this._isNewUser = undefined;
+    }
   };
 
   refreshUser = async () => {
@@ -49,9 +52,9 @@ export class UserStore {
   //TODO: 함수명 맘에 안듬
   private _checkAuth = async () => {
     if (this._auth.currentUser != null) {
-      await this._fetchCurrentUser(this._auth.currentUser.uid);
+      await this._fetchCurrentUser(this._auth.currentUser!.uid);
     }
-    const unsubscribe = this._auth.onAuthStateChanged(async (user) => {
+    const unsubscribe = this._auth.onIdTokenChanged(async (user) => {
       unsubscribe();
       if (user != null) {
         await this._fetchCurrentUser(user.uid);
@@ -92,9 +95,11 @@ export class UserStore {
 
   signInWithGoogle = async () => {
     try {
-      const firebaseApp = await signInWithPopup(auth, this._googleAuthProvider);
+      const firebaseApp = await signInWithPopup(
+        this._auth,
+        this._googleAuthProvider
+      );
       await this._fetchIsNewUser(firebaseApp.user.uid);
-      //TODO 로그인 후 유저 정보를 조회할 수 없음, 그래서 로그인 후 _checkAuth() 호출함. 좋은 방법은 아닌거 같음. 다른 방법 생각해 볼 것.
       if (!this.isNewUser) await this._checkAuth();
     } catch (e) {
       console.log(e);
@@ -103,7 +108,10 @@ export class UserStore {
 
   signInWithGithub = async () => {
     try {
-      const firebaseApp = await signInWithPopup(auth, this._githubAuthProvider);
+      const firebaseApp = await signInWithPopup(
+        this._auth,
+        this._githubAuthProvider
+      );
       await this._fetchIsNewUser(firebaseApp.user.uid);
       if (!this.isNewUser) await this._checkAuth();
     } catch (e) {

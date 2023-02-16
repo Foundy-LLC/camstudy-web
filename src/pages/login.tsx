@@ -1,27 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { NextPage } from "next";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useRouter } from "next/router";
 import { observer } from "mobx-react";
-import { auth } from "@/service/firebase";
 import userStore from "@/stores/UserStore";
+import { useRouter } from "next/router";
+import { useAuth } from "@/components/AuthProvider";
 
 const Login: NextPage = () => {
-  const [user, loading] = useAuthState(auth);
-  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const auth = useAuth();
 
-  useEffect(() => {
-    setErrorMessage(
-      userStore.errorMessage == undefined ? "" : userStore.errorMessage
-    );
-  }, []);
-
-  if (loading) {
-    return <div>Loading</div>;
-  }
-  if (user && userStore.isNewUser !== undefined) {
-    console.log(userStore.isNewUser);
+  if (auth.user && userStore.isNewUser !== undefined) {
     if (userStore.isNewUser) {
       router.push("/welcome").then(() => {});
     } else {
@@ -38,7 +26,6 @@ const Login: NextPage = () => {
       <button onClick={() => userStore.signInWithGithub()}>
         Github Sign In
       </button>
-      <div>{errorMessage}</div>
     </div>
   );
 };
