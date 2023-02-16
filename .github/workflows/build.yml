@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      NEXT_PUBLIC_PRIVATE_KEY: ${{secrets.NEXT_PUBLIC_PRIVATE_KEY}}
+      NEXT_PUBLIC_CLIENT_EMAIL: ${{secrets.NEXT_PUBLIC_CLIENT_EMAIL}}
       NEXT_PUBLIC_API_KEY: ${{ secrets.NEXT_PUBLIC_API_KEY }}
       NEXT_PUBLIC_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_AUTH_DOMAIN }}
       NEXT_PUBLIC_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_PROJECT_ID }}
