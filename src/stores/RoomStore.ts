@@ -25,6 +25,7 @@ import {
 import { Auth } from "@firebase/auth";
 import { PeerState } from "@/models/room/PeerState";
 import { auth } from "@/service/firebase";
+import { BlockedUser } from "@/models/room/BlockedUser";
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
@@ -48,10 +49,11 @@ export interface RoomViewModel {
   onPomodoroTimerEvent: (event: PomodoroTimerEvent) => void;
   onUpdatedPomodoroTimer: (newProperty: PomodoroTimerProperty) => void;
   onKicked: (userId: string) => void;
+  onBlocked: (userId: string) => void;
 }
 
 export class RoomStore implements RoomViewModel {
-  private readonly _roomService = new RoomSocketService(this);
+  private readonly _roomService;
 
   private _failedToSignIn: boolean = false;
 
@@ -79,6 +81,8 @@ export class RoomStore implements RoomViewModel {
   private _pomodoroTimerState: PomodoroTimerState = PomodoroTimerState.STOPPED;
   private _pomodoroTimerEventDate?: Date = undefined;
   private _pomodoroProperty?: PomodoroTimerProperty = undefined;
+  private _blacklist: BlockedUser[] = [];
+
   private _kicked: boolean = false;
 
   /**
@@ -88,9 +92,11 @@ export class RoomStore implements RoomViewModel {
 
   constructor(
     private _mediaUtil: MediaUtil = new MediaUtil(),
-    private readonly _auth: Auth = auth
+    private readonly _auth: Auth = auth,
+    roomService?: RoomSocketService
   ) {
     makeAutoObservable(this);
+    this._roomService = roomService ?? new RoomSocketService(this);
   }
 
   public get state(): RoomState {
@@ -148,7 +154,7 @@ export class RoomStore implements RoomViewModel {
 
   private _isCurrentUserBlocked = (waitingRoomData: WaitingRoomData) => {
     const currentUserId = this._requireCurrentUserId();
-    return waitingRoomData.blacklist.some((id) => id === currentUserId);
+    return waitingRoomData.blacklist.some((user) => user.id === currentUserId);
   };
 
   public get failedToJoinMessage(): string | undefined {
@@ -267,6 +273,10 @@ export class RoomStore implements RoomViewModel {
     return this._pomodoroProperty;
   }
 
+  public get blacklist(): BlockedUser[] {
+    return this._blacklist;
+  }
+
   public get kicked(): boolean {
     return this._kicked;
   }
@@ -310,6 +320,7 @@ export class RoomStore implements RoomViewModel {
     this._state = RoomState.WAITING_ROOM;
     this._waitingRoomData = waitingRoomData;
     this._masterId = waitingRoomData.masterId;
+    this._blacklist = waitingRoomData.blacklist;
   };
 
   public onWaitingRoomEvent = (event: WaitingRoomEvent) => {
@@ -521,6 +532,16 @@ export class RoomStore implements RoomViewModel {
     this._roomService.blockUser(userId);
   };
 
+  public unblockUser = async (userId: string) => {
+    try {
+      await this._roomService.unblockUser(userId);
+      this._blacklist = this._blacklist.filter((user) => user.id !== userId);
+    } catch (e) {
+      this._userMessage =
+        typeof e === "string" ? e : "회원 차단 해제를 실패했습니다.";
+    }
+  };
+
   public onKicked = (userId: string) => {
     const isMe = userId === this._auth.currentUser!!.uid;
     if (isMe) {
@@ -532,10 +553,24 @@ export class RoomStore implements RoomViewModel {
         (peer) => peer.uid === userId
       );
       if (kickedPeerState == null) {
-        throw Error("강퇴시킬 피어의 정보가 없습니다.");
+        throw Error("강퇴시킨 피어의 정보가 없습니다.");
       }
       this._userMessage = `${kickedPeerState.name}님이 강퇴되었습니다.`;
     }
+  };
+
+  public onBlocked = (userId: string) => {
+    const blockedPeerState = this._peerStates.find(
+      (peer) => peer.uid === userId
+    );
+    if (blockedPeerState == null) {
+      throw Error("차단한 피어의 상태 정보가 없습니다.");
+    }
+    this._blacklist = [
+      ...this._blacklist,
+      { id: userId, name: blockedPeerState.name },
+    ];
+    this.onKicked(userId);
   };
 
   public clearUserMessage = () => {

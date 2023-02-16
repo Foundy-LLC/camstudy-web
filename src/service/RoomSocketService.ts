@@ -28,6 +28,7 @@ import {
   TRANSPORT_PRODUCER,
   TRANSPORT_PRODUCER_CONNECT,
   TRANSPORT_RECEIVER_CONNECT,
+  UNBLOCK_USER,
   UNMUTE_HEADSET,
 } from "@/constants/socketProtocol";
 import { MediaKind, RtpParameters } from "mediasoup-client/lib/RtpParameters";
@@ -260,7 +261,7 @@ export class RoomSocketService {
       this._roomViewModel.onUpdatedPomodoroTimer(newProperty);
     });
     socket.on(KICK_USER, this._roomViewModel.onKicked);
-    socket.on(BLOCK_USER, this._roomViewModel.onKicked);
+    socket.on(BLOCK_USER, this._roomViewModel.onBlocked);
   };
 
   private _createSendTransport = (
@@ -634,5 +635,21 @@ export class RoomSocketService {
 
   public blockUser = (userId: string) => {
     this._requireSocket().emit(BLOCK_USER, userId);
+  };
+
+  public unblockUser = (userId: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      this._requireSocket().emit(
+        UNBLOCK_USER,
+        userId,
+        (isSuccess: boolean, message: string) => {
+          if (isSuccess) {
+            resolve();
+          } else {
+            reject(message);
+          }
+        }
+      );
+    });
   };
 }

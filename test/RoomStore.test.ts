@@ -10,6 +10,8 @@ import {
 import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
 import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { Auth, User } from "@firebase/auth";
+import { auth } from "@/service/firebase";
+import { RoomSocketService } from "@/service/RoomSocketService";
 
 describe("RoomStore.onConnected", () => {
   it("should set state to CONNECTED", async () => {
@@ -159,10 +161,10 @@ describe("RoomStore.enabledJoinRoomButton", () => {
 
   it("should be false when current user was blocked", () => {
     // given
-    const uid = "id";
+    const id = "id";
     const mockAuth = mock<Auth>();
     const mockUser = mock<User>();
-    when(mockUser.uid).thenReturn(uid);
+    when(mockUser.uid).thenReturn(id);
     when(mockAuth.currentUser).thenReturn(instance(mockUser));
     const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
 
@@ -171,7 +173,7 @@ describe("RoomStore.enabledJoinRoomButton", () => {
       joinerList: [],
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
-      blacklist: [uid],
+      blacklist: [{ id, name: "name" }],
       hasPassword: false,
     });
 
@@ -239,6 +241,33 @@ describe("RoomStore.onKicked", () => {
     roomStore.onKicked("other");
 
     expect(roomStore.kicked).toBe(false);
+  });
+});
+
+describe("RoomStore.unblockUser", () => {
+  it("should remove user from blacklist when success", async () => {
+    // given
+    const userId = "userId";
+    const mockService = mock<RoomSocketService>();
+    when(mockService.unblockUser(userId)).thenResolve();
+    const roomStore = new RoomStore(
+      new MediaUtil(),
+      auth,
+      instance(mockService)
+    );
+    roomStore.onConnectedWaitingRoom({
+      blacklist: [{ id: userId, name: "name" }],
+      capacity: 0,
+      hasPassword: false,
+      joinerList: [],
+      masterId: "",
+    });
+
+    // when
+    await roomStore.unblockUser(userId);
+
+    // then
+    expect(roomStore.blacklist.length).toBe(0);
   });
 });
 
