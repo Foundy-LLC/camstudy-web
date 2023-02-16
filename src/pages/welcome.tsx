@@ -5,34 +5,10 @@ import { WelcomeStore } from "@/stores/WelcomeStore";
 import { observer } from "mobx-react";
 import userStore from "@/stores/UserStore";
 import { useAuth } from "@/components/AuthProvider";
-import nookies from "nookies";
-import { firebaseAdmin } from "@/service/firebaseAdmin";
+import { verifyUserToken } from "@/service/verifyUserToken";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  try {
-    const cookies = nookies.get(ctx);
-    const token = await firebaseAdmin.auth().verifyIdToken(cookies.token);
-    const { uid, email } = token;
-
-    return {
-      props: {
-        message: `Your email is ${email} and your UID is ${uid}.`,
-        uid: uid,
-      },
-    };
-  } catch (err) {
-    // either the `token` cookie didn't exist
-    // or token verification failed
-    // either way: redirect to the login page
-    ctx.res.writeHead(302, { Location: "/login" });
-    ctx.res.end();
-
-    // `as never` prevents inference issues
-    // with InferGetServerSidePropsType.
-    // The props returned here don't matter because we've
-    // already redirected the user.
-    return { props: {} as never };
-  }
+  return await verifyUserToken(ctx);
 };
 
 const Welcome: NextPage = () => {
@@ -40,9 +16,8 @@ const Welcome: NextPage = () => {
   const [welcomeStore] = useState(new WelcomeStore());
   const successToCreate = welcomeStore.successToCreate;
   const router = useRouter();
-  /**
-   * Welcome 페이지에서는 이동 못하도록 설정
-   */
+
+  //Welcome 페이지에서는 이동 못하도록 설정
   useEffect(() => {
     router.events.on("routeChangeStart", () => {
       router.events.emit("routeChangeError");

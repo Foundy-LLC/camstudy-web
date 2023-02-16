@@ -22,7 +22,7 @@ export class UserStore {
     private readonly _auth: Auth = auth
   ) {
     makeAutoObservable(this);
-    this._checkAuth().then();
+    this.fetchAuth().then();
   }
 
   get isNewUser(): boolean | undefined {
@@ -45,14 +45,10 @@ export class UserStore {
     }
   };
 
-  refreshUser = async () => {
-    await this._checkAuth();
-  };
-
   //TODO: 함수명 맘에 안듬
-  private _checkAuth = async () => {
+  fetchAuth = async () => {
     if (this._auth.currentUser != null) {
-      await this._fetchCurrentUser(this._auth.currentUser!.uid);
+      await this._fetchCurrentUser(this._auth.currentUser.uid);
     }
     const unsubscribe = this._auth.onIdTokenChanged(async (user) => {
       unsubscribe();
@@ -100,7 +96,7 @@ export class UserStore {
         this._googleAuthProvider
       );
       await this._fetchIsNewUser(firebaseApp.user.uid);
-      if (!this.isNewUser) await this._checkAuth();
+      if (!this.isNewUser) await this.fetchAuth();
     } catch (e) {
       console.log(e);
     }
@@ -113,7 +109,7 @@ export class UserStore {
         this._githubAuthProvider
       );
       await this._fetchIsNewUser(firebaseApp.user.uid);
-      if (!this.isNewUser) await this._checkAuth();
+      if (!this.isNewUser) await this.fetchAuth();
     } catch (e) {
       console.log(e);
     }
