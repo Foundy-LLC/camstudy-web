@@ -18,6 +18,15 @@ describe("postReport", () => {
   it("success", async () => {
     // when
     mockPrisma.user_account.findUnique.mockResolvedValue({} as user_account);
+    mockPrisma.report.create.mockResolvedValue({
+      id: "id",
+      reporter_id: "",
+      reported_at: new Date(),
+      suspect_id: "",
+      content: "",
+      category: ReportCategory.hindrance,
+      screenshot: null,
+    });
     const request = createMockRequest({
       body: fakeRequest,
     });
