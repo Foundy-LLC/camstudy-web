@@ -4,7 +4,7 @@ import { Result } from "@/models/common/Result";
 import { UserService } from "@/service/user.service";
 import {
   PROFILE_IMAGE_INVALID_EXTENSION,
-  PROFILE_IMAGE_SIZE_ERROR_MESSAGE,
+  IMAGE_SIZE_EXCEED_MESSAGE,
   TAG_COUNT_ERROR_MESSAGE,
   TAG_LENGTH_ERROR_MESSAGE,
   USER_INTRODUCE_LENGTH_ERROR_MESSAGE,
@@ -217,7 +217,7 @@ describe("WelcomeStore.profileImageUrlErrorMessage", () => {
 
     //then
     expect(welcomeStore.profileImageUrlErrorMessage).toBe(
-      PROFILE_IMAGE_SIZE_ERROR_MESSAGE
+      IMAGE_SIZE_EXCEED_MESSAGE
     );
   });
 });

@@ -1,9 +1,10 @@
 import { mockPrisma } from "./mockPrisma";
 import { room } from "@prisma/client";
 import { getRoomAvailability } from "@/controller/room.controller";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiResponse } from "next";
 import { instance, mock, verify, when } from "ts-mockito";
 import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
+import { createMockRequest } from "./util/request.util";
 
 describe("getRoomAvailability", () => {
   const mockRoom: room = {
@@ -17,19 +18,7 @@ describe("getRoomAvailability", () => {
     thumbnail: "url here",
     timer: 0,
     title: "",
-  };
-
-  const createMockRequest = ({
-    body,
-    query,
-  }: {
-    body?: any;
-    query?: any;
-  }): NextApiRequest => {
-    const request = mock<NextApiRequest>();
-    when(request.body).thenReturn(body);
-    when(request.query).thenReturn(query);
-    return request;
+    deleted_at: null,
   };
 
   it("success", async () => {

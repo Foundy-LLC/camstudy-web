@@ -13,7 +13,7 @@ import {
   NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
   NOT_FOUND_USER_MESSAGE,
   PROFILE_CREATE_SUCCESS,
-  PROFILE_IMAGE_SIZE_ERROR_MESSAGE,
+  IMAGE_SIZE_EXCEED_MESSAGE,
   PROFILE_IMAGE_UPDATE,
   SERVER_INTERNAL_ERROR_MESSAGE,
   USER_INFORMATION_LOOKUP_SUCCESS,
@@ -24,6 +24,8 @@ import { UserGetRequestBody } from "@/models/user/UserGetRequestBody";
 import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import { uuidv4 } from "@firebase/util";
+import runMiddleware from "@/utils/runMiddleware";
+import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -116,21 +118,6 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-function runMiddleware(
-  req: NextApiRequest & { [key: string]: any },
-  res: NextApiResponse,
-  fn: (...args: any[]) => void
-): Promise<any> {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result: any) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
-    });
-  });
-}
-
 export const config = {
   api: {
     bodyParser: false,
@@ -150,7 +137,7 @@ export const postProfileImage = async (
           callback(null, uuidv4() + ".png");
         },
       }),
-      limits: { fileSize: 5 * 1024 * 1024 },
+      limits: { fileSize: MAX_IMAGE_BYTE_SIZE },
     });
 
     await runMiddleware(req, res, multerUpload.single("profileImage"));
@@ -172,7 +159,7 @@ export const postProfileImage = async (
     if (e instanceof MulterError && e.code === "LIMIT_FILE_SIZE") {
       res
         .status(400)
-        .send(new ResponseBody({ message: PROFILE_IMAGE_SIZE_ERROR_MESSAGE }));
+        .send(new ResponseBody({ message: IMAGE_SIZE_EXCEED_MESSAGE }));
       return;
     }
     if (typeof e === "string") {
