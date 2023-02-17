@@ -12,8 +12,7 @@ describe("postReport", () => {
     "suspect",
     "reporter",
     ReportCategory.hindrance,
-    "content",
-    undefined
+    "content"
   );
 
   it("success", async () => {

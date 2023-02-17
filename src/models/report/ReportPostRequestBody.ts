@@ -6,8 +6,7 @@ export class ReportPostRequestBody {
     readonly suspectId: string,
     readonly reporterId: string,
     readonly category: ReportCategory,
-    readonly content: string,
-    readonly screenshot?: string
+    readonly content: string
   ) {
     validateReportContent(content);
   }
