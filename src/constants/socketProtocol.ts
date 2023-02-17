@@ -168,6 +168,11 @@ const KICK_USER = "kick-user";
  */
 const BLOCK_USER = "block-user";
 
+/**
+ * 방장이 회원 차단을 해제할 때 서버에 전송하는 프로토콜이다.
+ */
+const UNBLOCK_USER = "unblock-user";
+
 export {
   IP_ADDRESS,
   NAME_SPACE,
@@ -200,4 +205,5 @@ export {
   EDIT_AND_STOP_TIMER,
   KICK_USER,
   BLOCK_USER,
+  UNBLOCK_USER,
 };

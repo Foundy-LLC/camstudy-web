@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { RoomStore } from "@/stores/RoomStore";
 import { useRouter } from "next/router";
@@ -11,7 +11,8 @@ import { UserProfileImage } from "@/components/UserProfileImage";
 import { PeerState } from "@/models/room/PeerState";
 import PopupMenu from "@/components/PopupMenu";
 import { getEnumKeyByEnumValue } from "@/utils/EnumUtil";
-import { useAuth } from "@/components/AuthProvider";
+import Button from "@mui/material/Button";
+import { RoomSettingDialog } from "@/components/RoomSettingDialog";
 
 enum MasterPopupMenus {
   Kick = "강퇴",
@@ -121,7 +122,9 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
     const enabledVideo = roomStore.enabledLocalVideo;
     const enabledAudio = roomStore.enabledLocalAudio;
     const enabledHeadset = roomStore.enabledHeadset;
+    const isCurrentUserMaster = roomStore.isCurrentUserMaster;
     const router = useRouter();
+    const [openSettingDialog, setOpenSettingDialog] = React.useState(false);
 
     useEffect(() => {
       if (roomStore.userMessage != null) {
@@ -155,6 +158,16 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
 
     return (
       <div>
+        <RoomSettingDialog
+          open={openSettingDialog}
+          onClose={() => setOpenSettingDialog(false)}
+          onUpdatedTimer={() => {
+            /* TODO: 구현 */
+          }}
+          onUnblockedUser={(user) => roomStore.unblockUser(user.id)}
+          blacklist={roomStore.blacklist}
+        />
+
         <table className="mainTable">
           <tbody>
             <tr>
@@ -168,7 +181,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
               </td>
               <td className="remoteColumn">
                 <RemoteMediaGroup
-                  isCurrentUserMaster={roomStore.isCurrentUserMaster}
+                  isCurrentUserMaster={isCurrentUserMaster}
                   peerStates={roomStore.peerStates}
                   remoteVideoStreamByPeerIdEntries={
                     roomStore.remoteVideoStreamByPeerIdEntries
@@ -236,6 +249,11 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
             />
           ) : undefined}
         </div>
+        {isCurrentUserMaster && (
+          <div>
+            <Button onClick={() => setOpenSettingDialog(true)}>설정</Button>
+          </div>
+        )}
       </div>
     );
   }
