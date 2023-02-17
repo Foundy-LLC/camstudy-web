@@ -6,15 +6,20 @@ import React from "react";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { UserProfileImage } from "@/components/UserProfileImage";
 import { NOT_FOUND_USER_MESSAGE } from "@/constants/message";
+import { useRouter } from "next/router";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return await verifyUserToken(ctx);
 };
 
-function UserId(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function UserProfile(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
+  const router = useRouter();
+  const userId = router.query.userId as string;
   const fetcher = (args: string) => fetch(args).then((res) => res.json());
   const { data, error, isLoading } = useSWR<ResponseBody<User>>(
-    `/api/users/${props.uid}`,
+    `/api/users/${userId}`,
     fetcher
   );
   const user = data?.data;
@@ -26,7 +31,7 @@ function UserId(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   if (user != undefined)
     return (
       <div>
-        <UserProfileImage userId={props.uid} width={150} height={150} />
+        <UserProfileImage userId={userId} width={150} height={150} />
         <h1>아이디: {user.id}</h1>
         <h1>이름: {user.name}</h1>
         <h1>태그: {user.tags}</h1>
@@ -38,4 +43,4 @@ function UserId(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     );
 }
 
-export default UserId;
+export default UserProfile;
