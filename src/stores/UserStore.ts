@@ -45,15 +45,14 @@ export class UserStore {
     }
   };
 
-  //TODO: 함수명 맘에 안듬
   fetchAuth = async () => {
     if (this._auth.currentUser != null) {
-      await this._fetchCurrentUser(this._auth.currentUser.uid);
+      await this.fetchCurrentUser(this._auth.currentUser.uid);
     }
-    const unsubscribe = this._auth.onIdTokenChanged(async (user) => {
+    const unsubscribe = this._auth.onAuthStateChanged(async (user) => {
       unsubscribe();
       if (user != null) {
-        await this._fetchCurrentUser(user.uid);
+        await this.fetchCurrentUser(user.uid);
       } else {
         //TODO: 로그인 실패 처리
         this._errorMessage = NO_USER_UID_ERROR_MESSAGE;
@@ -62,7 +61,7 @@ export class UserStore {
     });
   };
 
-  private _fetchCurrentUser = async (userId: string) => {
+  fetchCurrentUser = async (userId: string) => {
     const result = await this._userService.getUser(userId);
     if (result.isSuccess) {
       runInAction(() => {

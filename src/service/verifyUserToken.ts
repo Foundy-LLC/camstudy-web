@@ -10,7 +10,6 @@ export async function verifyUserToken(ctx: GetServerSidePropsContext) {
 
     return {
       props: {
-        message: `Your email is ${email} and your UID is ${uid}.`,
         uid: uid,
       },
     };

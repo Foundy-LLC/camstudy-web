@@ -50,6 +50,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       <button onClick={() => loggingUserInformation()}>
         getUserInformation
       </button>
+      <button onClick={() => router.push("/profile")}>내 프로필</button>
       <button
         onClick={() =>
           userStore.signOut().then(() => {
@@ -59,7 +60,6 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       >
         sign out
       </button>
-      <div>{props.message}</div>
       <div>{errorMessage}</div>
     </div>
   );
