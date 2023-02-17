@@ -17,3 +17,17 @@ export const createReport = async (
     },
   });
 };
+
+export const updateReportScreenshot = async (
+  reportId: string,
+  screenshot: string
+) => {
+  await prisma.report.update({
+    where: {
+      id: reportId,
+    },
+    data: {
+      screenshot: screenshot,
+    },
+  });
+};

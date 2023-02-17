@@ -1,7 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { postReport } from "@/controller/report.controller";
+import { postReportScreenshot } from "@/controller/report.controller";
 
-export default async function reportsHandler(
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+export default async function reportScreenshotHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -9,7 +15,7 @@ export default async function reportsHandler(
 
   switch (method) {
     case "POST":
-      await postReport(req, res);
+      await postReportScreenshot(req, res);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);

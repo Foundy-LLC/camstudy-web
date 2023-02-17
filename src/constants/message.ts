@@ -1,12 +1,14 @@
 import { MAX_REPORT_CONTENT_LENGTH } from "@/constants/report.constant";
+import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 
 export const SERVER_INTERNAL_ERROR_MESSAGE: string =
   "서버 내부에 에러가 발생했습니다.";
 export const REQUEST_QUERY_ERROR = "query 요청이 잘못되었습니다";
 export const PROFILE_CREATE_SUCCESS = "프로필이 생성되었습니다.";
 export const PROFILE_IMAGE_UPDATE: string = "프로필 이미지가 설정되었습니다.";
-export const PROFILE_IMAGE_SIZE_ERROR_MESSAGE: string =
-  "파일 사이즈가이 너무 큽니다. 파일 사이즈는 최대 5MB 입니다.";
+export const IMAGE_SIZE_EXCEED_MESSAGE: string = `파일 사이즈가이 너무 큽니다. 파일 사이즈는 최대 ${
+  MAX_IMAGE_BYTE_SIZE / 1000 / 1000
+}MB 입니다.`;
 export const NO_USER_UID_ERROR_MESSAGE: string = "UID가 누락되었습니다.";
 export const USER_INFORMATION_LOOKUP_SUCCESS: string =
   "현재 회원 정보 조회를 성공했습니다.";
@@ -42,3 +44,5 @@ export const NOT_FOUND_SUSPECT_MESSAGE: string =
   "신고할 회원을 찾을 수 없습니다.";
 export const SUCCESSFUL_REPORTED_MESSAGE: string =
   "성공적으로 신고가 접수되었습니다.";
+export const REPORT_SCREENSHOT_UPLOADED: string =
+  "신고 이미지가 업로드되었습니다.";

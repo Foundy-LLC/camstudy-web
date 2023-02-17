@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {
   INVALID_ROOM_PASSWORD_ERROR_MESSAGE,
   NO_ROOM_ERROR_MESSAGE,
-  PROFILE_IMAGE_SIZE_ERROR_MESSAGE,
+  IMAGE_SIZE_EXCEED_MESSAGE,
   REQUEST_QUERY_ERROR,
   ROOM_AVAILABLE_MESSAGE,
   ROOM_IS_FULL_ERROR_MESSAGE,
@@ -34,6 +34,7 @@ import * as path from "path";
 import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
 import { RecentRoomsGetRequest } from "@/models/room/RecentRoomsGetRequest";
+import runMiddleware from "@/utils/runMiddleware";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -172,21 +173,6 @@ export const deleteRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-function runMiddleware(
-  req: NextApiRequest & { [key: string]: any },
-  res: NextApiResponse,
-  fn: (...args: any[]) => void
-): Promise<any> {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result: any) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
-    });
-  });
-}
-
 export const config = {
   api: {
     bodyParser: false,
@@ -225,7 +211,7 @@ export const postRoomThumbnail = async (
     if (e instanceof MulterError && e.code === "LIMIT_FILE_SIZE") {
       res
         .status(400)
-        .send(new ResponseBody({ message: PROFILE_IMAGE_SIZE_ERROR_MESSAGE }));
+        .send(new ResponseBody({ message: IMAGE_SIZE_EXCEED_MESSAGE }));
       return;
     }
     if (typeof e === "string") {
