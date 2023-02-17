@@ -1,3 +1,5 @@
+import { MAX_REPORT_CONTENT_LENGTH } from "@/constants/report.constant";
+
 export const SERVER_INTERNAL_ERROR_MESSAGE: string =
   "서버 내부에 에러가 발생했습니다.";
 export const REQUEST_QUERY_ERROR = "query 요청이 잘못되었습니다";
@@ -32,3 +34,11 @@ export const NO_EXISTS_INITIAL_INFORMATION_MESSAGE: string =
   "초기 입력 정보가 없습니다.";
 export const EXISTS_INITIAL_INFORMATION_MESSAGE: string =
   "초기 입력 정보가 있습니다.";
+
+export const EXCEED_REPORT_CONTENT_LENGTH_MESSAGE: string = `신고 내용은 최대 ${MAX_REPORT_CONTENT_LENGTH}자 입니다.`;
+export const NOT_FOUND_REPORTER_MESSAGE: string =
+  "신고자 회원을 찾을 수 없습니다.";
+export const NOT_FOUND_SUSPECT_MESSAGE: string =
+  "신고할 회원을 찾을 수 없습니다.";
+export const SUCCESSFUL_REPORTED_MESSAGE: string =
+  "성공적으로 신고가 접수되었습니다.";
