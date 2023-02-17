@@ -9,6 +9,7 @@ import {
 } from "@/constants/message";
 import { isUserExists } from "@/repository/user.repository";
 import { createReport } from "@/repository/report.repository";
+import { ReportPostResponseBody } from "@/models/report/ReportPostResponseBody";
 
 export const postReport = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -30,10 +31,14 @@ export const postReport = async (req: NextApiRequest, res: NextApiResponse) => {
       return;
     }
 
-    await createReport(body);
-    res
-      .status(201)
-      .send(new ResponseBody({ message: SUCCESSFUL_REPORTED_MESSAGE }));
+    const report = await createReport(body);
+    const responseBody: ReportPostResponseBody = { reportId: report.id };
+    res.status(201).send(
+      new ResponseBody({
+        message: SUCCESSFUL_REPORTED_MESSAGE,
+        data: responseBody,
+      })
+    );
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(e);
