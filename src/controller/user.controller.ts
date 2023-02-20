@@ -6,6 +6,7 @@ import {
 import {
   createUser,
   findUser,
+  insertUserProfileImage,
   isUserExists,
 } from "@/repository/user.repository";
 import {
@@ -157,6 +158,8 @@ export const postProfileImage = async (
       "users/" + userId + ".png",
       file.path
     );
+
+    await insertUserProfileImage(userId, signedUrl);
     res.status(201).send(
       new ResponseBody({
         message: PROFILE_IMAGE_UPDATE,
