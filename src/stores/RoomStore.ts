@@ -444,6 +444,7 @@ export class RoomStore implements RoomViewModel {
     for (const remoteAudioStream of this._remoteAudioStreamsByPeerId.values()) {
       remoteAudioStream.getAudioTracks().forEach((audio) => audio.stop());
     }
+    // TODO(민성): 헤드셋 뮤트하고 _remoteAudioStreamsByPeerId 클리어 해야하는지 확인하기
     this._roomService.muteHeadset();
     this._enabledHeadset = false;
   };
