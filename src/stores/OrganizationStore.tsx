@@ -27,7 +27,6 @@ export class OrganizationStore {
     this._recommendOrganizations = nameList;
   }
 
-  //TODO 리액트 디바운스 (0.5s)
   public async onChangeNameInput(name: string) {
     if (name === "") return;
     this._typedName = name;

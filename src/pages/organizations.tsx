@@ -1,9 +1,9 @@
 import { NextPage } from "next";
 import { observer } from "mobx-react";
 import { useStores } from "@/stores/context";
-import React, { useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { organization } from "@prisma/client";
-import { debounce } from "ts-debounce";
+import { useDebounce } from "@/components/UseDebounce";
 
 const RecommendedOrganizationsNameGroup: NextPage<{ items: organization[] }> =
   observer(({ items }) => {
@@ -38,7 +38,18 @@ const RecommendedOrganizationsName: NextPage<{ item: organization }> = observer(
 
 const organizations: NextPage = observer(() => {
   const { organizationStore } = useStores();
-  const debouncedFunction = debounce(organizationStore.onChangeNameInput, 500);
+  const [searchTerm, setSearchTerm] = useState("");
+  const debounceSearch = useDebounce(searchTerm, 500);
+
+  useEffect(
+    () => {
+      if (debounceSearch) {
+        organizationStore.onChangeNameInput(debounceSearch);
+      }
+    },
+    [debounceSearch] // Only call effect if debounced search term changes
+  );
+
   return (
     <>
       <div>
@@ -46,8 +57,8 @@ const organizations: NextPage = observer(() => {
           id="organization-name-input"
           type="text"
           placeholder="소속명"
-          onChange={(e) => {
-            organizationStore.onChangeNameInput(e.target.value);
+          onChange={async (e) => {
+            setSearchTerm(e.target.value);
           }}
         ></input>
         <button>등록</button>
