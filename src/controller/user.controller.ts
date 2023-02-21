@@ -6,6 +6,7 @@ import {
 import {
   createUser,
   findUser,
+  insertUserProfileImage,
   isUserExists,
 } from "@/repository/user.repository";
 import {
@@ -128,6 +129,15 @@ export const postProfileImage = async (
   res: NextApiResponse
 ) => {
   try {
+    const userId = req.query.userId;
+    if (typeof userId !== "string") {
+      res.status(404).send(
+        new ResponseBody({
+          message: "잘못된 query 접근입니다. 회원 ID가 문자열이 아닙니다.",
+        })
+      );
+      return;
+    }
     const multerUpload = multer({
       storage: multer.diskStorage({
         destination: function (req, file, callback) {
@@ -142,13 +152,14 @@ export const postProfileImage = async (
 
     await runMiddleware(req, res, multerUpload.single("profileImage"));
     const file = req.file;
-    const others = req.body;
     console.log(file);
 
     const signedUrl = await multipartUploader(
-      "users/" + others.fileName + ".png",
+      "users/" + userId + ".png",
       file.path
     );
+
+    await insertUserProfileImage(userId, signedUrl);
     res.status(201).send(
       new ResponseBody({
         message: PROFILE_IMAGE_UPDATE,
