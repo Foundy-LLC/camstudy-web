@@ -7,7 +7,7 @@ export class OrganizationService {
     name: string
   ): Promise<Result<organization[]>> {
     try {
-      const response = await fetch(`api/organizations?name=${name}`, {
+      const response = await fetch(`api/organizations?name=${name}&page=0`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

@@ -38,8 +38,8 @@ const RecommendedOrganizationsName: NextPage<{ item: organization }> = observer(
 
 const organizations: NextPage = observer(() => {
   const { organizationStore } = useStores();
-  const [searchTerm, setSearchTerm] = useState("");
-  const debounceSearch = useDebounce(searchTerm, 500);
+  const [searchInput, setSearchInput] = useState("");
+  const debounceSearch = useDebounce(searchInput, 500);
 
   useEffect(
     () => {
@@ -58,14 +58,10 @@ const organizations: NextPage = observer(() => {
           type="text"
           placeholder="소속명"
           onChange={async (e) => {
-            setSearchTerm(e.target.value);
+            setSearchInput(e.target.value);
           }}
         ></input>
         <button>등록</button>
-        {/*{organizationStore.recommendOrganizations &&*/}
-        {/*  organizationStore.recommendOrganizations.map((name) => {*/}
-        {/*    return <p>{name}</p>;*/}
-        {/*  })}*/}
       </div>
       <RecommendedOrganizationsNameGroup
         items={organizationStore.recommendOrganizations}

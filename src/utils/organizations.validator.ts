@@ -1,11 +1,12 @@
 import {
   ORGANIZATIONS_NAME_NULL_ERROR,
+  ORGANIZATIONS_PAGE_NULL_ERROR,
   ORGANIZATIONS_PAGE_NUM_NULL_ERROR,
 } from "@/constants/organizationMessage";
 
-export const validateOrganizationName = (organizationName: string) => {
-  if (!organizationName) {
-    throw ORGANIZATIONS_NAME_NULL_ERROR;
+export const validateOrganizationsPage = (page: string) => {
+  if (page === "") {
+    throw ORGANIZATIONS_PAGE_NULL_ERROR;
   }
 };
 
