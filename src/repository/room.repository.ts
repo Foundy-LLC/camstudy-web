@@ -44,7 +44,6 @@ export const isUserBlockedAtRoom = async (
   return block != null;
 };
 export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
-  var roomOverviews: RoomOverview[] = [];
   const rooms = await client.room.findMany({
     where: { deleted_at: null },
     skip: pageNum * ROOM_NUM_PER_PAGE,
@@ -72,7 +71,6 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
 };
 
 export const findRecentRooms = async (userId: string) => {
-  var roomOverviews: RoomOverview[] = [];
   const rooms = await client.study_history.findMany({
     where: { user_id: userId, room: { deleted_at: null } },
     distinct: "room_id",
