@@ -4,6 +4,7 @@ import { useStores } from "@/stores/context";
 import React, { useEffect, useState } from "react";
 import { organization } from "@prisma/client";
 import { useDebounce } from "@/components/UseDebounce";
+import { sendSecretMail } from "@/components/SendEmail";
 
 const RecommendedOrganizationsNameGroup: NextPage<{ items: organization[] }> =
   observer(({ items }) => {
@@ -70,7 +71,12 @@ const organizations: NextPage = observer(() => {
           type="email"
           placeholder="email"
         ></input>
-        <button disabled={organizationStore.emailVerityButtonDisable}>
+        <button
+          disabled={organizationStore.emailVerityButtonDisable}
+          onClick={(e) => {
+            sendSecretMail("khaerim41@naver.com", "33333");
+          }}
+        >
           이메일 등록
         </button>
       </div>
