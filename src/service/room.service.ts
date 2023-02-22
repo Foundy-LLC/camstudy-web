@@ -54,7 +54,7 @@ export class RoomService {
         headers: HEADER,
       });
       if (response.ok) {
-        return Result.createSuccessUsingResponseData(response);
+        return Result.createSuccessUsingResponseMessage(response);
       } else {
         return await Result.createErrorUsingResponseMessage(response);
       }

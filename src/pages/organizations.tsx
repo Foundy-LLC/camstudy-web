@@ -4,7 +4,8 @@ import { useStores } from "@/stores/context";
 import React, { useEffect, useState } from "react";
 import { organization } from "@prisma/client";
 import { useDebounce } from "@/components/UseDebounce";
-import { sendSecretMail } from "@/components/SendEmail";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/service/firebase";
 
 const RecommendedOrganizationsNameGroup: NextPage<{ items: organization[] }> =
   observer(({ items }) => {
@@ -28,7 +29,7 @@ const RecommendedOrganizationsName: NextPage<{ item: organization }> = observer(
             "organization-name-input"
           ) as HTMLInputElement;
           organizationStore.onChangeNameInput(text.innerHTML);
-          input!!.value = organizationStore.typedName;
+          input!.value = organizationStore.typedName;
           organizationStore.setEmailVerifyButtonDisable(
             organizationStore.checkIfNameIncluded() === undefined
           );
@@ -70,12 +71,13 @@ const organizations: NextPage = observer(() => {
           id="organization-email-input"
           type="email"
           placeholder="email"
+          onChange={(e) => {
+            organizationStore.onChangeEmailInput(e.target.value);
+          }}
         ></input>
         <button
           disabled={organizationStore.emailVerityButtonDisable}
-          onClick={(e) => {
-            sendSecretMail("khaerim41@naver.com", "33333");
-          }}
+          onClick={() => organizationStore.sendOrganizationVerifyEmail()}
         >
           이메일 등록
         </button>
@@ -83,6 +85,12 @@ const organizations: NextPage = observer(() => {
       <RecommendedOrganizationsNameGroup
         items={organizationStore.recommendOrganizations}
       />
+      {organizationStore.successMessage === "" ? null : (
+        <h2>{organizationStore.successMessage}</h2>
+      )}
+      {organizationStore.errorMessage === "" ? null : (
+        <h2>Error: {organizationStore.errorMessage}</h2>
+      )}
     </>
   );
 });

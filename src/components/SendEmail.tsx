@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import mg from "nodemailer-mailgun-transport";
 import Mail from "nodemailer/lib/mailer";
 import mailgunTransport from "nodemailer-mailgun-transport";
+import * as process from "process";
 const mailGunSendMail = (email: Mail.Options) => {
   const auth: mailgunTransport.Options = {
     auth: {
@@ -11,22 +12,25 @@ const mailGunSendMail = (email: Mail.Options) => {
   };
   const nodemailerMailgun = nodemailer.createTransport(mg(auth));
   try {
-    return nodemailerMailgun.sendMail(email, (err, info) => {
+    nodemailerMailgun.sendMail(email, (err, info) => {
       if (err) {
         console.log(`Error: ${err}`);
       } else {
         console.log(`Response: ${info}`);
       }
     });
-  } catch (e) {}
+    return true;
+  } catch (e) {
+    return false;
+  }
 };
 
-export const sendSecretMail = (address: string, secret: string) => {
+export const sendSecretMail = (address: string, userName: string) => {
   const email = {
-    from: "Windo@developer.com", // 보내는 사람 - 원하는 대로 쓰면 된다.
-    to: address, // 받는 사람
-    subject: "Login Secret Key", // 이메일 제목
-    html: `<b>Your Login Secret Key ${secret}</b>`, // 이메일 본문. HTML 문법이 먹힌다.
+    from: "studyingFarmer@developer.com",
+    to: address,
+    subject: "공부하는 농부 - 소속 인증 이메일",
+    html: `<b>안녕하세요, ${userName}님. 본인이 보낸 인증 메일이 맞다면 확인 버튼을 눌러주세요</b> </br> <button>확인</button>`,
   };
   return mailGunSendMail(email);
 };
