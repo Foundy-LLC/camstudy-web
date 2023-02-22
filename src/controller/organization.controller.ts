@@ -30,12 +30,12 @@ export const setOrganizationEmail = async (
       email,
       organizationId
     );
-    if (!sendSecretMail(email, userName)) throw ORGANIZATIONS_EMAIL_SEND_FAIL;
     await addOrganizationEmailVerify(
       organizationsEmailRequestBody.userId,
       organizationsEmailRequestBody.email,
       organizationsEmailRequestBody.organizationId
     );
+    if (!sendSecretMail(email, userName)) throw ORGANIZATIONS_EMAIL_SEND_FAIL;
     res.status(201).json(
       new ResponseBody({
         message: ORGANIZATIONS_EMAIL_SEND_SUCCESS,

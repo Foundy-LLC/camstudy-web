@@ -6,7 +6,6 @@ export const addOrganizationEmailVerify = async (
   email: string,
   organizationId: string
 ) => {
-  console.log("check", userId, email, organizationId);
   await client.belong.create({
     data: {
       user_id: userId,
