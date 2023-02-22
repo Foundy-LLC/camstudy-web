@@ -32,14 +32,23 @@ export class Result<T> {
   }
 
   /**
+   * 성공 응답의 메세지를 이용하여 {@link Result.success}를 만드는 유틸함수입니다.
+   */
+  static async createSuccessUsingResponseMessage<T>(
+    response: Response
+  ): Promise<Result<string>> {
+    const responseWrapper = await Result.parseToResponseBody<T>(response);
+    const message = responseWrapper.message;
+    return Result.success(message);
+  }
+
+  /**
    * {@link Result.error}를 만드는 유틸함수입니다.
    */
   static async createErrorUsingResponseMessage<T>(
     response: Response
   ): Promise<Result<T>> {
-    const responseWrapper = await Result.parseToResponseBody<undefined>(
-      response
-    );
+    const responseWrapper = await Result.parseToResponseBody<T>(response);
     const error = Error(responseWrapper.message);
     return Result.error(error);
   }

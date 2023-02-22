@@ -1,15 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getOrganizations } from "@/controller/organization.controller";
-import { sendSecretMail } from "@/components/SendEmail";
+import { setOrganizationEmail } from "@/controller/organization.controller";
 
-export default async function organizationHandler(
+export default async function organizationEmailHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const { method } = req;
   switch (method) {
-    case "GET":
-      await getOrganizations(req, res);
+    case "POST":
+      await setOrganizationEmail(req, res);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);

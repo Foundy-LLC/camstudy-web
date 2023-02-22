@@ -4,6 +4,8 @@ import { useStores } from "@/stores/context";
 import React, { useEffect, useState } from "react";
 import { organization } from "@prisma/client";
 import { useDebounce } from "@/components/UseDebounce";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/service/firebase";
 
 const RecommendedOrganizationsNameGroup: NextPage<{ items: organization[] }> =
   observer(({ items }) => {
@@ -27,7 +29,10 @@ const RecommendedOrganizationsName: NextPage<{ item: organization }> = observer(
             "organization-name-input"
           ) as HTMLInputElement;
           organizationStore.onChangeNameInput(text.innerHTML);
-          input!!.value = organizationStore.typedName;
+          input!.value = organizationStore.typedName;
+          organizationStore.setEmailVerifyButtonDisable(
+            organizationStore.checkIfNameIncluded() === undefined
+          );
         }}
       >
         {item.name}
@@ -41,14 +46,14 @@ const organizations: NextPage = observer(() => {
   const [searchInput, setSearchInput] = useState("");
   const debounceSearch = useDebounce(searchInput, 500);
 
-  useEffect(
-    () => {
-      if (debounceSearch) {
-        organizationStore.onChangeNameInput(debounceSearch);
-      }
-    },
-    [debounceSearch] // Only call effect if debounced search term changes
-  );
+  useEffect(() => {
+    if (debounceSearch) {
+      organizationStore.onChangeNameInput(debounceSearch);
+      organizationStore.setEmailVerifyButtonDisable(
+        organizationStore.checkIfNameIncluded() === undefined
+      );
+    }
+  }, [debounceSearch]);
 
   return (
     <>
@@ -61,11 +66,31 @@ const organizations: NextPage = observer(() => {
             setSearchInput(e.target.value);
           }}
         ></input>
-        <button>등록</button>
+        <br />
+        <input
+          id="organization-email-input"
+          type="email"
+          placeholder="email"
+          onChange={(e) => {
+            organizationStore.onChangeEmailInput(e.target.value);
+          }}
+        ></input>
+        <button
+          disabled={organizationStore.emailVerityButtonDisable}
+          onClick={() => organizationStore.sendOrganizationVerifyEmail()}
+        >
+          이메일 등록
+        </button>
       </div>
       <RecommendedOrganizationsNameGroup
         items={organizationStore.recommendOrganizations}
       />
+      {organizationStore.successMessage === "" ? null : (
+        <h2>{organizationStore.successMessage}</h2>
+      )}
+      {organizationStore.errorMessage === "" ? null : (
+        <h2>Error: {organizationStore.errorMessage}</h2>
+      )}
     </>
   );
 });

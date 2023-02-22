@@ -28,6 +28,7 @@ describe("RoomCreateRequestBody success validation", () => {
       10,
       2,
       new Date(),
+      undefined,
       []
     );
     //when
