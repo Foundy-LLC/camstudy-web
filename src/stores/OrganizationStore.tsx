@@ -5,6 +5,10 @@ import organizationService, {
 } from "@/service/organization.service";
 import { organization } from "@prisma/client";
 import userStore from "@/stores/UserStore";
+import {
+  createEmailToken,
+  verifyEmailToken,
+} from "@/service/manageVerifyToken";
 
 //TODO(건우): 유저 아이디 불러오는 법 수정 필요
 export class OrganizationStore {
@@ -62,6 +66,23 @@ export class OrganizationStore {
 
   public onChangeEmailInput(email: string) {
     this._typedEmail = email;
+  }
+
+  public async verifyEmailConfirm(AccessToken: string) {
+    const result =
+      await this._organizationService.confirmOrganizationEmailVerify(
+        AccessToken
+      );
+    if (result.isSuccess) {
+      runInAction(() => {
+        this._errorMessage = "";
+        this._successMessage = result.getOrNull()!! as string;
+      });
+    } else {
+      runInAction(() => {
+        this._errorMessage = result.throwableOrNull()!.message;
+      });
+    }
   }
 
   public async onChangeNameInput(name: string) {

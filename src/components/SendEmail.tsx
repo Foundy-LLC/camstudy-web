@@ -1,12 +1,15 @@
 import nodemailer from "nodemailer";
 import mg from "nodemailer-mailgun-transport";
-import Mail from "nodemailer/lib/mailer";
 import mailgunTransport from "nodemailer-mailgun-transport";
+import Mail from "nodemailer/lib/mailer";
 import * as process from "process";
+import { createEmailToken } from "@/service/manageVerifyToken";
+import { emailHtml } from "@/components/EmailHtmlExample";
+
 const mailGunSendMail = (email: Mail.Options) => {
   const auth: mailgunTransport.Options = {
     auth: {
-      api_key: process.env.NEXT_PUBLIC_MAILGUN_API_KEY!,
+      api_key: process.env.NEXT_PUBLIC_MAILGUN_API_KEY!!,
       domain: process.env.NEXT_PUBLIC_MAILGUN_DOMAIN_URL,
     },
   };
@@ -25,12 +28,18 @@ const mailGunSendMail = (email: Mail.Options) => {
   }
 };
 
-export const sendSecretMail = (address: string, userName: string) => {
+export const sendSecretMail = (
+  address: string,
+  userId: string,
+  userName: string,
+  organizationId: string
+) => {
+  const token = createEmailToken(userId, organizationId);
   const email = {
     from: "studyingFarmer@developer.com",
     to: address,
     subject: "공부하는 농부 - 소속 인증 이메일",
-    html: `<b>안녕하세요, ${userName}님. 본인이 보낸 인증 메일이 맞다면 확인 버튼을 눌러주세요</b> </br> <button>확인</button>`,
+    html: emailHtml(token, userName),
   };
   return mailGunSendMail(email);
 };
