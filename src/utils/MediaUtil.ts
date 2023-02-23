@@ -24,7 +24,7 @@ export class MediaUtil {
     });
   };
 
-  public changeLocalVideo = async (
+  public fetchLocalVideo = async (
     videoDeviceId: string
   ): Promise<MediaStream> => {
     return await navigator.mediaDevices.getUserMedia({
@@ -32,7 +32,7 @@ export class MediaUtil {
     });
   };
 
-  public changeLocalAudioInput = async (
+  public fetchLocalAudioInput = async (
     audioDeviceId: string
   ): Promise<MediaStream> => {
     return await navigator.mediaDevices.getUserMedia({
