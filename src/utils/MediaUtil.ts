@@ -16,13 +16,27 @@ export class MediaUtil {
   public fetchLocalMedia = async ({
     video = false,
     audio = false,
-    videoDeviceId = "",
-    audioDeviceId = "",
   }): Promise<MediaStream> => {
     return await navigator.mediaDevices.getUserMedia({
       ...MEDIA_CONSTRAINTS,
-      video: videoDeviceId !== "" ? { deviceId: videoDeviceId } : video,
-      audio: audioDeviceId !== "" ? { deviceId: audioDeviceId } : audio,
+      video: video,
+      audio: audio,
+    });
+  };
+
+  public changeLocalVideo = async (
+    videoDeviceId: string
+  ): Promise<MediaStream> => {
+    return await navigator.mediaDevices.getUserMedia({
+      video: { deviceId: videoDeviceId },
+    });
+  };
+
+  public changeLocalAudioInput = async (
+    audioDeviceId: string
+  ): Promise<MediaStream> => {
+    return await navigator.mediaDevices.getUserMedia({
+      audio: { deviceId: audioDeviceId },
     });
   };
 

@@ -601,18 +601,16 @@ export class RoomSocketService {
   };
 
   public hideRemoteVideo = (userId: string) => {
-    let producerId: string = "";
     this._receiveTransportWrappers = this._receiveTransportWrappers.filter(
       (wrapper) => {
         if (wrapper.userId === userId && wrapper.consumer.kind === "video") {
-          producerId = wrapper.producerId;
+          this._requireSocket().emit(HIDE_REMOTE_VIDEO, wrapper.producerId);
           wrapper.consumer.close();
           return false;
         }
         return true;
       }
     );
-    this._requireSocket().emit(HIDE_REMOTE_VIDEO, producerId);
   };
 
   public showRemoteVideo = (userId: string) => {

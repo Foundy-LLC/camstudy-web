@@ -407,9 +407,7 @@ export class RoomStore implements RoomViewModel {
   };
 
   public changeCamera = async (deviceId: string) => {
-    const media = await this._mediaUtil.fetchLocalMedia({
-      videoDeviceId: deviceId,
-    });
+    const media = await this._mediaUtil.changeLocalVideo(deviceId);
     await runInAction(async () => {
       this._localVideoStream = media;
       await this._roomService.replaceVideoProducer({
@@ -419,9 +417,7 @@ export class RoomStore implements RoomViewModel {
   };
 
   public changeAudio = async (deviceId: string) => {
-    const media = await this._mediaUtil.fetchLocalMedia({
-      audioDeviceId: deviceId,
-    });
+    const media = await this._mediaUtil.changeLocalAudioInput(deviceId);
     await runInAction(async () => {
       this._localAudioStream = media;
       await this._roomService.replaceAudioProducer({
@@ -442,9 +438,9 @@ export class RoomStore implements RoomViewModel {
         video: true,
       });
     } else {
-      media = await this._mediaUtil.fetchLocalMedia({
-        videoDeviceId: this._currentVideoDeviceId,
-      });
+      media = await this._mediaUtil.changeLocalVideo(
+        this._currentVideoDeviceId
+      );
     }
     await runInAction(async () => {
       const track = media.getVideoTracks()[0];
@@ -477,9 +473,9 @@ export class RoomStore implements RoomViewModel {
     if (this._currentAudioDeviceId == null) {
       media = await this._mediaUtil.fetchLocalMedia({ audio: true });
     } else {
-      media = await this._mediaUtil.fetchLocalMedia({
-        audioDeviceId: this._currentAudioDeviceId,
-      });
+      media = await this._mediaUtil.changeLocalAudioInput(
+        this._currentAudioDeviceId
+      );
     }
     await runInAction(async () => {
       const track = media.getAudioTracks()[0];
