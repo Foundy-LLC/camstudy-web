@@ -605,7 +605,6 @@ export class RoomSocketService {
     this._receiveTransportWrappers = this._receiveTransportWrappers.filter(
       (wrapper) => {
         if (wrapper.userId === userId && wrapper.consumer.kind === "video") {
-          console.log("success");
           producerId = wrapper.producerId;
           wrapper.consumer.close();
           return false;
