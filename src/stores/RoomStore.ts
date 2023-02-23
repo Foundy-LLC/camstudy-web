@@ -88,9 +88,9 @@ export class RoomStore implements RoomViewModel {
   private _videoDeviceList: MediaDeviceInfo[] = [];
   private _audioDeviceList: MediaDeviceInfo[] = [];
   private _speakerDeviceList: MediaDeviceInfo[] = [];
-  private _currentVideoDeviceId: string | undefined = "";
-  private _currentAudioDeviceId: string | undefined = "";
-  private _currentSpeakerDeviceId: string = "";
+  private _currentVideoDeviceId: string | undefined = undefined;
+  private _currentAudioDeviceId: string | undefined = undefined;
+  private _currentSpeakerDeviceId: string | undefined = undefined;
 
   /**
    * 회원에게 알림을 보내기위한 메시지이다.
@@ -407,7 +407,9 @@ export class RoomStore implements RoomViewModel {
   };
 
   public changeCamera = async (deviceId: string) => {
-    const media = await this._mediaUtil.changeLocalVideo(deviceId);
+    const media = await this._mediaUtil.fetchLocalMedia({
+      videoDeviceId: deviceId,
+    });
     await runInAction(async () => {
       this._localVideoStream = media;
       await this._roomService.replaceVideoProducer({
@@ -417,7 +419,9 @@ export class RoomStore implements RoomViewModel {
   };
 
   public changeAudio = async (deviceId: string) => {
-    const media = await this._mediaUtil.changeLocalAudioInput(deviceId);
+    const media = await this._mediaUtil.fetchLocalMedia({
+      audioDeviceId: deviceId,
+    });
     await runInAction(async () => {
       this._localAudioStream = media;
       await this._roomService.replaceAudioProducer({
@@ -438,9 +442,9 @@ export class RoomStore implements RoomViewModel {
         video: true,
       });
     } else {
-      media = await this._mediaUtil.changeLocalVideo(
-        this._currentVideoDeviceId
-      );
+      media = await this._mediaUtil.fetchLocalMedia({
+        videoDeviceId: this._currentVideoDeviceId,
+      });
     }
     await runInAction(async () => {
       const track = media.getVideoTracks()[0];
@@ -473,9 +477,9 @@ export class RoomStore implements RoomViewModel {
     if (this._currentAudioDeviceId == null) {
       media = await this._mediaUtil.fetchLocalMedia({ audio: true });
     } else {
-      media = await this._mediaUtil.changeLocalAudioInput(
-        this._currentAudioDeviceId
-      );
+      media = await this._mediaUtil.fetchLocalMedia({
+        audioDeviceId: this._currentAudioDeviceId,
+      });
     }
     await runInAction(async () => {
       const track = media.getAudioTracks()[0];
