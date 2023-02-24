@@ -85,10 +85,10 @@ const organizations: NextPage = observer(() => {
       <RecommendedOrganizationsNameGroup
         items={organizationStore.recommendOrganizations}
       />
-      {organizationStore.successMessage === "" ? null : (
+      {organizationStore.successMessage === undefined ? null : (
         <h2>{organizationStore.successMessage}</h2>
       )}
-      {organizationStore.errorMessage === "" ? null : (
+      {organizationStore.errorMessage === undefined ? null : (
         <h2>Error: {organizationStore.errorMessage}</h2>
       )}
     </>

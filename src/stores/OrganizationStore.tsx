@@ -16,8 +16,8 @@ export class OrganizationStore {
   private _typedEmail: string = "";
   private _typedName: string = "";
   private _recommendOrganizations: organization[] = [];
-  private _errorMessage: string = "";
-  private _successMessage: string = "";
+  private _errorMessage: string | undefined = undefined;
+  private _successMessage: string | undefined = undefined;
   private _emailVerityButtonDisable: boolean = true;
   constructor(
     root: RootStore,
@@ -75,11 +75,12 @@ export class OrganizationStore {
       );
     if (result.isSuccess) {
       runInAction(() => {
-        this._errorMessage = "";
-        this._successMessage = result.getOrNull()!! as string;
+        this._errorMessage = undefined;
+        this._successMessage = result.getOrNull()!!;
       });
     } else {
       runInAction(() => {
+        this._successMessage = undefined;
         this._errorMessage = result.throwableOrNull()!.message;
       });
     }
@@ -96,11 +97,12 @@ export class OrganizationStore {
     );
     if (result.isSuccess) {
       runInAction(() => {
-        this._errorMessage = "";
+        this._errorMessage = undefined;
         this.setRecommendOrganizations(result.getOrNull()!!);
       });
     } else {
       runInAction(() => {
+        this._successMessage = undefined;
         this._errorMessage = result.throwableOrNull()!.message;
       });
     }
@@ -115,11 +117,12 @@ export class OrganizationStore {
     );
     if (result.isSuccess) {
       runInAction(() => {
-        this._errorMessage = "";
+        this._errorMessage = undefined;
         this._successMessage = result.getOrNull()!;
       });
     } else {
       runInAction(() => {
+        this._successMessage = undefined;
         this._errorMessage = result.throwableOrNull()!.message;
         console.log(this._errorMessage);
       });

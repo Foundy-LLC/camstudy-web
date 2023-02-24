@@ -53,20 +53,23 @@ export const confirmOrganizationEmail = async (
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
       return;
-    } else if (e instanceof Prisma.PrismaClientKnownRequestError) {
+    }
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
       res.status(409).send(
         new ResponseBody({
           message: e.message,
         })
       );
       return;
-    } else if (e instanceof TokenExpiredError) {
+    }
+    if (e instanceof TokenExpiredError) {
       res.status(401).send(
         new ResponseBody({
           message:
             "이메일 인증 기간이 만료되었습니다. 다시 인증 요청을 보내주세요.",
         })
       );
+      return;
     }
     res
       .status(500)
@@ -102,7 +105,8 @@ export const setOrganizationEmail = async (
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
       return;
-    } else if (
+    }
+    if (
       e instanceof Prisma.PrismaClientKnownRequestError &&
       e.code === "P2002"
     ) {

@@ -17,10 +17,10 @@ const EmailAccessToken: NextPage = observer(() => {
 
   return (
     <>
-      {organizationStore.successMessage === "" ? null : (
+      {organizationStore.successMessage === undefined ? null : (
         <h1>{organizationStore.successMessage}</h1>
       )}
-      {organizationStore.errorMessage === "" ? null : (
+      {organizationStore.errorMessage === undefined ? null : (
         <h1>{organizationStore.errorMessage}</h1>
       )}
     </>

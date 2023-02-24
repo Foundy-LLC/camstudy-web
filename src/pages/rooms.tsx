@@ -172,7 +172,7 @@ const RoomList: NextPage = observer(() => {
           <p>{roomListStore.createdTitle}</p>
         </div>
 
-        {roomListStore.errorMessage === "" ? null : (
+        {roomListStore.errorMessage === undefined ? null : (
           <h3>{roomListStore.errorMessage}</h3>
         )}
         {/*{RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}*/}
