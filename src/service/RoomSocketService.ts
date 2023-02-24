@@ -274,7 +274,7 @@ export class RoomSocketService {
       {
         isConsumer: false,
       },
-      async ({ params }: { params: CreateWebRtcTransportParams }) => {
+      async (params: CreateWebRtcTransportParams) => {
         console.log(params);
         // creates a new WebRTC Transport to send media
         // based on the server's producer transport params
@@ -356,9 +356,10 @@ export class RoomSocketService {
     try {
       // Signal local DTLS parameters to the server side transport
       // see server's socket.on('transport-producer-connect', ...)
-      await this._requireSocket().emit(TRANSPORT_PRODUCER_CONNECT, {
-        dtlsParameters,
-      });
+      await this._requireSocket().emit(
+        TRANSPORT_PRODUCER_CONNECT,
+        dtlsParameters
+      );
       // Tell the transport that parameters were transmitted.
       callback();
     } catch (error: any) {
@@ -388,9 +389,9 @@ export class RoomSocketService {
           rtpParameters: parameters.rtpParameters,
           appData: parameters.appData,
         },
-        ({ id }: { id: string }) => {
+        (id: string, producersExists: boolean) => {
           callback({ id });
-          if (!this._didGetInitialProducers) {
+          if (!this._didGetInitialProducers && producersExists) {
             this._didGetInitialProducers = true;
             this._getRemoteProducersAndCreateReceiveTransport(device);
           }
@@ -441,7 +442,7 @@ export class RoomSocketService {
     this._requireSocket().emit(
       CREATE_WEB_RTC_TRANSPORT,
       { isConsumer: true },
-      async ({ params }: { params: CreateWebRtcTransportParams }) => {
+      async (params: CreateWebRtcTransportParams) => {
         console.log(`PARAMS... ${params}`);
 
         let receiveTransport: Transport;
@@ -507,7 +508,7 @@ export class RoomSocketService {
         remoteProducerId,
         serverReceiveTransportId: serverReceiveTransportId,
       },
-      async ({ params }: { params: ConsumeParams | ErrorParams }) => {
+      async (params: ConsumeParams | ErrorParams) => {
         if ((params as ErrorParams).error !== undefined) {
           params = params as ErrorParams;
           console.error("Cannot Consume", params.error);
@@ -542,9 +543,7 @@ export class RoomSocketService {
 
         // the server consumer started with media paused,
         // so we need to inform the server to resume
-        this._requireSocket().emit(CONSUME_RESUME, {
-          serverConsumerId: params.serverConsumerId,
-        });
+        this._requireSocket().emit(CONSUME_RESUME, params.serverConsumerId);
       }
     );
   };
