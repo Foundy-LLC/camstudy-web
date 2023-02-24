@@ -71,6 +71,8 @@ export class RoomStore implements RoomViewModel {
 
   private readonly _remoteVideoStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
+  private readonly _remoteVideoSwitchByPeerId: Map<string, boolean> =
+    observable.map(new Map());
   private readonly _remoteAudioStreamsByPeerId: Map<string, MediaStream> =
     observable.map(new Map());
 
@@ -82,8 +84,13 @@ export class RoomStore implements RoomViewModel {
   private _pomodoroTimerEventDate?: Date = undefined;
   private _pomodoroProperty?: PomodoroTimerProperty = undefined;
   private _blacklist: BlockedUser[] = [];
-
   private _kicked: boolean = false;
+  private _videoDeviceList: MediaDeviceInfo[] = [];
+  private _audioDeviceList: MediaDeviceInfo[] = [];
+  private _speakerDeviceList: MediaDeviceInfo[] = [];
+  private _currentVideoDeviceId: string | undefined = undefined;
+  private _currentAudioDeviceId: string | undefined = undefined;
+  private _currentSpeakerDeviceId: string | undefined = undefined;
 
   /**
    * 회원에게 알림을 보내기위한 메시지이다.
@@ -99,6 +106,22 @@ export class RoomStore implements RoomViewModel {
     this._roomService = roomService ?? new RoomSocketService(this);
   }
 
+  public get videoDeviceList() {
+    return this._videoDeviceList;
+  }
+
+  public get audioDeviceList() {
+    return this._audioDeviceList;
+  }
+
+  public get currentVideoDeviceId() {
+    return this._currentVideoDeviceId;
+  }
+
+  public get currentAudioDeviceId() {
+    return this._currentAudioDeviceId;
+  }
+
   public get state(): RoomState {
     return this._state;
   }
@@ -109,6 +132,10 @@ export class RoomStore implements RoomViewModel {
 
   public get localVideoStream(): MediaStream | undefined {
     return this._localVideoStream;
+  }
+
+  public get localAudioStream(): MediaStream | undefined {
+    return this._localAudioStream;
   }
 
   public get enabledLocalVideo(): boolean {
@@ -379,13 +406,40 @@ export class RoomStore implements RoomViewModel {
     }
   };
 
+  public changeCamera = async (deviceId: string) => {
+    const media = await this._mediaUtil.fetchLocalVideo(deviceId);
+    await runInAction(async () => {
+      this._localVideoStream = media;
+      await this._roomService.replaceVideoProducer({
+        track: this._localVideoStream.getTracks()[0],
+      });
+    });
+  };
+
+  public changeAudio = async (deviceId: string) => {
+    const media = await this._mediaUtil.fetchLocalAudioInput(deviceId);
+    await runInAction(async () => {
+      this._localAudioStream = media;
+      await this._roomService.replaceAudioProducer({
+        track: this._localAudioStream.getTracks()[0],
+      });
+    });
+  };
+
   public showVideo = async () => {
     if (this._localVideoStream !== undefined) {
       throw new InvalidStateError(
         "로컬 비디오가 있는 상태에서 비디오를 생성하려 했습니다."
       );
     }
-    const media = await this._mediaUtil.fetchLocalMedia({ video: true });
+    let media: MediaStream;
+    if (this._currentVideoDeviceId == undefined) {
+      media = await this._mediaUtil.fetchLocalMedia({
+        video: true,
+      });
+    } else {
+      media = await this._mediaUtil.fetchLocalVideo(this._currentVideoDeviceId);
+    }
     await runInAction(async () => {
       const track = media.getVideoTracks()[0];
       this._localVideoStream = new MediaStream([track]);
@@ -413,7 +467,14 @@ export class RoomStore implements RoomViewModel {
     if (!this.enabledHeadset) {
       this.unmuteHeadset();
     }
-    const media = await this._mediaUtil.fetchLocalMedia({ audio: true });
+    let media: MediaStream;
+    if (this._currentAudioDeviceId == null) {
+      media = await this._mediaUtil.fetchLocalMedia({ audio: true });
+    } else {
+      media = await this._mediaUtil.fetchLocalAudioInput(
+        this._currentAudioDeviceId
+      );
+    }
     await runInAction(async () => {
       const track = media.getAudioTracks()[0];
       this._localAudioStream = new MediaStream([track]);
@@ -447,6 +508,20 @@ export class RoomStore implements RoomViewModel {
     // TODO(민성): 헤드셋 뮤트하고 _remoteAudioStreamsByPeerId 클리어 해야하는지 확인하기
     this._roomService.muteHeadset();
     this._enabledHeadset = false;
+  };
+
+  public hideRemoteVideo = (userId: string) => {
+    const remoteVideoStream = this._remoteVideoStreamsByPeerId.get(userId);
+    if (remoteVideoStream != null) {
+      remoteVideoStream.getVideoTracks().forEach((video) => video.stop());
+    }
+    this._roomService.hideRemoteVideo(userId);
+    this._remoteVideoSwitchByPeerId.set(userId, false);
+  };
+
+  public showRemoteVideo = (userId: string) => {
+    this._roomService.showRemoteVideo(userId);
+    this._remoteVideoSwitchByPeerId.set(userId, true);
   };
 
   public onChangePeerState = (state: PeerState) => {
@@ -493,6 +568,7 @@ export class RoomStore implements RoomViewModel {
         break;
       case "video":
         this._remoteVideoStreamsByPeerId.set(peerId, new MediaStream([track]));
+        this._remoteVideoSwitchByPeerId.set(peerId, true);
         break;
     }
   };
@@ -582,5 +658,22 @@ export class RoomStore implements RoomViewModel {
     this._remoteVideoStreamsByPeerId.delete(peerId);
     this._remoteAudioStreamsByPeerId.delete(peerId);
     this._peerStates = this._peerStates.filter((peer) => peer.uid !== peerId);
+  };
+
+  public setVideoDeviceList = (videoDeviceList: MediaDeviceInfo[]) => {
+    this._videoDeviceList = videoDeviceList;
+  };
+  public setAudioDeviceList = (audioDeviceList: MediaDeviceInfo[]) => {
+    this._audioDeviceList = audioDeviceList;
+  };
+
+  public setCurrentVideoDeviceId = (id: string | undefined) => {
+    this._currentVideoDeviceId = id;
+  };
+  public setCurrentAudioDeviceId = (id: string | undefined) => {
+    this._currentAudioDeviceId = id;
+  };
+  public getEnableHideRemoteVideoByUserId = (userId: string) => {
+    return this._remoteVideoSwitchByPeerId.get(userId);
   };
 }

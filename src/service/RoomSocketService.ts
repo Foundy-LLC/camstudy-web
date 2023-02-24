@@ -10,6 +10,7 @@ import {
   CREATE_WEB_RTC_TRANSPORT,
   EDIT_AND_STOP_TIMER,
   GET_PRODUCER_IDS,
+  HIDE_REMOTE_VIDEO,
   JOIN_ROOM,
   JOIN_WAITING_ROOM,
   KICK_USER,
@@ -22,6 +23,7 @@ import {
   PEER_STATE_CHANGED,
   PRODUCER_CLOSED,
   SEND_CHAT,
+  SHOW_REMOTE_VIDEO,
   START_LONG_BREAK,
   START_SHORT_BREAK,
   START_TIMER,
@@ -320,10 +322,11 @@ export class RoomSocketService {
       this._audioProducer = await sendTransport.produce({
         track: audioTrack,
       });
-      this._audioProducer.on("trackended", () => {
-        console.log("audio track ended");
-        // TODO: close audio track
-      });
+      // this._audioProducer.on("trackended", () => {
+      //   console.log("audio track ended");
+      //   // TODO: close audio track
+      //
+      // });
       this._audioProducer.on("transportclose", () => {
         console.log("audio transport ended");
         // close audio track
@@ -335,10 +338,10 @@ export class RoomSocketService {
       this._videoProducer = await sendTransport.produce({
         track: videoTrack,
       });
-      this._videoProducer.on("trackended", () => {
-        console.log("video track ended");
-        // TODO: close video track
-      });
+      // this._videoProducer.on("trackended", () => {
+      //   console.log("video track ended");
+      //   // TODO: close video track
+      // });
       this._videoProducer.on("transportclose", () => {
         console.log("video transport ended");
         // TODO: close video track
@@ -571,6 +574,14 @@ export class RoomSocketService {
     this._requireSocket().emit(CLOSE_VIDEO_PRODUCER);
   };
 
+  public replaceVideoProducer = async (track: {
+    track: MediaStreamTrack | null;
+  }) => {
+    const producer = this._videoProducer;
+    if (producer == null) return;
+    await producer.replaceTrack(track);
+  };
+
   public closeAudioProducer = () => {
     const producer = this._audioProducer;
     if (producer == null) {
@@ -579,6 +590,46 @@ export class RoomSocketService {
     producer.close();
     this._audioProducer = undefined;
     this._requireSocket().emit(CLOSE_AUDIO_PRODUCER);
+  };
+
+  public replaceAudioProducer = async (track: {
+    track: MediaStreamTrack | null;
+  }) => {
+    const producer = this._audioProducer;
+    if (producer == null) return;
+    await producer.replaceTrack(track);
+  };
+
+  public hideRemoteVideo = (userId: string) => {
+    this._receiveTransportWrappers = this._receiveTransportWrappers.filter(
+      (wrapper) => {
+        if (wrapper.userId === userId && wrapper.consumer.kind === "video") {
+          this._requireSocket().emit(HIDE_REMOTE_VIDEO, wrapper.producerId);
+          wrapper.consumer.close();
+          return false;
+        }
+        return true;
+      }
+    );
+  };
+
+  public showRemoteVideo = (userId: string) => {
+    const socket = this._requireSocket();
+
+    socket.emit(
+      SHOW_REMOTE_VIDEO,
+      userId,
+      async (userAndProducerId: UserAndProducerId) => {
+        if (this._device === undefined) {
+          throw Error("Device 필드가 초기화 되지 않았습니다.");
+        }
+        await this._createReceiveTransport(
+          userAndProducerId.producerId,
+          userAndProducerId.userId,
+          this._device
+        );
+      }
+    );
   };
 
   public muteHeadset = () => {

@@ -50,7 +50,11 @@ const WaitingRoom: NextPage<{
 }> = observer(({ roomStore }) => {
   return (
     <>
-      <Video id="localVideo" videoStream={roomStore.localVideoStream} />
+      <Video
+        id="localVideo"
+        videoStream={roomStore.localVideoStream}
+        roomStore={roomStore}
+      />
       <button
         id="videoToggle"
         onClick={() =>
@@ -175,12 +179,14 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
                 <Video
                   id="localVideo"
                   videoStream={roomStore.localVideoStream}
+                  roomStore={roomStore}
                 />
                 {!enabledHeadset ? "헤드셋 꺼짐!" : ""}
                 {!enabledAudio ? "마이크 꺼짐!" : ""}
               </td>
               <td className="remoteColumn">
                 <RemoteMediaGroup
+                  roomStore={roomStore}
                   isCurrentUserMaster={isCurrentUserMaster}
                   peerStates={roomStore.peerStates}
                   remoteVideoStreamByPeerIdEntries={
@@ -235,6 +241,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
         >
           {enabledHeadset ? "Mute Headset" : "Unmute Headset"}
         </button>
+        <DeviceSelector roomStore={roomStore}></DeviceSelector>
         <div>
           <PomodoroTimer
             timerState={roomStore.pomodoroTimerState}
@@ -260,6 +267,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore }> = observer(
 );
 
 const RemoteMediaGroup: NextPage<{
+  roomStore: RoomStore;
   isCurrentUserMaster: boolean;
   peerStates: PeerState[];
   remoteVideoStreamByPeerIdEntries: [string, MediaStream][];
@@ -268,6 +276,7 @@ const RemoteMediaGroup: NextPage<{
   onBlockClick: (userId: string) => void;
 }> = observer(
   ({
+    roomStore,
     isCurrentUserMaster,
     peerStates,
     remoteVideoStreamByPeerIdEntries,
@@ -300,7 +309,11 @@ const RemoteMediaGroup: NextPage<{
             }
             return (
               <div key={peerId}>
-                <Video id={peerId} videoStream={mediaStream} />
+                <Video
+                  id={peerId}
+                  videoStream={mediaStream}
+                  roomStore={roomStore}
+                />
                 {peerState.enabledMicrophone ? "" : "마이크 끔!"}
                 {peerState.enabledHeadset ? "" : "헤드셋 끔!"}
                 {isCurrentUserMaster && (
@@ -327,10 +340,124 @@ const RemoteMediaGroup: NextPage<{
   }
 );
 
+const DeviceSelector: NextPage<{ roomStore: RoomStore }> = observer(
+  ({ roomStore }) => {
+    // 현재 사용 가능한 장치 목록 불러오고 현재 사용 중인 장치 저장
+    useEffect(() => {
+      (async () => {
+        await initDevice();
+        const videoLabel = roomStore.localVideoStream?.getTracks()[0].label;
+        const audioLabel = roomStore.localAudioStream?.getTracks()[0].label;
+        // 트랙에서 가져온 id 값이 실제 장치 id와 다르다. 하지만 label은 똑같기 때문에 label로 id를 찾는다.
+        roomStore.setCurrentVideoDeviceId(
+          roomStore.videoDeviceList.find((video) => video.label === videoLabel)
+            ?.deviceId
+        );
+        roomStore.setCurrentAudioDeviceId(
+          roomStore.audioDeviceList.find((audio) => audio.label === audioLabel)
+            ?.deviceId
+        );
+      })();
+    }, []);
+
+    const initDevice = async () => {
+      // 모든 장비 목록 불러오기
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      // 비디오만 분리
+      const videoInput = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
+      roomStore.setVideoDeviceList(videoInput);
+      // 아래는 위와 동일한데 오디오인 것만 다르다.
+      const audioInput = devices.filter(
+        (device) => device.kind === "audioinput"
+      );
+      roomStore.setAudioDeviceList(audioInput);
+      // TODO(대현) 스피커 구현
+      // const audioOutput = devices.filter(
+      //   (device) => device.kind === "audiooutput"
+      // );
+      // setAudioOutputDeviceList(audioOutput);
+    };
+
+    // 장치가 추가되거나 제거되었을 때 발생하는 이벤트
+    // 장치 리스트 갱신 -> 사용 중이던 장치 제거되었으면 다른 장치로 대치
+    // TODO(대현) 현재 사용 가능한 장치 중 첫 번째 장치로 대치함. -> 다른 방법 있는지 생각.
+    navigator.mediaDevices.ondevicechange = async function () {
+      await initDevice();
+      if (
+        !roomStore.videoDeviceList.some(
+          (device) => device.deviceId === roomStore.currentVideoDeviceId
+        )
+      ) {
+        await roomStore.changeCamera(roomStore.videoDeviceList[0].deviceId);
+        roomStore.setCurrentVideoDeviceId(
+          roomStore.videoDeviceList[0].deviceId
+        );
+      }
+      if (
+        !roomStore.audioDeviceList.some(
+          (device) => device.deviceId === roomStore.currentAudioDeviceId
+        )
+      ) {
+        await roomStore.changeAudio(roomStore.audioDeviceList[0].deviceId);
+        roomStore.setCurrentAudioDeviceId(
+          roomStore.audioDeviceList[0].deviceId
+        );
+      }
+    };
+
+    const handleChangeCamera = async (
+      e: React.ChangeEvent<HTMLSelectElement>
+    ) => {
+      roomStore.setCurrentVideoDeviceId(e.target.value);
+      await roomStore.changeCamera(e.target.value);
+    };
+    const handleChangeAudio = async (
+      e: React.ChangeEvent<HTMLSelectElement>
+    ) => {
+      roomStore.setCurrentAudioDeviceId(e.target.value);
+      await roomStore.changeAudio(e.target.value);
+    };
+
+    return (
+      <div>
+        <select
+          onChange={(e) => handleChangeCamera(e)}
+          value={roomStore.currentVideoDeviceId}
+        >
+          {roomStore.videoDeviceList.map((device, index) => (
+            <option key={index} value={device.deviceId}>
+              {device.label}
+            </option>
+          ))}
+        </select>
+        <select
+          onChange={(e) => handleChangeAudio(e)}
+          defaultValue={roomStore.localAudioStream?.getTracks()[0].id}
+        >
+          {roomStore.audioDeviceList.map((device, index) => (
+            <option key={index} value={device.deviceId}>
+              {device.label}
+            </option>
+          ))}
+        </select>
+        {/*  TODO 오디오 출력장치 바꾸는 거 구현*/}
+        {/*<select>*/}
+        {/*  {audioOutputDevicesList.map((device) => (*/}
+        {/*    <option value={device.deviceId}>{device.label}</option>*/}
+        {/*  ))}*/}
+        {/*</select>*/}
+      </div>
+    );
+  }
+);
+
 const Video: NextPage<{
   id: string;
   videoStream: MediaStream | undefined;
-}> = ({ id, videoStream }) => {
+  roomStore: RoomStore;
+}> = ({ id, videoStream, roomStore }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -340,8 +467,24 @@ const Video: NextPage<{
     }
   }, [videoStream]);
 
+  const handleVideoControl = (video: { userId: string }) => {
+    const myVideo = videoRef.current;
+    if (myVideo!.id !== "localVideo") {
+      roomStore.getEnableHideRemoteVideoByUserId(video.userId)
+        ? roomStore.hideRemoteVideo(video.userId)
+        : roomStore.showRemoteVideo(video.userId);
+    }
+  };
+
   return (
-    <video ref={videoRef} id={id} autoPlay className="video" muted></video>
+    <video
+      ref={videoRef}
+      id={id}
+      autoPlay
+      className="video"
+      muted
+      onClick={() => handleVideoControl({ userId: id })}
+    ></video>
   );
 };
 
