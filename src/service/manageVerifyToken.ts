@@ -3,13 +3,15 @@ import process from "process";
 
 export const createEmailToken = (
   userId: string,
-  organizationId: string
+  organizationId: string,
+  organizationName: string
 ): string => {
   try {
     return jwt.sign(
       {
         userId: userId,
         organizationId: organizationId,
+        organizationName: organizationName,
       },
       process.env.NEXT_PUBLIC_EMAIL_TOKEN_ACCESS_SECRET!,
       {

@@ -6,10 +6,13 @@ import {
 } from "@/constants/message";
 import {
   addOrganizationEmailVerify,
+  deleteBelong,
+  findBelongOrganizations,
   findOrganizations,
   updateEmailVerifyStatus,
 } from "@/repository/organization.repository";
 import {
+  BELONG_ORGANIZATIONS_GET_SUCCESS,
   ORGANIZATIONS_EMAIL_CONFIRM_SUCCESS,
   ORGANIZATIONS_EMAIL_SEND_FAIL,
   ORGANIZATIONS_EMAIL_SEND_SUCCESS,
@@ -19,33 +22,44 @@ import { OrganizationsGetRequestBody } from "@/models/organization/Organizations
 import { OrganizationsEmailRequestBody } from "@/models/organization/OrganizationsEmailRequestBody";
 import { sendSecretMail } from "@/components/SendEmail";
 import { Prisma } from "@prisma/client";
-import { OrganizationsEmailConfirmBody } from "@/models/organization/OrganizationsEmailConfirmBody";
+import { OrganizationsBelongRequestBody } from "@/models/organization/OrganizationsBelongRequestBody";
 import { verifyEmailToken } from "@/service/manageVerifyToken";
 import { TokenExpiredError } from "jsonwebtoken";
+import { OrganizationBelongGetRequestBody } from "@/models/organization/OrganizationBelongGetRequestBody";
+import { BelongOrganization } from "@/stores/OrganizationStore";
 
 interface JwtPayload {
   userId: string;
   organizationId: string;
+  organizationName: string;
 }
+
 export const confirmOrganizationEmail = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
   const { AccessToken } = req.body;
   try {
-    const { userId, organizationId } = verifyEmailToken(
+    const { userId, organizationId, organizationName } = verifyEmailToken(
       AccessToken
     ) as JwtPayload;
-    const organizationsEmailConfirmBody = new OrganizationsEmailConfirmBody(
+    const organizationsEmailConfirmBody = new OrganizationsBelongRequestBody(
       userId,
-      organizationId
+      organizationId,
+      organizationName
     );
-    await updateEmailVerifyStatus(
+    const verifiedOrganization = await updateEmailVerifyStatus(
       organizationsEmailConfirmBody.userId,
       organizationsEmailConfirmBody.organizationId
     );
+    const belongOrganization: BelongOrganization = {
+      userId: verifiedOrganization.user_id,
+      organizationId: verifiedOrganization.organization_id,
+      organizationName: organizationName,
+    };
     res.status(200).send(
       new ResponseBody({
+        data: belongOrganization,
         message: ORGANIZATIONS_EMAIL_CONFIRM_SUCCESS,
       })
     );
@@ -77,24 +91,51 @@ export const confirmOrganizationEmail = async (
   }
 };
 
+export const deleteBelongOrganization = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  const { userId, organizationId, organizationName } = req.body;
+  try {
+    const organizationDeleteRequestBody = new OrganizationsBelongRequestBody(
+      userId,
+      organizationId,
+      organizationName
+    );
+    await deleteBelong(
+      organizationDeleteRequestBody.userId,
+      organizationDeleteRequestBody.organizationId
+    );
+    res.status(201).json(
+      new ResponseBody({
+        message: `${organizationName}을(를) 소속에서 삭제하였습니다.`,
+      })
+    );
+  } catch (e) {}
+};
+
 export const setOrganizationEmail = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  const { userId, userName, email, organizationId } = req.body;
+  const { userId, userName, email, organizationId, organizationName } =
+    req.body;
   try {
     const organizationsEmailRequestBody = new OrganizationsEmailRequestBody(
       userId,
       userName,
       email,
-      organizationId
+      organizationId,
+      organizationName
     );
     await addOrganizationEmailVerify(
       organizationsEmailRequestBody.userId,
       organizationsEmailRequestBody.email,
       organizationsEmailRequestBody.organizationId
     );
-    if (!sendSecretMail(email, userId, userName, organizationId))
+    if (
+      !sendSecretMail(email, userId, userName, organizationId, organizationName)
+    )
       throw ORGANIZATIONS_EMAIL_SEND_FAIL;
     res.status(201).json(
       new ResponseBody({
@@ -145,6 +186,32 @@ export const getOrganizations = async (
       new ResponseBody({
         data: result,
         message: ORGANIZATIONS_GET_SUCCESS,
+      })
+    );
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+  }
+};
+
+export const getBelongOrganizations = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  const { userId } = req.query;
+  try {
+    if (typeof userId !== "string") throw REQUEST_QUERY_ERROR;
+    const organizationsGetBody = new OrganizationBelongGetRequestBody(userId);
+    const result = await findBelongOrganizations(organizationsGetBody.userId);
+    res.status(201).json(
+      new ResponseBody({
+        data: result,
+        message: BELONG_ORGANIZATIONS_GET_SUCCESS,
       })
     );
   } catch (e) {

@@ -5,10 +5,21 @@ import organizationService, {
 } from "@/service/organization.service";
 import { organization } from "@prisma/client";
 import userStore from "@/stores/UserStore";
-import {
-  createEmailToken,
-  verifyEmailToken,
-} from "@/service/manageVerifyToken";
+import { ORGANIZATIONS_EMAIL_CONFIRM_SUCCESS } from "@/constants/organizationMessage";
+
+export interface OrganizationVerifyEmailForm {
+  readonly userId: string;
+  readonly userName: string;
+  readonly email: string;
+  readonly organizationId: string;
+  readonly organizationName: string;
+}
+
+export interface BelongOrganization {
+  readonly userId: string;
+  readonly organizationId: string;
+  readonly organizationName: string;
+}
 
 //TODO(건우): 유저 아이디 불러오는 법 수정 필요
 export class OrganizationStore {
@@ -16,9 +27,11 @@ export class OrganizationStore {
   private _typedEmail: string = "";
   private _typedName: string = "";
   private _recommendOrganizations: organization[] = [];
+  private _belongOrganizations: BelongOrganization[] | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
   private _successMessage: string | undefined = undefined;
   private _emailVerityButtonDisable: boolean = true;
+
   constructor(
     root: RootStore,
     private readonly _organizationService: OrganizationService = organizationService
@@ -47,9 +60,14 @@ export class OrganizationStore {
     return this._recommendOrganizations;
   }
 
+  get belongOrganizations() {
+    return this._belongOrganizations;
+  }
+
   setEmailVerifyButtonDisable(disable: boolean) {
     this._emailVerityButtonDisable = disable;
   }
+
   get organizationId() {
     return this.checkIfNameIncluded()!!.id;
   }
@@ -76,7 +94,34 @@ export class OrganizationStore {
     if (result.isSuccess) {
       runInAction(() => {
         this._errorMessage = undefined;
-        this._successMessage = result.getOrNull()!!;
+        this._successMessage = ORGANIZATIONS_EMAIL_CONFIRM_SUCCESS;
+        if (this._belongOrganizations !== undefined) {
+          this._belongOrganizations.push(result.getOrNull()!);
+        }
+      });
+    } else {
+      runInAction(() => {
+        this._successMessage = undefined;
+        this._errorMessage = result.throwableOrNull()!.message;
+      });
+    }
+  }
+
+  public async deleteBelongOrganization(
+    belongOrganization: BelongOrganization
+  ) {
+    const { userId, organizationId, organizationName } = belongOrganization;
+    const result = await this._organizationService.deleteBelongOrganization(
+      userId,
+      organizationId,
+      organizationName
+    );
+    if (result.isSuccess) {
+      runInAction(() => {
+        this._errorMessage = undefined;
+        this._belongOrganizations = this._belongOrganizations!.filter(
+          (belong) => belong.organizationId !== organizationId
+        );
       });
     } else {
       runInAction(() => {
@@ -109,11 +154,15 @@ export class OrganizationStore {
   }
 
   public async sendOrganizationVerifyEmail() {
+    const organizationVerifyEmailForm: OrganizationVerifyEmailForm = {
+      userId: userStore.currentUser!!.id,
+      userName: userStore.currentUser!!.name,
+      email: this._typedEmail,
+      organizationId: this.organizationId,
+      organizationName: this._typedName,
+    };
     const result = await this._organizationService.setOrganizationEmail(
-      userStore.currentUser!!.id,
-      userStore.currentUser!!.name,
-      this._typedEmail,
-      this.organizationId
+      organizationVerifyEmailForm
     );
     if (result.isSuccess) {
       runInAction(() => {
@@ -126,6 +175,20 @@ export class OrganizationStore {
         this._errorMessage = result.throwableOrNull()!.message;
         console.log(this._errorMessage);
       });
+    }
+  }
+
+  public async fetchBelongOrganizations() {
+    const result = await this._organizationService.getBelongOrganizations(
+      userStore.currentUser!.id
+    );
+    if (result.isSuccess) {
+      runInAction(() => {
+        console.log(result.getOrNull()!);
+        this._belongOrganizations = result.getOrNull()!;
+      });
+    } else {
+      runInAction(() => {});
     }
   }
 }
