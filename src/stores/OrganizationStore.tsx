@@ -5,6 +5,10 @@ import organizationService, {
 } from "@/service/organization.service";
 import { organization } from "@prisma/client";
 import userStore from "@/stores/UserStore";
+import {
+  createEmailToken,
+  verifyEmailToken,
+} from "@/service/manageVerifyToken";
 
 //TODO(건우): 유저 아이디 불러오는 법 수정 필요
 export class OrganizationStore {
@@ -12,8 +16,8 @@ export class OrganizationStore {
   private _typedEmail: string = "";
   private _typedName: string = "";
   private _recommendOrganizations: organization[] = [];
-  private _errorMessage: string = "";
-  private _successMessage: string = "";
+  private _errorMessage: string | undefined = undefined;
+  private _successMessage: string | undefined = undefined;
   private _emailVerityButtonDisable: boolean = true;
   constructor(
     root: RootStore,
@@ -64,6 +68,24 @@ export class OrganizationStore {
     this._typedEmail = email;
   }
 
+  public async verifyEmailConfirm(AccessToken: string) {
+    const result =
+      await this._organizationService.confirmOrganizationEmailVerify(
+        AccessToken
+      );
+    if (result.isSuccess) {
+      runInAction(() => {
+        this._errorMessage = undefined;
+        this._successMessage = result.getOrNull()!!;
+      });
+    } else {
+      runInAction(() => {
+        this._successMessage = undefined;
+        this._errorMessage = result.throwableOrNull()!.message;
+      });
+    }
+  }
+
   public async onChangeNameInput(name: string) {
     this._typedName = name;
     if (this._typedName === "") {
@@ -75,11 +97,12 @@ export class OrganizationStore {
     );
     if (result.isSuccess) {
       runInAction(() => {
-        this._errorMessage = "";
+        this._errorMessage = undefined;
         this.setRecommendOrganizations(result.getOrNull()!!);
       });
     } else {
       runInAction(() => {
+        this._successMessage = undefined;
         this._errorMessage = result.throwableOrNull()!.message;
       });
     }
@@ -94,11 +117,12 @@ export class OrganizationStore {
     );
     if (result.isSuccess) {
       runInAction(() => {
-        this._errorMessage = "";
+        this._errorMessage = undefined;
         this._successMessage = result.getOrNull()!;
       });
     } else {
       runInAction(() => {
+        this._successMessage = undefined;
         this._errorMessage = result.throwableOrNull()!.message;
         console.log(this._errorMessage);
       });

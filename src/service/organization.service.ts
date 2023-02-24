@@ -1,12 +1,37 @@
 import { Result } from "@/models/common/Result";
 import { organization } from "@prisma/client";
 import { OrganizationsEmailRequestBody } from "@/models/organization/OrganizationsEmailRequestBody";
+import { OrganizationsEmailConfirmBody } from "@/models/organization/OrganizationsEmailConfirmBody";
+import { OrganizationsEmailJWTBody } from "@/models/organization/OrganizationsEmailJWTBody";
 
 const HEADER = {
   "Content-Type": "application/json",
 };
 
 export class OrganizationService {
+  public async confirmOrganizationEmailVerify(
+    AccessToken: string
+  ): Promise<Result<string>> {
+    try {
+      const emailConfirmBody = new OrganizationsEmailJWTBody(AccessToken);
+      const response = await fetch(
+        "http://localhost:3000/api/organizations/confirmation",
+        {
+          method: "POST",
+          body: JSON.stringify(emailConfirmBody),
+          headers: HEADER,
+        }
+      );
+      if (response.ok) {
+        return Result.createSuccessUsingResponseMessage(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  }
+
   public async setOrganizationEmail(
     userId: string,
     userName: string,

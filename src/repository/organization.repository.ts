@@ -1,6 +1,21 @@
 import client from "prisma/client";
 import { ORGANIZATION_NUM_PER_PAGE } from "@/constants/organization.constant";
 
+export const updateEmailVerifyStatus = async (
+  userId: string,
+  organizationId: string
+) => {
+  await client.belong.update({
+    where: {
+      user_id_organization_id: {
+        user_id: userId,
+        organization_id: organizationId,
+      },
+    },
+    data: { is_authenticated: true },
+  });
+};
+
 export const addOrganizationEmailVerify = async (
   userId: string,
   email: string,
