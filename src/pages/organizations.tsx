@@ -4,10 +4,50 @@ import { useStores } from "@/stores/context";
 import React, { useEffect, useState } from "react";
 import { organization } from "@prisma/client";
 import { useDebounce } from "@/components/UseDebounce";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/service/firebase";
+import { BelongOrganization, Organization } from "@/stores/OrganizationStore";
+import Image from "next/image";
 
-const RecommendedOrganizationsNameGroup: NextPage<{ items: organization[] }> =
+const BelongOrganizationsName: NextPage<{ item: BelongOrganization }> =
+  observer(({ item }) => {
+    const { organizationStore } = useStores();
+    const { organizationName } = item;
+    return (
+      <>
+        <h3 style={{ display: "inline" }}>{organizationName}</h3>
+        <Image
+          src={
+            "https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/red-x-icon.png"
+          }
+          width={13}
+          height={13}
+          alt="locked"
+          onClick={() => {
+            if (
+              confirm(`"${organizationName}"을 소속에서 삭제하시겠습니까?`) ===
+              true
+            ) {
+              organizationStore.deleteBelongOrganization(item);
+              console.log(`${organizationName}가(이) 소속에서 삭제되었습니다`);
+            } else return;
+          }}
+        />
+        <br />
+      </>
+    );
+  });
+
+const BelongOrganizationsNameGroup: NextPage<{ items: BelongOrganization[] }> =
+  observer(({ items }) => {
+    return (
+      <>
+        {items.map((item, key) => (
+          <BelongOrganizationsName item={item} key={key} />
+        ))}
+      </>
+    );
+  });
+
+const RecommendedOrganizationsNameGroup: NextPage<{ items: Organization[] }> =
   observer(({ items }) => {
     return (
       <>
@@ -18,7 +58,7 @@ const RecommendedOrganizationsNameGroup: NextPage<{ items: organization[] }> =
     );
   });
 
-const RecommendedOrganizationsName: NextPage<{ item: organization }> = observer(
+const RecommendedOrganizationsName: NextPage<{ item: Organization }> = observer(
   ({ item }) => {
     const { organizationStore } = useStores();
     return (
@@ -81,6 +121,9 @@ const organizations: NextPage = observer(() => {
         >
           이메일 등록
         </button>
+        <button onClick={() => organizationStore.fetchBelongOrganizations()}>
+          내 소속 조회
+        </button>
       </div>
       <RecommendedOrganizationsNameGroup
         items={organizationStore.recommendOrganizations}
@@ -91,6 +134,13 @@ const organizations: NextPage = observer(() => {
       {organizationStore.errorMessage === undefined ? null : (
         <h2>Error: {organizationStore.errorMessage}</h2>
       )}
+      <BelongOrganizationsNameGroup
+        items={
+          organizationStore.belongOrganizations
+            ? organizationStore.belongOrganizations
+            : []
+        }
+      />
     </>
   );
 });

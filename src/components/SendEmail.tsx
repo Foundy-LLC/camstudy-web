@@ -32,9 +32,10 @@ export const sendSecretMail = (
   address: string,
   userId: string,
   userName: string,
-  organizationId: string
+  organizationId: string,
+  organizationName: string
 ) => {
-  const token = createEmailToken(userId, organizationId);
+  const token = createEmailToken(userId, organizationId, organizationName);
   const email = {
     from: "studyingFarmer@developer.com",
     to: address,
