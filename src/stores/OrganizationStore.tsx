@@ -15,6 +15,12 @@ export interface OrganizationVerifyEmailForm {
   readonly organizationName: string;
 }
 
+export interface Organization {
+  readonly id: string;
+  readonly name: string;
+  readonly address: string;
+}
+
 export interface BelongOrganization {
   readonly userId: string;
   readonly organizationId: string;
@@ -26,7 +32,7 @@ export class OrganizationStore {
   readonly rootStore: RootStore;
   private _typedEmail: string = "";
   private _typedName: string = "";
-  private _recommendOrganizations: organization[] = [];
+  private _recommendOrganizations: Organization[] = [];
   private _belongOrganizations: BelongOrganization[] | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
   private _successMessage: string | undefined = undefined;
@@ -78,7 +84,7 @@ export class OrganizationStore {
     });
   }
 
-  private setRecommendOrganizations(nameList: organization[]) {
+  private setRecommendOrganizations(nameList: Organization[]) {
     this._recommendOrganizations = nameList;
   }
 
@@ -184,7 +190,6 @@ export class OrganizationStore {
     );
     if (result.isSuccess) {
       runInAction(() => {
-        console.log(result.getOrNull()!);
         this._belongOrganizations = result.getOrNull()!;
       });
     } else {

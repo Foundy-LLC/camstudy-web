@@ -1,12 +1,12 @@
 import client from "prisma/client";
 import { ORGANIZATION_NUM_PER_PAGE } from "@/constants/organization.constant";
-import { Simulate } from "react-dom/test-utils";
-import { BelongOrganization } from "@/stores/OrganizationStore";
+import { belong, organization } from "@prisma/client";
+import { BelongOrganization, Organization } from "@/stores/OrganizationStore";
 
 export const updateEmailVerifyStatus = async (
   userId: string,
   organizationId: string
-) => {
+): Promise<belong> => {
   return await client.belong.update({
     where: {
       user_id_organization_id: {
@@ -44,7 +44,10 @@ export const deleteBelong = async (userId: string, organizationId: string) => {
   });
 };
 
-export const findOrganizations = async (pageNum: number, name?: string) => {
+export const findOrganizations = async (
+  pageNum: number,
+  name?: string
+): Promise<Organization[]> => {
   return await client.organization.findMany({
     skip: pageNum * ORGANIZATION_NUM_PER_PAGE,
     take: ORGANIZATION_NUM_PER_PAGE,
@@ -54,7 +57,9 @@ export const findOrganizations = async (pageNum: number, name?: string) => {
   });
 };
 
-export const findBelongOrganizations = async (userId: string) => {
+export const findBelongOrganizations = async (
+  userId: string
+): Promise<BelongOrganization[]> => {
   const result = await client.belong.findMany({
     where: {
       user_id: userId,

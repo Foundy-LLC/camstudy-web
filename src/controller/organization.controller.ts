@@ -25,8 +25,8 @@ import { Prisma } from "@prisma/client";
 import { OrganizationsBelongRequestBody } from "@/models/organization/OrganizationsBelongRequestBody";
 import { verifyEmailToken } from "@/service/manageVerifyToken";
 import { TokenExpiredError } from "jsonwebtoken";
-import { OrganizationBelongGetRequestBody } from "@/models/organization/OrganizationBelongGetRequestBody";
 import { BelongOrganization } from "@/stores/OrganizationStore";
+import { ValidateUid } from "@/models/common/ValidateUid";
 
 interface JwtPayload {
   userId: string;
@@ -206,7 +206,7 @@ export const getBelongOrganizations = async (
   const { userId } = req.query;
   try {
     if (typeof userId !== "string") throw REQUEST_QUERY_ERROR;
-    const organizationsGetBody = new OrganizationBelongGetRequestBody(userId);
+    const organizationsGetBody = new ValidateUid(userId);
     const result = await findBelongOrganizations(organizationsGetBody.userId);
     res.status(201).json(
       new ResponseBody({

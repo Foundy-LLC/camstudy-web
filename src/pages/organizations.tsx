@@ -4,7 +4,7 @@ import { useStores } from "@/stores/context";
 import React, { useEffect, useState } from "react";
 import { organization } from "@prisma/client";
 import { useDebounce } from "@/components/UseDebounce";
-import { BelongOrganization } from "@/stores/OrganizationStore";
+import { BelongOrganization, Organization } from "@/stores/OrganizationStore";
 import Image from "next/image";
 
 const BelongOrganizationsName: NextPage<{ item: BelongOrganization }> =
@@ -47,7 +47,7 @@ const BelongOrganizationsNameGroup: NextPage<{ items: BelongOrganization[] }> =
     );
   });
 
-const RecommendedOrganizationsNameGroup: NextPage<{ items: organization[] }> =
+const RecommendedOrganizationsNameGroup: NextPage<{ items: Organization[] }> =
   observer(({ items }) => {
     return (
       <>
@@ -58,7 +58,7 @@ const RecommendedOrganizationsNameGroup: NextPage<{ items: organization[] }> =
     );
   });
 
-const RecommendedOrganizationsName: NextPage<{ item: organization }> = observer(
+const RecommendedOrganizationsName: NextPage<{ item: Organization }> = observer(
   ({ item }) => {
     const { organizationStore } = useStores();
     return (

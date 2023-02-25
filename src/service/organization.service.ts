@@ -5,6 +5,7 @@ import { OrganizationsBelongRequestBody } from "@/models/organization/Organizati
 import { OrganizationsEmailJWTBody } from "@/models/organization/OrganizationsEmailJWTBody";
 import {
   BelongOrganization,
+  Organization,
   OrganizationVerifyEmailForm,
 } from "@/stores/OrganizationStore";
 
@@ -94,7 +95,7 @@ export class OrganizationService {
 
   public async getSimilarOrganizations(
     name: string
-  ): Promise<Result<organization[]>> {
+  ): Promise<Result<Organization[]>> {
     try {
       const response = await fetch(`api/organizations?name=${name}&page=0`, {
         method: "GET",
