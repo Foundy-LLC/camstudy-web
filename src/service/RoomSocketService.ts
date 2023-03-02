@@ -653,7 +653,7 @@ export class RoomSocketService {
       UNMUTE_HEADSET,
       async (userAndProducerIds: UserAndProducerId[]) => {
         if (this._device === undefined) {
-          throw Error("Device 필드가 초기화 되지 않았습니다.");
+          return;
         }
         for (const userAndProducerId of userAndProducerIds) {
           await this._createReceiveTransport(
