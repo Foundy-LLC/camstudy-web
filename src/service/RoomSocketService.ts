@@ -171,6 +171,7 @@ export class RoomSocketService {
       JOIN_ROOM,
       {
         userId: user.id,
+        mutedHeadset: this._mutedHeadset,
         roomPasswordInput: password,
       },
       async (
