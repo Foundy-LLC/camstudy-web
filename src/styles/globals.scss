@@ -1,0 +1,159 @@
+/* Typography */
+@import url('https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css');
+/* 스크린 리더에서는 읽히게 해주고 안보이게 해주는 역할 */
+.sr-only {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  clip: rect(0,0,0,0);
+}
+/* 디스플레이 용도로 사용 */
+.typography__display{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 60px;
+  line-height: 74px;
+  /* identical to box height, or 123% */
+  letter-spacing: -0.5px;
+}
+/* 큰 타이틀에 사용_1 */
+.typography__title1--big{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 60px;
+  /* identical to box height, or 125% */
+  letter-spacing: -0.5px;
+}
+/* 큰 타이틀에 사용_2 */
+.typography__title2--big{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 50px;
+  /* identical to box height, or 125% */
+  letter-spacing: -0.5px;
+}
+/* 헤드라인에 사용 */
+.typography__headline{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 46px;
+  /* identical to box height, or 128% */
+  letter-spacing: -0.5px;
+}
+/* 서브 헤드라인에 사용 */
+.typography__sub-headline{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 42px;
+  /* identical to box height, or 131% */
+  letter-spacing: -0.5px;
+}
+/* 작은 서브 헤드라인에 사용 */
+.typography__sub-headline--small{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 32px;
+  /* identical to box height, or 133% */
+  letter-spacing: -0.5px;
+}
+/* 큰 본문에 사용 */
+.typography__text--big{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  /* identical to box height, or 140% */
+  letter-spacing: -0.5px;
+}
+/* 본문에 사용 */
+.typography__text{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+  /* identical to box height, or 138% */
+  letter-spacing: -0.5px;
+}
+/* 작은 본문에 사용 */
+.typography__text--small{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  /* identical to box height, or 129% */
+  letter-spacing: -0.5px;
+}
+/* 캡션 */
+.typography__caption{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  /* identical to box height, or 133% */
+  letter-spacing: -0.5px;
+}
+
+/* Elevation */
+/* 상단 App Bar(대기 중) */
+.elevation__top-app-bar--waiting{
+  elevation: 0;
+}
+/* 카드, 서치 바, 컨테인드 버튼(대기 중) 등 */
+.elevation__card__search-bar__contained-button--waiting__etc{
+  background: #D9D9D9;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.12);
+}
+/* 상단 App Bar(상승) */
+.elevation__top-app-bar--rise{
+  background: #D9D9D9;
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 2px 4px rgba(0, 0, 0, 0.13);
+}
+/* 스낵 바, FAB(대기 중) */
+.elevation__snack-bar__FAB--waiting{
+  background: #D9D9D9;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.14);
+}
+/* 메뉴, 네비게이션 바, 컨테인드 버튼(눌림) 등 */
+.elevation__menu__navigation-bar__contained-button--pressed__etc{
+  background: #D9D9D9;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08), 0px 2px 8px rgba(0, 0, 0, 0.14);
+}
+/* FAB(눌림) */
+.elevation__FAB--pressed{
+  background: #D9D9D9;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), 0px 2px 12px rgba(0, 0, 0, 0.15);
+}
+/* 네비게이션 드로어, 모달 사이드/바텀 시트 등 */
+.elevation__navigation-drawer__modal-side-bottom-sheet__etc{
+  /* background: #D9D9D9; */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 2px 16px rgba(0, 0, 0, 0.15);
+}
+/* -(필요에 따라 재량껏 사용) */
+.elevation__discretion{
+  background: #D9D9D9;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.14), 0px 4px 20px rgba(0, 0, 0, 0.16);
+}
+/* 모달, 팝업 등의 Dialog */
+.elevation__modal__popup__etc--dialog{
+  background: #D9D9D9;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.22), 0px 4px 24px rgba(0, 0, 0, 0.16);
+}
