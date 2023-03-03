@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { postUser } from "@/controller/user.controller";
+import { GetUsers, postUser } from "@/controller/user.controller";
 
 export default async function userHandler(
   req: NextApiRequest,
@@ -9,6 +9,9 @@ export default async function userHandler(
   console.log(req.body);
 
   switch (method) {
+    case "GET":
+      await GetUsers(req, res);
+      break;
     case "POST":
       await postUser(req, res);
       break;
