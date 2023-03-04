@@ -403,7 +403,9 @@ export class RoomStore implements RoomViewModel {
     this._pomodoroTimerState = timerState;
     this._pomodoroProperty = timerProperty;
     if (timerStartedDate !== undefined) {
-      this._pomodoroTimerEventDate = new Date(timerStartedDate);
+      this._pomodoroTimerEventDate = convertToKoreaDate(
+        new Date(timerStartedDate)
+      );
     }
   };
 
@@ -575,7 +577,7 @@ export class RoomStore implements RoomViewModel {
   };
 
   public onPomodoroTimerEvent = (event: PomodoroTimerEvent) => {
-    this._pomodoroTimerEventDate = new Date();
+    this._pomodoroTimerEventDate = convertToKoreaDate(new Date());
     beep();
     switch (event) {
       case PomodoroTimerEvent.ON_START:
