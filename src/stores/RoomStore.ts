@@ -26,6 +26,7 @@ import { Auth } from "@firebase/auth";
 import { PeerState } from "@/models/room/PeerState";
 import { auth } from "@/service/firebase";
 import { BlockedUser } from "@/models/room/BlockedUser";
+import { convertToKoreaDate } from "@/utils/DateUtil";
 
 export interface RoomViewModel {
   onConnected: () => Promise<void>;
@@ -291,7 +292,7 @@ export class RoomStore implements RoomViewModel {
     if (this._pomodoroTimerEventDate === undefined) {
       return 0;
     }
-    const currentTime = new Date().getTime();
+    const currentTime = convertToKoreaDate(new Date()).getTime();
     const milliseconds = currentTime - this._pomodoroTimerEventDate.getTime();
     return milliseconds / 1000;
   }
@@ -402,7 +403,9 @@ export class RoomStore implements RoomViewModel {
     this._pomodoroTimerState = timerState;
     this._pomodoroProperty = timerProperty;
     if (timerStartedDate !== undefined) {
-      this._pomodoroTimerEventDate = new Date(timerStartedDate);
+      this._pomodoroTimerEventDate = convertToKoreaDate(
+        new Date(timerStartedDate)
+      );
     }
   };
 
@@ -574,7 +577,7 @@ export class RoomStore implements RoomViewModel {
   };
 
   public onPomodoroTimerEvent = (event: PomodoroTimerEvent) => {
-    this._pomodoroTimerEventDate = new Date();
+    this._pomodoroTimerEventDate = convertToKoreaDate(new Date());
     beep();
     switch (event) {
       case PomodoroTimerEvent.ON_START:
