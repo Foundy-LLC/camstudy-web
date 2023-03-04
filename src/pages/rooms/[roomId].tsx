@@ -581,8 +581,8 @@ const ElapsedTimeDisplay: NextPage<{
 
   return (
     <>
-      {seconds >= 60 ? `${(seconds / 60).toFixed(0)}분 ` : undefined}
-      {(seconds % 60).toFixed(0)}초 지남
+      {seconds >= 60 ? `${Math.floor(seconds / 60)}분 ` : undefined}
+      {Math.floor(seconds % 60)}초 지남
     </>
   );
 };
