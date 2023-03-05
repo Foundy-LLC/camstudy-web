@@ -1,9 +1,7 @@
 import { Result } from "@/models/common/Result";
-import { OrganizationsEmailJWTBody } from "@/models/organization/OrganizationsEmailJWTBody";
 import { FriendPostRequestBody } from "@/models/friend/FriendPostRequestBody";
 import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedFriendsGetRequestBody";
-import { Organization } from "@/stores/OrganizationStore";
-import { UserSearchOverview } from "@/stores/FriendStore";
+import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 
 const HEADER = {
   "Content-Type": "application/json",

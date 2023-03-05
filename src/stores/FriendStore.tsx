@@ -6,12 +6,8 @@ import {
   FRIEND_REQUEST_SUCCESS,
   SEARCH_SIMILAR_NAMED_USERS_SUCCESS,
 } from "@/constants/FriendMessage";
+import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 
-export interface UserSearchOverview {
-  id: string;
-  name: string;
-  profile_image: string | null;
-}
 export class FriendStore {
   readonly rootStore: RootStore;
   private _userSearchOverview: UserSearchOverview[] = [];

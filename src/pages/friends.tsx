@@ -3,8 +3,8 @@ import { observer } from "mobx-react";
 import { useStores } from "@/stores/context";
 import Image from "next/image";
 import React, { useState } from "react";
-import { UserSearchOverview } from "@/stores/FriendStore";
 import userStore from "@/stores/UserStore";
+import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 
 const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
   ({ item }) => {

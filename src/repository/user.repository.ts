@@ -4,7 +4,7 @@ import { UserStatus } from "@/models/user/UserStatus";
 import { User } from "@/models/user/User";
 import { getMinutesDiff } from "@/utils/DateUtil";
 import { SEARCH_USERS_MAX_NUM } from "@/constants/user.constant";
-import { UserSearchOverview } from "@/stores/FriendStore";
+import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 
 export const findUser = async (userId: string): Promise<User | null> => {
   const userAccount = await prisma.user_account.findUnique({
@@ -69,13 +69,20 @@ export const getSimilarNamedUsers = async (
 ): Promise<UserSearchOverview[]> => {
   const removeSpace = userName.replace(/ /g, "");
   const splitName = removeSpace.split("#");
-  return prisma.user_account.findMany({
+  const result = await prisma.user_account.findMany({
     take: SEARCH_USERS_MAX_NUM,
     where: {
       name: { startsWith: splitName[0] },
       id: { startsWith: splitName[1] },
     },
     select: { id: true, name: true, profile_image: true },
+  });
+  return result.map((item) => {
+    return {
+      id: item.id,
+      name: item.name,
+      profileImage: item.profile_image,
+    };
   });
 };
 
