@@ -199,6 +199,7 @@ export class RoomSocketService {
           this._createSendTransport(this._device, localMediaStream);
 
           this._listenRoomEvents(this._device);
+          this._getRemoteProducersAndCreateReceiveTransport(this._device);
         } catch (e) {
           // TODO
         }
@@ -383,21 +384,11 @@ export class RoomSocketService {
       // with the following parameters and produce
       // and expect back a server side producer id
       // see server's socket.on('transport-produce', ...)
-      await this._requireSocket().emit(
-        TRANSPORT_PRODUCER,
-        {
-          kind: parameters.kind,
-          rtpParameters: parameters.rtpParameters,
-          appData: parameters.appData,
-        },
-        (id: string, producersExists: boolean) => {
-          callback({ id });
-          if (!this._didGetInitialProducers && producersExists) {
-            this._didGetInitialProducers = true;
-            this._getRemoteProducersAndCreateReceiveTransport(device);
-          }
-        }
-      );
+      await this._requireSocket().emit(TRANSPORT_PRODUCER, {
+        kind: parameters.kind,
+        rtpParameters: parameters.rtpParameters,
+        appData: parameters.appData,
+      });
     } catch (error: any) {
       errback(error);
     }
