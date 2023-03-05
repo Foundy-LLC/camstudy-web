@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "../../prisma/client";
 import { uuidv4 } from "@firebase/util";
 import tagWhereInput = Prisma.tagWhereInput;
+import { SEARCH_USERS_MAX_NUM } from "@/constants/user.constant";
 
 export const createTagsIfNotExists = async (tagNames: string[]) => {
   const data: { id: string; name: string }[] = tagNames.map((tagName) => {

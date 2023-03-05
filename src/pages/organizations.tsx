@@ -2,7 +2,6 @@ import { NextPage } from "next";
 import { observer } from "mobx-react";
 import { useStores } from "@/stores/context";
 import React, { useEffect, useState } from "react";
-import { organization } from "@prisma/client";
 import { useDebounce } from "@/components/UseDebounce";
 import { BelongOrganization, Organization } from "@/stores/OrganizationStore";
 import Image from "next/image";

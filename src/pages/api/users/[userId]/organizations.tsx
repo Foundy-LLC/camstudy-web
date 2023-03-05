@@ -1,8 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import {
-  getBelongOrganizations,
-  getOrganizations,
-} from "@/controller/organization.controller";
+import { getBelongOrganizations } from "@/controller/organization.controller";
 
 export default async function belongOrganizationHandler(
   req: NextApiRequest,

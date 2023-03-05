@@ -6,16 +6,18 @@ import {
 import {
   createUser,
   findUser,
+  getSimilarNamedUsers,
   insertUserProfileImage,
   isUserExists,
 } from "@/repository/user.repository";
 import {
   EXISTS_INITIAL_INFORMATION_MESSAGE,
+  IMAGE_SIZE_EXCEED_MESSAGE,
   NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
   NOT_FOUND_USER_MESSAGE,
   PROFILE_CREATE_SUCCESS,
-  IMAGE_SIZE_EXCEED_MESSAGE,
   PROFILE_IMAGE_UPDATE,
+  REQUEST_QUERY_ERROR,
   SERVER_INTERNAL_ERROR_MESSAGE,
   USER_INFORMATION_LOOKUP_SUCCESS,
 } from "@/constants/message";
@@ -27,6 +29,8 @@ import { uuidv4 } from "@firebase/util";
 import runMiddleware from "@/utils/runMiddleware";
 import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 import { ValidateUid } from "@/models/common/ValidateUid";
+import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedFriendsGetRequestBody";
+import { SEARCH_SIMILAR_NAMED_USERS_SUCCESS } from "@/constants/FriendMessage";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -75,6 +79,30 @@ export const getUserExistence = async (
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+    return;
+  }
+};
+
+export const GetUsers = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const { name } = req.query;
+    if (typeof name !== "string") throw REQUEST_QUERY_ERROR;
+    const friendGetRequestBody = new SimilarNamedFriendsGetRequestBody(name);
+    const userList = await getSimilarNamedUsers(friendGetRequestBody.userName);
+    res.status(201).json(
+      new ResponseBody({
+        message: SEARCH_SIMILAR_NAMED_USERS_SUCCESS,
+        data: userList,
+      })
+    );
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(e);
       return;
     }
     res

@@ -3,7 +3,6 @@ import { makeAutoObservable, runInAction } from "mobx";
 import organizationService, {
   OrganizationService,
 } from "@/service/organization.service";
-import { organization } from "@prisma/client";
 import userStore from "@/stores/UserStore";
 import { ORGANIZATIONS_EMAIL_CONFIRM_SUCCESS } from "@/constants/organizationMessage";
 
