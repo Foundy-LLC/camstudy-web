@@ -1,12 +1,20 @@
-import "@/styles/globals.css";
+import "@/styles/globals.scss";
 import type { AppProps } from "next/app";
-import React from "react";
+import React, { useContext } from "react";
 import { AuthProvider } from "@/components/AuthProvider";
-
+import "../styles/_main.scss";
+import { ThemeContext, ThemeProvider } from "@/context/ThemeContext";
 export default function App({ Component, pageProps }: AppProps) {
+  const { theme } = useContext(ThemeContext);
   return (
-    <AuthProvider>
-      <Component {...pageProps} />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <div className={`${theme}`}>
+          <div className={"background flex"}>
+            <Component {...pageProps} />
+          </div>
+        </div>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

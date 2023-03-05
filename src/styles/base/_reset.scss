@@ -1,0 +1,31 @@
+@use '../color/colorPalette' as *;
+
+body{
+  padding: 0;
+  margin: 0;
+}
+
+.light{
+  .text{
+    color: $-system_black;
+  }
+  .background{
+    background-color: $-light-mode;
+  }
+}
+
+.dark{
+  .text{
+    color: $-system_white;
+  }
+  .background{
+    background-color: $-system_black;
+  }
+}
+
+.flex{
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  height: 100vh;
+}

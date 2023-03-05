@@ -1,0 +1,88 @@
+@import "./color/colorPalette";
+
+// 로그인 폼
+.login-form {
+  text-align: center;
+  width: 460px;
+  height: 400px;
+  margin: auto;
+
+  background: $-system_white;
+  border: 0.5px solid $-gray_cool-300;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 2px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+
+  .title {
+    padding: 64px 0 20px 0;
+    margin: 0 auto;
+  }
+
+  .sub-title {
+    color: $-gray_cool-400;
+    padding-bottom: 60px;
+  }
+
+  .typography__text--big {
+    color: $-gray_cool-400;
+  }
+}
+
+// 로그인 버튼
+.login-button {
+  width: 300px;
+  height: 52px;
+  border-radius: 6px;
+  font-family: Roboto;
+
+  .logoWithText {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .button_text {
+    margin-left: 12px;
+  }
+}
+
+.google-login-button {
+  @extend .login-button;
+  background: $-system_white;
+  border: 1px solid #d3d1d1;
+  color: #2e2d2d;
+  margin-bottom: 15px;
+
+  &:hover {
+    background: $-gray_cool-50;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.14);
+  }
+  &:active{
+    background: $-gray_cool-100;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.github-login-button {
+  @extend .login-button;
+  background: $-gray_cool-800;
+  border: 1px solid #d3d1d1;
+  color: $-system_white;
+
+  &:hover {
+    background: $-gray_cool-700;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.12);
+  }
+  &:active{
+    background: $-gray_cool-900;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.dark {
+  background-color: $-gray_cool-800;
+}
+
+.light {
+  background-color: $-system_white;
+}
