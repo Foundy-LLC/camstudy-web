@@ -10,9 +10,11 @@ import {
   findBelongOrganizations,
   findOrganizations,
   updateEmailVerifyStatus,
+  verifyBelong,
 } from "@/repository/organization.repository";
 import {
   BELONG_ORGANIZATIONS_GET_SUCCESS,
+  ORGANIZATION_EMAIL_VERIFY_DUPLICATED,
   ORGANIZATIONS_EMAIL_CONFIRM_SUCCESS,
   ORGANIZATIONS_EMAIL_SEND_FAIL,
   ORGANIZATIONS_EMAIL_SEND_SUCCESS,
@@ -128,6 +130,14 @@ export const setOrganizationEmail = async (
       organizationId,
       organizationName
     );
+    // 해당 소속이 이미 인증되어 있는 지 확인
+    if (await verifyBelong(userId, organizationId)) {
+      res
+        .status(409)
+        .send(
+          new ResponseBody({ message: ORGANIZATION_EMAIL_VERIFY_DUPLICATED })
+        );
+    }
     await addOrganizationEmailVerify(
       organizationsEmailRequestBody.userId,
       organizationsEmailRequestBody.email,

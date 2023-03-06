@@ -19,3 +19,5 @@ export const ORGANIZATIONS_EMAIL_SEND_FAIL: string =
   "인증 이메일 발송에 실패하였습니다.";
 export const ORGANIZATIONS_EMAIL_TOKEN_NULL_ERROR: string =
   "이메일 인증 토큰이 누락되었습니다.";
+export const ORGANIZATION_EMAIL_VERIFY_DUPLICATED: string =
+  "이미 인증된 소속입니다.";

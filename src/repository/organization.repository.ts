@@ -2,6 +2,7 @@ import client from "prisma/client";
 import { ORGANIZATION_NUM_PER_PAGE } from "@/constants/organization.constant";
 import { belong, organization } from "@prisma/client";
 import { BelongOrganization, Organization } from "@/stores/OrganizationStore";
+import { async } from "@firebase/util";
 
 export const updateEmailVerifyStatus = async (
   userId: string,
@@ -16,6 +17,22 @@ export const updateEmailVerifyStatus = async (
     },
     data: { is_authenticated: true },
   });
+};
+
+export const verifyBelong = async (
+  userId: string,
+  organizationId: string
+): Promise<boolean> => {
+  const result = await client.belong.findUnique({
+    where: {
+      user_id_organization_id: {
+        user_id: userId,
+        organization_id: organizationId,
+      },
+    },
+  });
+  if (result === null) return false;
+  else return true;
 };
 
 export const addOrganizationEmailVerify = async (
