@@ -1,0 +1,189 @@
+@import "./color/colorPalette";
+
+%placeholder{
+  padding-left: 0.75rem;
+}
+
+.welcome-form {
+  padding: 36px 28px;
+  width: 404px;
+  height: 448px;
+  border: 0.5px solid $-gray_cool-300;
+  border-radius: 8px;
+  margin: auto;
+  label {
+    display: block;
+  }
+  label.title{
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.375rem;
+    color: $-gray_cool-800
+  }
+  label.sub-title{
+    font-size: 0.75rem;
+    font-weight: normal;
+    color: $-gray_cool-400
+  }
+  .common-input{
+    @extend %placeholder;
+    width: 15rem;
+    height: 1.75rem;
+    font-family: Galmuri11;
+    font-size: 0.75rem;
+    background-color: $-system_white;
+    border: 0.5px solid $-gray_cool-300;
+    border-radius: 4px;
+
+    margin-top: 0.625rem;
+  }
+
+  .tags-input {
+    @extend %placeholder;
+    display: flex;
+    align-items: flex-start;
+    font-size: 0.75rem;
+    //flex-wrap: wrap;
+    font-family: Galmuri11;
+    height: 1.75rem;
+    width: 15rem;
+    background-color: $-system_white;
+    border: 0.5px solid $-gray_cool-300;
+    border-radius: 4px;
+    input {
+      font-family: Galmuri11;
+      flex: 1;
+      border: none;
+      height: 1.375rem;
+      font-size: 0.75rem;
+      margin: auto;
+      overflow: hidden;
+      &:focus {
+        outline: transparent;
+      }
+    }
+  }
+
+  .tags {
+    margin: auto;
+    display: flex;
+    //flex-wrap: wrap;
+    padding: 0;
+    margin: 3px 0 0 0;
+    overflow: hidden;
+  }
+
+  .tag {
+    width: auto;
+    height: 1.375rem;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $-primary-400;
+    list-style: none;
+    margin: auto 8px 8px auto;
+    .tag-close-icon {
+      display: block;
+      width: 1rem;
+      height: 1.375rem;
+      //line-height: 16px;
+      text-align: center;
+      font-size: 14px;
+      margin-left: 0.125rem;
+      color: #0052cc;
+      background: #fff;
+      cursor: pointer;
+    }
+  }
+  // 이미지 input
+  .image-input {
+    justify-items: center;
+    align-items: center;
+    img{
+      object-fit: cover;
+    }
+    .preview {
+      display: inline-block;
+      vertical-align: top;
+      width: 72px;
+      height: 72px;
+      margin-right: 1em;
+      background: $-gray_cool-100;
+      border-radius: 12px;
+    }
+    .input {
+      display: inline-block;
+      .file-box {
+        text-align: center;
+        width: 112px;
+        height: 28px;
+        background-color: $-gray_cool-700;
+        cursor: pointer;
+        margin-top: 0.375em;
+
+        border: 0.5px solid $-gray_cool-300;
+        border-radius: 4px;
+
+        label {
+          display: block;
+          font-family: 'Galmuri11';
+          font-size: 12px;
+          line-height: 28px;
+          color: $-system_white;
+          vertical-align: middle;
+        }
+
+        &:hover {
+          background: $-gray_cool-800;
+        }
+        &:active{
+          background: $-gray_cool-600;
+        }
+      }
+    }
+  }
+  .back-button{
+    font-family: Galmuri11;
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: $-gray_cool-600;
+    line-height: 1.375rem;
+    width: 5rem;
+    height: 2.25rem;
+    background: $-system_white;
+    border: 0.5px solid $-gray_cool-300;
+    border-radius: 4px;
+    &:hover {
+      background: $-gray_cool-100;
+    }
+    &:active{
+      background: $-gray_cool-200;
+    }
+  }
+  .save-button{
+    font-family: Galmuri11;
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: $-system_white;
+    line-height: 1.375rem;
+    width: 9.125rem;
+    height: 2.25rem;
+    background: $-gray_cool-700;
+    border: 0.5px solid $-gray_cool-300;
+    border-radius: 4px;
+    &:hover {
+      background: $-gray_cool-800;
+    }
+    &:active{
+      background: $-gray_cool-600;
+    }
+  }
+  .button-group{
+    text-align: right;
+  }
+}
+
+
+
+

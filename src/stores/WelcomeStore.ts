@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import userService, { UserService } from "@/service/user.service";
 import {
   validateUserIntroduce,
@@ -7,12 +7,16 @@ import {
   validateUserTags,
 } from "@/utils/user.validator";
 import userStore from "@/stores/UserStore";
+import { welcomeService, WelcomeService } from "@/service/welcome.service";
+import { Tag } from "@/models/welcome/Tag";
 
 export class WelcomeStore {
   private _profileImage?: File;
   private _name: string = "";
   private _introduce: string = "";
   private _tags: string = "";
+  private _tag = "";
+  private _recommendTags: Tag[] = [];
 
   private _profileImageChanged: boolean = false;
   private _nameChanged: boolean = false;
@@ -21,8 +25,12 @@ export class WelcomeStore {
 
   private _errorMessage?: string = undefined;
   private _successToCreate: boolean = false;
+  private _successMessage: string | undefined = undefined;
 
-  constructor(private readonly _userService: UserService = userService) {
+  constructor(
+    private readonly _userService: UserService = userService,
+    private readonly _welcomeService: WelcomeService = welcomeService
+  ) {
     makeAutoObservable(this);
   }
 
@@ -155,4 +163,28 @@ export class WelcomeStore {
       this._errorMessage = createUserResult.throwableOrNull()!!.message;
     }
   };
+
+  public async onChangeTagInput(tag: string) {
+    this._tag = tag;
+    if (this._tag === "") {
+      this._recommendTags = [];
+      return;
+    }
+    const result = await this._welcomeService.getTags(this._tag);
+    if (result.isSuccess) {
+      runInAction(() => {
+        this._errorMessage = undefined;
+        this.setRecommendTags(result.getOrNull()!!);
+      });
+    } else {
+      runInAction(() => {
+        this._successMessage = undefined;
+        this._errorMessage = result.throwableOrNull()!.message;
+      });
+    }
+  }
+
+  private setRecommendTags(tags: Tag[]) {
+    this._recommendTags = tags;
+  }
 }

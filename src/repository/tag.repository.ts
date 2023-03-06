@@ -3,6 +3,9 @@ import prisma from "../../prisma/client";
 import { uuidv4 } from "@firebase/util";
 import tagWhereInput = Prisma.tagWhereInput;
 import { SEARCH_USERS_MAX_NUM } from "@/constants/user.constant";
+import client from "../../prisma/client";
+import { ORGANIZATION_NUM_PER_PAGE } from "@/constants/organization.constant";
+import { TAG_NUM_PER_PAGE } from "@/constants/tag.constant";
 
 export const createTagsIfNotExists = async (tagNames: string[]) => {
   const data: { id: string; name: string }[] = tagNames.map((tagName) => {
@@ -35,5 +38,15 @@ export const findTagIdsByTagName = async (
     select: {
       id: true,
     },
+  });
+};
+
+export const findSimilarTags = async (pageNum: number, name?: string) => {
+  return await client.tag.findMany({
+    skip: pageNum * TAG_NUM_PER_PAGE,
+    take: TAG_NUM_PER_PAGE,
+    where: { name: { startsWith: name } },
+    orderBy: { name: "asc" },
+    select: { name: true },
   });
 };
