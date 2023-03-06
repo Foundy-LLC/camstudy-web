@@ -10,6 +10,7 @@ import {
   findBelongOrganizations,
   findOrganizations,
   updateEmailVerifyStatus,
+  updateOrganizationEmailVerify,
   verifyBelong,
 } from "@/repository/organization.repository";
 import {
@@ -131,22 +132,38 @@ export const setOrganizationEmail = async (
       organizationName
     );
     // 해당 소속이 이미 인증되어 있는 지 확인
-    if (await verifyBelong(userId, organizationId)) {
+    const verify = await verifyBelong(userId, organizationId);
+    if (verify && verify.isAuthenticated === true) {
       res
         .status(409)
         .send(
           new ResponseBody({ message: ORGANIZATION_EMAIL_VERIFY_DUPLICATED })
         );
+      return;
     }
-    await addOrganizationEmailVerify(
-      organizationsEmailRequestBody.userId,
-      organizationsEmailRequestBody.email,
-      organizationsEmailRequestBody.organizationId
-    );
+    // 소속되어 있지 않고 이메일을 보낸 적도 없을 경우
+    if (!verify) {
+      await addOrganizationEmailVerify(
+        organizationsEmailRequestBody.userId,
+        organizationsEmailRequestBody.email,
+        organizationsEmailRequestBody.organizationId
+      );
+    }
+    // 이메일을 보낸 적이 있으나 다른 이메일 인 경우
+    else if (verify.email !== email) {
+      await updateOrganizationEmailVerify(
+        organizationsEmailRequestBody.userId,
+        organizationsEmailRequestBody.email,
+        organizationsEmailRequestBody.organizationId
+      );
+    }
+
+    //이메일 전송
     if (
       !sendSecretMail(email, userId, userName, organizationId, organizationName)
-    )
+    ) {
       throw ORGANIZATIONS_EMAIL_SEND_FAIL;
+    }
     res.status(201).json(
       new ResponseBody({
         message: ORGANIZATIONS_EMAIL_SEND_SUCCESS,
