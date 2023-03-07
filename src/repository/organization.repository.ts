@@ -2,6 +2,8 @@ import client from "prisma/client";
 import { ORGANIZATION_NUM_PER_PAGE } from "@/constants/organization.constant";
 import { belong, organization } from "@prisma/client";
 import { BelongOrganization, Organization } from "@/stores/OrganizationStore";
+import { async } from "@firebase/util";
+import { VerifyOrganization } from "@/models/organization/verifyOrganization";
 
 export const updateEmailVerifyStatus = async (
   userId: string,
@@ -18,6 +20,26 @@ export const updateEmailVerifyStatus = async (
   });
 };
 
+export const verifyBelong = async (
+  userId: string,
+  organizationId: string
+): Promise<VerifyOrganization | undefined> => {
+  const result = await client.belong.findUnique({
+    where: {
+      user_id_organization_id: {
+        user_id: userId,
+        organization_id: organizationId,
+      },
+    },
+    select: {
+      email: true,
+      is_authenticated: true,
+    },
+  });
+  if (result == null) return undefined;
+  return { email: result.email, isAuthenticated: result.is_authenticated };
+};
+
 export const addOrganizationEmailVerify = async (
   userId: string,
   email: string,
@@ -30,6 +52,22 @@ export const addOrganizationEmailVerify = async (
       email: email,
       is_authenticated: false,
     },
+  });
+};
+
+export const updateOrganizationEmailVerify = async (
+  userId: string,
+  email: string,
+  organizationId: string
+) => {
+  await client.belong.update({
+    where: {
+      user_id_organization_id: {
+        user_id: userId,
+        organization_id: organizationId,
+      },
+    },
+    data: { email: email },
   });
 };
 

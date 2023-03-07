@@ -10,9 +10,12 @@ import {
   findBelongOrganizations,
   findOrganizations,
   updateEmailVerifyStatus,
+  updateOrganizationEmailVerify,
+  verifyBelong,
 } from "@/repository/organization.repository";
 import {
   BELONG_ORGANIZATIONS_GET_SUCCESS,
+  ORGANIZATION_EMAIL_VERIFY_DUPLICATED,
   ORGANIZATIONS_EMAIL_CONFIRM_SUCCESS,
   ORGANIZATIONS_EMAIL_SEND_FAIL,
   ORGANIZATIONS_EMAIL_SEND_SUCCESS,
@@ -128,15 +131,39 @@ export const setOrganizationEmail = async (
       organizationId,
       organizationName
     );
-    await addOrganizationEmailVerify(
-      organizationsEmailRequestBody.userId,
-      organizationsEmailRequestBody.email,
-      organizationsEmailRequestBody.organizationId
-    );
+    // 해당 소속이 이미 인증되어 있는 지 확인
+    const verify = await verifyBelong(userId, organizationId);
+    if (verify && verify.isAuthenticated === true) {
+      res
+        .status(409)
+        .send(
+          new ResponseBody({ message: ORGANIZATION_EMAIL_VERIFY_DUPLICATED })
+        );
+      return;
+    }
+    // 소속되어 있지 않고 이메일을 보낸 적도 없을 경우
+    if (!verify) {
+      await addOrganizationEmailVerify(
+        organizationsEmailRequestBody.userId,
+        organizationsEmailRequestBody.email,
+        organizationsEmailRequestBody.organizationId
+      );
+    }
+    // 이메일을 보낸 적이 있으나 다른 이메일 인 경우
+    else if (verify.email !== email) {
+      await updateOrganizationEmailVerify(
+        organizationsEmailRequestBody.userId,
+        organizationsEmailRequestBody.email,
+        organizationsEmailRequestBody.organizationId
+      );
+    }
+
+    //이메일 전송
     if (
       !sendSecretMail(email, userId, userName, organizationId, organizationName)
-    )
+    ) {
       throw ORGANIZATIONS_EMAIL_SEND_FAIL;
+    }
     res.status(201).json(
       new ResponseBody({
         message: ORGANIZATIONS_EMAIL_SEND_SUCCESS,
