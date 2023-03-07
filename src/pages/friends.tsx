@@ -2,15 +2,48 @@ import { NextPage } from "next";
 import { observer } from "mobx-react";
 import { useStores } from "@/stores/context";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import userStore from "@/stores/UserStore";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 
 const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
   ({ item }) => {
-    const [selected, setSelected] = useState<boolean>(false);
+    const [selected, setSelected] = useState<string | undefined>(undefined);
+    const [statusImage, setStatusImage] = useState<string>(
+      "https://uxwing.com/wp-content/themes/uxwing/download/user-interface/add-plus-icon.png"
+    );
     const { friendStore } = useStores();
     const { name, id } = item;
+    useEffect(() => {
+      // 요청한 기록이 없는 경우 "none"
+      if (item.requestHistory.length === 0) {
+        setSelected("none");
+        return;
+      }
+      // 이미 친구인 경우
+      item.requestHistory.map((value) => {
+        if (value.accepted === true) setSelected("accepted");
+      });
+      if (selected !== undefined) return;
+      //요청했으나 수락되지 않은 경우
+      setSelected("requested");
+    }, [item]);
+
+    useEffect(() => {
+      if (selected === "accepted") {
+        setStatusImage(
+          "https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/blue-check-mark-icon.png"
+        );
+      } else if (selected === "requested") {
+        setStatusImage(
+          "https://uxwing.com/wp-content/themes/uxwing/download/festival-culture-religion/cracker-color-icon.png"
+        );
+      } else {
+        setStatusImage(
+          "https://uxwing.com/wp-content/themes/uxwing/download/user-interface/add-plus-icon.png"
+        );
+      }
+    }, [selected]);
     return (
       <>
         <h3 style={{ display: "inline" }}>{name}</h3>{" "}
@@ -18,16 +51,13 @@ const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
         {userStore.currentUser!.id !== id && (
           <>
             <Image
-              src={
-                selected
-                  ? "https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/blue-check-mark-icon.png"
-                  : "https://uxwing.com/wp-content/themes/uxwing/download/festival-culture-religion/cracker-color-icon.png"
-              }
+              src={statusImage}
               width={18}
               height={18}
               alt="select"
-              onClick={() => {
-                setSelected(!selected);
+              onClick={async () => {
+                await friendStore.sendFriendRequest(id);
+                setSelected("requested");
               }}
             />
             <br />
@@ -77,7 +107,7 @@ const friends: NextPage = observer(() => {
         <h3>{friendStore.successMessage}</h3>
       ) : null}
       {friendStore.errorMessage ? <h3>{friendStore.errorMessage}</h3> : null}
-      <SimilarNamedUserGroup items={friendStore.userSearchOverview} />
+      <SimilarNamedUserGroup items={friendStore.userSearchOverviews} />
     </>
   );
 });

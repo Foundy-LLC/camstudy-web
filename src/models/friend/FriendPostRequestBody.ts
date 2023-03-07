@@ -1,15 +1,12 @@
-import { validateUid, validateUserName } from "@/utils/user.validator";
+import { validateUid } from "@/utils/user.validator";
 
 export class FriendPostRequestBody {
-  constructor(readonly userName: string, readonly userId: string) {
-    this._validateUserName();
-    this._validateUserId();
-  }
-  private _validateUserName() {
-    validateUserName(this.userName);
+  constructor(readonly userId: string, readonly targetUserId: string) {
+    this._validateUserIds();
   }
 
-  private _validateUserId() {
+  private _validateUserIds() {
     validateUid(this.userId);
+    validateUid(this.targetUserId);
   }
 }

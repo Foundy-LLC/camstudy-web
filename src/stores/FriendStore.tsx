@@ -4,13 +4,16 @@ import userStore from "@/stores/UserStore";
 import { makeAutoObservable, runInAction } from "mobx";
 import {
   FRIEND_REQUEST_SUCCESS,
+  NO_SELECTED_USER_FOR_FRIEND_REQUEST,
   SEARCH_SIMILAR_NAMED_USERS_SUCCESS,
 } from "@/constants/FriendMessage";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
+import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
+import { element } from "prop-types";
 
 export class FriendStore {
   readonly rootStore: RootStore;
-  private _userSearchOverview: UserSearchOverview[] = [];
+  private _userSearchOverviews: UserSearchOverview[] = [];
   private _friendRequestInput: string | undefined = undefined;
   private _selectedUserId: string | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
@@ -22,9 +25,6 @@ export class FriendStore {
     makeAutoObservable(this);
     this.rootStore = root;
   }
-  public get friendRequestInput() {
-    return this._friendRequestInput;
-  }
 
   public get errorMessage() {
     return this._errorMessage;
@@ -34,23 +34,42 @@ export class FriendStore {
     return this._successMessage;
   }
 
-  public get userSearchOverview() {
-    return this._userSearchOverview;
+  public get userSearchOverviews() {
+    return this._userSearchOverviews;
   }
 
   public async changeFriendRequestInput(str: string) {
     this._friendRequestInput = str;
   }
 
+  public findIndexFromUserOverview(userId: string) {
+    return this.userSearchOverviews.findIndex(
+      (overview) => overview.id === userId
+    );
+  }
+
+  private _pushAcceptedToUserOverview(userId: string) {
+    runInAction(() => {
+      this._userSearchOverviews[
+        this.findIndexFromUserOverview(userId)
+      ].requestHistory.push({ accepted: false });
+    });
+  }
+
   public async getSimilarNamedUsers() {
     if (!this._friendRequestInput) return;
+    if (!userStore.currentUser) {
+      throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+    }
+    const userId = userStore.currentUser.id;
     const result = await this._friendService.getSimilarNamedUsers(
-      this._friendRequestInput
+      this._friendRequestInput,
+      userId
     );
     if (result.isSuccess) {
       runInAction(() => {
         this._errorMessage = undefined;
-        this._userSearchOverview = result.getOrNull()!;
+        this._userSearchOverviews = result.getOrNull()!;
         this._successMessage = SEARCH_SIMILAR_NAMED_USERS_SUCCESS;
       });
     } else {
@@ -62,23 +81,39 @@ export class FriendStore {
   }
 
   public async sendFriendRequest(userId: string) {
-    this._selectedUserId = userId;
-    if (!this._selectedUserId) return;
-
-    const result = await this._friendService.sendFriendRequest(
-      this._selectedUserId,
-      userStore.currentUser?.id!
-    );
-    if (result.isSuccess) {
+    try {
+      this._selectedUserId = userId;
+      //유저 정보가 존재하지 않을 경우 에러 처리
+      if (!userStore.currentUser) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      const requesterId = userStore.currentUser.id;
+      //선택된 유저가 존재하지 않을 경우 에러
+      if (!this._selectedUserId) {
+        throw new Error(NO_SELECTED_USER_FOR_FRIEND_REQUEST);
+      }
+      const result = await this._friendService.sendFriendRequest(
+        requesterId,
+        this._selectedUserId
+      );
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._errorMessage = undefined;
+          this._successMessage = FRIEND_REQUEST_SUCCESS;
+          this._pushAcceptedToUserOverview(userId);
+        });
+      } else {
+        runInAction(() => {
+          this._successMessage = undefined;
+          throw new Error(result.throwableOrNull()!.message);
+        });
+      }
+    } catch (e) {
       runInAction(() => {
-        this._errorMessage = undefined;
-        this._successMessage = FRIEND_REQUEST_SUCCESS;
-      });
-    } else {
-      runInAction(() => {
-        this._successMessage = undefined;
-        this._errorMessage = result.throwableOrNull()!.message;
+        if (e instanceof Error) this._errorMessage = e.message;
       });
     }
   }
+
+  //public async cancelFriendRequest(userId: string) {}
 }

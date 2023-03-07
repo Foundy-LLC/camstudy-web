@@ -38,13 +38,14 @@ model crops {
 }
 
 model friend {
-  id                                             String       @id(map: "pk_friend") @db.VarChar(100)
   requester_id                                   String       @db.VarChar(100)
   acceptor_id                                    String       @db.VarChar(100)
   accepted                                       Boolean
   requested_at                                   DateTime     @db.Timestamp(6)
   user_account_friend_acceptor_idTouser_account  user_account @relation("friend_acceptor_idTouser_account", fields: [acceptor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_friend_user_account_1")
   user_account_friend_requester_idTouser_account user_account @relation("friend_requester_idTouser_account", fields: [requester_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_friend_user_account_2")
+
+  @@id([requester_id, acceptor_id], map: "pk_friend")
 }
 
 model harvested_crops {
