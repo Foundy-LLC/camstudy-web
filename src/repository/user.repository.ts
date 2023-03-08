@@ -7,6 +7,7 @@ import { SEARCH_USERS_MAX_NUM } from "@/constants/user.constant";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { async } from "@firebase/util";
 import { where } from "@firebase/firestore";
+import { FRIEND_STATUS, friendStatus } from "@/constants/FriendStatus";
 
 export const findUser = async (userId: string): Promise<User | null> => {
   const userAccount = await prisma.user_account.findUnique({
@@ -94,7 +95,11 @@ export const getSimilarNamedUsers = async (
       id: item.id,
       name: item.name,
       profileImage: item.profile_image,
-      requestHistory: item.friend_friend_acceptor_idTouser_account,
+      requestHistory: item.friend_friend_acceptor_idTouser_account[0]
+        ? item.friend_friend_acceptor_idTouser_account[0].accepted === true
+          ? friendStatus.ACCEPTED
+          : friendStatus.REQUESTED
+        : friendStatus.NONE,
     };
   });
 };

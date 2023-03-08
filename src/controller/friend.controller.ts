@@ -26,6 +26,7 @@ export const sendFriendRequest = async (
       res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
+    //이미 해당 아이디로 친구 요청을 보낸 적이 있는 경우
     if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
       res
         .status(409)

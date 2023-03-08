@@ -5,36 +5,22 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import userStore from "@/stores/UserStore";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
+import { friendStatus } from "@/constants/FriendStatus";
 
 const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
   ({ item }) => {
-    const [selected, setSelected] = useState<string | undefined>(undefined);
     const [statusImage, setStatusImage] = useState<string>(
       "https://uxwing.com/wp-content/themes/uxwing/download/user-interface/add-plus-icon.png"
     );
     const { friendStore } = useStores();
-    const { name, id } = item;
-    useEffect(() => {
-      // 요청한 기록이 없는 경우 "none"
-      if (item.requestHistory.length === 0) {
-        setSelected("none");
-        return;
-      }
-      // 이미 친구인 경우
-      item.requestHistory.map((value) => {
-        if (value.accepted === true) setSelected("accepted");
-      });
-      if (selected !== undefined) return;
-      //요청했으나 수락되지 않은 경우
-      setSelected("requested");
-    }, [item]);
+    const { name, id, requestHistory } = item;
 
     useEffect(() => {
-      if (selected === "accepted") {
+      if (requestHistory === friendStatus.ACCEPTED) {
         setStatusImage(
           "https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/blue-check-mark-icon.png"
         );
-      } else if (selected === "requested") {
+      } else if (requestHistory === friendStatus.REQUESTED) {
         setStatusImage(
           "https://uxwing.com/wp-content/themes/uxwing/download/festival-culture-religion/cracker-color-icon.png"
         );
@@ -43,7 +29,7 @@ const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
           "https://uxwing.com/wp-content/themes/uxwing/download/user-interface/add-plus-icon.png"
         );
       }
-    }, [selected]);
+    }, [requestHistory]);
     return (
       <>
         <h3 style={{ display: "inline" }}>{name}</h3>{" "}
@@ -56,8 +42,16 @@ const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
               height={18}
               alt="select"
               onClick={async () => {
-                await friendStore.sendFriendRequest(id);
-                setSelected("requested");
+                switch (requestHistory) {
+                  case "ACCEPTED":
+                    break;
+                  case "NONE":
+                    await friendStore.sendFriendRequest(id);
+                    break;
+                  case "REQUESTED":
+                    await friendStore.cancelFriendRequest(id);
+                    break;
+                }
               }}
             />
             <br />

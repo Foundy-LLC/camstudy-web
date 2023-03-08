@@ -10,6 +10,7 @@ import {
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
 import { element } from "prop-types";
+import { friendStatus } from "@/constants/FriendStatus";
 
 export class FriendStore {
   readonly rootStore: RootStore;
@@ -49,11 +50,11 @@ export class FriendStore {
   }
 
   private _pushAcceptedToUserOverview(userId: string) {
-    runInAction(() => {
-      this._userSearchOverviews[
-        this.findIndexFromUserOverview(userId)
-      ].requestHistory.push({ accepted: false });
-    });
+    const index = this.findIndexFromUserOverview(userId);
+    this._userSearchOverviews[index] = {
+      ...this._userSearchOverviews[index],
+      requestHistory: friendStatus.REQUESTED,
+    };
   }
 
   public async getSimilarNamedUsers() {
@@ -115,5 +116,5 @@ export class FriendStore {
     }
   }
 
-  //public async cancelFriendRequest(userId: string) {}
+  public async cancelFriendRequest(userId: string) {}
 }
