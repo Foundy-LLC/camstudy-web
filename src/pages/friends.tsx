@@ -49,7 +49,7 @@ const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
                 if (confirm("친구 요청을 취소하시겠어요?") === true) {
                   await friendStore.cancelFriendRequest(id);
                   console.log(`친구 요청을 취소했습니다.`);
-                } else return;
+                }
 
                 break;
             }
