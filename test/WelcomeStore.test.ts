@@ -152,7 +152,7 @@ describe("WelcomeStore.tagsErrorMessage", () => {
     expect(welcomeStore.tagsErrorMessage).toBeUndefined();
 
     // when
-    welcomeStore.changeTags(["taglonglonglonglonglo"]);
+    welcomeStore.changeTags(["taglonglonglonglonglon"]);
 
     // then
     expect(welcomeStore.tagsErrorMessage).toBe(TAG_LENGTH_ERROR_MESSAGE);

@@ -199,4 +199,15 @@ export class WelcomeStore {
   public clearRecommendTags() {
     this._recommendTags = [];
   }
+
+  public get enabledSubmitButton() {
+    return (
+      this._tags.length === 0 ||
+      this._name === "" ||
+      this.nameErrorMessage !== undefined ||
+      this.tagsErrorMessage !== undefined ||
+      this.introduceErrorMessage !== undefined ||
+      this.profileImageUrlErrorMessage !== undefined
+    );
+  }
 }

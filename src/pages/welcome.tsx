@@ -103,14 +103,7 @@ const Welcome: NextPage = () => {
           뒤로가기
         </button>
         <button
-          disabled={
-            welcomeStore.tags.length === 0 ||
-            welcomeStore.name === "" ||
-            welcomeStore.nameErrorMessage !== undefined ||
-            welcomeStore.tagsErrorMessage !== undefined ||
-            welcomeStore.introduceErrorMessage !== undefined ||
-            welcomeStore.profileImageUrlErrorMessage !== undefined
-          }
+          disabled={welcomeStore.enabledSubmitButton}
           className={`${welcomeStyles["save-button"]}`}
           onClick={() => welcomeStore.createUser(user!.uid)}
         >

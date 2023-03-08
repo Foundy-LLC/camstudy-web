@@ -97,7 +97,7 @@ describe("UserRequestBody", () => {
 
   it("should throw error when some tag length is out of range", () => {
     // given
-    const tags = [" ", "123456789012345678901"];
+    const tags = [" ", "1234567890123456789012"];
 
     // when
     const createUser = () => {
