@@ -1,10 +1,17 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { FriendPostRequestBody } from "@/models/friend/FriendPostRequestBody";
-import { AddFriend } from "@/repository/friend.repository";
+import { AddFriend, CancelFriendRequest } from "@/repository/friend.repository";
 import { findUser } from "@/repository/user.repository";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { SERVER_INTERNAL_ERROR_MESSAGE } from "@/constants/message";
-import { FRIEND_REQUEST_DUPLICATED_ERROR } from "@/constants/FriendMessage";
+import {
+  FRIEND_CANCEL_REQUEST_ERROR,
+  FRIEND_CANCEL_REQUEST_ID_ERROR,
+  FRIEND_REQUEST_CANCEL_SUCCESS,
+  FRIEND_REQUEST_DUPLICATED_ERROR,
+  FRIEND_REQUEST_ID_ERROR,
+  FRIEND_REQUEST_SUCCESS,
+} from "@/constants/FriendMessage";
 import { Prisma } from ".prisma/client";
 import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError;
 
@@ -15,12 +22,11 @@ export const sendFriendRequest = async (
   const { userId, targetUserId } = req.body;
   try {
     const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
+    if (userId === targetUserId) {
+      throw FRIEND_REQUEST_ID_ERROR;
+    }
     await AddFriend(friendRequestBody.userId, friendRequestBody.targetUserId);
-    res
-      .status(201)
-      .send(
-        new ResponseBody({ message: "친구 요청을 성공적으로 보냈습니다." })
-      );
+    res.status(201).send(new ResponseBody({ message: FRIEND_REQUEST_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
@@ -31,6 +37,41 @@ export const sendFriendRequest = async (
       res
         .status(409)
         .send(new ResponseBody({ message: FRIEND_REQUEST_DUPLICATED_ERROR }));
+      return;
+    }
+    res
+      .status(500)
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+  }
+};
+
+export const cancelFriendRequest = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  try {
+    const { userId, targetUserId } = req.body;
+    const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
+    if (userId === targetUserId) {
+      throw FRIEND_CANCEL_REQUEST_ID_ERROR;
+    }
+    await CancelFriendRequest(
+      friendRequestBody.userId,
+      friendRequestBody.targetUserId
+    );
+    res
+      .status(201)
+      .send(new ResponseBody({ message: FRIEND_REQUEST_CANCEL_SUCCESS }));
+  } catch (e) {
+    console.error(e);
+    if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
+      res
+        .status(400)
+        .send(new ResponseBody({ message: FRIEND_CANCEL_REQUEST_ERROR }));
+      return;
+    }
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
     res

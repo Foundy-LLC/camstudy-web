@@ -39,9 +39,30 @@ export class FriendService {
     try {
       const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
       const response = await fetch(
-        `http://localhost:3000/api/users/${friendRequestBody.targetUserId}/friends`,
+        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends`,
         {
           method: "POST",
+          body: JSON.stringify(friendRequestBody),
+          headers: HEADER,
+        }
+      );
+      if (response.ok) {
+        return Result.createSuccessUsingResponseMessage(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  };
+
+  public cancelFriendRequest = async (userId: string, targetUserId: string) => {
+    try {
+      const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
+      const response = await fetch(
+        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends`,
+        {
+          method: "DELETE",
           body: JSON.stringify(friendRequestBody),
           headers: HEADER,
         }
