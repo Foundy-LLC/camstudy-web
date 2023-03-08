@@ -125,32 +125,30 @@ export class WelcomeStore {
   }
 
   public createUser = async (uid: string) => {
-    let profileImageUrl: string | undefined = undefined;
-
-    if (this._profileImageChanged && this._profileImage != null) {
-      const formData = new FormData();
-      formData.append("fileName", uid);
-      formData.append("profileImage", this._profileImage);
-
-      const uploadProfileImageResult =
-        await this._userService.uploadProfileImage(uid, formData);
-      if (uploadProfileImageResult.isSuccess) {
-        profileImageUrl = uploadProfileImageResult.getOrNull();
-      } else {
-        this._errorMessage =
-          uploadProfileImageResult.throwableOrNull()!!.message;
-        return;
-      }
-    }
     const createUserResult = await this._userService.createUser(
       uid,
       this._name,
       this._introduce,
-      this._tags.split(" "),
-      profileImageUrl
+      this._tags.split(" ")
     );
     if (createUserResult.isSuccess) {
-      this._successToCreate = true;
+      if (this._profileImageChanged && this._profileImage != null) {
+        const formData = new FormData();
+        formData.append("fileName", uid);
+        formData.append("profileImage", this._profileImage);
+
+        const uploadProfileImageResult =
+          await this._userService.uploadProfileImage(uid, formData);
+        if (uploadProfileImageResult.isSuccess) {
+          this._successToCreate = true;
+        } else {
+          this._errorMessage =
+            uploadProfileImageResult.throwableOrNull()!!.message;
+          return;
+        }
+      } else {
+        this._successToCreate = true;
+      }
       // TODO: 회원가입 후 유저 정보를 가지고 올 수 없다. 따라서 유저 생성이 성공이라면 유저정보를 가지고 오게 설정했다. 다른 방법 생각해볼 것
       await userStore.fetchAuth();
     } else {
