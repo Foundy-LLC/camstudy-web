@@ -30,7 +30,7 @@ describe("WelcomeStore.createUser", () => {
     // when
     welcomeStore.changeName(name);
     welcomeStore.changeIntroduce(introduce);
-    welcomeStore.changeTags(tags.join(" "));
+    welcomeStore.changeTags(tags);
     await welcomeStore.createUser(userId);
 
     // then
@@ -54,7 +54,7 @@ describe("WelcomeStore.createUser", () => {
     // when
     welcomeStore.changeName(name);
     welcomeStore.changeIntroduce(introduce);
-    welcomeStore.changeTags(tags.join(" "));
+    welcomeStore.changeTags(tags);
     await welcomeStore.createUser(userId);
 
     // then
@@ -130,7 +130,7 @@ describe("WelcomeStore.tagsErrorMessage", () => {
     expect(welcomeStore.tagsErrorMessage).toBeUndefined();
 
     // when
-    welcomeStore.changeTags("valid");
+    welcomeStore.changeTags(["valid"]);
 
     // then
     expect(welcomeStore.tagsErrorMessage).toBeUndefined();
@@ -141,7 +141,7 @@ describe("WelcomeStore.tagsErrorMessage", () => {
     expect(welcomeStore.tagsErrorMessage).toBeUndefined();
 
     // when
-    welcomeStore.changeTags("tag tag2 tag3 tag4");
+    welcomeStore.changeTags(["tag", "tag2", "tag3", "tag4"]);
 
     // then
     expect(welcomeStore.tagsErrorMessage).toBe(TAG_COUNT_ERROR_MESSAGE);
@@ -152,7 +152,7 @@ describe("WelcomeStore.tagsErrorMessage", () => {
     expect(welcomeStore.tagsErrorMessage).toBeUndefined();
 
     // when
-    welcomeStore.changeTags("taglonglonglonglonglo");
+    welcomeStore.changeTags(["taglonglonglonglonglo"]);
 
     // then
     expect(welcomeStore.tagsErrorMessage).toBe(TAG_LENGTH_ERROR_MESSAGE);
