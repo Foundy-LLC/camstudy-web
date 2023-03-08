@@ -1,16 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { FriendPostRequestBody } from "@/models/friend/FriendPostRequestBody";
-import { AddFriend, CancelFriendRequest } from "@/repository/friend.repository";
-import { findUser } from "@/repository/user.repository";
+import { addFriend, deleteFriendRequest } from "@/repository/friend.repository";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { SERVER_INTERNAL_ERROR_MESSAGE } from "@/constants/message";
 import {
-  FRIEND_CANCEL_REQUEST_ERROR,
   FRIEND_CANCEL_REQUEST_ID_ERROR,
   FRIEND_REQUEST_CANCEL_SUCCESS,
   FRIEND_REQUEST_DUPLICATED_ERROR,
   FRIEND_REQUEST_ID_ERROR,
   FRIEND_REQUEST_SUCCESS,
+  NOT_FOUND_FRIEND_REQUEST_ERROR,
 } from "@/constants/FriendMessage";
 import { Prisma } from ".prisma/client";
 import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError;
@@ -25,7 +24,7 @@ export const sendFriendRequest = async (
     if (userId === targetUserId) {
       throw FRIEND_REQUEST_ID_ERROR;
     }
-    await AddFriend(friendRequestBody.userId, friendRequestBody.targetUserId);
+    await addFriend(friendRequestBody.userId, friendRequestBody.targetUserId);
     res.status(201).send(new ResponseBody({ message: FRIEND_REQUEST_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
@@ -55,7 +54,7 @@ export const cancelFriendRequest = async (
     if (userId === targetUserId) {
       throw FRIEND_CANCEL_REQUEST_ID_ERROR;
     }
-    await CancelFriendRequest(
+    await deleteFriendRequest(
       friendRequestBody.userId,
       friendRequestBody.targetUserId
     );
@@ -67,7 +66,7 @@ export const cancelFriendRequest = async (
     if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
       res
         .status(400)
-        .send(new ResponseBody({ message: FRIEND_CANCEL_REQUEST_ERROR }));
+        .send(new ResponseBody({ message: NOT_FOUND_FRIEND_REQUEST_ERROR }));
       return;
     }
     if (typeof e === "string") {

@@ -27,7 +27,7 @@ const BelongOrganizationsName: NextPage<{ item: BelongOrganization }> =
             ) {
               organizationStore.deleteBelongOrganization(item);
               console.log(`${organizationName}가(이) 소속에서 삭제되었습니다`);
-            } else return;
+            }
           }}
         />
         <br />
