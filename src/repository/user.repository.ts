@@ -78,6 +78,7 @@ export const getSimilarNamedUsers = async (
     where: {
       name: { startsWith: splitName[0] },
       id: { startsWith: splitName[1] },
+      NOT: { id: userId },
     },
     select: {
       id: true,

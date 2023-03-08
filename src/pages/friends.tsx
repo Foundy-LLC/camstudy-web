@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import { useStores } from "@/stores/context";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import userStore from "@/stores/UserStore";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
 
@@ -34,29 +33,29 @@ const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
       <>
         <h3 style={{ display: "inline" }}>{name}</h3>{" "}
         <i>#{id.substring(0, 5)}&nbsp;</i>
-        {userStore.currentUser!.id !== id && (
-          <>
-            <Image
-              src={statusImage}
-              width={18}
-              height={18}
-              alt="select"
-              onClick={async () => {
-                switch (requestHistory) {
-                  case "ACCEPTED":
-                    break;
-                  case "NONE":
-                    await friendStore.sendFriendRequest(id);
-                    break;
-                  case "REQUESTED":
-                    await friendStore.cancelFriendRequest(id);
-                    break;
+        <Image
+          src={statusImage}
+          width={18}
+          height={18}
+          alt="select"
+          onClick={async () => {
+            switch (requestHistory) {
+              case "ACCEPTED":
+                break;
+              case "NONE":
+                await friendStore.sendFriendRequest(id);
+                break;
+              case "REQUESTED":
+                if (confirm("친구 요청을 취소하시겠어요?") === true) {
+                  await friendStore.cancelFriendRequest(id);
+                  console.log(`친구 요청을 취소했습니다.`);
                 }
-              }}
-            />
-            <br />
-          </>
-        )}
+
+                break;
+            }
+          }}
+        />
+        <br />
       </>
     );
   }
