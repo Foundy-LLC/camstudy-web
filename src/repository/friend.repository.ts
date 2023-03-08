@@ -10,7 +10,7 @@ export const AddFriend = async (userId: string, targetUserId: string) => {
     },
   });
 };
-export const CancelFriendRequest = async (
+export const deleteFriendRequest = async (
   userId: string,
   targetUserId: string
 ) => {
