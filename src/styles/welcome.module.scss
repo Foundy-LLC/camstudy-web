@@ -196,12 +196,19 @@
     background: $-gray_cool-700;
     border: 0.5px solid $-gray_cool-300;
     border-radius: 4px;
-    &:hover {
-      background: $-gray_cool-800;
+    &:enabled{
+      &:hover {
+        background: $-gray_cool-800;
+      }
+      &:active{
+        background: $-gray_cool-600;
+      }
     }
-    &:active{
-      background: $-gray_cool-600;
+    &:disabled{
+      color: $-gray_cool-500;
+      background: $-gray_cool-100;
     }
+
   }
   .button-group{
     text-align: right;

@@ -103,6 +103,14 @@ const Welcome: NextPage = () => {
           뒤로가기
         </button>
         <button
+          disabled={
+            welcomeStore.tags.length === 0 ||
+            welcomeStore.name === "" ||
+            welcomeStore.nameErrorMessage !== undefined ||
+            welcomeStore.tagsErrorMessage !== undefined ||
+            welcomeStore.introduceErrorMessage !== undefined ||
+            welcomeStore.profileImageUrlErrorMessage !== undefined
+          }
           className={`${welcomeStyles["save-button"]}`}
           onClick={() => welcomeStore.createUser(user!.uid)}
         >
@@ -154,7 +162,7 @@ const TagsInput: NextPage<{ welcomeStore: WelcomeStore }> = observer(
     };
     const isExistTag = (tag: string) => {
       if (welcomeStore.tags.includes(tag)) {
-        alert("태그가 중복됬습니다.");
+        alert("태그가 중복되었습니다.");
         return true;
       }
     };
@@ -202,6 +210,7 @@ const TagsInput: NextPage<{ welcomeStore: WelcomeStore }> = observer(
             autoComplete={"off"}
             aria-autocomplete={"list"}
             list={"tags-list"}
+            maxLength={21}
           />
         </div>
         <div
