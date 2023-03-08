@@ -101,8 +101,6 @@ export class RoomSocketService {
 
   private _receiveTransportWrappers: ReceiveTransportWrapper[] = [];
 
-  private _didGetInitialProducers: boolean = false;
-
   private _mutedHeadset: boolean = false;
   private _device?: Device;
 
@@ -384,11 +382,18 @@ export class RoomSocketService {
       // with the following parameters and produce
       // and expect back a server side producer id
       // see server's socket.on('transport-produce', ...)
-      await this._requireSocket().emit(TRANSPORT_PRODUCER, {
-        kind: parameters.kind,
-        rtpParameters: parameters.rtpParameters,
-        appData: parameters.appData,
-      });
+      await this._requireSocket().emit(
+        TRANSPORT_PRODUCER,
+        {
+          kind: parameters.kind,
+          rtpParameters: parameters.rtpParameters,
+          appData: parameters.appData,
+        },
+        (id: string) => {
+          // 반드시 콜백을 호출해야 `onProduce`가 완료된다.
+          callback({ id });
+        }
+      );
     } catch (error: any) {
       errback(error);
     }
