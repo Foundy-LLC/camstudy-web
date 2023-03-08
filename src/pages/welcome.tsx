@@ -103,7 +103,7 @@ const Welcome: NextPage = () => {
           뒤로가기
         </button>
         <button
-          disabled={welcomeStore.enabledSubmitButton}
+          disabled={welcomeStore.disabledSubmitButton}
           className={`${welcomeStyles["save-button"]}`}
           onClick={() => welcomeStore.createUser(user!.uid)}
         >

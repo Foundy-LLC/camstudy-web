@@ -200,7 +200,7 @@ export class WelcomeStore {
     this._recommendTags = [];
   }
 
-  public get enabledSubmitButton() {
+  public get disabledSubmitButton() {
     return (
       this._tags.length === 0 ||
       this._name === "" ||
