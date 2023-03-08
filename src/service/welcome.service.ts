@@ -8,11 +8,13 @@ const HEADER = {
 export class WelcomeService {
   public async getTags(name: string): Promise<Result<Tag[]>> {
     try {
-      console.log("test", name);
-      const response = await fetch(`api/tags?name=${name}&page=0`, {
-        headers: HEADER,
-        method: "GET",
-      });
+      const response = await fetch(
+        `api/tags?name=${encodeURIComponent(name)}&page=0`,
+        {
+          headers: HEADER,
+          method: "GET",
+        }
+      );
       if (response.ok)
         return await Result.createSuccessUsingResponseData(response);
       else return await Result.createErrorUsingResponseMessage(response);

@@ -7,12 +7,8 @@ import { useAuth } from "@/components/AuthProvider";
 import { verifyUserToken } from "@/service/verifyUserToken";
 import welcomeStyles from "@/styles/welcome.module.scss";
 import userStore from "@/stores/UserStore";
-import {
-  NO_TAG_ERROR_MESSAGE,
-  TAG_COUNT_ERROR_MESSAGE,
-} from "@/constants/message";
-import { event } from "next/dist/build/output/log";
 import { useDebounce } from "@/components/UseDebounce";
+
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return await verifyUserToken(ctx);
 };
@@ -83,33 +79,10 @@ const Welcome: NextPage = () => {
           <div>{welcomeStore.introduceErrorMessage}</div>
         </div>
         <div id={"tags"}>
-          <label className={`${welcomeStyles["title"]}`}>
+          <label className={`${welcomeStyles["title"]}`} htmlFor={"tagInput"}>
             관심분야 해시태그
           </label>
           <TagsInput welcomeStore={welcomeStore}></TagsInput>
-          {/*<div className={`${welcomeStyles["tag-input"]}`}>*/}
-          {/*  <ul>*/}
-          {/*    <li className={`${welcomeStyles["tag-item"]}`}>*/}
-          {/*      <span>tag1</span>*/}
-          {/*      <i>close</i>*/}
-          {/*    </li>*/}
-          {/*    <li>*/}
-          {/*      <span>tag2</span>*/}
-          {/*      <i>close</i>*/}
-          {/*    </li>*/}
-          {/*  </ul>*/}
-          {/*  <input*/}
-          {/*    id={"tagInput"}*/}
-          {/*    // className={`${welcomeStyles["common-input"]}`}*/}
-          {/*    type={"text"}*/}
-          {/*    onChange={(e) => welcomeStore.changeTags(e.target.value)}*/}
-          {/*    value={welcomeStore.tags}*/}
-          {/*    aria-autocomplete={"list"}*/}
-          {/*    autoComplete={"false"}*/}
-          {/*    placeholder={"#수능, #개발, #공시 등 입력하세요"}*/}
-          {/*    onSubmit={(e) => console.log(e.target)}*/}
-          {/*  />*/}
-          {/*</div>*/}
           <div>{welcomeStore.tagsErrorMessage}</div>
         </div>
       </div>
@@ -143,29 +116,27 @@ const Welcome: NextPage = () => {
 
 const TagsInput: NextPage<{ welcomeStore: WelcomeStore }> = observer(
   ({ welcomeStore }) => {
-    // TODO(대현): any 타입 바꾸기
-    const [tags, setTags] = React.useState([] as any);
     const [tag, setTag] = React.useState("");
     const debounceSearch = useDebounce(tag, 500);
 
     useEffect(() => {
       if (debounceSearch) {
         welcomeStore.onChangeTagInput(debounceSearch);
-        // welcomeStore.setEmailVerifyButtonDisable(
-        //   welcomeStore.checkIfNameIncluded() === undefined
-        // );
       }
     }, [debounceSearch]);
 
     const removeTags = (indexToRemove: number) => {
-      setTags([
-        ...tags.filter((_: any, index: number) => index !== indexToRemove),
-      ]);
+      welcomeStore.removeTags(indexToRemove);
     };
     const addTags = (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if ((event.target as HTMLInputElement).value !== "") {
-        setTags([...tags, (event.target as HTMLInputElement).value]);
-        (event.target as HTMLInputElement).value = "";
+      if (isExistTag((event.target as HTMLInputElement).value)) return;
+
+      if (
+        (event.target as HTMLInputElement).value !== "" &&
+        !event.nativeEvent.isComposing // 한글 키 중복 방지
+      ) {
+        welcomeStore.changeTags([(event.target as HTMLInputElement).value]);
+        welcomeStore.clearRecommendTags();
         setTag("");
       }
     };
@@ -174,17 +145,6 @@ const TagsInput: NextPage<{ welcomeStore: WelcomeStore }> = observer(
         case "Enter":
           addTags(event);
           break;
-        case "Backspace": {
-          if (
-            (event.target as HTMLInputElement).value.length === 0 &&
-            tags.length != 0
-          ) {
-            // onKeyDown 이벤트여서 백스페이스가 앞에 있는 태그에 영향을 준다. 따라서 공백 문자 하나를 주어서 공백 문자가 지워지게 했다.
-            setTag(tags[tags.length - 1] + " ");
-            removeTags(tags.length - 1);
-          }
-          break;
-        }
         default:
           if ((event.target as HTMLInputElement).value.length === 0) {
             setTag("#" + tag);
@@ -192,32 +152,75 @@ const TagsInput: NextPage<{ welcomeStore: WelcomeStore }> = observer(
           break;
       }
     };
+    const isExistTag = (tag: string) => {
+      if (welcomeStore.tags.includes(tag)) {
+        alert("태그가 중복됬습니다.");
+        return true;
+      }
+    };
+
+    const selectRecommendTag = (
+      e: React.MouseEvent<HTMLLabelElement, MouseEvent>
+    ) => {
+      if (isExistTag((e.target as HTMLLabelElement).innerText)) return;
+      welcomeStore.changeTags([(e.target as HTMLLabelElement).innerText]);
+      welcomeStore.clearRecommendTags();
+      setTag("");
+    };
     return (
-      <div className={`${welcomeStyles["tags-input"]}`}>
-        <ul className={`${welcomeStyles["tags"]}`}>
-          {tags.map((tag: string, index: number) => (
-            <li key={index} className={`${welcomeStyles["tag"]}`}>
-              <span className={`${welcomeStyles["tag-title"]}`}>{tag}</span>
-              <span
-                className={`${welcomeStyles["tag-close-icon"]}`}
-                onClick={() => removeTags(index)}
+      <>
+        <div className={`${welcomeStyles["tags-input"]}`}>
+          <ul className={`${welcomeStyles["tags"]}`}>
+            {...welcomeStore.tags.map((tag: string, index: number) => (
+              <li key={index} className={`${welcomeStyles["tag"]}`}>
+                <span className={`${welcomeStyles["tag-title"]}`}>{tag}</span>
+                <span
+                  className={`${welcomeStyles["tag-close-icon"]}`}
+                  onClick={() => removeTags(index)}
+                >
+                  x
+                </span>
+              </li>
+            ))}
+          </ul>
+          <input
+            id={"tagInput"}
+            name={"tagInput"}
+            type="text"
+            onKeyDown={(event) => tagInputEvent(event)}
+            placeholder={
+              welcomeStore.tags.length == 0
+                ? "#수능, #개발, #고시 등 입력하세요"
+                : "#"
+            }
+            hidden={welcomeStore.tags.length === 3}
+            onChange={(e) => {
+              setTag(e.target.value);
+              console.log(tag);
+            }}
+            value={tag}
+            autoComplete={"off"}
+            aria-autocomplete={"list"}
+            list={"tags-list"}
+          />
+        </div>
+        <div
+          className={`${welcomeStyles["recommend-tags"]}`}
+          hidden={welcomeStore.recommendTags.length == 0}
+        >
+          {welcomeStore.recommendTags.map((tag, idx) => {
+            return (
+              <label
+                className={`${welcomeStyles["recommend-tag"]}`}
+                key={idx}
+                onClick={(e) => selectRecommendTag(e)}
               >
-                x
-              </span>
-            </li>
-          ))}
-        </ul>
-        <input
-          type="text"
-          onKeyDown={(event) => tagInputEvent(event)}
-          placeholder={
-            tags.length == 0 ? "#수능, #개발, #고시 등 입력하세요" : "#"
-          }
-          hidden={tags.length === 3}
-          onChange={(e) => setTag(e.target.value)}
-          value={tag}
-        />
-      </div>
+                {tag.name}
+              </label>
+            );
+          })}
+        </div>
+      </>
     );
   }
 );

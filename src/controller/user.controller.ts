@@ -31,6 +31,7 @@ import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedFriendsGetRequestBody";
 import { SEARCH_SIMILAR_NAMED_USERS_SUCCESS } from "@/constants/FriendMessage";
+import { SET_ROOM_THUMBNAIL_SUCCESS } from "@/constants/roomMessage";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -186,14 +187,12 @@ export const postProfileImage = async (
 
     await runMiddleware(req, res, multerUpload.single("profileImage"));
     const file = req.file;
-    console.log(file);
-
     const signedUrl = await multipartUploader(
       "users/" + userId + ".png",
       file.path
     );
-
     await updateUserProfileImage(userId, signedUrl);
+
     res.status(201).send(
       new ResponseBody({
         message: PROFILE_IMAGE_UPDATE,

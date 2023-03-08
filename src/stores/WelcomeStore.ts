@@ -14,7 +14,7 @@ export class WelcomeStore {
   private _profileImage?: File;
   private _name: string = "";
   private _introduce: string = "";
-  private _tags: string = "";
+  private _tags: string[] = [];
   private _tag = "";
   private _recommendTags: Tag[] = [];
 
@@ -42,7 +42,7 @@ export class WelcomeStore {
     return this._introduce;
   }
 
-  public get tags(): string {
+  public get tags(): string[] {
     return this._tags;
   }
 
@@ -103,7 +103,7 @@ export class WelcomeStore {
       return undefined;
     }
     try {
-      validateUserTags(this._tags.split(" "));
+      validateUserTags(this._tags);
     } catch (e) {
       if (typeof e === "string") {
         return e;
@@ -127,9 +127,13 @@ export class WelcomeStore {
     this._introduce = introduce;
   }
 
-  public changeTags(tags: string) {
+  public changeTags(tags: string[]) {
     this._tagsChanged = true;
-    this._tags = tags;
+    this._tags = [...this._tags, ...tags];
+  }
+
+  public removeTags(indexToRemove: number) {
+    this._tags = this._tags.filter((_, index) => index !== indexToRemove);
   }
 
   public createUser = async (uid: string) => {
@@ -137,7 +141,7 @@ export class WelcomeStore {
       uid,
       this._name,
       this._introduce,
-      this._tags.split(" ")
+      this._tags
     );
     if (createUserResult.isSuccess) {
       if (this._profileImageChanged && this._profileImage != null) {
@@ -166,7 +170,7 @@ export class WelcomeStore {
 
   public async onChangeTagInput(tag: string) {
     this._tag = tag;
-    if (this._tag === "") {
+    if (this._tag === "" || this._tag === "#") {
       this._recommendTags = [];
       return;
     }
@@ -186,5 +190,12 @@ export class WelcomeStore {
 
   private setRecommendTags(tags: Tag[]) {
     this._recommendTags = tags;
+  }
+
+  public get recommendTags() {
+    return this._recommendTags;
+  }
+  public clearRecommendTags() {
+    this._recommendTags = [];
   }
 }

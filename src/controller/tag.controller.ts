@@ -4,9 +4,9 @@ import {
   SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
 import { ResponseBody } from "@/models/common/ResponseBody";
-import { ORGANIZATIONS_GET_SUCCESS } from "@/constants/organizationMessage";
 import { findSimilarTags } from "@/repository/tag.repository";
 import { TagGetRequestBody } from "@/models/welcome/TagGetRequestBody";
+import { TAGS_GET_SUCCESS } from "@/constants/tag.constant";
 
 export const getTags = async (req: NextApiRequest, res: NextApiResponse) => {
   const { name, page } = req.query;
@@ -25,7 +25,7 @@ export const getTags = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(201).json(
       new ResponseBody({
         data: result,
-        message: ORGANIZATIONS_GET_SUCCESS,
+        message: TAGS_GET_SUCCESS,
       })
     );
   } catch (e) {

@@ -91,11 +91,35 @@
       text-align: center;
       font-size: 14px;
       margin-left: 0.125rem;
-      color: #0052cc;
-      background: #fff;
+      color: $-primary-400;
+      background: $-system_white;
       cursor: pointer;
     }
   }
+
+  .recommend-tags {
+    position: absolute;
+    z-index: 1;
+    font-family: Galmuri11;
+    font-size: 0.75rem;
+    background: aqua;
+    width: 15.75rem;
+    color: $-primary-400;
+    background: $-system_white;
+    background-color: $-system_white;
+    border: 0.5px solid $-gray_cool-300;
+    border-radius: 4px;
+    .recommend-tag{
+      padding-left: 0.75rem;
+      display: flex;
+      align-items: center;
+      height: 1.75rem;
+      &:hover{
+        background-color: $-gray_cool-100;
+      }
+    }
+  }
+
   // 이미지 input
   .image-input {
     justify-items: center;
