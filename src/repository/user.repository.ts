@@ -109,8 +109,7 @@ export const createUser = async (
   userId: string,
   name: string,
   introduce: string | undefined,
-  tagIds: { id: string }[],
-  profileImageUrl: string | undefined
+  tagIds: { id: string }[]
 ): Promise<user_account> => {
   const tagIdsDto: { tag_id: string }[] = tagIds.map((tag) => {
     return { tag_id: tag.id };
@@ -127,12 +126,11 @@ export const createUser = async (
           data: [...tagIdsDto],
         },
       },
-      profile_image: profileImageUrl,
     },
   });
 };
 
-export const insertUserProfileImage = async (userId: string, url: string) => {
+export const updateUserProfileImage = async (userId: string, url: string) => {
   return await prisma.user_account.update({
     data: {
       profile_image: url,

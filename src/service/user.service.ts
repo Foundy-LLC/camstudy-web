@@ -64,17 +64,10 @@ export class UserService {
     uid: string,
     name: string,
     introduce: string,
-    tags: string[],
-    profileImageUrl: string | undefined
+    tags: string[]
   ): Promise<Result<void>> {
     try {
-      const requestBody = new UserPostRequestBody(
-        uid,
-        name,
-        introduce,
-        tags,
-        profileImageUrl
-      );
+      const requestBody = new UserPostRequestBody(uid, name, introduce, tags);
       const response = await fetch(`api/users`, {
         method: "POST",
         body: JSON.stringify(requestBody),

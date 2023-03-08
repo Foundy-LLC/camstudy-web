@@ -7,7 +7,7 @@ import {
   createUser,
   findUser,
   getSimilarNamedUsers,
-  insertUserProfileImage,
+  updateUserProfileImage,
   isUserExists,
 } from "@/repository/user.repository";
 import {
@@ -88,7 +88,7 @@ export const getUserExistence = async (
   }
 };
 
-export const GetUsers = async (req: NextApiRequest, res: NextApiResponse) => {
+export const getUsers = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { name, id } = req.query;
     if (typeof name !== "string" || typeof id !== "string") {
@@ -127,8 +127,7 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
       req.body.userId,
       req.body.name,
       req.body.introduce,
-      req.body.tags,
-      req.body.profileImageUrl
+      req.body.tags
     );
 
     await createTagsIfNotExists(userCreateBody.tags);
@@ -139,8 +138,7 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
       userCreateBody.userId,
       userCreateBody.name,
       userCreateBody.introduce,
-      tagIds,
-      userCreateBody.profileImageUrl
+      tagIds
     );
     res.status(201).json(new ResponseBody({ message: PROFILE_CREATE_SUCCESS }));
   } catch (e) {
@@ -195,7 +193,7 @@ export const postProfileImage = async (
       file.path
     );
 
-    await insertUserProfileImage(userId, signedUrl);
+    await updateUserProfileImage(userId, signedUrl);
     res.status(201).send(
       new ResponseBody({
         message: PROFILE_IMAGE_UPDATE,
