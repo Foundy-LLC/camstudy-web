@@ -7,8 +7,8 @@ import {
   createUser,
   findUser,
   getSimilarNamedUsers,
-  updateUserProfileImage,
   isUserExists,
+  updateUserProfileImage,
 } from "@/repository/user.repository";
 import {
   EXISTS_INITIAL_INFORMATION_MESSAGE,
@@ -31,7 +31,6 @@ import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedFriendsGetRequestBody";
 import { SEARCH_SIMILAR_NAMED_USERS_SUCCESS } from "@/constants/FriendMessage";
-import { SET_ROOM_THUMBNAIL_SUCCESS } from "@/constants/roomMessage";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {

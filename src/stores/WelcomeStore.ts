@@ -195,6 +195,7 @@ export class WelcomeStore {
   public get recommendTags() {
     return this._recommendTags;
   }
+
   public clearRecommendTags() {
     this._recommendTags = [];
   }
