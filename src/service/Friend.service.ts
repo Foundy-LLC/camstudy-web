@@ -8,16 +8,18 @@ const HEADER = {
 };
 export class FriendService {
   public getSimilarNamedUsers = async (
-    userName: string
+    userName: string,
+    userId: string
   ): Promise<Result<UserSearchOverview[]>> => {
     try {
       const friendGetRequestBody = new SimilarNamedFriendsGetRequestBody(
-        userName
+        userName,
+        userId
       );
       const response = await fetch(
         `http://localhost:3000/api/users?name=${encodeURIComponent(
           friendGetRequestBody.userName
-        )}`,
+        )}&id=${friendGetRequestBody.userId}`,
         {
           method: "GET",
           headers: HEADER,
@@ -33,11 +35,11 @@ export class FriendService {
     }
   };
 
-  public sendFriendRequest = async (userName: string, userId: string) => {
+  public sendFriendRequest = async (userId: string, targetUserId: string) => {
     try {
-      const friendRequestBody = new FriendPostRequestBody(userName, userId);
+      const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
       const response = await fetch(
-        `http://localhost:3000/api/users/${userId}/friends`,
+        `http://localhost:3000/api/users/${friendRequestBody.targetUserId}/friends`,
         {
           method: "POST",
           body: JSON.stringify(friendRequestBody),

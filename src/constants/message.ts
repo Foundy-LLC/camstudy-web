@@ -9,6 +9,8 @@ export const PROFILE_IMAGE_UPDATE: string = "프로필 이미지가 설정되었
 export const IMAGE_SIZE_EXCEED_MESSAGE: string = `파일 사이즈가이 너무 큽니다. 파일 사이즈는 최대 ${
   MAX_IMAGE_BYTE_SIZE / 1000 / 1000
 }MB 입니다.`;
+export const NO_USER_STORE_ERROR_MESSAGE: string =
+  "유저 정보가 존재하지 않습니다.";
 export const NO_USER_UID_ERROR_MESSAGE: string = "UID가 누락되었습니다.";
 export const USER_INFORMATION_LOOKUP_SUCCESS: string =
   "현재 회원 정보 조회를 성공했습니다.";

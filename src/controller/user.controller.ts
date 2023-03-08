@@ -90,10 +90,18 @@ export const getUserExistence = async (
 
 export const GetUsers = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { name } = req.query;
-    if (typeof name !== "string") throw REQUEST_QUERY_ERROR;
-    const friendGetRequestBody = new SimilarNamedFriendsGetRequestBody(name);
-    const userList = await getSimilarNamedUsers(friendGetRequestBody.userName);
+    const { name, id } = req.query;
+    if (typeof name !== "string" || typeof id !== "string") {
+      throw REQUEST_QUERY_ERROR;
+    }
+    const friendGetRequestBody = new SimilarNamedFriendsGetRequestBody(
+      name,
+      id
+    );
+    const userList = await getSimilarNamedUsers(
+      friendGetRequestBody.userName,
+      friendGetRequestBody.userId
+    );
     res.status(201).json(
       new ResponseBody({
         message: SEARCH_SIMILAR_NAMED_USERS_SUCCESS,
