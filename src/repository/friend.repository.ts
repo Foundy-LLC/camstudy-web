@@ -29,7 +29,7 @@ export const fetchFriendRequests = async (
   userId: string
 ): Promise<FriendRequestUser[]> => {
   const requests = await client.friend.findMany({
-    where: { acceptor_id: userId },
+    where: { acceptor_id: userId, accepted: false },
     select: {
       user_account_friend_requester_idTouser_account: {
         select: { id: true, name: true, profile_image: true },
@@ -44,5 +44,17 @@ export const fetchFriendRequests = async (
       requesterName: name,
       profileImage: profile_image,
     };
+  });
+};
+
+export const approveFriendRequest = async (
+  friendId: string,
+  userId: string
+) => {
+  await client.friend.update({
+    where: {
+      requester_id_acceptor_id: { requester_id: friendId, acceptor_id: userId },
+    },
+    data: { accepted: true },
   });
 };

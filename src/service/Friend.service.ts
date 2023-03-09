@@ -100,6 +100,29 @@ export class FriendService {
       return Result.createErrorUsingException(e);
     }
   };
+
+  public acceptFriendRequest = async (
+    userId: string,
+    accepterId: string
+  ): Promise<Result<string>> => {
+    try {
+      const friendRequestBody = new FriendPostRequestBody(accepterId, userId);
+      const response = await fetch(
+        `http://localhost:3000/api/users/${friendRequestBody.userId}/friend-requests/${friendRequestBody.targetUserId}`,
+        {
+          method: "PUT",
+          headers: HEADER,
+        }
+      );
+      if (response.ok) {
+        return Result.createSuccessUsingResponseMessage(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  };
 }
 
 const friendService = new FriendService();

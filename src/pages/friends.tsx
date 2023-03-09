@@ -7,6 +7,7 @@ import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
+import { APPROVE_FRIEND_REQUEST_SUCCESS } from "@/constants/FriendMessage";
 
 const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
   ({ item }) => {
@@ -75,9 +76,10 @@ const SimilarNamedUserGroup: NextPage<{ items: UserSearchOverview[] }> =
 
 const FriendRequest: NextPage<{ item: FriendRequestUser }> = observer(
   ({ item }) => {
-    const { requesterName, profileImage } = item;
+    const { requesterName, requesterId, profileImage } = item;
+    const { friendStore } = useStores();
     return (
-      <td>
+      <>
         <Image
           width={50}
           height={50}
@@ -89,15 +91,21 @@ const FriendRequest: NextPage<{ item: FriendRequestUser }> = observer(
           width={18}
           height={18}
           src="https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/accept-icon.png"
-          alt="approve"
+          alt="accept"
+          onClick={async () => {
+            if (confirm("친구 요청을 수락하시겠어요?") === true) {
+              await friendStore.acceptFriendRequest(requesterId);
+              console.log(APPROVE_FRIEND_REQUEST_SUCCESS);
+            }
+          }}
         />
         <Image
           width={18}
           height={18}
           src="https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/cancel-icon.png"
-          alt="refuse"
+          alt="reject"
         />
-      </td>
+      </>
     );
   }
 );
@@ -106,13 +114,9 @@ const FriendRequestGroup: NextPage<{ items: FriendRequestUser[] }> = observer(
   ({ items }) => {
     return (
       <>
-        <table style={{ border: "1px black solid" }}>
-          {items.map((item, key) => (
-            <tr key={key}>
-              <FriendRequest item={item} />
-            </tr>
-          ))}
-        </table>
+        {items.map((item, key) => (
+          <FriendRequest item={item} key={key} />
+        ))}
       </>
     );
   }
