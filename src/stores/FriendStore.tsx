@@ -5,15 +5,18 @@ import { makeAutoObservable, runInAction } from "mobx";
 import {
   FRIEND_REQUEST_CANCEL_SUCCESS,
   FRIEND_REQUEST_SUCCESS,
+  FRIEND_REQUESTS_GET_SUCCESS,
   SEARCH_SIMILAR_NAMED_USERS_SUCCESS,
 } from "@/constants/FriendMessage";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
 import { friendStatus } from "@/constants/FriendStatus";
+import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 
 export class FriendStore {
   readonly rootStore: RootStore;
   private _userSearchOverviews: UserSearchOverview[] = [];
+  private _friendRequestUsers: FriendRequestUser[] | undefined = undefined;
   private _friendRequestInput: string | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
   private _successMessage: string | undefined = undefined;
@@ -35,6 +38,10 @@ export class FriendStore {
 
   public get userSearchOverviews() {
     return this._userSearchOverviews;
+  }
+
+  public get friendRequestUsers() {
+    return this._friendRequestUsers;
   }
 
   public async changeFriendRequestInput(str: string) {
@@ -133,6 +140,33 @@ export class FriendStore {
           this._errorMessage = undefined;
           this._successMessage = FRIEND_REQUEST_CANCEL_SUCCESS;
           this._changeAcceptedToNone(userId);
+        });
+      } else {
+        runInAction(() => {
+          this._successMessage = undefined;
+          throw new Error(result.throwableOrNull()!.message);
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  }
+
+  public async fetchFriendRequests() {
+    try {
+      //유저 정보가 존재하지 않을 경우 에러 처리
+      if (!userStore.currentUser) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      const requesterId = userStore.currentUser.id;
+      const result = await this._friendService.getFriendRequests(requesterId);
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._errorMessage = undefined;
+          this._successMessage = FRIEND_REQUESTS_GET_SUCCESS;
+          this._friendRequestUsers = result.getOrNull();
         });
       } else {
         runInAction(() => {

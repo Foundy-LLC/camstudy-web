@@ -12,6 +12,12 @@ const nextConfig = {
         port: "",
         pathname: "/wp-content/themes/uxwing/download/**",
       },
+      {
+        protocol: "https",
+        hostname: "studying-farmer.kr.object.ncloudstorage.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   sassOptions: {

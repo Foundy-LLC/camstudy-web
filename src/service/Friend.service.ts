@@ -2,6 +2,8 @@ import { Result } from "@/models/common/Result";
 import { FriendPostRequestBody } from "@/models/friend/FriendPostRequestBody";
 import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedFriendsGetRequestBody";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
+import { ValidateUid } from "@/models/common/ValidateUid";
+import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -69,6 +71,28 @@ export class FriendService {
       );
       if (response.ok) {
         return Result.createSuccessUsingResponseMessage(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  };
+
+  public getFriendRequests = async (
+    userId: string
+  ): Promise<Result<FriendRequestUser[]>> => {
+    try {
+      const friendRequestBody = new ValidateUid(userId);
+      const response = await fetch(
+        `http://localhost:3000/api/users/${friendRequestBody.userId}/friend-requests`,
+        {
+          method: "GET",
+          headers: HEADER,
+        }
+      );
+      if (response.ok) {
+        return Result.createSuccessUsingResponseData(response);
       } else {
         return Result.createErrorUsingResponseMessage(response);
       }

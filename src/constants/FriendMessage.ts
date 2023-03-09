@@ -10,3 +10,5 @@ export const NOT_FOUND_FRIEND_REQUEST_ERROR =
 export const FRIEND_REQUEST_ID_ERROR = "본인에게 친구 요청을 보낼 수 없습니다.";
 export const FRIEND_CANCEL_REQUEST_ID_ERROR =
   "본인에게 보낸 친구 요청이 존재할 수 없습니다.";
+export const FRIEND_REQUESTS_GET_SUCCESS =
+  "친구 요청 목록을 성공적으로 얻었습니다.";
