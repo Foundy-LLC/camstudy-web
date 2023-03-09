@@ -7,8 +7,8 @@ import {
   createUser,
   findUser,
   getSimilarNamedUsers,
-  updateUserProfileImage,
   isUserExists,
+  updateUserProfileImage,
 } from "@/repository/user.repository";
 import {
   EXISTS_INITIAL_INFORMATION_MESSAGE,
@@ -186,14 +186,12 @@ export const postProfileImage = async (
 
     await runMiddleware(req, res, multerUpload.single("profileImage"));
     const file = req.file;
-    console.log(file);
-
     const signedUrl = await multipartUploader(
       "users/" + userId + ".png",
       file.path
     );
-
     await updateUserProfileImage(userId, signedUrl);
+
     res.status(201).send(
       new ResponseBody({
         message: PROFILE_IMAGE_UPDATE,

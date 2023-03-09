@@ -1,13 +1,11 @@
-import { friend, user_account } from ".prisma/client";
+import { user_account } from ".prisma/client";
 import prisma from "../../prisma/client";
 import { UserStatus } from "@/models/user/UserStatus";
 import { User } from "@/models/user/User";
 import { getMinutesDiff } from "@/utils/DateUtil";
 import { SEARCH_USERS_MAX_NUM } from "@/constants/user.constant";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
-import { async } from "@firebase/util";
-import { where } from "@firebase/firestore";
-import { FRIEND_STATUS, friendStatus } from "@/constants/FriendStatus";
+import { friendStatus } from "@/constants/FriendStatus";
 
 export const findUser = async (userId: string): Promise<User | null> => {
   const userAccount = await prisma.user_account.findUnique({

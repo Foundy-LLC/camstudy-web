@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import userService, { UserService } from "@/service/user.service";
 import {
   validateUserIntroduce,
@@ -7,12 +7,16 @@ import {
   validateUserTags,
 } from "@/utils/user.validator";
 import userStore from "@/stores/UserStore";
+import { welcomeService, WelcomeService } from "@/service/welcome.service";
+import { Tag } from "@/models/welcome/Tag";
 
 export class WelcomeStore {
   private _profileImage?: File;
   private _name: string = "";
   private _introduce: string = "";
-  private _tags: string = "";
+  private _tags: string[] = [];
+  private _tag = "";
+  private _recommendTags: Tag[] = [];
 
   private _profileImageChanged: boolean = false;
   private _nameChanged: boolean = false;
@@ -21,8 +25,12 @@ export class WelcomeStore {
 
   private _errorMessage?: string = undefined;
   private _successToCreate: boolean = false;
+  private _successMessage: string | undefined = undefined;
 
-  constructor(private readonly _userService: UserService = userService) {
+  constructor(
+    private readonly _userService: UserService = userService,
+    private readonly _welcomeService: WelcomeService = welcomeService
+  ) {
     makeAutoObservable(this);
   }
 
@@ -34,7 +42,7 @@ export class WelcomeStore {
     return this._introduce;
   }
 
-  public get tags(): string {
+  public get tags(): string[] {
     return this._tags;
   }
 
@@ -95,7 +103,7 @@ export class WelcomeStore {
       return undefined;
     }
     try {
-      validateUserTags(this._tags.split(" "));
+      validateUserTags(this._tags);
     } catch (e) {
       if (typeof e === "string") {
         return e;
@@ -119,9 +127,13 @@ export class WelcomeStore {
     this._introduce = introduce;
   }
 
-  public changeTags(tags: string) {
+  public changeTags(tags: string[]) {
     this._tagsChanged = true;
-    this._tags = tags;
+    this._tags = [...this._tags, ...tags];
+  }
+
+  public removeTags(indexToRemove: number) {
+    this._tags = this._tags.filter((_, index) => index !== indexToRemove);
   }
 
   public createUser = async (uid: string) => {
@@ -129,7 +141,7 @@ export class WelcomeStore {
       uid,
       this._name,
       this._introduce,
-      this._tags.split(" ")
+      this._tags
     );
     if (createUserResult.isSuccess) {
       if (this._profileImageChanged && this._profileImage != null) {
@@ -155,4 +167,47 @@ export class WelcomeStore {
       this._errorMessage = createUserResult.throwableOrNull()!!.message;
     }
   };
+
+  public async onChangeTagInput(tag: string) {
+    this._tag = tag;
+    if (this._tag === "" || this._tag === "#") {
+      this._recommendTags = [];
+      return;
+    }
+    const result = await this._welcomeService.getTags(this._tag);
+    if (result.isSuccess) {
+      runInAction(() => {
+        this._errorMessage = undefined;
+        this.setRecommendTags(result.getOrNull()!!);
+      });
+    } else {
+      runInAction(() => {
+        this._successMessage = undefined;
+        this._errorMessage = result.throwableOrNull()!.message;
+      });
+    }
+  }
+
+  private setRecommendTags(tags: Tag[]) {
+    this._recommendTags = tags;
+  }
+
+  public get recommendTags() {
+    return this._recommendTags;
+  }
+
+  public clearRecommendTags() {
+    this._recommendTags = [];
+  }
+
+  public get disabledSubmitButton() {
+    return (
+      this._tags.length === 0 ||
+      this._name === "" ||
+      this.nameErrorMessage !== undefined ||
+      this.tagsErrorMessage !== undefined ||
+      this.introduceErrorMessage !== undefined ||
+      this.profileImageUrlErrorMessage !== undefined
+    );
+  }
 }

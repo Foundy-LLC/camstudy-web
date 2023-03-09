@@ -4,7 +4,7 @@ import {
   validatePaginationPageNum,
 } from "@/utils/pagenation.validation";
 
-export class OrganizationsGetRequestBody {
+export class TagGetRequestBody {
   readonly pageNum: number;
 
   constructor(readonly page: string, readonly name?: string) {
