@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { FriendPostRequestBody } from "@/models/friend/FriendPostRequestBody";
 import {
   addFriend,
+  approveFriendRequest,
   deleteFriendRequest,
   fetchFriendRequests,
 } from "@/repository/friend.repository";
@@ -11,6 +12,7 @@ import {
   SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
 import {
+  APPROVE_FRIEND_REQUEST_SUCCESS,
   FRIEND_CANCEL_REQUEST_ID_ERROR,
   FRIEND_REQUEST_CANCEL_SUCCESS,
   FRIEND_REQUEST_DUPLICATED_ERROR,
@@ -102,6 +104,36 @@ export const getFriendRequests = async (
       new ResponseBody({
         data: result,
         message: FRIEND_REQUESTS_GET_SUCCESS,
+      })
+    );
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+  }
+};
+
+export const acceptFriendRequest = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  try {
+    const { userId, friendId } = req.query;
+    if (typeof userId !== "string" || typeof friendId !== "string") {
+      throw REQUEST_QUERY_ERROR;
+    }
+    const friendRequestBody = new FriendPostRequestBody(friendId, userId);
+    await approveFriendRequest(
+      friendRequestBody.userId,
+      friendRequestBody.targetUserId
+    );
+    res.status(200).send(
+      new ResponseBody({
+        message: APPROVE_FRIEND_REQUEST_SUCCESS,
       })
     );
   } catch (e) {
