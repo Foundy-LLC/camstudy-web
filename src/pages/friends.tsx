@@ -7,7 +7,11 @@ import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
-import { APPROVE_FRIEND_REQUEST_SUCCESS } from "@/constants/FriendMessage";
+import {
+  APPROVE_FRIEND_REQUEST_SUCCESS,
+  FRIEND_REQUEST_REFUSE_SUCCESS,
+  REFUSE_FRIEND_REQUEST_SUCCESS,
+} from "@/constants/FriendMessage";
 
 const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
   ({ item }) => {
@@ -104,6 +108,12 @@ const FriendRequest: NextPage<{ item: FriendRequestUser }> = observer(
           height={18}
           src="https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/cancel-icon.png"
           alt="reject"
+          onClick={async () => {
+            if (confirm("친구 요청을 거절하시겠어요?") === true) {
+              await friendStore.refuseFriendRequest(requesterId);
+              console.log(FRIEND_REQUEST_REFUSE_SUCCESS);
+            }
+          }}
         />
       </>
     );

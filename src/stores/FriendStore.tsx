@@ -4,7 +4,8 @@ import userStore from "@/stores/UserStore";
 import { makeAutoObservable, runInAction } from "mobx";
 import {
   APPROVE_FRIEND_REQUEST_SUCCESS,
-  FRIEND_REQUEST_CANCEL_SUCCESS,
+  REFUSE_FRIEND_REQUEST_SUCCESS,
+  FRIEND_REQUEST_REFUSE_SUCCESS,
   FRIEND_REQUEST_SUCCESS,
   FRIEND_REQUESTS_GET_SUCCESS,
   SEARCH_SIMILAR_NAMED_USERS_SUCCESS,
@@ -138,14 +139,14 @@ export class FriendStore {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
       const requesterId = userStore.currentUser.id;
-      const result = await this._friendService.cancelFriendRequest(
+      const result = await this._friendService.deleteFriendRequest(
         requesterId,
         userId
       );
       if (result.isSuccess) {
         runInAction(() => {
           this._errorMessage = undefined;
-          this._successMessage = FRIEND_REQUEST_CANCEL_SUCCESS;
+          this._successMessage = REFUSE_FRIEND_REQUEST_SUCCESS;
           this._changeAcceptedToNone(userId);
         });
       } else {
@@ -203,6 +204,36 @@ export class FriendStore {
         runInAction(() => {
           this._errorMessage = undefined;
           this._successMessage = APPROVE_FRIEND_REQUEST_SUCCESS;
+          this._disposeFriendRequest(userId);
+        });
+      } else {
+        runInAction(() => {
+          this._successMessage = undefined;
+          throw new Error(result.throwableOrNull()!.message);
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  }
+
+  public async refuseFriendRequest(userId: string) {
+    try {
+      //유저 정보가 존재하지 않을 경우 에러 처리
+      if (!userStore.currentUser) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      const accepterId = userStore.currentUser.id;
+      const result = await this._friendService.deleteFriendRequest(
+        userId,
+        accepterId
+      );
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._errorMessage = undefined;
+          this._successMessage = FRIEND_REQUEST_REFUSE_SUCCESS;
           this._disposeFriendRequest(userId);
         });
       } else {

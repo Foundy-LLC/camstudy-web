@@ -14,7 +14,7 @@ import {
 import {
   APPROVE_FRIEND_REQUEST_SUCCESS,
   FRIEND_CANCEL_REQUEST_ID_ERROR,
-  FRIEND_REQUEST_CANCEL_SUCCESS,
+  REFUSE_FRIEND_REQUEST_SUCCESS,
   FRIEND_REQUEST_DUPLICATED_ERROR,
   FRIEND_REQUEST_ID_ERROR,
   FRIEND_REQUEST_SUCCESS,
@@ -60,9 +60,13 @@ export const cancelFriendRequest = async (
   res: NextApiResponse
 ) => {
   try {
-    const { userId, targetUserId } = req.body;
-    const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
-    if (userId === targetUserId) {
+    const { userId, friendId } = req.query;
+    console.log(userId, friendId);
+    if (typeof userId !== "string" || typeof friendId !== "string") {
+      throw REQUEST_QUERY_ERROR;
+    }
+    const friendRequestBody = new FriendPostRequestBody(userId, friendId);
+    if (userId === friendId) {
       throw FRIEND_CANCEL_REQUEST_ID_ERROR;
     }
     await deleteFriendRequest(
@@ -71,7 +75,7 @@ export const cancelFriendRequest = async (
     );
     res
       .status(201)
-      .send(new ResponseBody({ message: FRIEND_REQUEST_CANCEL_SUCCESS }));
+      .send(new ResponseBody({ message: REFUSE_FRIEND_REQUEST_SUCCESS }));
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
       res
@@ -94,10 +98,14 @@ export const getFriendRequests = async (
   res: NextApiResponse
 ) => {
   try {
-    const { userId } = req.query;
+    const { userId, accepted } = req.query;
     if (typeof userId !== "string") {
       throw REQUEST_QUERY_ERROR;
     }
+    // 친구 목록 GET
+    if (typeof accepted === undefined) {
+    }
+    // 친구 요청 목록 GET
     const friendRequestBody = new ValidateUid(userId);
     const result = await fetchFriendRequests(friendRequestBody.userId);
     res.status(200).send(

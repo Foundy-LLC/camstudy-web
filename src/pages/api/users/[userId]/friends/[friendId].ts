@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {
+  acceptFriendRequest,
+  cancelFriendRequest,
   getFriendRequests,
-  sendFriendRequest,
 } from "@/controller/friend.controller";
 
 export default async function friendRequestHandler(
@@ -10,8 +11,11 @@ export default async function friendRequestHandler(
 ) {
   const { method } = req;
   switch (method) {
-    case "GET":
-      await getFriendRequests(req, res);
+    case "PUT":
+      await acceptFriendRequest(req, res);
+      break;
+    case "DELETE":
+      await cancelFriendRequest(req, res);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);
