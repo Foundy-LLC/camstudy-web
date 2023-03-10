@@ -58,14 +58,13 @@ export class FriendService {
     }
   };
 
-  public cancelFriendRequest = async (userId: string, targetUserId: string) => {
+  public deleteFriendRequest = async (userId: string, targetUserId: string) => {
     try {
       const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
       const response = await fetch(
-        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends`,
+        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends/${friendRequestBody.targetUserId}`,
         {
           method: "DELETE",
-          body: JSON.stringify(friendRequestBody),
           headers: HEADER,
         }
       );
@@ -85,7 +84,7 @@ export class FriendService {
     try {
       const friendRequestBody = new ValidateUid(userId);
       const response = await fetch(
-        `http://localhost:3000/api/users/${friendRequestBody.userId}/friend-requests`,
+        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends?accepted=false`,
         {
           method: "GET",
           headers: HEADER,
@@ -108,7 +107,7 @@ export class FriendService {
     try {
       const friendRequestBody = new FriendPostRequestBody(accepterId, userId);
       const response = await fetch(
-        `http://localhost:3000/api/users/${friendRequestBody.userId}/friend-requests/${friendRequestBody.targetUserId}`,
+        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends/${friendRequestBody.targetUserId}`,
         {
           method: "PUT",
           headers: HEADER,
