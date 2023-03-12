@@ -200,19 +200,22 @@
     width: 9.125rem;
     height: 2.25rem;
     background: $-gray_cool-700;
-    border: 0.5px solid $-gray_cool-300;
+    border: 0.5px solid $-gray_cool-700;
     border-radius: 4px;
     &:enabled{
       &:hover {
         background: $-gray_cool-800;
+        border: 0.5px solid $-gray_cool-800;
       }
       &:active{
         background: $-gray_cool-600;
+        border: 0.5px solid $-gray_cool-600;
       }
     }
     &:disabled{
-      color: $-gray_cool-500;
+      color: $-gray_cool-400;
       background: $-gray_cool-100;
+      border: 0.5px solid $-gray_cool-100;
     }
 
   }
