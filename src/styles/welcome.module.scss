@@ -25,6 +25,12 @@
     font-weight: normal;
     color: $-gray_cool-400
   }
+
+  .error-message{
+    margin-top: 0.25rem;
+    color: $-error-500
+  }
+
   .common-input{
     @extend %placeholder;
     width: 15rem;
