@@ -62,7 +62,11 @@ const Welcome: NextPage = () => {
             value={welcomeStore.name}
             placeholder={"최대 10자, 한글, 영문, 숫자 사용 가능"}
           />
-          <div>{welcomeStore.nameErrorMessage}</div>
+          <div
+            className={`typography__caption ${welcomeStyles["error-message"]}`}
+          >
+            {welcomeStore.nameErrorMessage}
+          </div>
         </div>
         <div id={"introduce"}>
           <label className={`${welcomeStyles["title"]}`}>자기소개 메시지</label>
@@ -76,14 +80,22 @@ const Welcome: NextPage = () => {
             value={welcomeStore.introduce}
             placeholder={"최대 100자 이내로 작성"}
           />
-          <div>{welcomeStore.introduceErrorMessage}</div>
+          <div
+            className={`typography__caption ${welcomeStyles["error-message"]}`}
+          >
+            {welcomeStore.introduceErrorMessage}
+          </div>
         </div>
         <div id={"tags"}>
           <label className={`${welcomeStyles["title"]}`} htmlFor={"tagInput"}>
             관심분야 해시태그
           </label>
           <TagsInput welcomeStore={welcomeStore}></TagsInput>
-          <div>{welcomeStore.tagsErrorMessage}</div>
+          <div
+            className={`typography__caption ${welcomeStyles["error-message"]}`}
+          >
+            {welcomeStore.tagsErrorMessage}
+          </div>
         </div>
       </div>
 
@@ -110,7 +122,9 @@ const Welcome: NextPage = () => {
           프로필 저장하고 시작
         </button>
       </div>
-      <div>{welcomeStore.errorMessage}</div>
+      <div className={`typography__caption ${welcomeStyles["error-message"]}`}>
+        {welcomeStore.errorMessage}
+      </div>
     </div>
   );
 };
@@ -273,7 +287,11 @@ const ImageInput: NextPage<{ welcomeStore: WelcomeStore }> = ({
             />
           </div>
         </div>
-        <div>{welcomeStore.profileImageUrlErrorMessage}</div>
+        <div
+          className={`typography__caption ${welcomeStyles["error-message"]}`}
+        >
+          {welcomeStore.profileImageUrlErrorMessage}
+        </div>
       </div>
     </>
   );
