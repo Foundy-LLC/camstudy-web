@@ -41,7 +41,7 @@ export const validateExpiredAt = (expired_at: Date) => {
   }
 };
 
-export const validatePage = (page: string | null) => {
+export const validatePage = (page: string | undefined) => {
   if (page == null) {
     throw ROOM_PAGE_NUM_TYPE_ERROR;
   }

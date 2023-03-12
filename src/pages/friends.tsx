@@ -12,6 +12,7 @@ import {
   FRIEND_REQUEST_REFUSE_SUCCESS,
   REFUSE_FRIEND_REQUEST_SUCCESS,
 } from "@/constants/FriendMessage";
+import { UserOverview } from "@/models/user/UserOverview";
 
 const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
   ({ item }) => {
@@ -132,6 +133,28 @@ const FriendRequestGroup: NextPage<{ items: FriendRequestUser[] }> = observer(
   }
 );
 
+const FriendOverview: NextPage<{ item: UserOverview }> = observer(
+  ({ item }) => {
+    return (
+      <>
+        <h3>{item.name}</h3>
+      </>
+    );
+  }
+);
+
+const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
+  ({ items }) => {
+    return (
+      <>
+        {items.map((item, key) => (
+          <FriendOverview item={item} key={key} />
+        ))}
+      </>
+    );
+  }
+);
+
 const friends: NextPage = observer(() => {
   const { friendStore } = useStores();
   const keyPressed = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -163,6 +186,14 @@ const friends: NextPage = observer(() => {
         친구 요청 조회
       </button>
       <br />
+      <button
+        onClick={(e) => {
+          friendStore.fetchFriendList();
+        }}
+      >
+        친구 목록 조회
+      </button>
+      <br />
 
       {friendStore.successMessage ? (
         <h3>{friendStore.successMessage}</h3>
@@ -171,6 +202,9 @@ const friends: NextPage = observer(() => {
       <SimilarNamedUserGroup items={friendStore.userSearchOverviews} />
       {friendStore.friendRequestUsers && (
         <FriendRequestGroup items={friendStore.friendRequestUsers} />
+      )}
+      {friendStore.friendOverviews && (
+        <FriendOverviewGroup items={friendStore.friendOverviews} />
       )}
     </>
   );

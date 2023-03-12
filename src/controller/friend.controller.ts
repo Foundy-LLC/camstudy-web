@@ -4,6 +4,7 @@ import {
   addFriend,
   approveFriendRequest,
   deleteFriendRequest,
+  fetchFriendList,
   fetchFriendRequests,
 } from "@/repository/friend.repository";
 import { ResponseBody } from "@/models/common/ResponseBody";
@@ -20,10 +21,12 @@ import {
   FRIEND_REQUEST_SUCCESS,
   FRIEND_REQUESTS_GET_SUCCESS,
   NOT_FOUND_FRIEND_REQUEST_ERROR,
+  FRIEND_LIST_GET_SUCCESS,
 } from "@/constants/FriendMessage";
 import { Prisma } from ".prisma/client";
 import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError;
-import { ValidateUid } from "@/models/common/ValidateUid";
+import { FriendGetOverviewsBody } from "@/models/friend/FriendGetOverviewsBody";
+import { FriendGetRequestsBody } from "@/models/friend/FriendGetRequestsBody";
 
 export const sendFriendRequest = async (
   req: NextApiRequest,
@@ -93,27 +96,52 @@ export const cancelFriendRequest = async (
   }
 };
 
-export const getFriendRequests = async (
+export const getFriendList = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
   try {
-    const { userId, accepted } = req.query;
-    if (typeof userId !== "string") {
+    const { userId, page, accepted } = req.query;
+    if (
+      typeof userId !== "string" ||
+      typeof accepted !== "string" ||
+      (typeof page !== "string" && typeof page !== "undefined")
+    ) {
       throw REQUEST_QUERY_ERROR;
     }
-    // 친구 목록 GET
-    if (typeof accepted === undefined) {
+    //친구 요청 목록 조회인 경우
+    if (page === undefined) {
+      const friendRequestBody = new FriendGetRequestsBody(userId, accepted);
+      const result = await fetchFriendRequests(
+        friendRequestBody.userId,
+        friendRequestBody.accepted!
+      );
+      res.status(200).send(
+        new ResponseBody({
+          data: result,
+          message: FRIEND_REQUESTS_GET_SUCCESS,
+        })
+      );
     }
-    // 친구 요청 목록 GET
-    const friendRequestBody = new ValidateUid(userId);
-    const result = await fetchFriendRequests(friendRequestBody.userId);
-    res.status(200).send(
-      new ResponseBody({
-        data: result,
-        message: FRIEND_REQUESTS_GET_SUCCESS,
-      })
-    );
+    //친구 목록 조회인 경우
+    else {
+      const friendRequestBody = new FriendGetOverviewsBody(
+        userId,
+        page!,
+        accepted
+      );
+      const result = await fetchFriendList(
+        friendRequestBody.userId,
+        friendRequestBody.pageNum!,
+        friendRequestBody.accepted!
+      );
+      res.status(200).send(
+        new ResponseBody({
+          data: result,
+          message: FRIEND_LIST_GET_SUCCESS,
+        })
+      );
+    }
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));

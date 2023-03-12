@@ -37,6 +37,28 @@ export class FriendService {
     }
   };
 
+  public getFriendList = async (
+    userId: string
+  ): Promise<Result<FriendRequestUser[]>> => {
+    try {
+      const friendRequestBody = new ValidateUid(userId);
+      const response = await fetch(
+        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends?page=0&accepted=true`,
+        {
+          method: "GET",
+          headers: HEADER,
+        }
+      );
+      if (response.ok) {
+        return Result.createSuccessUsingResponseData(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  };
+
   public sendFriendRequest = async (userId: string, targetUserId: string) => {
     try {
       const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
