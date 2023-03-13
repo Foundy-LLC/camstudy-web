@@ -20,8 +20,8 @@ import { UserOverview } from "@/models/user/UserOverview";
 export class FriendStore {
   readonly rootStore: RootStore;
   private _userSearchOverviews: UserSearchOverview[] = [];
-  private _friendRequestUsers: FriendRequestUser[] | undefined;
-  private _friendOverviews: UserOverview[] | undefined;
+  private _friendRequestUsers: FriendRequestUser[] = [];
+  private _friendOverviews: UserOverview[] = [];
   private _friendRequestInput: string | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
   private _successMessage: string | undefined = undefined;
@@ -29,8 +29,8 @@ export class FriendStore {
     root: RootStore,
     private readonly _friendService: FriendService = friendService
   ) {
-    makeAutoObservable(this);
     this.rootStore = root;
+    makeAutoObservable(this);
   }
 
   public get errorMessage() {
@@ -181,8 +181,7 @@ export class FriendStore {
         runInAction(() => {
           this._errorMessage = undefined;
           this._successMessage = FRIEND_REQUESTS_GET_SUCCESS;
-          this._friendRequestUsers = result.getOrNull();
-          console.log(this._friendRequestUsers);
+          this._friendRequestUsers = result.getOrNull()!;
         });
       } else {
         runInAction(() => {
@@ -209,8 +208,7 @@ export class FriendStore {
         runInAction(() => {
           this._errorMessage = undefined;
           this._successMessage = FRIEND_LIST_GET_SUCCESS;
-          this._friendRequestUsers = result.getOrNull();
-          console.log(this._friendRequestUsers);
+          this._friendOverviews = result.getOrNull()!;
         });
       } else {
         runInAction(() => {

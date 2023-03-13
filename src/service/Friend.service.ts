@@ -4,6 +4,7 @@ import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedF
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
+import { UserOverview } from "@/models/user/UserOverview";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -39,7 +40,7 @@ export class FriendService {
 
   public getFriendList = async (
     userId: string
-  ): Promise<Result<FriendRequestUser[]>> => {
+  ): Promise<Result<UserOverview[]>> => {
     try {
       const friendRequestBody = new ValidateUid(userId);
       const response = await fetch(

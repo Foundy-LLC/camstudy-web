@@ -10,9 +10,9 @@ import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import {
   APPROVE_FRIEND_REQUEST_SUCCESS,
   FRIEND_REQUEST_REFUSE_SUCCESS,
-  REFUSE_FRIEND_REQUEST_SUCCESS,
 } from "@/constants/FriendMessage";
 import { UserOverview } from "@/models/user/UserOverview";
+import { UserStatus } from "@/models/user/UserStatus";
 
 const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
   ({ item }) => {
@@ -135,9 +135,26 @@ const FriendRequestGroup: NextPage<{ items: FriendRequestUser[] }> = observer(
 
 const FriendOverview: NextPage<{ item: UserOverview }> = observer(
   ({ item }) => {
+    const { id, name, profileImage, rankingScore, status } = item;
     return (
       <>
-        <h3>{item.name}</h3>
+        <Image
+          width={50}
+          height={50}
+          src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
+          alt={`${name}-profileImg`}
+        />
+        <h3>{name}&nbsp;</h3> <h3>랭킹점수:{rankingScore}&nbsp;</h3>
+        <Image
+          width={20}
+          height={20}
+          src={
+            status === UserStatus.LOGIN
+              ? "https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/green-circle-icon.png"
+              : "https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/red-circle-icon.png"
+          }
+          alt={`${name}-profileImg`}
+        />
       </>
     );
   }
@@ -200,12 +217,8 @@ const friends: NextPage = observer(() => {
       ) : null}
       {friendStore.errorMessage ? <h3>{friendStore.errorMessage}</h3> : null}
       <SimilarNamedUserGroup items={friendStore.userSearchOverviews} />
-      {friendStore.friendRequestUsers && (
-        <FriendRequestGroup items={friendStore.friendRequestUsers} />
-      )}
-      {friendStore.friendOverviews && (
-        <FriendOverviewGroup items={friendStore.friendOverviews} />
-      )}
+      <FriendRequestGroup items={friendStore.friendRequestUsers} />
+      <FriendOverviewGroup items={friendStore.friendOverviews} />
     </>
   );
 });

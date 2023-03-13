@@ -5,26 +5,9 @@ import organizationService, {
 } from "@/service/organization.service";
 import userStore from "@/stores/UserStore";
 import { ORGANIZATIONS_EMAIL_CONFIRM_SUCCESS } from "@/constants/organizationMessage";
-
-export interface OrganizationVerifyEmailForm {
-  readonly userId: string;
-  readonly userName: string;
-  readonly email: string;
-  readonly organizationId: string;
-  readonly organizationName: string;
-}
-
-export interface Organization {
-  readonly id: string;
-  readonly name: string;
-  readonly address: string;
-}
-
-export interface BelongOrganization {
-  readonly userId: string;
-  readonly organizationId: string;
-  readonly organizationName: string;
-}
+import { OrganizationVerifyEmailForm } from "@/models/organization/OrganizationVerifyEmailForm";
+import { BelongOrganization } from "@/models/organization/BelongOrganization";
+import { Organization } from "@/models/organization/Organization";
 
 //TODO(건우): 유저 아이디 불러오는 법 수정 필요
 export class OrganizationStore {
