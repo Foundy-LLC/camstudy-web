@@ -3,8 +3,9 @@ import { observer } from "mobx-react";
 import { useStores } from "@/stores/context";
 import React, { useEffect, useState } from "react";
 import { useDebounce } from "@/components/UseDebounce";
-import { BelongOrganization, Organization } from "@/stores/OrganizationStore";
 import Image from "next/image";
+import { BelongOrganization } from "@/models/organization/BelongOrganization";
+import { Organization } from "@/models/organization/Organization";
 
 const BelongOrganizationsName: NextPage<{ item: BelongOrganization }> =
   observer(({ item }) => {

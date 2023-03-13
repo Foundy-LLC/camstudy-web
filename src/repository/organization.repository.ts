@@ -1,9 +1,9 @@
 import client from "prisma/client";
 import { ORGANIZATION_NUM_PER_PAGE } from "@/constants/organization.constant";
-import { belong, organization } from "@prisma/client";
-import { BelongOrganization, Organization } from "@/stores/OrganizationStore";
-import { async } from "@firebase/util";
+import { belong } from "@prisma/client";
 import { VerifyOrganization } from "@/models/organization/verifyOrganization";
+import { Organization } from "@/models/organization/Organization";
+import { BelongOrganization } from "@/models/organization/BelongOrganization";
 
 export const updateEmailVerifyStatus = async (
   userId: string,

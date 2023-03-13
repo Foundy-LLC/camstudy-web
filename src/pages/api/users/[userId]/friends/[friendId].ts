@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {
   acceptFriendRequest,
   cancelFriendRequest,
-  getFriendRequests,
+  getFriendList,
 } from "@/controller/friend.controller";
 
 export default async function friendRequestHandler(

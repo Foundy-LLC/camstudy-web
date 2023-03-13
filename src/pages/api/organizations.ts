@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getOrganizations } from "@/controller/organization.controller";
-import { sendSecretMail } from "@/components/SendEmail";
 
 export default async function organizationHandler(
   req: NextApiRequest,
