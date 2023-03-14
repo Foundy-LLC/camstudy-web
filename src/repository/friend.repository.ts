@@ -36,6 +36,7 @@ export const fetchFriendRequests = async (
   const requests = await client.friend.findMany({
     take: ORGANIZATION_NUM_PER_PAGE,
     where: { acceptor_id: userId, accepted: accepted },
+    orderBy: [{ requested_at: "desc" }],
     select: {
       user_account_friend_requester_idTouser_account: {
         select: { id: true, name: true, profile_image: true },

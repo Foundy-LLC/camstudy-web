@@ -22,6 +22,7 @@ import {
   FRIEND_REQUESTS_GET_SUCCESS,
   NOT_FOUND_FRIEND_REQUEST_ERROR,
   FRIEND_LIST_GET_SUCCESS,
+  PAGE_NUM_OUT_OF_RANGE_ERROR,
 } from "@/constants/FriendMessage";
 import { Prisma } from ".prisma/client";
 import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError;
@@ -135,6 +136,9 @@ export const getFriendList = async (
         friendRequestBody.pageNum!,
         friendRequestBody.accepted!
       );
+      if (result.length === 0 && friendRequestBody.pageNum !== 0) {
+        throw PAGE_NUM_OUT_OF_RANGE_ERROR;
+      }
       res.status(200).send(
         new ResponseBody({
           data: result,
