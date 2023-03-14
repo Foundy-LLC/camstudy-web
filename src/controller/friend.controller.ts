@@ -110,7 +110,7 @@ export const getFriendList = async (
       throw REQUEST_QUERY_ERROR;
     }
     //친구 요청 목록 조회인 경우
-    if (page === undefined) {
+    if (accepted === "false") {
       const friendRequestBody = new FriendGetRequestsBody(userId, accepted);
       const result = await fetchFriendRequests(
         friendRequestBody.userId,
