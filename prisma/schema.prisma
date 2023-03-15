@@ -148,7 +148,7 @@ enum crops_type {
   strawberry
   tomato
   carrot
-  pumkin
+  pumpkin
   cabbage
 }
 
