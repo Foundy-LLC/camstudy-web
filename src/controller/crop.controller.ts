@@ -20,7 +20,7 @@ export const setCrop = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(200).json(new ResponseBody({ message: SET_CROP_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
-      res.status(400).send(e);
+      res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
     res
