@@ -105,7 +105,7 @@ export const getFriendList = async (
     const { userId, page, accepted } = req.query;
     if (
       typeof userId !== "string" ||
-      typeof accepted !== "string" ||
+      (typeof accepted !== "string" && typeof accepted !== "undefined") ||
       (typeof page !== "string" && typeof page !== "undefined")
     ) {
       throw REQUEST_QUERY_ERROR;
@@ -129,7 +129,7 @@ export const getFriendList = async (
       const friendRequestBody = new FriendGetOverviewsBody(
         userId,
         page!,
-        accepted
+        "true"
       );
       const result = await fetchFriendList(
         friendRequestBody.userId,

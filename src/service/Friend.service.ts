@@ -44,7 +44,7 @@ export class FriendService {
     try {
       const friendRequestBody = new ValidateUid(userId);
       const response = await fetch(
-        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends?page=0&accepted=true`,
+        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends?page=0`,
         {
           method: "GET",
           headers: HEADER,
