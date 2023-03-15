@@ -3,7 +3,7 @@ import { FriendPostRequestBody } from "@/models/friend/FriendPostRequestBody";
 import {
   addFriend,
   approveFriendRequest,
-  deleteFriendRequest,
+  deleteFriendOrRequest,
   fetchFriendList,
   fetchFriendRequests,
 } from "@/repository/friend.repository";
@@ -59,7 +59,7 @@ export const sendFriendRequest = async (
   }
 };
 
-export const cancelFriendRequest = async (
+export const deleteFriend = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
@@ -73,7 +73,7 @@ export const cancelFriendRequest = async (
     if (userId === friendId) {
       throw FRIEND_CANCEL_REQUEST_ID_ERROR;
     }
-    await deleteFriendRequest(
+    await deleteFriendOrRequest(
       friendRequestBody.userId,
       friendRequestBody.targetUserId
     );
