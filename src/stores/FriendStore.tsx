@@ -86,7 +86,7 @@ export class FriendStore {
     );
   }
 
-  private _updateFriendList(userId: string) {
+  private _reflectFriendDelete(userId: string) {
     this._friendOverviews = this._friendOverviews!.filter(
       (item) => item.id !== userId
     );
@@ -304,7 +304,7 @@ export class FriendStore {
         runInAction(() => {
           this._errorMessage = undefined;
           this._successMessage = FREIND_DELETE_SUCCESS;
-          this._updateFriendList(userId);
+          this._reflectFriendDelete(userId);
         });
       } else {
         runInAction(() => {
