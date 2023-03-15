@@ -9,7 +9,7 @@ export const isExistGrowingCrop = async (userId: string) => {
       harvested_at: null,
     },
   });
-  return growingCrops.length != 0;
+  return growingCrops.length !== 0;
 };
 
 export const createCrop = async (body: CropRequestBody) => {
