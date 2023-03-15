@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getOrganizations } from "@/controller/organization.controller";
+import { setCrop } from "@/controller/crop.controller";
 
-export default async function organizationHandler(
+export default async function cropsHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const { method } = req;
   switch (method) {
-    case "GET":
-      await getOrganizations(req, res);
+    case "POST":
+      await setCrop(req, res);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);

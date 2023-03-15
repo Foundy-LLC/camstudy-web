@@ -9,6 +9,7 @@ import userStore from "@/stores/UserStore";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { verifyUserToken } from "@/service/verifyUserToken";
+import { CropsType } from "@/models/crop/CropsType";
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
@@ -25,6 +26,19 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   };
   const loggingUserInformation = () => {
     console.log(JSON.stringify(userStore.currentUser));
+  };
+
+  // 테스트용
+  const setCrop = async () => {
+    const data = {
+      userId: "ZwI7O4fBI1fvJfOANmq8vij6Pjm2",
+      cropType: CropsType.STRAWBERRY,
+    };
+    await fetch("/api/crops/strawberry", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" },
+    });
   };
 
   useEffect(() => {
@@ -53,6 +67,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       <button onClick={() => router.push(`/users/${props.uid}`)}>
         내 프로필
       </button>
+      <button onClick={() => setCrop()}>작물</button>
       <button
         onClick={() =>
           userStore.signOut().then(() => {
