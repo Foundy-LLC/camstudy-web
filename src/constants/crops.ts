@@ -4,7 +4,6 @@ export interface Crops {
   type: crops_type;
   requireDay: number;
   imageUrls: string[];
-  maxLevel: number;
 }
 
 const CROPS: Crops[] = [
@@ -18,7 +17,6 @@ const CROPS: Crops[] = [
       "src/assets/strawberry/plant_strawberry_4.png",
       "src/assets/strawberry/plant_strawberry_5.png",
     ],
-    maxLevel: 3,
   },
   {
     type: crops_type.tomato,
@@ -30,7 +28,6 @@ const CROPS: Crops[] = [
       "src/assets/tomato/plant_tomato_4.png",
       "src/assets/tomato/plant_tomato_5.png",
     ],
-    maxLevel: 5,
   },
   {
     type: crops_type.carrot,
@@ -40,7 +37,6 @@ const CROPS: Crops[] = [
       "src/assets/carrot/plant_carrot_2.png",
       "src/assets/carrot/plant_carrot_3.png",
     ],
-    maxLevel: 7,
   },
   {
     type: crops_type.pumpkin,
@@ -52,7 +48,6 @@ const CROPS: Crops[] = [
       "src/assets/pumpkin/plant_pumpkin_4.png",
       "src/assets/pumpkin/plant_pumpkin_5.png",
     ],
-    maxLevel: 9,
   },
   {
     type: crops_type.cabbage,
@@ -64,6 +59,5 @@ const CROPS: Crops[] = [
       "src/assets/cabbage/plant_corn_2-2.png",
       "src/assets/cabbage/plant_corn_2-3.png",
     ],
-    maxLevel: 11,
   },
 ];
