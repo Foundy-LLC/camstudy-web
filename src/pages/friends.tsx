@@ -10,8 +10,9 @@ import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import {
   APPROVE_FRIEND_REQUEST_SUCCESS,
   FRIEND_REQUEST_REFUSE_SUCCESS,
-  REFUSE_FRIEND_REQUEST_SUCCESS,
 } from "@/constants/FriendMessage";
+import { UserOverview } from "@/models/user/UserOverview";
+import { UserStatus } from "@/models/user/UserStatus";
 
 const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
   ({ item }) => {
@@ -132,6 +133,45 @@ const FriendRequestGroup: NextPage<{ items: FriendRequestUser[] }> = observer(
   }
 );
 
+const FriendOverview: NextPage<{ item: UserOverview }> = observer(
+  ({ item }) => {
+    const { id, name, profileImage, rankingScore, status } = item;
+    return (
+      <>
+        <Image
+          width={50}
+          height={50}
+          src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
+          alt={`${name}-profileImg`}
+        />
+        <h3>{name}&nbsp;</h3> <h3>랭킹점수:{rankingScore}&nbsp;</h3>
+        <Image
+          width={20}
+          height={20}
+          src={
+            status === UserStatus.LOGIN
+              ? "https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/green-circle-icon.png"
+              : "https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/red-circle-icon.png"
+          }
+          alt={`${name}-profileImg`}
+        />
+      </>
+    );
+  }
+);
+
+const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
+  ({ items }) => {
+    return (
+      <>
+        {items.map((item, key) => (
+          <FriendOverview item={item} key={key} />
+        ))}
+      </>
+    );
+  }
+);
+
 const friends: NextPage = observer(() => {
   const { friendStore } = useStores();
   const keyPressed = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -163,15 +203,22 @@ const friends: NextPage = observer(() => {
         친구 요청 조회
       </button>
       <br />
+      <button
+        onClick={(e) => {
+          friendStore.fetchFriendList();
+        }}
+      >
+        친구 목록 조회
+      </button>
+      <br />
 
       {friendStore.successMessage ? (
         <h3>{friendStore.successMessage}</h3>
       ) : null}
       {friendStore.errorMessage ? <h3>{friendStore.errorMessage}</h3> : null}
       <SimilarNamedUserGroup items={friendStore.userSearchOverviews} />
-      {friendStore.friendRequestUsers && (
-        <FriendRequestGroup items={friendStore.friendRequestUsers} />
-      )}
+      <FriendRequestGroup items={friendStore.friendRequestUsers} />
+      <FriendOverviewGroup items={friendStore.friendOverviews} />
     </>
   );
 });

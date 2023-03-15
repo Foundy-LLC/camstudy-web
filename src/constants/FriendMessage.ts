@@ -13,4 +13,6 @@ export const FRIEND_CANCEL_REQUEST_ID_ERROR =
   "본인에게 보낸 친구 요청이 존재할 수 없습니다.";
 export const FRIEND_REQUESTS_GET_SUCCESS =
   "친구 요청 목록을 성공적으로 얻었습니다.";
+export const FRIEND_LIST_GET_SUCCESS = "친구 목록을 성공적으로 얻었습니다.";
 export const APPROVE_FRIEND_REQUEST_SUCCESS = "친구 요청을 수락했습니다.";
+export const PAGE_NUM_OUT_OF_RANGE_ERROR = "더 이상 친구가 없습니다.";

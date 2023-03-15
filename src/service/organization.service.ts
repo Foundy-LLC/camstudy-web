@@ -1,13 +1,10 @@
 import { Result } from "@/models/common/Result";
-import { belong, organization } from "@prisma/client";
 import { OrganizationsEmailRequestBody } from "@/models/organization/OrganizationsEmailRequestBody";
 import { OrganizationsBelongRequestBody } from "@/models/organization/OrganizationsBelongRequestBody";
 import { OrganizationsEmailJWTBody } from "@/models/organization/OrganizationsEmailJWTBody";
-import {
-  BelongOrganization,
-  Organization,
-  OrganizationVerifyEmailForm,
-} from "@/stores/OrganizationStore";
+import { BelongOrganization } from "@/models/organization/BelongOrganization";
+import { OrganizationVerifyEmailForm } from "@/models/organization/OrganizationVerifyEmailForm";
+import { Organization } from "@/models/organization/Organization";
 
 const HEADER = {
   "Content-Type": "application/json",

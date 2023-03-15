@@ -4,6 +4,7 @@ import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedF
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
+import { UserOverview } from "@/models/user/UserOverview";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -22,6 +23,28 @@ export class FriendService {
         `http://localhost:3000/api/users?name=${encodeURIComponent(
           friendGetRequestBody.userName
         )}&id=${friendGetRequestBody.userId}`,
+        {
+          method: "GET",
+          headers: HEADER,
+        }
+      );
+      if (response.ok) {
+        return Result.createSuccessUsingResponseData(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  };
+
+  public getFriendList = async (
+    userId: string
+  ): Promise<Result<UserOverview[]>> => {
+    try {
+      const friendRequestBody = new ValidateUid(userId);
+      const response = await fetch(
+        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends?page=0`,
         {
           method: "GET",
           headers: HEADER,

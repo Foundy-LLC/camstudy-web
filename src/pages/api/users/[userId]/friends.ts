@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {
   cancelFriendRequest,
-  getFriendRequests,
+  getFriendList,
   sendFriendRequest,
 } from "@/controller/friend.controller";
 
@@ -12,7 +12,7 @@ export default async function friendHandler(
   const { method } = req;
   switch (method) {
     case "GET":
-      await getFriendRequests(req, res);
+      await getFriendList(req, res);
       break;
     case "POST":
       await sendFriendRequest(req, res);

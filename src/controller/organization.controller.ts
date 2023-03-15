@@ -28,8 +28,8 @@ import { Prisma } from "@prisma/client";
 import { OrganizationsBelongRequestBody } from "@/models/organization/OrganizationsBelongRequestBody";
 import { verifyEmailToken } from "@/service/manageVerifyToken";
 import { TokenExpiredError } from "jsonwebtoken";
-import { BelongOrganization } from "@/stores/OrganizationStore";
 import { ValidateUid } from "@/models/common/ValidateUid";
+import { BelongOrganization } from "@/models/organization/BelongOrganization";
 
 interface JwtPayload {
   userId: string;
