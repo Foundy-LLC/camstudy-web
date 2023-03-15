@@ -2,14 +2,14 @@ import { uuidv4 } from "@firebase/util";
 import { CropRequestBody } from "@/models/crop/CropRequestBody";
 import prisma from "../../prisma/client";
 
-export const isExistCrop = async (userId: string) => {
-  const isExist = await prisma.crops.findMany({
+export const isExistGrowingCrop = async (userId: string) => {
+  const growingCrops = await prisma.crops.findMany({
     where: {
       user_id: userId,
       harvested_at: null,
     },
   });
-  return isExist.length != 0;
+  return growingCrops.length != 0;
 };
 
 export const createCrop = async (body: CropRequestBody) => {

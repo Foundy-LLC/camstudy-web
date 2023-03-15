@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { CropRequestBody } from "@/models/crop/CropRequestBody";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { SERVER_INTERNAL_ERROR_MESSAGE } from "@/constants/message";
-import { createCrop, isExistCrop } from "@/repository/crop.repository";
+import { createCrop, isExistGrowingCrop } from "@/repository/crop.repository";
 import { ALREADY_EXIST_CROP, SET_CROP_SUCCESS } from "@/constants/cropMessage";
 
 export const setCrop = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -10,7 +10,7 @@ export const setCrop = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, cropType } = req.body;
     const reqBody = new CropRequestBody(userId, cropType);
 
-    const isExist = await isExistCrop(reqBody.userId);
+    const isExist = await isExistGrowingCrop(reqBody.userId);
     if (isExist) {
       throw ALREADY_EXIST_CROP;
     }
