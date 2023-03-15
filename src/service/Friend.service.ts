@@ -81,7 +81,10 @@ export class FriendService {
     }
   };
 
-  public deleteFriendRequest = async (userId: string, targetUserId: string) => {
+  public deleteFriendOrRequest = async (
+    userId: string,
+    targetUserId: string
+  ) => {
     try {
       const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
       const response = await fetch(

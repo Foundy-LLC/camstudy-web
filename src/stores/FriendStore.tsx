@@ -10,6 +10,7 @@ import {
   FRIEND_REQUESTS_GET_SUCCESS,
   SEARCH_SIMILAR_NAMED_USERS_SUCCESS,
   FRIEND_LIST_GET_SUCCESS,
+  FREIND_DELETE_SUCCESS,
 } from "@/constants/FriendMessage";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
@@ -85,6 +86,12 @@ export class FriendStore {
     );
   }
 
+  private _reflectFriendDelete(userId: string) {
+    this._friendOverviews = this._friendOverviews!.filter(
+      (item) => item.id !== userId
+    );
+  }
+
   public async getSimilarNamedUsers() {
     if (!this._friendRequestInput) return;
     if (!userStore.currentUser) {
@@ -146,7 +153,7 @@ export class FriendStore {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
       const requesterId = userStore.currentUser.id;
-      const result = await this._friendService.deleteFriendRequest(
+      const result = await this._friendService.deleteFriendOrRequest(
         requesterId,
         userId
       );
@@ -260,7 +267,7 @@ export class FriendStore {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
       const accepterId = userStore.currentUser.id;
-      const result = await this._friendService.deleteFriendRequest(
+      const result = await this._friendService.deleteFriendOrRequest(
         userId,
         accepterId
       );
@@ -269,6 +276,35 @@ export class FriendStore {
           this._errorMessage = undefined;
           this._successMessage = FRIEND_REQUEST_REFUSE_SUCCESS;
           this._disposeFriendRequest(userId);
+        });
+      } else {
+        runInAction(() => {
+          this._successMessage = undefined;
+          throw new Error(result.throwableOrNull()!.message);
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  }
+  public async deleteFriend(userId: string) {
+    try {
+      //유저 정보가 존재하지 않을 경우 에러 처리
+      if (!userStore.currentUser) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      const accepterId = userStore.currentUser.id;
+      const result = await this._friendService.deleteFriendOrRequest(
+        userId,
+        accepterId
+      );
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._errorMessage = undefined;
+          this._successMessage = FREIND_DELETE_SUCCESS;
+          this._reflectFriendDelete(userId);
         });
       } else {
         runInAction(() => {

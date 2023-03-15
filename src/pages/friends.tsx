@@ -7,10 +7,7 @@ import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
-import {
-  APPROVE_FRIEND_REQUEST_SUCCESS,
-  FRIEND_REQUEST_REFUSE_SUCCESS,
-} from "@/constants/FriendMessage";
+import { FRIEND_REQUEST_REFUSE_SUCCESS } from "@/constants/FriendMessage";
 import { UserOverview } from "@/models/user/UserOverview";
 import { UserStatus } from "@/models/user/UserStatus";
 
@@ -56,7 +53,6 @@ const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
               case "REQUESTED":
                 if (confirm("친구 요청을 취소하시겠어요?") === true) {
                   await friendStore.cancelFriendRequest(id);
-                  console.log(`친구 요청을 취소했습니다.`);
                 }
                 break;
             }
@@ -100,7 +96,6 @@ const FriendRequest: NextPage<{ item: FriendRequestUser }> = observer(
           onClick={async () => {
             if (confirm("친구 요청을 수락하시겠어요?") === true) {
               await friendStore.acceptFriendRequest(requesterId);
-              console.log(APPROVE_FRIEND_REQUEST_SUCCESS);
             }
           }}
         />
@@ -112,7 +107,6 @@ const FriendRequest: NextPage<{ item: FriendRequestUser }> = observer(
           onClick={async () => {
             if (confirm("친구 요청을 거절하시겠어요?") === true) {
               await friendStore.refuseFriendRequest(requesterId);
-              console.log(FRIEND_REQUEST_REFUSE_SUCCESS);
             }
           }}
         />
@@ -135,6 +129,7 @@ const FriendRequestGroup: NextPage<{ items: FriendRequestUser[] }> = observer(
 
 const FriendOverview: NextPage<{ item: UserOverview }> = observer(
   ({ item }) => {
+    const { friendStore } = useStores();
     const { id, name, profileImage, rankingScore, status } = item;
     return (
       <>
@@ -155,6 +150,15 @@ const FriendOverview: NextPage<{ item: UserOverview }> = observer(
           }
           alt={`${name}-profileImg`}
         />
+        <h3
+          onClick={async () => {
+            if (confirm(`${name}을 친구 목록에서 삭제하시겠어요?`) === true) {
+              await friendStore.deleteFriend(id);
+            }
+          }}
+        >
+          x
+        </h3>
       </>
     );
   }
