@@ -2,7 +2,7 @@ import { validateUid } from "@/utils/user.validator";
 import { validateCropType } from "@/utils/crop.validator";
 import { CropsType } from "@/models/crop/CropsType";
 
-export class CropRequestBody {
+export class CropCreateRequestBody {
   constructor(readonly userId: string, readonly cropType: CropsType) {
     this._validateUserId();
     this._validateCropType();
