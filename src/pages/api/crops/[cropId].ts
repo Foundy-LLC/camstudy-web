@@ -7,9 +7,6 @@ export default async function cropsHandler(
 ) {
   const { method } = req;
   switch (method) {
-    case "POST":
-      await setCrop(req, res);
-      break;
     case "DELETE":
       await deleteGrowingCrop(req, res);
       break;

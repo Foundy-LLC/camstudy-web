@@ -11,6 +11,7 @@ import {
   ALREADY_EXIST_CROP,
   DELETE_CROP_SUCCESS,
   NOT_EXIST_CROP,
+  NOT_EXIST_GROWING_CROP,
   SET_CROP_SUCCESS,
 } from "@/constants/cropMessage";
 import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
@@ -50,7 +51,7 @@ export const deleteGrowingCrop = async (
 
     const isExist = await isExistGrowingCrop(reqBody.userId);
     if (!isExist) {
-      throw NOT_EXIST_CROP;
+      throw NOT_EXIST_GROWING_CROP;
     }
 
     await deleteCrop(reqBody);
