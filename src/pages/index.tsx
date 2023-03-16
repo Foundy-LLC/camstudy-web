@@ -34,7 +34,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       userId: "ZwI7O4fBI1fvJfOANmq8vij6Pjm2",
       cropType: CropsType.STRAWBERRY,
     };
-    await fetch("/api/crops/strawberry", {
+    await fetch("/api/crops", {
       method: "POST",
       body: JSON.stringify(data),
       headers: { "Content-Type": "application/json" },

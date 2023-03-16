@@ -1,6 +1,7 @@
 import { uuidv4 } from "@firebase/util";
-import { CropRequestBody } from "@/models/crop/CropRequestBody";
+import { CropCreateRequestBody } from "@/models/crop/CropCreateRequestBody";
 import prisma from "../../prisma/client";
+import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
 
 export const isExistGrowingCrop = async (userId: string) => {
   const growingCrops = await prisma.crops.findMany({
@@ -12,7 +13,7 @@ export const isExistGrowingCrop = async (userId: string) => {
   return growingCrops.length !== 0;
 };
 
-export const createCrop = async (body: CropRequestBody) => {
+export const createCrop = async (body: CropCreateRequestBody) => {
   await prisma.crops.create({
     data: {
       id: uuidv4(),
@@ -21,6 +22,17 @@ export const createCrop = async (body: CropRequestBody) => {
       planted_at: new Date(),
       harvested_at: null,
       grade: null,
+    },
+  });
+};
+
+export const deleteCrop = async (body: CropDeleteRequestBody) => {
+  await prisma.crops.delete({
+    where: {
+      id_user_id: {
+        user_id: body.userId,
+        id: body.cropId,
+      },
     },
   });
 };
