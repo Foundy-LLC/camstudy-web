@@ -5,6 +5,7 @@ import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { UserOverview } from "@/models/user/UserOverview";
+import { fetchAbsolute } from "@/utils/fetchAbsolute";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -19,8 +20,8 @@ export class FriendService {
         userName,
         userId
       );
-      const response = await fetch(
-        `http://localhost:3000/api/users?name=${encodeURIComponent(
+      const response = await fetchAbsolute(
+        `api/users?name=${encodeURIComponent(
           friendGetRequestBody.userName
         )}&id=${friendGetRequestBody.userId}`,
         {
@@ -43,8 +44,8 @@ export class FriendService {
   ): Promise<Result<UserOverview[]>> => {
     try {
       const friendRequestBody = new ValidateUid(userId);
-      const response = await fetch(
-        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends?page=0`,
+      const response = await fetchAbsolute(
+        `api/users/${friendRequestBody.userId}/friends?page=0`,
         {
           method: "GET",
           headers: HEADER,
@@ -63,8 +64,8 @@ export class FriendService {
   public sendFriendRequest = async (userId: string, targetUserId: string) => {
     try {
       const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
-      const response = await fetch(
-        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends`,
+      const response = await fetchAbsolute(
+        `api/users/${friendRequestBody.userId}/friends`,
         {
           method: "POST",
           body: JSON.stringify(friendRequestBody),
@@ -87,8 +88,8 @@ export class FriendService {
   ) => {
     try {
       const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
-      const response = await fetch(
-        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends/${friendRequestBody.targetUserId}`,
+      const response = await fetchAbsolute(
+        `api/users/${friendRequestBody.userId}/friends/${friendRequestBody.targetUserId}`,
         {
           method: "DELETE",
           headers: HEADER,
@@ -109,8 +110,8 @@ export class FriendService {
   ): Promise<Result<FriendRequestUser[]>> => {
     try {
       const friendRequestBody = new ValidateUid(userId);
-      const response = await fetch(
-        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends?accepted=false`,
+      const response = await fetchAbsolute(
+        `api/users/${friendRequestBody.userId}/friends?accepted=false`,
         {
           method: "GET",
           headers: HEADER,
@@ -132,8 +133,8 @@ export class FriendService {
   ): Promise<Result<string>> => {
     try {
       const friendRequestBody = new FriendPostRequestBody(accepterId, userId);
-      const response = await fetch(
-        `http://localhost:3000/api/users/${friendRequestBody.userId}/friends/${friendRequestBody.targetUserId}`,
+      const response = await fetchAbsolute(
+        `api/users/${friendRequestBody.userId}/friends/${friendRequestBody.targetUserId}`,
         {
           method: "PUT",
           headers: HEADER,

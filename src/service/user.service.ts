@@ -1,6 +1,7 @@
 import { UserPostRequestBody } from "@/models/user/UserPostRequestBody";
 import { Result } from "@/models/common/Result";
 import { User } from "@/models/user/User";
+import { fetchAbsolute } from "@/utils/fetchAbsolute";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -9,7 +10,7 @@ const HEADER = {
 export class UserService {
   public async getUser(userId: string): Promise<Result<User>> {
     try {
-      const response = await fetch(`api/users/${userId}`, {
+      const response = await fetchAbsolute(`api/users/${userId}`, {
         headers: HEADER,
         method: "GET",
       });
@@ -23,7 +24,7 @@ export class UserService {
 
   public async isExistUser(userId: string): Promise<Result<boolean>> {
     try {
-      const response = await fetch(`api/users/${userId}/exists`, {
+      const response = await fetchAbsolute(`api/users/${userId}/exists`, {
         method: "GET",
         headers: HEADER,
       });
@@ -42,11 +43,14 @@ export class UserService {
     formData: FormData
   ): Promise<Result<string>> {
     try {
-      const response = await fetch(`api/users/${fileName}/profile-image`, {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
+      const response = await fetchAbsolute(
+        `api/users/${fileName}/profile-image`,
+        {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        }
+      );
       if (response.ok) {
         return await Result.createSuccessUsingResponseData(response);
       } else {
@@ -65,7 +69,7 @@ export class UserService {
   ): Promise<Result<void>> {
     try {
       const requestBody = new UserPostRequestBody(uid, name, introduce, tags);
-      const response = await fetch(`api/users`, {
+      const response = await fetchAbsolute(`api/users`, {
         method: "POST",
         body: JSON.stringify(requestBody),
         headers: HEADER,

@@ -3,6 +3,7 @@ import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { Room } from "@/stores/RoomListStore";
 import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
+import { fetchAbsolute } from "@/utils/fetchAbsolute";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -11,7 +12,7 @@ const HEADER = {
 export class RoomService {
   public async getRooms(page: number): Promise<Result<RoomOverview[]>> {
     try {
-      const response = await fetch(`api/rooms?page=${page}`, {
+      const response = await fetchAbsolute(`api/rooms?page=${page}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -29,7 +30,7 @@ export class RoomService {
 
   public async getRecentRooms(userId: string): Promise<Result<RoomOverview[]>> {
     try {
-      const response = await fetch(`api/users/${userId}/recent-rooms`, {
+      const response = await fetchAbsolute(`api/users/${userId}/recent-rooms`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -48,7 +49,7 @@ export class RoomService {
   public async createRoom(room: Room): Promise<Result<string>> {
     try {
       const requestBody = new RoomCreateRequestBody(room);
-      const response = await fetch(`api/rooms`, {
+      const response = await fetchAbsolute(`api/rooms`, {
         method: "POST",
         body: JSON.stringify(requestBody),
         headers: HEADER,
@@ -66,7 +67,7 @@ export class RoomService {
   public async deleteRoom(roomId: string) {
     try {
       const requestBody = new RoomDeleteRequestBody(roomId);
-      const response = await fetch(`api/rooms/${roomId}`, {
+      const response = await fetchAbsolute(`api/rooms/${roomId}`, {
         method: "DELETE",
         body: JSON.stringify(requestBody),
         headers: HEADER,
@@ -86,7 +87,7 @@ export class RoomService {
     formData: FormData
   ): Promise<Result<string>> {
     try {
-      const response = await fetch(`api/rooms/${roomId}/thumbnail`, {
+      const response = await fetchAbsolute(`api/rooms/${roomId}/thumbnail`, {
         method: "POST",
         body: formData,
         credentials: "include",

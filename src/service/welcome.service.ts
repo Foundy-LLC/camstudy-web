@@ -1,5 +1,6 @@
 import { Result } from "@/models/common/Result";
 import { Tag } from "@/models/welcome/Tag";
+import { fetchAbsolute } from "@/utils/fetchAbsolute";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -8,7 +9,7 @@ const HEADER = {
 export class WelcomeService {
   public async getTags(name: string): Promise<Result<Tag[]>> {
     try {
-      const response = await fetch(
+      const response = await fetchAbsolute(
         `api/tags?name=${encodeURIComponent(name)}&page=0`,
         {
           headers: HEADER,
