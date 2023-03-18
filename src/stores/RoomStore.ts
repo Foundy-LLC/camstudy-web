@@ -29,8 +29,8 @@ import { BlockedUser } from "@/models/room/BlockedUser";
 import { convertToKoreaDate } from "@/utils/DateUtil";
 
 export interface RoomViewModel {
-  onConnected: () => Promise<void>;
   onConnectedWaitingRoom: (waitingRoomData: WaitingRoomData) => void;
+  onNotExistsRoomId: () => void;
   onWaitingRoomEvent: (event: WaitingRoomEvent) => void;
   onFailedToJoin: (message: string) => void;
   onJoined: (
@@ -330,25 +330,25 @@ export class RoomStore implements RoomViewModel {
     });
   };
 
-  public onConnected = async (): Promise<void> => {
+  public onConnectedWaitingRoom = async (waitingRoomData: WaitingRoomData) => {
     const mediaStream = await this._mediaUtil.fetchLocalMedia({
       video: true,
       audio: true,
     });
     runInAction(() => {
-      this._state = RoomState.CONNECTED;
       this._localVideoStream =
         this._mediaUtil.getMediaStreamUsingFirstVideoTrackOf(mediaStream);
       this._localAudioStream =
         this._mediaUtil.getMediaStreamUsingFirstAudioTrackOf(mediaStream);
+      this._state = RoomState.WAITING_ROOM;
+      this._waitingRoomData = waitingRoomData;
+      this._masterId = waitingRoomData.masterId;
+      this._blacklist = waitingRoomData.blacklist;
     });
   };
 
-  public onConnectedWaitingRoom = (waitingRoomData: WaitingRoomData) => {
-    this._state = RoomState.WAITING_ROOM;
-    this._waitingRoomData = waitingRoomData;
-    this._masterId = waitingRoomData.masterId;
-    this._blacklist = waitingRoomData.blacklist;
+  public onNotExistsRoomId = () => {
+    this._state = RoomState.NOT_EXISTS;
   };
 
   public onWaitingRoomEvent = (event: WaitingRoomEvent) => {

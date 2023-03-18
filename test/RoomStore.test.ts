@@ -1,5 +1,5 @@
 import { RoomStore } from "@/stores/RoomStore";
-import { deepEqual, instance, mock, when } from "ts-mockito";
+import { instance, mock, when } from "ts-mockito";
 import { RoomState } from "@/models/room/RoomState";
 import { MediaUtil } from "@/utils/MediaUtil";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
@@ -12,29 +12,6 @@ import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { Auth, User } from "@firebase/auth";
 import { auth } from "@/service/firebase";
 import { RoomSocketService } from "@/service/RoomSocketService";
-
-describe("RoomStore.onConnected", () => {
-  it("should set state to CONNECTED", async () => {
-    // given
-    const mediaUtil = mock<MediaUtil>();
-    when(mediaUtil.fetchLocalMedia({ video: true, audio: true })).thenResolve(
-      mock()
-    );
-    when(
-      mediaUtil.getMediaStreamUsingFirstVideoTrackOf(deepEqual(mock()))
-    ).thenReturn(mock());
-    when(
-      mediaUtil.getMediaStreamUsingFirstAudioTrackOf(deepEqual(mock()))
-    ).thenReturn(mock());
-    const roomStore = new RoomStore(instance(mediaUtil));
-
-    // when
-    await roomStore.onConnected();
-
-    // then
-    expect(roomStore.state).toBe(RoomState.CONNECTED);
-  });
-});
 
 describe("RoomStore.onJoined", () => {
   it("should set state to JOINED", () => {
