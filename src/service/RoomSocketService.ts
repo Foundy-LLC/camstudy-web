@@ -55,7 +55,6 @@ import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { JoinRoomSuccessCallbackProperty } from "@/models/room/JoinRoomSuccessCallbackProperty";
 import { JoinRoomFailureCallbackProperty } from "@/models/room/JoinRoomFailureCallbackProperty";
 import { PeerState } from "@/models/room/PeerState";
-import userStore from "@/stores/UserStore";
 
 const PORT = 2000;
 const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
@@ -162,16 +161,16 @@ export class RoomSocketService {
     socket.removeListener(OTHER_PEER_EXITED_ROOM);
   };
 
-  public join = (localMediaStream: MediaStream, password: string) => {
+  public join = (
+    localMediaStream: MediaStream,
+    password: string,
+    uid: string
+  ) => {
     const socket = this._requireSocket();
-    const user = userStore.currentUser;
-    if (user == null) {
-      throw Error("회원 정보가 없이 방 참여를 시도했습니다.");
-    }
     socket.emit(
       JOIN_ROOM,
       {
-        userId: user.id,
+        userId: uid,
         mutedHeadset: this._mutedHeadset,
         roomPasswordInput: password,
       },

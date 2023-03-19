@@ -22,11 +22,10 @@ import {
   CONNECTING_ROOM_MESSAGE,
   ROOM_IS_FULL_MESSAGE,
 } from "@/constants/roomMessage";
-import { Auth } from "@firebase/auth";
 import { PeerState } from "@/models/room/PeerState";
-import { auth } from "@/service/firebase";
 import { BlockedUser } from "@/models/room/BlockedUser";
 import { convertToKoreaDate } from "@/utils/DateUtil";
+import { uuidv4 } from "@firebase/util";
 
 export interface RoomViewModel {
   onConnectedWaitingRoom: (waitingRoomData: WaitingRoomData) => void;
@@ -100,7 +99,6 @@ export class RoomStore implements RoomViewModel {
 
   constructor(
     private _mediaUtil: MediaUtil = new MediaUtil(),
-    private readonly _auth: Auth = auth,
     roomService?: RoomSocketService
   ) {
     makeAutoObservable(this);
@@ -152,13 +150,10 @@ export class RoomStore implements RoomViewModel {
   }
 
   // ================================ 대기실 getter 시작 ================================
+  private _uid = uuidv4();
+
   private _requireCurrentUserId(): string {
-    if (this._auth.currentUser?.uid == null) {
-      throw Error(
-        "로그인 하지 않고 공부방 접속을 시도했습니다. 리다이렉트가 되어야 합니다."
-      );
-    }
-    return this._auth.currentUser.uid;
+    return this._uid;
   }
 
   private _isCurrentUserMaster = (
@@ -254,10 +249,10 @@ export class RoomStore implements RoomViewModel {
   // ==============================================================================
 
   public get isCurrentUserMaster(): boolean {
-    if (this._auth.currentUser?.uid === undefined) {
+    if (this._uid === undefined) {
       return false;
     }
-    return this._masterId === this._auth.currentUser?.uid;
+    return this._masterId === this._uid;
   }
 
   public get peerStates(): PeerState[] {
@@ -314,20 +309,7 @@ export class RoomStore implements RoomViewModel {
   }
 
   public connectSocket = (roomId: string) => {
-    // 이미 로그인 되어있으면 곧바로 소켓에 연결
-    if (this._auth.currentUser != null) {
-      this._roomService.connect(roomId);
-      return;
-    }
-    // 아니라면 연결 되고나서 소켓에 연결
-    const unsubscribe = this._auth.onAuthStateChanged((state) => {
-      unsubscribe();
-      if (state != null) {
-        this._roomService.connect(roomId);
-      } else {
-        this._failedToSignIn = true;
-      }
-    });
+    this._roomService.connect(roomId);
   };
 
   public onConnectedWaitingRoom = async (waitingRoomData: WaitingRoomData) => {
@@ -383,7 +365,7 @@ export class RoomStore implements RoomViewModel {
     if (this._localAudioStream !== undefined) {
       mediaStream.addTrack(this._localAudioStream.getAudioTracks()[0]);
     }
-    this._roomService.join(mediaStream, this._passwordInput);
+    this._roomService.join(mediaStream, this._passwordInput, this._uid);
   };
 
   public onFailedToJoin = (message: string) => {
@@ -623,7 +605,7 @@ export class RoomStore implements RoomViewModel {
   };
 
   public onKicked = (userId: string) => {
-    const isMe = userId === this._auth.currentUser!!.uid;
+    const isMe = userId === this._uid;
     if (isMe) {
       this._kicked = true;
       this._localAudioStream?.getTracks().forEach((t) => t.stop());
