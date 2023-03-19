@@ -36,6 +36,8 @@ const RoomScaffold: NextPage = observer(() => {
   }
 
   switch (roomStore.state) {
+    case RoomState.NOT_EXISTS:
+      return <NotExistsPage />;
     case RoomState.CREATED:
     case RoomState.CONNECTED:
     case RoomState.WAITING_ROOM:
@@ -44,6 +46,16 @@ const RoomScaffold: NextPage = observer(() => {
       return <StudyRoom roomStore={roomStore} />;
   }
 });
+
+const NotExistsPage: NextPage = () => {
+  const router = useRouter();
+  return (
+    <>
+      존재하지 않는 방입니다.
+      <Button onClick={() => router.replace("/")}>홈으로</Button>
+    </>
+  );
+};
 
 const WaitingRoom: NextPage<{
   roomStore: RoomStore;

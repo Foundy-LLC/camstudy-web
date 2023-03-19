@@ -1,5 +1,5 @@
 import { RoomStore } from "@/stores/RoomStore";
-import { deepEqual, instance, mock, when } from "ts-mockito";
+import { instance, mock, when } from "ts-mockito";
 import { RoomState } from "@/models/room/RoomState";
 import { MediaUtil } from "@/utils/MediaUtil";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
@@ -12,29 +12,6 @@ import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { Auth, User } from "@firebase/auth";
 import { auth } from "@/service/firebase";
 import { RoomSocketService } from "@/service/RoomSocketService";
-
-describe("RoomStore.onConnected", () => {
-  it("should set state to CONNECTED", async () => {
-    // given
-    const mediaUtil = mock<MediaUtil>();
-    when(mediaUtil.fetchLocalMedia({ video: true, audio: true })).thenResolve(
-      mock()
-    );
-    when(
-      mediaUtil.getMediaStreamUsingFirstVideoTrackOf(deepEqual(mock()))
-    ).thenReturn(mock());
-    when(
-      mediaUtil.getMediaStreamUsingFirstAudioTrackOf(deepEqual(mock()))
-    ).thenReturn(mock());
-    const roomStore = new RoomStore(instance(mediaUtil));
-
-    // when
-    await roomStore.onConnected();
-
-    // then
-    expect(roomStore.state).toBe(RoomState.CONNECTED);
-  });
-});
 
 describe("RoomStore.onJoined", () => {
   it("should set state to JOINED", () => {
@@ -76,9 +53,10 @@ describe("after invoking RoomStore.onUpdatedPomodoroTimer", () => {
 describe("RoomStore.onWaitingRoomEvent", () => {
   let roomStore: RoomStore;
 
-  beforeAll(() => {
-    roomStore = new RoomStore();
-    roomStore.onConnectedWaitingRoom({
+  beforeAll(async () => {
+    const mediaUtil: MediaUtil = mock();
+    roomStore = new RoomStore(instance(mediaUtil));
+    await roomStore.onConnectedWaitingRoom({
       joinerList: [],
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
@@ -115,17 +93,21 @@ describe("RoomStore.onWaitingRoomEvent", () => {
 });
 
 describe("RoomStore.enabledJoinRoomButton", () => {
-  it("true", () => {
+  it("true", async () => {
     // given
     const id = "id";
+    const mockMediaUtil = mock<MediaUtil>();
     const mockAuth = mock<Auth>();
     const mockUser = mock<User>();
     when(mockUser.uid).thenReturn(id);
     when(mockAuth.currentUser).thenReturn(instance(mockUser));
-    const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
+    const roomStore = new RoomStore(
+      instance(mockMediaUtil),
+      instance(mockAuth)
+    );
 
     // when
-    roomStore.onConnectedWaitingRoom({
+    await roomStore.onConnectedWaitingRoom({
       joinerList: [],
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
@@ -137,17 +119,21 @@ describe("RoomStore.enabledJoinRoomButton", () => {
     expect(roomStore.enableJoinButton).toBe(true);
   });
 
-  it("should be false when current user already joined room", () => {
+  it("should be false when current user already joined room", async () => {
     // given
     const id = "id";
+    const mockMediaUtil = mock<MediaUtil>();
     const mockAuth = mock<Auth>();
     const mockUser = mock<User>();
     when(mockUser.uid).thenReturn(id);
     when(mockAuth.currentUser).thenReturn(instance(mockUser));
-    const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
+    const roomStore = new RoomStore(
+      instance(mockMediaUtil),
+      instance(mockAuth)
+    );
 
     // when
-    roomStore.onConnectedWaitingRoom({
+    await roomStore.onConnectedWaitingRoom({
       joinerList: [{ id: id, name: "name" }],
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
@@ -159,17 +145,21 @@ describe("RoomStore.enabledJoinRoomButton", () => {
     expect(roomStore.enableJoinButton).toBe(false);
   });
 
-  it("should be false when current user was blocked", () => {
+  it("should be false when current user was blocked", async () => {
     // given
     const id = "id";
+    const mockMediaUtil = mock<MediaUtil>();
     const mockAuth = mock<Auth>();
     const mockUser = mock<User>();
     when(mockUser.uid).thenReturn(id);
     when(mockAuth.currentUser).thenReturn(instance(mockUser));
-    const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
+    const roomStore = new RoomStore(
+      instance(mockMediaUtil),
+      instance(mockAuth)
+    );
 
     // when
-    roomStore.onConnectedWaitingRoom({
+    await roomStore.onConnectedWaitingRoom({
       joinerList: [],
       masterId: "masterId",
       capacity: MAX_ROOM_CAPACITY,
@@ -249,13 +239,14 @@ describe("RoomStore.unblockUser", () => {
     // given
     const userId = "userId";
     const mockService = mock<RoomSocketService>();
+    const mediaUtil = mock<MediaUtil>();
     when(mockService.unblockUser(userId)).thenResolve();
     const roomStore = new RoomStore(
-      new MediaUtil(),
+      instance(mediaUtil),
       auth,
       instance(mockService)
     );
-    roomStore.onConnectedWaitingRoom({
+    await roomStore.onConnectedWaitingRoom({
       blacklist: [{ id: userId, name: "name" }],
       capacity: 0,
       hasPassword: false,

@@ -122,7 +122,6 @@ export class RoomSocketService {
       CONNECTION_SUCCESS,
       async ({ socketId }: { socketId: string }) => {
         console.log("Connected: ", socketId);
-        await this._roomViewModel.onConnected();
         this._connectWaitingRoom(roomId);
       }
     );
@@ -132,7 +131,11 @@ export class RoomSocketService {
     this._requireSocket().emit(
       JOIN_WAITING_ROOM,
       roomId,
-      (waitingRoomData: WaitingRoomData) => {
+      (waitingRoomData?: WaitingRoomData) => {
+        if (waitingRoomData == null) {
+          this._roomViewModel.onNotExistsRoomId();
+          return;
+        }
         this._roomViewModel.onConnectedWaitingRoom(waitingRoomData);
         this._listenWaitingRoomEvents();
       }
