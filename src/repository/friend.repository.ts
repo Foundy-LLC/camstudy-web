@@ -1,8 +1,8 @@
 import client from "../../prisma/client";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
-import { ORGANIZATION_NUM_PER_PAGE } from "@/constants/organization.constant";
 import { UserOverview } from "@/models/user/UserOverview";
 import { UserStatus } from "@/models/user/UserStatus";
+import { FRIEND_NUM_PER_PAGE } from "@/constants/friend.constant";
 
 export const addFriend = async (userId: string, targetUserId: string) => {
   await client.friend.create({
@@ -31,11 +31,12 @@ export const deleteFriendOrRequest = async (
 
 export const fetchFriendRequests = async (
   userId: string,
-  accepted: boolean
+  page: number
 ): Promise<FriendRequestUser[]> => {
   const requests = await client.friend.findMany({
-    take: ORGANIZATION_NUM_PER_PAGE,
-    where: { acceptor_id: userId, accepted: accepted },
+    skip: page * FRIEND_NUM_PER_PAGE,
+    take: FRIEND_NUM_PER_PAGE,
+    where: { acceptor_id: userId, accepted: false },
     orderBy: [{ requested_at: "desc" }],
     select: {
       user_account_friend_requester_idTouser_account: {
@@ -57,13 +58,12 @@ export const fetchFriendRequests = async (
 
 export const fetchFriendList = async (
   userId: string,
-  pageNum: number,
-  accepted: boolean
+  pageNum: number
 ): Promise<UserOverview[]> => {
   const requests = await client.friend.findMany({
-    skip: pageNum * ORGANIZATION_NUM_PER_PAGE,
-    take: ORGANIZATION_NUM_PER_PAGE,
-    where: { acceptor_id: userId, accepted: accepted },
+    skip: pageNum * FRIEND_NUM_PER_PAGE,
+    take: FRIEND_NUM_PER_PAGE,
+    where: { requester_id: userId, accepted: true },
     select: {
       user_account_friend_requester_idTouser_account: {
         select: {
@@ -93,10 +93,23 @@ export const approveFriendRequest = async (
   friendId: string,
   userId: string
 ) => {
-  await client.friend.update({
-    where: {
-      requester_id_acceptor_id: { requester_id: friendId, acceptor_id: userId },
-    },
-    data: { accepted: true },
+  await client.$transaction(async (tx) => {
+    await tx.friend.update({
+      where: {
+        requester_id_acceptor_id: {
+          requester_id: friendId,
+          acceptor_id: userId,
+        },
+      },
+      data: { accepted: true },
+    });
+    await tx.friend.create({
+      data: {
+        requester_id: userId,
+        acceptor_id: friendId,
+        requested_at: new Date(),
+        accepted: true,
+      },
+    });
   });
 };
