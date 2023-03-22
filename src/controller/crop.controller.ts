@@ -86,7 +86,6 @@ export const harvestGrowingCrop = async (
     const { userId, cropId } = req.body;
     const reqBody = new CropIdRequestBody(userId, cropId);
 
-    //TODO: 이부분 고치기
     const isExist = await isExistGrowingCrop(reqBody.userId);
     if (isExist == null || isExist.length === 0) {
       throw NOT_EXIST_GROWING_CROP;
