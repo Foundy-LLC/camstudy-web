@@ -1,11 +1,11 @@
 import { uuidv4 } from "@firebase/util";
 import { CropCreateRequestBody } from "@/models/crop/CropCreateRequestBody";
 import prisma from "../../prisma/client";
-import { CropIdRequestBody } from "@/models/crop/CropIdRequestBody";
+import { CropHarvestRequestBody } from "@/models/crop/CropHarvestRequestBody";
 import { Prisma } from ".prisma/client";
 import { fruit_grade } from "@prisma/client";
-import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
 import { Crop } from "@/models/crop/Crop";
+import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
 
 export const getHarvestedCrops = async (userId: string): Promise<Crop[]> => {
   const harvestedCrops = await prisma.crops.findMany({
@@ -27,7 +27,7 @@ export const getHarvestedCrops = async (userId: string): Promise<Crop[]> => {
   });
 };
 
-export const isExistGrowingCrop = async (userId: string) => {
+export const getGrowingCrop = async (userId: string) => {
   return await prisma.crops.findMany({
     where: {
       user_id: userId,
@@ -49,7 +49,7 @@ export const createCrop = async (body: CropCreateRequestBody) => {
   });
 };
 
-export const deleteCrop = async (body: CropIdRequestBody) => {
+export const deleteCrop = async (body: CropDeleteRequestBody) => {
   await prisma.crops.delete({
     where: {
       id_user_id: {
@@ -61,7 +61,7 @@ export const deleteCrop = async (body: CropIdRequestBody) => {
 };
 
 export const getTargetCropTypeAndPlantedDate = async (
-  body: CropIdRequestBody
+  body: CropHarvestRequestBody
 ) => {
   return await prisma.crops.findUnique({
     select: {
@@ -78,22 +78,23 @@ export const getTargetCropTypeAndPlantedDate = async (
 };
 
 export const getConsecutiveAttendanceDays = async (
-  body: CropIdRequestBody,
+  userId: string,
   start: Date,
   requireDay: number
-): Promise<{ num_continuous_days: number }[]> => {
+): Promise<number> => {
   const msToAdd = requireDay * 24 * 60 * 60 * 1000;
 
-  return await prisma.$queryRaw(
+  const result: { num_continuous_days: number }[] = await prisma.$queryRaw(
     Prisma.sql`WITH study_days AS (SELECT DISTINCT CASE
-                                    WHEN DATE_PART('hour', sh.join_at::timestamp with time zone) >= 6
-                                        THEN date_trunc('day', sh.join_at::timestamp with time zone + interval '6 hours')
-                                        ELSE date_trunc('day', sh.join_at::timestamp with time zone - interval '18 hours')
-                                        END AS day
+                                                       WHEN DATE_PART('hour', sh.join_at::timestamp with time zone) >= 6
+                                                           THEN date_trunc('day', sh.join_at::timestamp with time zone + interval '6 hours')
+                                                       ELSE date_trunc('day', sh.join_at::timestamp with time zone - interval '18 hours')
+                                                       END AS day
                FROM study_history sh
-               WHERE sh.user_id = ${body.userId}
+               WHERE sh.user_id = ${userId}
                  AND sh.join_at >= ${start}
-                 AND sh.join_at < ${new Date(start.getTime() + msToAdd)}
+                 AND sh.join_at
+                   < ${new Date(start.getTime() + msToAdd)}
                    )
                    , continuous_days AS (
                SELECT
@@ -105,31 +106,32 @@ export const getConsecutiveAttendanceDays = async (
     GROUP BY day_number
     ORDER BY num_continuous_days DESC LIMIT 1;`
   );
+  return Number(result[0].num_continuous_days);
 };
 
 export const getAverageStudyTime = async (
-  body: CropIdRequestBody,
+  body: CropHarvestRequestBody,
   plantedAt: Date,
   requireDay: number
-): Promise<{ average_study_time: number }[]> => {
+): Promise<number> => {
   const msToAdd = requireDay * 24 * 60 * 60 * 1000;
 
-  return await prisma.$queryRaw(
+  const result: { average_study_time: number }[] = await prisma.$queryRaw(
     Prisma.sql`SELECT SUM(extract(epoch from (COALESCE(exit_at, ${new Date(
       plantedAt.getTime() + msToAdd
     )}) - join_at))) / (3600 * ${requireDay}) as average_study_time
                FROM study_history
                WHERE user_id = ${body.userId}
                  AND join_at >= ${plantedAt}
-                 AND (exit_at <= ${new Date(
-                   plantedAt.getTime() + msToAdd
-                 )} OR exit_at IS NULL)
+                 AND join_at < ${new Date(plantedAt.getTime() + msToAdd)}
                GROUP BY user_id;`
   );
+
+  return result[0].average_study_time;
 };
 
 export const harvestCrop = async (
-  body: CropIdRequestBody,
+  body: CropHarvestRequestBody,
   grade: fruit_grade
 ) => {
   return await prisma.crops.update({

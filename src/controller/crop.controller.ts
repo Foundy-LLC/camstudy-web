@@ -10,10 +10,10 @@ import {
   deleteCrop,
   getAverageStudyTime,
   getConsecutiveAttendanceDays,
+  getGrowingCrop,
+  getHarvestedCrops,
   getTargetCropTypeAndPlantedDate,
   harvestCrop,
-  getHarvestedCrops,
-  isExistGrowingCrop,
 } from "@/repository/crop.repository";
 import {
   ALREADY_EXIST_CROP,
@@ -21,21 +21,18 @@ import {
   CROP_DEAD,
   CROP_ID_DOES_NOT_MATCH,
   DELETE_CROP_SUCCESS,
-  HARVEST_CROP_SUCCESS,
-  NOT_EXIST_GROWING_CROP,
-  SET_CROP_SUCCESS,
-} from "@/constants/cropMessage";
-import { CropIdRequestBody } from "@/models/crop/CropIdRequestBody";
-import { CROPS } from "@/constants/crops";
-import { determineCropsGrade } from "@/utils/CropUtil";
-
   FETCH_HARVESTED_CROPS_SUCCESS,
+  HARVEST_CROP_SUCCESS,
+  NO_CROP_TYPE_AND_PLANTED_DATE,
   NOT_EXIST_CROP,
   NOT_EXIST_GROWING_CROP,
   SET_CROP_SUCCESS,
 } from "@/constants/cropMessage";
-import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
+import { CropHarvestRequestBody } from "@/models/crop/CropHarvestRequestBody";
+import { CROPS } from "@/constants/crops";
+import { determineCropsGrade } from "@/utils/CropUtil";
 import { ValidateUid } from "@/models/common/ValidateUid";
+import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
 
 export const fetchHarvestedCrops = async (
   req: NextApiRequest,
@@ -69,7 +66,7 @@ export const setCrop = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, cropType } = req.body;
     const reqBody = new CropCreateRequestBody(userId, cropType);
 
-    const isExist = await isExistGrowingCrop(reqBody.userId);
+    const isExist = await getGrowingCrop(reqBody.userId);
     if (isExist.length !== 0) {
       throw ALREADY_EXIST_CROP;
     }
@@ -95,9 +92,9 @@ export const deleteGrowingCrop = async (
 ) => {
   try {
     const { userId, cropId } = req.body;
-    const reqBody = new CropIdRequestBody(userId, cropId);
+    const reqBody = new CropDeleteRequestBody(userId, cropId);
 
-    const isExist = await isExistGrowingCrop(reqBody.userId);
+    const isExist = await getGrowingCrop(reqBody.userId);
     if (isExist.length === 0) {
       throw NOT_EXIST_GROWING_CROP;
     }
@@ -123,9 +120,9 @@ export const harvestGrowingCrop = async (
 ) => {
   try {
     const { userId, cropId } = req.body;
-    const reqBody = new CropIdRequestBody(userId, cropId);
+    const reqBody = new CropHarvestRequestBody(userId, cropId);
 
-    const isExist = await isExistGrowingCrop(reqBody.userId);
+    const isExist = await getGrowingCrop(reqBody.userId);
     if (isExist == null || isExist.length === 0) {
       throw NOT_EXIST_GROWING_CROP;
     }
@@ -138,40 +135,45 @@ export const harvestGrowingCrop = async (
       reqBody
     );
 
+    if (targetCropTypeAndPlantedDate == null) {
+      throw NO_CROP_TYPE_AND_PLANTED_DATE;
+    }
+
     const targetCropType = CROPS.find(
-      (crop) => crop.type === targetCropTypeAndPlantedDate!.type
+      (crop) => crop.type === targetCropTypeAndPlantedDate.type
     );
 
-    const plantedAt = targetCropTypeAndPlantedDate!.planted_at;
+    if (targetCropType == null) {
+      throw NOT_EXIST_CROP;
+    }
+
+    const plantedAt = targetCropTypeAndPlantedDate.planted_at;
     const currentDate = new Date();
     const isPossibleToHarvest: boolean =
       (currentDate.getTime() - plantedAt.getTime()) / (1000 * 60 * 60 * 24) >
-      targetCropType!.requireDay;
+      targetCropType.requireDay;
 
     if (!isPossibleToHarvest) {
       throw CAN_NOT_HARVEST_CROP_YET;
     }
 
     const consecutiveAttendanceDays = await getConsecutiveAttendanceDays(
-      reqBody,
+      reqBody.userId,
       plantedAt,
-      targetCropType!.requireDay
+      targetCropType.requireDay
     );
 
-    if (
-      Number(consecutiveAttendanceDays[0].num_continuous_days) !==
-      targetCropType!.requireDay
-    ) {
+    if (consecutiveAttendanceDays !== targetCropType.requireDay) {
       throw CROP_DEAD;
     }
 
     const averageStudyTimes = await getAverageStudyTime(
       reqBody,
       plantedAt,
-      targetCropType!.requireDay
+      targetCropType.requireDay
     );
 
-    const grade = determineCropsGrade(averageStudyTimes[0].average_study_time);
+    const grade = determineCropsGrade(averageStudyTimes);
 
     await harvestCrop(reqBody, grade);
 

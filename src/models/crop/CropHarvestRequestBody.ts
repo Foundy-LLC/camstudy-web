@@ -1,11 +1,12 @@
 import { validateUid } from "@/utils/user.validator";
-import { validateCropId, validateCropType } from "@/utils/crop.validator";
+import { validateCropId } from "@/utils/crop.validator";
 
-export class CropIdRequestBody {
+export class CropHarvestRequestBody {
   constructor(readonly userId: string, readonly cropId: string) {
     this._validateUserId();
     this._validateCropId();
   }
+
   private _validateUserId = () => {
     validateUid(this.userId);
   };
