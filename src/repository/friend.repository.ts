@@ -30,9 +30,11 @@ export const deleteFriendOrRequest = async (
 };
 
 export const fetchFriendRequests = async (
-  userId: string
+  userId: string,
+  page: number
 ): Promise<FriendRequestUser[]> => {
   const requests = await client.friend.findMany({
+    skip: page * FRIEND_NUM_PER_PAGE,
     take: FRIEND_NUM_PER_PAGE,
     where: { acceptor_id: userId, accepted: false },
     orderBy: [{ requested_at: "desc" }],
