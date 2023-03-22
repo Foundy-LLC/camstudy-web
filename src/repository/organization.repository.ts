@@ -1,9 +1,9 @@
 import client from "prisma/client";
-import { ORGANIZATION_NUM_PER_PAGE } from "@/constants/organization.constant";
 import { belong } from "@prisma/client";
 import { VerifyOrganization } from "@/models/organization/verifyOrganization";
 import { Organization } from "@/models/organization/Organization";
 import { BelongOrganization } from "@/models/organization/BelongOrganization";
+import { NUM_PER_PAGE } from "@/constants/common";
 
 export const updateEmailVerifyStatus = async (
   userId: string,
@@ -87,8 +87,8 @@ export const findOrganizations = async (
   name?: string
 ): Promise<Organization[]> => {
   return await client.organization.findMany({
-    skip: pageNum * ORGANIZATION_NUM_PER_PAGE,
-    take: ORGANIZATION_NUM_PER_PAGE,
+    skip: pageNum * NUM_PER_PAGE,
+    take: NUM_PER_PAGE,
     where: { name: { startsWith: name } },
     orderBy: { name: "asc" },
     select: { id: true, name: true, address: true },

@@ -1,8 +1,8 @@
 import client from "../../prisma/client";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
-import { ORGANIZATION_NUM_PER_PAGE } from "@/constants/organization.constant";
 import { UserOverview } from "@/models/user/UserOverview";
 import { UserStatus } from "@/models/user/UserStatus";
+import { NUM_PER_PAGE } from "@/constants/common";
 
 export const addFriend = async (userId: string, targetUserId: string) => {
   await client.friend.create({
@@ -35,8 +35,8 @@ export const fetchFriendRequests = async (
   accepted: boolean
 ): Promise<FriendRequestUser[]> => {
   const requests = await client.friend.findMany({
-    skip: pageNum * ORGANIZATION_NUM_PER_PAGE,
-    take: ORGANIZATION_NUM_PER_PAGE,
+    skip: pageNum * NUM_PER_PAGE,
+    take: NUM_PER_PAGE,
     where: { acceptor_id: userId, accepted: accepted },
     orderBy: [{ requested_at: "desc" }],
     select: {
@@ -62,8 +62,8 @@ export const fetchFriendList = async (
   accepted: boolean
 ): Promise<UserOverview[]> => {
   const requests = await client.friend.findMany({
-    skip: pageNum * ORGANIZATION_NUM_PER_PAGE,
-    take: ORGANIZATION_NUM_PER_PAGE,
+    skip: pageNum * NUM_PER_PAGE,
+    take: NUM_PER_PAGE,
     where: { acceptor_id: userId, accepted: accepted },
     select: {
       user_account_friend_requester_idTouser_account: {
