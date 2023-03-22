@@ -71,7 +71,7 @@ export const getConsecutiveAttendanceDays = async (
                FROM study_history sh
                WHERE sh.user_id = ${body.userId}
                  AND sh.join_at >= ${start}
-                 AND sh.join_at <= ${new Date(start.getTime() + msToAdd)}
+                 AND sh.join_at < ${new Date(start.getTime() + msToAdd)}
                    )
                    , continuous_days AS (
                SELECT
