@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { deleteGrowingCrop, setCrop } from "@/controller/crop.controller";
+import {
+  deleteGrowingCrop,
+  harvestGrowingCrop,
+} from "@/controller/crop.controller";
 
 export default async function cropsHandler(
   req: NextApiRequest,
@@ -9,6 +12,9 @@ export default async function cropsHandler(
   switch (method) {
     case "DELETE":
       await deleteGrowingCrop(req, res);
+      break;
+    case "PATCH":
+      await harvestGrowingCrop(req, res);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);

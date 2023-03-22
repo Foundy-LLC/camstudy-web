@@ -1,7 +1,7 @@
 import { validateUid } from "@/utils/user.validator";
 import { validateCropId, validateCropType } from "@/utils/crop.validator";
 
-export class CropDeleteRequestBody {
+export class CropIdRequestBody {
   constructor(readonly userId: string, readonly cropId: string) {
     this._validateUserId();
     this._validateCropId();

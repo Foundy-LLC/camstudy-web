@@ -6,7 +6,7 @@ export interface Crops {
   imageUrls: string[];
 }
 
-const CROPS: Crops[] = [
+export const CROPS: Crops[] = [
   {
     type: crops_type.strawberry,
     requireDay: 3,
