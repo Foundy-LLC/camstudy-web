@@ -9,3 +9,5 @@ export const CAN_NOT_HARVEST_CROP_YET = "아직 작물을 수확할 수 없습�
 export const HARVEST_CROP_SUCCESS = "작물이 수확되었습니다.";
 export const CROP_DEAD = "작물이 죽었습니다.";
 export const CROP_ID_DOES_NOT_MATCH = "작물 아이디가 일치하지 않습니다.";
+export const FETCH_HARVESTED_CROPS_SUCCESS =
+  "수확한 작물을 성공적으로 조회했습니다.";

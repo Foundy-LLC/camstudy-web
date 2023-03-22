@@ -5,6 +5,7 @@ import { OrganizationsEmailJWTBody } from "@/models/organization/OrganizationsEm
 import { BelongOrganization } from "@/models/organization/BelongOrganization";
 import { OrganizationVerifyEmailForm } from "@/models/organization/OrganizationVerifyEmailForm";
 import { Organization } from "@/models/organization/Organization";
+import { fetchAbsolute } from "@/utils/fetchAbsolute";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -16,14 +17,11 @@ export class OrganizationService {
   ): Promise<Result<BelongOrganization>> {
     try {
       const emailConfirmBody = new OrganizationsEmailJWTBody(AccessToken);
-      const response = await fetch(
-        "http://localhost:3000/api/organizations/confirmation",
-        {
-          method: "POST",
-          body: JSON.stringify(emailConfirmBody),
-          headers: HEADER,
-        }
-      );
+      const response = await fetchAbsolute("api/organizations/confirmation", {
+        method: "POST",
+        body: JSON.stringify(emailConfirmBody),
+        headers: HEADER,
+      });
       if (response.ok) {
         return Result.createSuccessUsingResponseData(response);
       } else {
@@ -44,8 +42,8 @@ export class OrganizationService {
         organizationId,
         organizationName
       );
-      const response = await fetch(
-        `http://localhost:3000/api/organizations/${organizationId}`,
+      const response = await fetchAbsolute(
+        `api/organizations/${organizationId}`,
         {
           method: "DELETE",
           body: JSON.stringify(emailConfirmBody),
@@ -75,11 +73,14 @@ export class OrganizationService {
         organizationId,
         organizationName
       );
-      const response = await fetch(`api/organizations/${organizationId}`, {
-        method: "POST",
-        body: JSON.stringify(requestBody),
-        headers: HEADER,
-      });
+      const response = await fetchAbsolute(
+        `api/organizations/${organizationId}`,
+        {
+          method: "POST",
+          body: JSON.stringify(requestBody),
+          headers: HEADER,
+        }
+      );
       if (response.ok) {
         return Result.createSuccessUsingResponseMessage(response);
       } else {
@@ -94,10 +95,13 @@ export class OrganizationService {
     name: string
   ): Promise<Result<Organization[]>> {
     try {
-      const response = await fetch(`api/organizations?name=${name}&page=0`, {
-        method: "GET",
-        headers: HEADER,
-      });
+      const response = await fetchAbsolute(
+        `api/organizations?name=${name}&page=0`,
+        {
+          method: "GET",
+          headers: HEADER,
+        }
+      );
       if (response.ok) {
         return Result.createSuccessUsingResponseData(response);
       } else {
@@ -112,10 +116,13 @@ export class OrganizationService {
     userId: string
   ): Promise<Result<BelongOrganization[]>> {
     try {
-      const response = await fetch(`api/users/${userId}/organizations`, {
-        method: "GET",
-        headers: HEADER,
-      });
+      const response = await fetchAbsolute(
+        `api/users/${userId}/organizations`,
+        {
+          method: "GET",
+          headers: HEADER,
+        }
+      );
       if (response.ok) {
         return Result.createSuccessUsingResponseData(response);
       } else {

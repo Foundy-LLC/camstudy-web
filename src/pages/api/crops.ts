@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { setCrop } from "@/controller/crop.controller";
+import { fetchHarvestedCrops, setCrop } from "@/controller/crop.controller";
 
 export default async function cropsHandler(
   req: NextApiRequest,
@@ -7,6 +7,9 @@ export default async function cropsHandler(
 ) {
   const { method } = req;
   switch (method) {
+    case "GET":
+      await fetchHarvestedCrops(req, res);
+      break;
     case "POST":
       await setCrop(req, res);
       break;

@@ -4,6 +4,28 @@ import prisma from "../../prisma/client";
 import { CropIdRequestBody } from "@/models/crop/CropIdRequestBody";
 import { Prisma } from ".prisma/client";
 import { fruit_grade } from "@prisma/client";
+import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
+import { Crop } from "@/models/crop/Crop";
+
+export const getHarvestedCrops = async (userId: string): Promise<Crop[]> => {
+  const harvestedCrops = await prisma.crops.findMany({
+    where: {
+      user_id: userId,
+      harvested_at: {
+        not: null,
+      },
+    },
+    orderBy: {
+      harvested_at: "desc",
+    },
+  });
+  return harvestedCrops.map((crop) => {
+    return {
+      type: crop.type,
+      grade: crop.grade!,
+    };
+  });
+};
 
 export const isExistGrowingCrop = async (userId: string) => {
   return await prisma.crops.findMany({

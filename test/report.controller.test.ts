@@ -26,6 +26,7 @@ describe("postReport", () => {
       content: "",
       category: ReportCategory.hindrance,
       screenshot: null,
+      accepted: false,
     });
     const request = createMockRequest({
       body: fakeRequest,
