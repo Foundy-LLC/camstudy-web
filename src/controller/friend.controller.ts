@@ -113,10 +113,7 @@ export const getFriendList = async (
     //친구 요청 목록 조회인 경우
     if (accepted === "false") {
       const friendRequestBody = new FriendGetRequestsBody(userId, accepted);
-      const result = await fetchFriendRequests(
-        friendRequestBody.userId,
-        friendRequestBody.accepted!
-      );
+      const result = await fetchFriendRequests(friendRequestBody.userId);
       res.status(200).send(
         new ResponseBody({
           data: result,
@@ -126,15 +123,10 @@ export const getFriendList = async (
     }
     //친구 목록 조회인 경우
     else {
-      const friendRequestBody = new FriendGetOverviewsBody(
-        userId,
-        page,
-        "true"
-      );
+      const friendRequestBody = new FriendGetOverviewsBody(userId, page);
       const result = await fetchFriendList(
         friendRequestBody.userId,
-        friendRequestBody.page,
-        friendRequestBody.accepted
+        friendRequestBody.page
       );
       if (result.length === 0 && friendRequestBody.page !== 0) {
         throw PAGE_NUM_OUT_OF_RANGE_ERROR;
