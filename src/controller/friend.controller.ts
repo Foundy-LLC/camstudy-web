@@ -27,7 +27,6 @@ import {
 import { Prisma } from ".prisma/client";
 import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError;
 import { FriendGetOverviewsBody } from "@/models/friend/FriendGetOverviewsBody";
-import { FriendGetRequestsBody } from "@/models/friend/FriendGetRequestsBody";
 
 export const sendFriendRequest = async (
   req: NextApiRequest,
@@ -106,17 +105,25 @@ export const getFriendList = async (
     if (
       typeof userId !== "string" ||
       (typeof accepted !== "string" && typeof accepted !== "undefined") ||
-      (typeof page !== "string" && typeof page !== "undefined")
+      typeof page !== "string"
     ) {
       throw REQUEST_QUERY_ERROR;
     }
     //친구 요청 목록 조회인 경우
     if (accepted === "false") {
-      const friendRequestBody = new FriendGetRequestsBody(userId, accepted);
+      const friendRequestBody = new FriendGetOverviewsBody(
+        userId,
+        page,
+        accepted
+      );
       const result = await fetchFriendRequests(
         friendRequestBody.userId,
+        friendRequestBody.pageNum!,
         friendRequestBody.accepted!
       );
+      if (result.length === 0 && friendRequestBody.pageNum !== 0) {
+        throw PAGE_NUM_OUT_OF_RANGE_ERROR;
+      }
       res.status(200).send(
         new ResponseBody({
           data: result,
@@ -128,7 +135,7 @@ export const getFriendList = async (
     else {
       const friendRequestBody = new FriendGetOverviewsBody(
         userId,
-        page!,
+        page,
         "true"
       );
       const result = await fetchFriendList(

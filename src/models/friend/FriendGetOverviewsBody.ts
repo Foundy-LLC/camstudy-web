@@ -40,7 +40,7 @@ export class FriendGetOverviewsBody {
   };
 
   private _convertAcceptedToBoolean = (accepted: string): boolean => {
-    return Boolean(accepted);
+    return accepted === "true" ? true : false;
   };
   private _validatePagNum() {
     validatePageNum(this._pageNum);

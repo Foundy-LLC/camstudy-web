@@ -38,7 +38,7 @@ export class FriendService {
       return Result.createErrorUsingException(e);
     }
   };
-
+  //TODO(건우): 페이지네이션 지정 필요
   public getFriendList = async (
     userId: string
   ): Promise<Result<UserOverview[]>> => {
@@ -104,14 +104,14 @@ export class FriendService {
       return Result.createErrorUsingException(e);
     }
   };
-
+  //TODO(건우): 페이지네이션 지정 필요
   public getFriendRequests = async (
     userId: string
   ): Promise<Result<FriendRequestUser[]>> => {
     try {
       const friendRequestBody = new ValidateUid(userId);
       const response = await fetchAbsolute(
-        `api/users/${friendRequestBody.userId}/friends?accepted=false`,
+        `api/users/${friendRequestBody.userId}/friends?accepted=false&page=0`,
         {
           method: "GET",
           headers: HEADER,
