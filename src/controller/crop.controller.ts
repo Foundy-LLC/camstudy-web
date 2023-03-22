@@ -66,8 +66,8 @@ export const setCrop = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, cropType } = req.body;
     const reqBody = new CropCreateRequestBody(userId, cropType);
 
-    const isExist = await getGrowingCrop(reqBody.userId);
-    if (isExist.length !== 0) {
+    const growingCrop = await getGrowingCrop(reqBody.userId);
+    if (growingCrop != null) {
       throw ALREADY_EXIST_CROP;
     }
 
@@ -94,8 +94,8 @@ export const deleteGrowingCrop = async (
     const { userId, cropId } = req.body;
     const reqBody = new CropDeleteRequestBody(userId, cropId);
 
-    const isExist = await getGrowingCrop(reqBody.userId);
-    if (isExist.length === 0) {
+    const growingCrop = await getGrowingCrop(reqBody.userId);
+    if (growingCrop == null) {
       throw NOT_EXIST_GROWING_CROP;
     }
 
@@ -122,12 +122,12 @@ export const harvestGrowingCrop = async (
     const { userId, cropId } = req.body;
     const reqBody = new CropHarvestRequestBody(userId, cropId);
 
-    const isExist = await getGrowingCrop(reqBody.userId);
-    if (isExist == null || isExist.length === 0) {
+    const growingCrop = await getGrowingCrop(reqBody.userId);
+    if (growingCrop == null) {
       throw NOT_EXIST_GROWING_CROP;
     }
 
-    if (isExist[0].id !== reqBody.cropId) {
+    if (growingCrop.id !== reqBody.cropId) {
       throw CROP_ID_DOES_NOT_MATCH;
     }
 

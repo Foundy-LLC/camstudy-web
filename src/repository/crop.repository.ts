@@ -28,12 +28,13 @@ export const getHarvestedCrops = async (userId: string): Promise<Crop[]> => {
 };
 
 export const getGrowingCrop = async (userId: string) => {
-  return await prisma.crops.findMany({
+  const result = await prisma.crops.findMany({
     where: {
       user_id: userId,
       harvested_at: null,
     },
   });
+  return result.length != 0 ? result[0] : undefined;
 };
 
 export const createCrop = async (body: CropCreateRequestBody) => {
