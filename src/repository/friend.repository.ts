@@ -61,9 +61,9 @@ export const fetchFriendList = async (
   accepted: boolean
 ): Promise<UserOverview[]> => {
   const requests = await client.friend.findMany({
-    where: { acceptor_id: userId, accepted: accepted },
     skip: pageNum * FRIEND_NUM_PER_PAGE,
     take: FRIEND_NUM_PER_PAGE,
+    where: { requester_id: userId, accepted: accepted },
     select: {
       user_account_friend_requester_idTouser_account: {
         select: {
