@@ -6,47 +6,19 @@ import {
 } from "@/utils/friend.validator";
 
 export class FriendGetOverviewsBody {
-  private _pageNum: number | null;
-  private _accepted: boolean | undefined;
+  readonly page: number;
+  readonly accepted: boolean;
+
   constructor(
     readonly userId: string,
-    readonly page: string,
-    accepted: string
+    page: string | undefined,
+    accepted: string | undefined
   ) {
-    this._validateUserIds();
-    this._validatePage();
-    this._pageNum = this._convertPageToInt(page);
-    validateAccepted(accepted);
-    this._accepted = this._convertAcceptedToBoolean(accepted);
-    this._validatePagNum();
-    this._validateAccepted();
-  }
+    page ??= "0";
+    accepted ??= "true";
+    this.page = parseInt(page);
+    this.accepted = Boolean(accepted);
 
-  public get pageNum() {
-    return this._pageNum;
-  }
-  public get accepted() {
-    return this._accepted;
-  }
-  private _validateUserIds() {
-    validateUid(this.userId);
-  }
-  private _validatePage() {
-    validatePage(this.page);
-    this._pageNum = parseInt(this.page);
-  }
-  private _convertPageToInt = (page: string): number => {
-    return parseInt(page);
-  };
-
-  private _convertAcceptedToBoolean = (accepted: string): boolean => {
-    return Boolean(accepted);
-  };
-  private _validatePagNum() {
-    validatePageNum(this._pageNum);
-  }
-
-  private _validateAccepted() {
-    validateAcceptedBoolean(this._accepted);
+    validateUid(userId);
   }
 }

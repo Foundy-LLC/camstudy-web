@@ -128,15 +128,15 @@ export const getFriendList = async (
     else {
       const friendRequestBody = new FriendGetOverviewsBody(
         userId,
-        page!,
+        page,
         "true"
       );
       const result = await fetchFriendList(
         friendRequestBody.userId,
-        friendRequestBody.pageNum!,
-        friendRequestBody.accepted!
+        friendRequestBody.page,
+        friendRequestBody.accepted
       );
-      if (result.length === 0 && friendRequestBody.pageNum !== 0) {
+      if (result.length === 0 && friendRequestBody.page !== 0) {
         throw PAGE_NUM_OUT_OF_RANGE_ERROR;
       }
       res.status(200).send(
