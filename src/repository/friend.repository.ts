@@ -93,10 +93,23 @@ export const approveFriendRequest = async (
   friendId: string,
   userId: string
 ) => {
-  await client.friend.update({
-    where: {
-      requester_id_acceptor_id: { requester_id: friendId, acceptor_id: userId },
-    },
-    data: { accepted: true },
+  await client.$transaction(async (tx) => {
+    await tx.friend.update({
+      where: {
+        requester_id_acceptor_id: {
+          requester_id: friendId,
+          acceptor_id: userId,
+        },
+      },
+      data: { accepted: true },
+    });
+    await tx.friend.create({
+      data: {
+        requester_id: userId,
+        acceptor_id: friendId,
+        requested_at: new Date(),
+        accepted: true,
+      },
+    });
   });
 };
