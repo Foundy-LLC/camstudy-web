@@ -31,14 +31,10 @@ export class CropStore {
           this._harvestedCrops = result.getOrNull()!;
         });
       } else {
-        runInAction(() => {
-          throw new Error(result.throwableOrNull()!.message);
-        });
+        throw new Error(result.throwableOrNull()!.message);
       }
     } catch (e) {
-      runInAction(() => {
-        if (e instanceof Error) console.error(e.message);
-      });
+      if (e instanceof Error) console.error(e.message);
     }
   };
 }
