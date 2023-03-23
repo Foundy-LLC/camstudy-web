@@ -1,0 +1,56 @@
+@import "./color/colorPalette";
+.room-list-frame{
+  width: 1040px;
+  height: 638px;
+  background: $-system_white;
+  border: 0.5px solid $-gray_cool-300;
+  border-radius: 16px;
+  display: inline-flex;
+  .room-list-title{
+
+  }
+  .room-list-form{
+    width: 490px;
+    height: 128px;
+    background: $-system_white;
+    border: 0.5px solid $-gray_cool-300;
+    border-radius: 12px;
+    display: inline-flex;
+    margin: 20px 0px 0px 20px;
+
+    .room-thumbnail-img{
+      width: 96px;
+      height: 96px;
+      left: 16px;
+      top: 16px;
+      margin: 16px;
+      background: $-gray_cool-100 ;
+      border-radius: 12px;
+    }
+
+    .room-title{
+      margin: 16px 12px 0px 0px;
+      height: 28px;
+    }
+
+    .room-tags{
+      width: 232px;
+      height: 22px;
+      margin-top:4px;
+      color: $-gray_cool-400;
+    }
+    .room-joiner-img-blank{
+      height: 32px;
+      width: 32px;
+      margin-top: 8px;
+      border: none;
+      background:$-gray_cool-50;
+      border-radius: 8px;
+    }
+    .room-enter-button{
+      margin-top: 4px;
+      width: 86px;
+      height: 38px;
+    }
+  }
+}
