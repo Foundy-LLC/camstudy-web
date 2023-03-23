@@ -54,6 +54,7 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
           exit_at: null,
         },
       },
+      room_tag: { include: { tag: true } },
     },
   });
   return rooms.map((room) => {
@@ -65,7 +66,7 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
       room.thumbnail,
       room.study_history.length,
       MAX_ROOM_CAPACITY,
-      [] //room.room_tags
+      room.room_tag.map((tags) => tags.tag.name) //room.room_tags
     );
   });
 };

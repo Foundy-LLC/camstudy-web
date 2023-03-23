@@ -9,7 +9,7 @@ export class RoomOverview {
     readonly thumbnail: string | null,
     readonly joinCount: number,
     readonly maxCount: number,
-    readonly tags?: Array<String>
+    readonly tags?: Array<string>
   ) {
     makeAutoObservable(this);
   }
