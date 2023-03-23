@@ -10,6 +10,7 @@ import {
 } from "@/constants/room.constant";
 import { room } from "@prisma/client";
 import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
+import { UserStatus } from "@/models/user/UserStatus";
 
 export const findRoomById = async (roomId: string): Promise<room | null> => {
   return await prisma.room.findUnique({
@@ -53,10 +54,22 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
         where: {
           exit_at: null,
         },
+        include: { user_account: true },
       },
+      room_tag: { include: { tag: true } },
     },
   });
   return rooms.map((room) => {
+    const userOverviews = room.study_history.map((history) => {
+      const { id, name, profile_image, score, status } = history.user_account;
+      return {
+        id: id,
+        name: name,
+        profileImage: profile_image,
+        rankingScore: Number(score),
+        status: status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
+      };
+    });
     return new RoomOverview(
       room.id,
       room.master_id,
@@ -65,7 +78,8 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
       room.thumbnail,
       room.study_history.length,
       MAX_ROOM_CAPACITY,
-      [] //room.room_tags
+      userOverviews,
+      room.room_tag.map((tags) => tags.tag.name) //room.room_tags
     );
   });
 };

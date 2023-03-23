@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import React, { Key, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useStores } from "@/stores/context";
 import { observer } from "mobx-react-lite";
 import { RoomOverview } from "@/models/room/RoomOverview";
@@ -8,47 +8,114 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import { useRouter } from "next/router";
 import userStore from "@/stores/UserStore";
+import roomListStyles from "@/styles/room-list.module.scss";
+import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
+import locked_icon from "/public/room/locked.png";
+import option_icon from "/public/room/option.png";
+import enter_btn from "/public/room/enterBtn.png";
+const RoomTag: NextPage<{ userTag: string }> = observer(({ userTag }) => {
+  return <a>{userTag.toString() + " "}</a>;
+});
+
+const RoomTagGroup: NextPage<{ userTags: string[] }> = observer(
+  ({ userTags }) => {
+    return (
+      <div className={`${roomListStyles["room-tags"]} typography__text`}>
+        {userTags.map((userTag, key) => (
+          <RoomTag userTag={userTag} key={key} />
+        ))}
+      </div>
+    );
+  }
+);
 
 const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
   ({ roomOverview }) => {
-    const { roomListStore } = useStores();
-    const [user] = useAuthState(auth);
+    console.log(roomOverview.joinedUsers);
     return (
-      <div>
-        {!roomOverview.hasPassword ? null : (
-          <Image
-            src={
-              "https://uxwing.com/wp-content/themes/uxwing/download/editing-user-action/padlock-black-icon.png"
-            }
-            width={7}
-            height={10}
-            alt="locked"
-            style={{ display: "inline" }}
-          />
-        )}
-        <h3 style={{ display: "inline" }}>{roomOverview.title}</h3>
-        <p style={{ display: "inline" }}>
-          :{roomOverview.joinCount}/{roomOverview.maxCount}
-        </p>
-        {roomOverview.masterId === user?.uid ? (
-          <Image
-            src={
-              "https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/red-x-icon.png"
-            }
-            width={13}
-            height={13}
-            alt="locked"
-            onClick={() => {
-              if (
-                confirm(`"${roomOverview.title}"방을 삭제하시겠습니까?`) ===
-                true
-              ) {
-                console.log(`${roomOverview.title}방이 삭제되었습니다`);
-                roomListStore.deleteRoom(roomOverview.id);
-              } else return;
-            }}
-          />
-        ) : null}
+      <div
+        className={`${roomListStyles["room-list-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+      >
+        <Image
+          src={
+            roomOverview.thumbnail
+              ? roomOverview.thumbnail
+              : DEFAULT_THUMBNAIL_URL
+          }
+          alt={`${roomOverview.title}-thumbnail-img`}
+          className={`${roomListStyles["room-thumbnail-img"]}`}
+          width={96}
+          height={96}
+        ></Image>
+        <div
+          style={{
+            display: "inline-flex",
+            flexDirection: "column",
+            width: "100%",
+          }}
+        >
+          <div style={{ display: "inline-flex" }}>
+            <h3
+              className={`${roomListStyles["room-title"]} typography__text--big`}
+            >
+              {roomOverview.title}
+            </h3>
+            {!roomOverview.hasPassword ? null : (
+              <Image
+                src={locked_icon}
+                width={15}
+                height={20}
+                alt="locked"
+                style={{ marginTop: "19px" }}
+              />
+            )}
+            <Image
+              src={option_icon}
+              alt={"option_icon"}
+              width={16}
+              height={4}
+              style={{
+                marginLeft: "auto",
+                marginTop: "26px",
+                marginRight: "20px",
+              }}
+            />
+          </div>
+          <div style={{ display: "inline-flex" }}>
+            {roomOverview.tags && <RoomTagGroup userTags={roomOverview.tags} />}
+          </div>
+          <div style={{ display: "inline-flex" }}>
+            <div>
+              <button
+                className={`${roomListStyles["room-joiner-img-blank"]}`}
+                src = {roomOverview.}
+              ></button>
+              <button
+                className={`${roomListStyles["room-joiner-img-blank"]}`}
+              ></button>
+              <button
+                className={`${roomListStyles["room-joiner-img-blank"]}`}
+              ></button>
+              <button
+                className={`${roomListStyles["room-joiner-img-blank"]}`}
+              ></button>
+            </div>
+            <Image
+              className={`${roomListStyles["room-enter-button"]}`}
+              style={{
+                marginLeft: "auto",
+                marginRight: "16px",
+                marginBottom: "16px",
+              }}
+              src={enter_btn}
+              alt={"enterBtn"}
+            />
+          </div>
+        </div>
+
+        {/*<p>*/}
+        {/*  :{roomOverview.joinCount}/{roomOverview.maxCount}*/}
+        {/*</p>*/}
       </div>
     );
   }
@@ -57,11 +124,15 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
 const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
     return (
-      <>
-        {items.map((item) => (
-          <RoomItem roomOverview={item} key={item.id} />
-        ))}
-      </>
+      <div
+        className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
+      >
+        <>
+          {items.map((item) => (
+            <RoomItem roomOverview={item} key={item.id} />
+          ))}
+        </>
+      </div>
     );
   }
 );

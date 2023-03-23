@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { UserOverview } from "@/models/user/UserOverview";
 
 export class RoomOverview {
   constructor(
@@ -9,7 +10,8 @@ export class RoomOverview {
     readonly thumbnail: string | null,
     readonly joinCount: number,
     readonly maxCount: number,
-    readonly tags?: Array<String>
+    readonly joinedUsers: UserOverview[],
+    readonly tags?: Array<string>
   ) {
     makeAutoObservable(this);
   }
