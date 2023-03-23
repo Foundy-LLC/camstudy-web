@@ -130,7 +130,7 @@ const FriendRequestGroup: NextPage<{ items: FriendRequestUser[] }> = observer(
 const FriendOverview: NextPage<{ item: UserOverview }> = observer(
   ({ item }) => {
     const { friendStore } = useStores();
-    const { id, name, profileImage, rankingScore, status } = item;
+    const { id, name, profileImage, introduce, status } = item;
     return (
       <>
         <Image
@@ -139,7 +139,7 @@ const FriendOverview: NextPage<{ item: UserOverview }> = observer(
           src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
           alt={`${name}-profileImg`}
         />
-        <h3>{name}&nbsp;</h3> <h3>랭킹점수:{rankingScore}&nbsp;</h3>
+        <h3>{name}&nbsp;</h3> <h3>자기소개: {introduce}&nbsp;</h3>
         <Image
           width={20}
           height={20}
