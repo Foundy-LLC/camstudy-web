@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import {
-  deleteFriend,
   getFriendList,
   sendFriendRequest,
 } from "@/controller/friend.controller";
