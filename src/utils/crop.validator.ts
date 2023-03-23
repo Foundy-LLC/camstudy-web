@@ -15,7 +15,7 @@ export const validateCropType = (cropType: string) => {
 };
 
 export const validateCropId = (cropId: string) => {
-  if (cropId.length == 0) {
+  if (cropId == null || cropId.length == 0) {
     throw NOT_EXIST_CROP_ID;
   }
 };
