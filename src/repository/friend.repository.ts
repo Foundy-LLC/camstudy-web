@@ -18,13 +18,23 @@ export const deleteFriendOrRequest = async (
   userId: string,
   targetUserId: string
 ) => {
-  await client.friend.delete({
-    where: {
-      requester_id_acceptor_id: {
-        requester_id: userId,
-        acceptor_id: targetUserId,
+  await client.$transaction(async (tx) => {
+    await tx.friend.delete({
+      where: {
+        requester_id_acceptor_id: {
+          requester_id: userId,
+          acceptor_id: targetUserId,
+        },
       },
-    },
+    });
+    await tx.friend.delete({
+      where: {
+        requester_id_acceptor_id: {
+          requester_id: targetUserId,
+          acceptor_id: userId,
+        },
+      },
+    });
   });
 };
 
