@@ -1,5 +1,4 @@
 import client from "../../prisma/client";
-import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { UserOverview } from "@/models/user/UserOverview";
 import { UserStatus } from "@/models/user/UserStatus";
 import { FRIEND_NUM_PER_PAGE } from "@/constants/friend.constant";
@@ -32,7 +31,7 @@ export const deleteFriendOrRequest = async (
 export const fetchFriendRequests = async (
   userId: string,
   page: number
-): Promise<FriendRequestUser[]> => {
+): Promise<UserOverview[]> => {
   const requests = await client.friend.findMany({
     skip: page * FRIEND_NUM_PER_PAGE,
     take: FRIEND_NUM_PER_PAGE,
@@ -40,18 +39,26 @@ export const fetchFriendRequests = async (
     orderBy: [{ requested_at: "desc" }],
     select: {
       user_account_friend_requester_idTouser_account: {
-        select: { id: true, name: true, profile_image: true },
+        select: {
+          id: true,
+          name: true,
+          introduce: true,
+          profile_image: true,
+          status: true,
+        },
       },
     },
   });
 
   return requests.map((request) => {
-    const { id, name, profile_image } =
+    const { id, name, introduce, profile_image, status } =
       request.user_account_friend_requester_idTouser_account;
     return {
-      requesterId: id,
-      requesterName: name,
+      id,
+      name,
       profileImage: profile_image,
+      introduce: introduce,
+      status: status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
     };
   });
 };
@@ -65,25 +72,25 @@ export const fetchFriendList = async (
     take: FRIEND_NUM_PER_PAGE,
     where: { requester_id: userId, accepted: true },
     select: {
-      user_account_friend_requester_idTouser_account: {
+      user_account_friend_acceptor_idTouser_account: {
         select: {
           id: true,
           name: true,
           profile_image: true,
-          score: true,
+          introduce: true,
           status: true,
         },
       },
     },
   });
   return requests.map((request) => {
-    const { id, name, profile_image, score, status } =
-      request.user_account_friend_requester_idTouser_account;
+    const { id, name, profile_image, introduce, status } =
+      request.user_account_friend_acceptor_idTouser_account;
     return {
       id: id,
       name: name,
       profileImage: profile_image,
-      rankingScore: Number(score),
+      introduce: introduce,
       status: status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
     };
   });
