@@ -110,7 +110,7 @@ export const getUsers = async (req: NextApiRequest, res: NextApiResponse) => {
     );
   } catch (e) {
     if (typeof e === "string") {
-      res.status(400).send(e);
+      res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
     res
@@ -143,7 +143,7 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(201).json(new ResponseBody({ message: PROFILE_CREATE_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
-      res.status(400).send(e);
+      res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
     res
