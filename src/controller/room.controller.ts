@@ -35,6 +35,7 @@ import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
 import { RecentRoomsGetRequest } from "@/models/room/RecentRoomsGetRequest";
 import runMiddleware from "@/utils/runMiddleware";
+import { uuidv4 } from "@firebase/util";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -157,7 +158,9 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
 
 export const deleteRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    await deleteRoomReq(new RoomDeleteRequestBody(req.body.roomId));
+    const { roomId } = req.query;
+    if (typeof roomId !== "string") throw REQUEST_QUERY_ERROR;
+    await deleteRoomReq(new RoomDeleteRequestBody(roomId));
     res.status(201).send(new ResponseBody({ message: ROOM_DELETE_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
@@ -188,16 +191,16 @@ export const postRoomThumbnail = async (
       storage: multer.diskStorage({
         filename: function (req, file, callback) {
           const ext = path.extname(file.originalname);
-          callback(null, "test" + ext);
+          callback(null, uuidv4() + ext);
         },
       }),
       limits: { fileSize: MAX_IMAGE_BYTE_SIZE },
     });
     await runMiddleware(req, res, multerUpload.single("roomThumbnail"));
     const file = req.file;
-    const others = req.body;
+    const { roomId } = req.query;
     const signedUrl: string = await multipartUploader(
-      "rooms/" + others.roomId + ".png",
+      "rooms/" + roomId + ".png",
       file.path
     );
 

@@ -39,7 +39,6 @@ export class OrganizationService {
     try {
       const emailConfirmBody = new OrganizationsBelongRequestBody(
         userId,
-        organizationId,
         organizationName
       );
       const response = await fetchAbsolute(

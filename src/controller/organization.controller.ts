@@ -30,6 +30,7 @@ import { verifyEmailToken } from "@/service/manageVerifyToken";
 import { TokenExpiredError } from "jsonwebtoken";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { BelongOrganization } from "@/models/organization/BelongOrganization";
+import { OrganizationsBelongConfirmRequestBody } from "@/models/organization/OrganizationsBelongConfirmRequestBody";
 
 interface JwtPayload {
   userId: string;
@@ -46,11 +47,12 @@ export const confirmOrganizationEmail = async (
     const { userId, organizationId, organizationName } = verifyEmailToken(
       AccessToken
     ) as JwtPayload;
-    const organizationsEmailConfirmBody = new OrganizationsBelongRequestBody(
-      userId,
-      organizationId,
-      organizationName
-    );
+    const organizationsEmailConfirmBody =
+      new OrganizationsBelongConfirmRequestBody(
+        userId,
+        organizationId,
+        organizationName
+      );
     const verifiedOrganization = await updateEmailVerifyStatus(
       organizationsEmailConfirmBody.userId,
       organizationsEmailConfirmBody.organizationId
@@ -98,17 +100,15 @@ export const deleteBelongOrganization = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  const { userId, organizationId, organizationName } = req.body;
   try {
+    const { organizationId } = req.query;
+    const { userId, organizationName } = req.body;
+    if (typeof organizationId !== "string") throw REQUEST_QUERY_ERROR;
     const organizationDeleteRequestBody = new OrganizationsBelongRequestBody(
       userId,
-      organizationId,
       organizationName
     );
-    await deleteBelong(
-      organizationDeleteRequestBody.userId,
-      organizationDeleteRequestBody.organizationId
-    );
+    await deleteBelong(organizationDeleteRequestBody.userId, organizationId);
     res.status(201).json(
       new ResponseBody({
         message: `${organizationName}을(를) 소속에서 삭제하였습니다.`,
