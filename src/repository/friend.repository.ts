@@ -2,6 +2,10 @@ import client from "../../prisma/client";
 import { UserOverview } from "@/models/user/UserOverview";
 import { UserStatus } from "@/models/user/UserStatus";
 import { FRIEND_NUM_PER_PAGE } from "@/constants/friend.constant";
+import {
+  FRIEND_CANCEL_REQUEST_ID_ERROR,
+  NOT_FOUND_FRIEND_REQUEST_ERROR,
+} from "@/constants/FriendMessage";
 
 export const addFriend = async (userId: string, targetUserId: string) => {
   await client.friend.create({
@@ -18,8 +22,17 @@ export const deleteFriendOrRequest = async (
   userId: string,
   targetUserId: string
 ) => {
-  await client.$transaction(async (tx) => {
-    await tx.friend.delete({
+  const result = await client.friend.findUnique({
+    where: {
+      requester_id_acceptor_id: {
+        requester_id: userId,
+        acceptor_id: targetUserId,
+      },
+    },
+  });
+  // 상대방이 아직 친구 요청을 수락하지 않은 경우
+  if (result && result.accepted === false) {
+    await client.friend.delete({
       where: {
         requester_id_acceptor_id: {
           requester_id: userId,
@@ -27,15 +40,28 @@ export const deleteFriendOrRequest = async (
         },
       },
     });
-    await tx.friend.delete({
-      where: {
-        requester_id_acceptor_id: {
-          requester_id: targetUserId,
-          acceptor_id: userId,
+  }
+  // 상대방이 이미 친구 요청을 수락한 경우
+  else {
+    await client.$transaction(async (tx) => {
+      await tx.friend.delete({
+        where: {
+          requester_id_acceptor_id: {
+            requester_id: userId,
+            acceptor_id: targetUserId,
+          },
         },
-      },
+      });
+      await tx.friend.delete({
+        where: {
+          requester_id_acceptor_id: {
+            requester_id: targetUserId,
+            acceptor_id: userId,
+          },
+        },
+      });
     });
-  });
+  }
 };
 
 export const fetchFriendRequests = async (
