@@ -23,6 +23,7 @@ import {
   NOT_FOUND_FRIEND_REQUEST_ERROR,
   FRIEND_LIST_GET_SUCCESS,
   PAGE_NUM_OUT_OF_RANGE_ERROR,
+  INVALID_FRIEND_REQUEST_USER_ID,
 } from "@/constants/FriendMessage";
 import { Prisma } from ".prisma/client";
 import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError;
@@ -33,8 +34,13 @@ export const sendFriendRequest = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  const { userId, targetUserId } = req.body;
+  const { targetUserId } = req.body;
+  const { userId } = req.query;
+
   try {
+    if (typeof userId !== "string") {
+      throw INVALID_FRIEND_REQUEST_USER_ID;
+    }
     const friendRequestBody = new FriendPostRequestBody(userId, targetUserId);
     if (userId === targetUserId) {
       throw FRIEND_REQUEST_ID_ERROR;
