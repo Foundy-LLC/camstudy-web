@@ -18,8 +18,9 @@ export const deleteFriendOrRequest = async (
   userId: string,
   targetUserId: string
 ) => {
+  // 상대방이 이미 친구 요청을 수락한 경우
   await client.$transaction(async (tx) => {
-    await tx.friend.delete({
+    const result = await tx.friend.findUnique({
       where: {
         requester_id_acceptor_id: {
           requester_id: userId,
@@ -27,14 +28,34 @@ export const deleteFriendOrRequest = async (
         },
       },
     });
-    await tx.friend.delete({
-      where: {
-        requester_id_acceptor_id: {
-          requester_id: targetUserId,
-          acceptor_id: userId,
+    // 상대방이 아직 친구 요청을 수락하지 않은 경우
+    if (result && result.accepted === false) {
+      await tx.friend.delete({
+        where: {
+          requester_id_acceptor_id: {
+            requester_id: userId,
+            acceptor_id: targetUserId,
+          },
         },
-      },
-    });
+      });
+    } else {
+      await tx.friend.delete({
+        where: {
+          requester_id_acceptor_id: {
+            requester_id: userId,
+            acceptor_id: targetUserId,
+          },
+        },
+      });
+      await tx.friend.delete({
+        where: {
+          requester_id_acceptor_id: {
+            requester_id: targetUserId,
+            acceptor_id: userId,
+          },
+        },
+      });
+    }
   });
 };
 
