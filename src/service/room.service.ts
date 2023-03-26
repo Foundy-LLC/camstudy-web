@@ -66,10 +66,8 @@ export class RoomService {
 
   public async deleteRoom(roomId: string) {
     try {
-      const requestBody = new RoomDeleteRequestBody(roomId);
       const response = await fetchAbsolute(`api/rooms/${roomId}`, {
         method: "DELETE",
-        body: JSON.stringify(requestBody),
         headers: HEADER,
       });
       if (response.ok) {

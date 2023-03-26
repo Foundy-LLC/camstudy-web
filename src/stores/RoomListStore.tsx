@@ -149,7 +149,6 @@ export class RoomListStore {
     // 사용자가 선택한 이미지를 업로드
     if (this.isSuccessImportImage) {
       const formData = new FormData();
-      formData.append("roomId", this._tempRoom.id);
       formData.append("roomThumbnail", this._selectedImageFile!!);
 
       const uploadThumbnailImgResult =
