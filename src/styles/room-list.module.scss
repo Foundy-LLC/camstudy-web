@@ -3,82 +3,54 @@
   width: 1040px;
   height: 638px;
   background: $-system_white;
-  border: 0.5px solid $-gray_cool-200;
+  border: 0.5px solid $-gray_cool-300;
   border-radius: 16px;
-  .room-list-icon {
-    margin: 20px 0px 0px 20px;
-    height: 20px;
-    width: 20px;
-  }
+  display: inline-flex;
   .room-list-title{
-    width: 148px;
-    height: 28px;
-    margin-left: 6px;
-    margin-top: 15px;
-    font-weight: 700;
-    position:fixed;
-  }
-  .room-list-grid{
-    margin: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(40%, auto));
-    column-gap: 20px;
-    .room-title{
 
-    }
-    .room-list-form{
-      height: 128px;
-      background: $-system_white;
-      border: 0.5px solid $-gray_cool-200;
+  }
+  .room-list-form{
+    width: 490px;
+    height: 128px;
+    background: $-system_white;
+    border: 0.5px solid $-gray_cool-300;
+    border-radius: 12px;
+    display: inline-flex;
+    margin: 20px 0px 0px 20px;
+
+    .room-thumbnail-img{
+      width: 96px;
+      height: 96px;
+      left: 16px;
+      top: 16px;
+      margin: 16px;
+      background: $-gray_cool-100 ;
       border-radius: 12px;
-      display: inline-flex;
-      margin-bottom: 20px;
+    }
 
-      .room-thumbnail-img{
-        width: 96px;
-        height: 96px;
-        left: 16px;
-        top: 16px;
-        margin: 16px;
-        background: $-gray_cool-100 ;
-        border-radius: 12px;
-      }
+    .room-title{
+      margin: 16px 12px 0px 0px;
+      height: 28px;
+    }
 
-      .room-title{
-        margin: 16px 12px 0px 0px;
-        height: 28px;
-        font-weight: 700;
-      }
-
-      .room-tags{
-        width: 232px;
-        height: 22px;
-        margin-top:4px;
-        font-weight: 400;
-        color: $-gray_cool-400;
-      }
-      .room-joiner-img-blank{
-        height: 32px;
-        width: 32px;
-        margin-top: 8px;
-        border: none;
-        background:$-gray_cool-50;
-        border-radius: 8px;
-        margin-right: 8px;
-      }
-      .room-joiner-img{
-        height: 32px;
-        width: 32px;
-        margin-top: 8px;
-        border: none;
-        border-radius: 8px;
-        margin-right: 8px;
-      }
-      .room-enter-button{
-        width: 86px;
-        height: 38px;
-        margin-top: 6px;
-      }
-  }
+    .room-tags{
+      width: 232px;
+      height: 22px;
+      margin-top:4px;
+      color: $-gray_cool-400;
+    }
+    .room-joiner-img-blank{
+      height: 32px;
+      width: 32px;
+      margin-top: 8px;
+      border: none;
+      background:$-gray_cool-50;
+      border-radius: 8px;
+    }
+    .room-enter-button{
+      margin-top: 4px;
+      width: 86px;
+      height: 38px;
+    }
   }
 }
