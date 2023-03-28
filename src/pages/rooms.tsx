@@ -12,11 +12,9 @@ import roomListStyles from "@/styles/room-list.module.scss";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import locked_icon from "/public/room/locked.png";
 import option_icon from "/public/room/option.png";
-import enter_btn from "/public/room/enterBtn.png";
 import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
 import Router from "next/router";
-import Head from "next/head";
 
 const RoomTag: NextPage<{ userTag: string }> = observer(({ userTag }) => {
   return <a>{userTag.toString() + " "}</a>;
@@ -125,21 +123,20 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
                 maxCount={roomOverview.maxCount}
               />
             </div>
-            <Image
+            <div
               className={`${roomListStyles["room-enter-button"]}`}
               style={{
                 marginLeft: "auto",
                 marginRight: "16px",
                 marginBottom: "16px",
               }}
-              src={enter_btn}
-              alt={"enterBtn"}
               onClick={() => {
-                console.log("click");
                 const roomLink = `/rooms/${roomOverview.id}`;
                 Router.push(roomLink);
               }}
-            />
+            >
+              <p>입장하기</p>
+            </div>
           </div>
         </div>
       </div>

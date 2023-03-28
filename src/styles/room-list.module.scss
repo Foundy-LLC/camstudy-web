@@ -77,7 +77,34 @@
       .room-enter-button{
         width: 86px;
         height: 38px;
-        margin-top: 6px;
+        margin-top: 7px;
+        background: $-primary-500;
+        border: none;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        p{
+          font-style: normal;
+          font-weight: 500;
+          font-size: 16px;
+          line-height: 22px;
+          color: $-system_white;
+          user-select: none;
+          cursor:default;
+        }
+      }
+      .room-enter-button:hover{
+        background: $-primary-300;
+      }
+      .room-enter-button:active{
+        background: $-primary-600;
+      }
+      .room-enter-button:disabled{
+        background: $-primary-100;
+      }
+      .room-enter-button:focus{
+        background: $-primary-400;
       }
   }
   }
