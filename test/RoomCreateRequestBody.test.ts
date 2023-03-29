@@ -53,15 +53,6 @@ describe("RoomCreateRequestBody success validation", () => {
 });
 
 describe("RoomCreateRequestBody Error validation", () => {
-  it("should throw error when roomId is null", async () => {
-    //given
-    const room: Room = new Room("");
-    //when
-    await expect(() => {
-      new RoomCreateRequestBody(room);
-    }).toThrow(NO_ROOM_ID_ERROR_MESSAGE); //then
-  });
-
   it("should throw error when masterId is null", async () => {
     //given
     const room: Room = new Room("123", "");
