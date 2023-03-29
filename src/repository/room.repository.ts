@@ -61,12 +61,14 @@ export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
   });
   return rooms.map((room) => {
     const userOverviews = room.study_history.map((history) => {
-      const { id, name, profile_image, score, status } = history.user_account;
+      const { id, name, profile_image, score, status, introduce } =
+        history.user_account;
       return {
         id: id,
         name: name,
         profileImage: profile_image,
         rankingScore: Number(score),
+        introduce: introduce,
         status: status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
       };
     });
