@@ -26,6 +26,7 @@ import { multipartUploader } from "@/service/imageUploader";
 import {
   GET_RECENT_ROOM_SUCCESS,
   GET_ROOMS_SUCCESS,
+  ROOM_BODY_INVALID_ERROR_MESSAGE,
   ROOM_CREATE_SUCCESS,
   ROOM_DELETE_SUCCESS,
   SET_ROOM_THUMBNAIL_SUCCESS,
@@ -140,7 +141,14 @@ export const getRecentRooms = async (
 
 export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    await createRoom(new RoomCreateRequestBody(req.body._room));
+    const body = req.body as RoomCreateRequestBody | null;
+    if (body == null) {
+      res
+        .status(400)
+        .send(new ResponseBody({ message: ROOM_BODY_INVALID_ERROR_MESSAGE }));
+      return;
+    }
+    await createRoom(body);
     res.status(201).send(new ResponseBody({ message: ROOM_CREATE_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {

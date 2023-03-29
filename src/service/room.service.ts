@@ -2,7 +2,6 @@ import { Result } from "@/models/common/Result";
 import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { Room } from "@/stores/RoomListStore";
-import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
 
 const HEADER = {

@@ -14,10 +14,25 @@ import {
 } from "@/utils/room.validator";
 
 export class RoomCreateRequestBody {
-  private readonly _room: Room;
+  readonly masterId: string;
+  readonly title: string;
+  readonly password: string | undefined;
+  readonly timer: number;
+  readonly shortBreak: number;
+  readonly longBreak: number;
+  readonly longBreakInterval: number;
+  readonly expiredAt: Date;
+
   constructor(room: Room) {
-    this._room = room;
-    this._validateId();
+    this.masterId = room.masterId;
+    this.title = room.title;
+    this.timer = room.timer;
+    this.password = room.password;
+    this.shortBreak = room.shortBreak;
+    this.longBreak = room.longBreak;
+    this.longBreakInterval = room.longBreakInterval;
+    this.expiredAt = room.expiredAt;
+
     this._validateMasterId();
     this._validatePassword();
     this._validateTitle();
@@ -27,34 +42,36 @@ export class RoomCreateRequestBody {
     this._validateLongInterval();
     this._validateExpiredAt();
   }
-  get room() {
-    return this._room;
-  }
-  private _validateId = () => {
-    validateId(this._room.id);
-  };
+
   private _validateMasterId = () => {
-    validateMasterId(this._room.masterId);
+    validateMasterId(this.masterId);
   };
+
   private _validatePassword = () => {
-    validatePassword(this._room.password);
+    validatePassword(this.password);
   };
+
   private _validateTitle = () => {
-    validateTitle(this._room.title);
+    validateTitle(this.title);
   };
+
   private _validateTimer = () => {
-    validateTimerLength(this._room.timer);
+    validateTimerLength(this.timer);
   };
+
   private _validateShortBreak = () => {
-    validateShortBreak(this._room.shortBreak);
+    validateShortBreak(this.shortBreak);
   };
+
   private _validateLongBreak = () => {
-    validateLongBreak(this._room.longBreak);
+    validateLongBreak(this.longBreak);
   };
+
   private _validateLongInterval = () => {
-    validateLongInterval(this._room.longBreakInterval);
+    validateLongInterval(this.longBreakInterval);
   };
+
   private _validateExpiredAt = () => {
-    validateExpiredAt(this._room.expiredAt);
+    validateExpiredAt(this.expiredAt);
   };
 }

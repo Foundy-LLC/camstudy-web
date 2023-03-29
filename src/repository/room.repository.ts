@@ -2,7 +2,6 @@ import prisma from "../../prisma/client";
 import client from "prisma/client";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
-import { Room } from "@/stores/RoomListStore";
 import {
   MAX_RECENT_ROOM_NUM,
   MAX_ROOM_CAPACITY,
@@ -11,6 +10,7 @@ import {
 import { room } from "@prisma/client";
 import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
 import { UserStatus } from "@/models/user/UserStatus";
+import { uuidv4 } from "@firebase/util";
 
 export const findRoomById = async (roomId: string): Promise<room | null> => {
   return await prisma.room.findUnique({
@@ -111,19 +111,17 @@ export const findRecentRooms = async (userId: string) => {
 };
 
 export const createRoom = async (body: RoomCreateRequestBody) => {
-  const room: Room = body.room;
   await client.room.create({
     data: {
-      id: room.id,
-      master_id: room.masterId,
-      title: room.title,
-      thumbnail: room.thumbnail,
-      password: room.password,
-      timer: room.timer,
-      short_break: room.shortBreak,
-      long_break: room.longBreak,
-      long_break_interval: room.longBreakInterval,
-      expired_at: room.expiredAt,
+      id: uuidv4(),
+      master_id: body.masterId,
+      title: body.title,
+      password: body.password,
+      timer: body.timer,
+      short_break: body.shortBreak,
+      long_break: body.longBreak,
+      long_break_interval: body.longBreakInterval,
+      expired_at: body.expiredAt,
     },
   });
 };
