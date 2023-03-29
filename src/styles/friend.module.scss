@@ -1,0 +1,31 @@
+@import "./color/colorPalette";
+
+.friend-list-frame{
+  width: 600px;
+  height: 906px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 40px;
+  background: $-system_white;
+  border: 0.5px solid $-gray_cool-300;
+  border-radius: 16px;
+  .friend-list-form{
+    width: 560px;
+    height: 72px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 24px 16px;
+    gap: 20px;
+    background: $-system_white;
+    border: 0.5px solid $-gray_cool-300;
+    border-radius: 8px;
+  }
+  .friend-name{
+    width: 114px;
+    height: 22px;
+    font-weight: 500;
+  }
+}

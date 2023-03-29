@@ -5,10 +5,11 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
-import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
+import friendListIcon from "/public/friend-list/friend-list-icon.png";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import { UserOverview } from "@/models/user/UserOverview";
 import { UserStatus } from "@/models/user/UserStatus";
+import friendStyles from "@/styles/friend.module.scss";
 
 const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
   ({ item }) => {
@@ -74,47 +75,45 @@ const SimilarNamedUserGroup: NextPage<{ items: UserSearchOverview[] }> =
     );
   });
 
-const FriendRequest: NextPage<{ item: FriendRequestUser }> = observer(
-  ({ item }) => {
-    const { requesterName, requesterId, profileImage } = item;
-    const { friendStore } = useStores();
-    return (
-      <>
-        <Image
-          width={50}
-          height={50}
-          src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
-          alt={`${requesterName}-profileImg`}
-        />
-        <h3>{requesterName}</h3>
-        <Image
-          width={18}
-          height={18}
-          src="https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/accept-icon.png"
-          alt="accept"
-          onClick={async () => {
-            if (confirm("친구 요청을 수락하시겠어요?") === true) {
-              await friendStore.acceptFriendRequest(requesterId);
-            }
-          }}
-        />
-        <Image
-          width={18}
-          height={18}
-          src="https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/cancel-icon.png"
-          alt="reject"
-          onClick={async () => {
-            if (confirm("친구 요청을 거절하시겠어요?") === true) {
-              await friendStore.refuseFriendRequest(requesterId);
-            }
-          }}
-        />
-      </>
-    );
-  }
-);
+const FriendRequest: NextPage<{ item: UserOverview }> = observer(({ item }) => {
+  const { id, name, profileImage, introduce, status } = item;
+  const { friendStore } = useStores();
+  return (
+    <>
+      <Image
+        width={50}
+        height={50}
+        src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
+        alt={`${name}-profileImg`}
+      />
+      <h3>{name}</h3>
+      <Image
+        width={18}
+        height={18}
+        src="https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/accept-icon.png"
+        alt="accept"
+        onClick={async () => {
+          if (confirm("친구 요청을 수락하시겠어요?") === true) {
+            await friendStore.acceptFriendRequest(id);
+          }
+        }}
+      />
+      <Image
+        width={18}
+        height={18}
+        src="https://uxwing.com/wp-content/themes/uxwing/download/checkmark-cross/cancel-icon.png"
+        alt="reject"
+        onClick={async () => {
+          if (confirm("친구 요청을 거절하시겠어요?") === true) {
+            await friendStore.refuseFriendRequest(id);
+          }
+        }}
+      />
+    </>
+  );
+});
 
-const FriendRequestGroup: NextPage<{ items: FriendRequestUser[] }> = observer(
+const FriendRequestGroup: NextPage<{ items: UserOverview[] }> = observer(
   ({ items }) => {
     return (
       <>
@@ -131,24 +130,20 @@ const FriendOverview: NextPage<{ item: UserOverview }> = observer(
     const { friendStore } = useStores();
     const { id, name, profileImage, introduce, status } = item;
     return (
-      <>
+      <div
+        className={`${friendStyles["friend-list-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+      >
         <Image
           width={50}
           height={50}
           src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
           alt={`${name}-profileImg`}
         />
-        <h3>{name}&nbsp;</h3> <h3>자기소개: {introduce}&nbsp;</h3>
-        <Image
-          width={20}
-          height={20}
-          src={
-            status === UserStatus.LOGIN
-              ? "https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/green-circle-icon.png"
-              : "https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/red-circle-icon.png"
-          }
-          alt={`${name}-profileImg`}
-        />
+        <p className={`${friendStyles["friend-name"]} typography__text`}>
+          {name}
+        </p>{" "}
+        {status === UserStatus.LOGIN ? <p>접속 중</p> : <p>로그오프</p>}{" "}
+        <p>{introduce}</p>
         <h3
           onClick={async () => {
             if (confirm(`${name}을 친구 목록에서 삭제하시겠어요?`) === true) {
@@ -158,7 +153,7 @@ const FriendOverview: NextPage<{ item: UserOverview }> = observer(
         >
           x
         </h3>
-      </>
+      </div>
     );
   }
 );
@@ -166,11 +161,23 @@ const FriendOverview: NextPage<{ item: UserOverview }> = observer(
 const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
   ({ items }) => {
     return (
-      <>
+      <div
+        className={`${friendStyles["friend-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
+      >
+        <div>
+          <Image
+            src={friendListIcon}
+            alt={"friend-list-icon"}
+            width={24}
+            height={24}
+            className={`${friendStyles["friend-list-frame"]}`}
+          />
+          <label>내 친구</label>
+        </div>
         {items.map((item, key) => (
           <FriendOverview item={item} key={key} />
         ))}
-      </>
+      </div>
     );
   }
 );
