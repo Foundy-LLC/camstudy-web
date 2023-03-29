@@ -10,7 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <ThemeProvider>
       <AuthProvider>
         <div className={`${theme}`}>
-          <div className={"background flex"}>
+          <div className={"background"}>
             <Component {...pageProps} />
           </div>
         </div>

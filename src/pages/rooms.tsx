@@ -15,6 +15,7 @@ import option_icon from "/public/room/option.png";
 import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
 import Router from "next/router";
+import { SideMenuBar } from "@/components/SideMenuBar";
 
 const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
@@ -203,89 +204,139 @@ const RoomList: NextPage = observer(() => {
     return <div>Please sign in to continue</div>;
   }
   return (
-    <>
-      <div>
-        <button
-          id="sign-out"
-          style={{
-            float: "right",
-            marginRight: "30px",
-            width: "100px",
-            height: "30px",
-          }}
-          onClick={() => userStore.signOut()}
-        >
-          sign out
-        </button>
-      </div>
-      <div>
-        <h1>rooms page</h1>
+    <section className={"box"}>
+      <header className={"box-header"}>header</header>
+      <div className={"box-contents-margin"}>
+        <div className={"box-contents"}>
+          <div className={"box-contents-side-menu"}>
+            <SideMenuBar userId={user.uid}></SideMenuBar>
+          </div>
+          <div className={"box-contents-item"}>
+            <div>
+              <button
+                id="sign-out"
+                style={{
+                  float: "right",
+                  marginRight: "30px",
+                  width: "100px",
+                  height: "30px",
+                }}
+                onClick={() => userStore.signOut()}
+              >
+                sign out
+              </button>
+            </div>
+            <div>
+              <h1>rooms page</h1>
 
-        <input
-          id="pageNum"
-          placeholder="페이지 번호"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            console.log(e.target.value);
-            roomListStore.changeRoomNum(e.target.value);
-          }}
-        ></input>
-        <button
-          id="getBtn"
-          onClick={async () => {
-            await roomListStore.fetchRooms();
-          }}
-        >
-          GET
-        </button>
-        <button
-          id="recentRoomBtn"
-          onClick={async () => {
-            await roomListStore.fetchRecentRooms(user.uid);
-          }}
-        >
-          최근 방 조회
-        </button>
-        <br />
-        <input
-          id="roomName"
-          placeholder="방 제목"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            roomListStore.setRoomTitleInput(e.target.value);
-          }}
-        ></input>
-        <button
-          id="PostBtn"
-          onClick={async () => {
-            await roomListStore.createRoom();
-          }}
-        >
-          POST
-        </button>
-        <br />
-        <input
-          id="roomThumbnail"
-          type="file"
-          accept="image/png, image/jpeg"
-          onChange={(e) => {
-            if (e.target.files) {
-              roomListStore.importRoomThumbnail(e.target.files[0]);
-            }
-          }}
-        ></input>
-        <SelectedThumbnailImage imageUrl={roomListStore.imageUrl} />
-        <RoomItemGroup items={roomListStore.roomOverviews} />
-        <div>
-          <br />
-          <h3>생성한 방:</h3>
-          <p>{roomListStore.createdTitle}</p>
+              <input
+                id="pageNum"
+                placeholder="페이지 번호"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  console.log(e.target.value);
+                  roomListStore.changeRoomNum(e.target.value);
+                }}
+              ></input>
+              <button
+                id="getBtn"
+                onClick={async () => {
+                  await roomListStore.fetchRooms();
+                }}
+              >
+                GET
+              </button>
+              <button
+                id="recentRoomBtn"
+                onClick={async () => {
+                  await roomListStore.fetchRecentRooms(user.uid);
+                }}
+              >
+                최근 방 조회
+              </button>
+              <br />
+              <input
+                id="roomName"
+                placeholder="방 제목"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  roomListStore.setRoomTitleInput(e.target.value);
+                }}
+              ></input>
+              <button
+                id="PostBtn"
+                onClick={async () => {
+                  await roomListStore.createRoom();
+                }}
+              >
+                POST
+              </button>
+              <br />
+              <input
+                id="roomThumbnail"
+                type="file"
+                accept="image/png, image/jpeg"
+                onChange={(e) => {
+                  if (e.target.files) {
+                    roomListStore.importRoomThumbnail(e.target.files[0]);
+                  }
+                }}
+              ></input>
+              <SelectedThumbnailImage imageUrl={roomListStore.imageUrl} />
+              <RoomItemGroup items={roomListStore.roomOverviews} />
+              <div>
+                <br />
+                <h3>생성한 방:</h3>
+                <p>{roomListStore.createdTitle}</p>
+              </div>
+
+              {roomListStore.errorMessage === undefined ? null : (
+                <h3>{roomListStore.errorMessage}</h3>
+              )}
+              {/*{RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}*/}
+            </div>
+          </div>
         </div>
-
-        {roomListStore.errorMessage === undefined ? null : (
-          <h3>{roomListStore.errorMessage}</h3>
-        )}
-        {/*{RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}*/}
       </div>
-    </>
+      <style jsx>{`
+        //스크롤바 아예 지울때
+        //::-webkit-scrollbar {
+        //  width: 0;
+        //  height: 0;
+        //}
+        //test
+        section {
+          background-color: #0a0a0a;
+        }
+        .box {
+          height: 100vh;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .box-header {
+          min-height: 4rem;
+          background-color: rebeccapurple;
+        }
+        .box-contents-margin {
+          display: flex;
+          min-height: 0; /* 필수는 아님 */
+          justify-content: center; /* 가로 중앙 정렬 */
+        }
+        .box-contents {
+          display: flex;
+          flex-grow: 1;
+          max-width: 1440px;
+        }
+        .box-contents-side-menu {
+          overflow: auto;
+        }
+        .box-contents-item {
+          overflow: auto;
+          flex-grow: 1;
+          background-color: green;
+        }
+      `}</style>
+    </section>
   );
 });
 export default RoomList;

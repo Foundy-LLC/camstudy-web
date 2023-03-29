@@ -1,0 +1,96 @@
+@import "./color/colorPalette";
+
+
+$--side-menu-bar-content-gap: 1rem;
+
+.menu {
+  //하단 스크롤바 지우려면 width 설정을 지워야함.
+  //width: 19.5rem;
+  background-color: $-system_white;
+  padding: 0.75rem;
+  margin: 0;
+  border-right: 1px solid $-gray_cool-200;
+  border-radius: 0;
+
+  ul {
+    padding: 0;
+  }
+
+  a {
+    color: $-gray_cool-700;
+  }
+  .title {
+    height: 3.5rem;
+    margin: 0;
+    display: flex;
+    align-items: center; /* 수직 가운데 정렬 */
+    padding-left: $--side-menu-bar-content-gap;
+  }
+
+  .contents {
+    display: flex;
+    height: 3.5rem;
+    align-items: center; /* 수직 가운데 정렬 */
+    padding-left: $--side-menu-bar-content-gap;
+    font-weight: 600;
+    li {
+      padding-left: 0.75rem;
+    }
+
+    .notification{
+      color: $-caution-500;
+    }
+
+    &:hover{
+      background-color: $-gray_cool-50;
+      border-radius: 8px;
+    }
+    &:active{
+      background-color: $-gray_cool-200;
+      border-radius: 8px;
+    }
+    &:focus{
+      background-color: $-gray_cool-100;
+      border-radius: 8px;
+    }
+  }
+
+  .active{
+    background-color: $-caution-50;
+    border-radius: 8px;
+
+    &:hover{
+      background-color: $-caution-100;
+      border-radius: 8px;
+    }
+    &:active{
+      background-color: $-caution-300;
+      border-radius: 8px;
+    }
+    &:focus{
+      background-color: $-caution-200;
+      border-radius: 8px;
+    }
+  }
+
+
+  a {
+    text-decoration: none;
+  }
+
+  .empty-place {
+    width: 21rem;
+    //height: 8.938rem;
+
+    .empty-place-content {
+      display: flex;
+      flex-grow: 1;
+      flex-direction: column;
+      width: 19.5rem;
+      background: $-gray_cool-50;
+      border-radius: 8px;
+      margin: auto;
+    }
+  }
+}
+

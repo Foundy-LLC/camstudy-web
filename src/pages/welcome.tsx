@@ -33,97 +33,103 @@ const Welcome: NextPage = () => {
   }, [successToCreate, router]);
 
   return (
-    <div
-      className={`${welcomeStyles["welcome-form"]} elevation__navigation-drawer__modal-side-bottom-sheet__etc login-form`}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
+    <div className={"flex"}>
       <div
+        className={`${welcomeStyles["welcome-form"]} elevation__navigation-drawer__modal-side-bottom-sheet__etc login-form`}
         style={{
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          flexGrow: 1,
         }}
       >
-        <ImageInput welcomeStore={welcomeStore}></ImageInput>
-        <div id={"nickName"}>
-          <label className={`${welcomeStyles["title"]}`}>닉네임 설정</label>
-          <label className={`${welcomeStyles["sub-title"]}`}>
-            미풍양속을 해치치 않는 내용으로 작성해주세요
-          </label>
-          <input
-            className={`${welcomeStyles["common-input"]}`}
-            type={"text"}
-            onChange={(e) => welcomeStore.changeName(e.target.value)}
-            value={welcomeStore.name}
-            placeholder={"최대 10자, 한글, 영문, 숫자 사용 가능"}
-          />
-          <div
-            className={`typography__caption ${welcomeStyles["error-message"]}`}
-          >
-            {welcomeStore.nameErrorMessage}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            flexGrow: 1,
+          }}
+        >
+          <ImageInput welcomeStore={welcomeStore}></ImageInput>
+          <div id={"nickName"}>
+            <label className={`${welcomeStyles["title"]}`}>닉네임 설정</label>
+            <label className={`${welcomeStyles["sub-title"]}`}>
+              미풍양속을 해치치 않는 내용으로 작성해주세요
+            </label>
+            <input
+              className={`${welcomeStyles["common-input"]}`}
+              type={"text"}
+              onChange={(e) => welcomeStore.changeName(e.target.value)}
+              value={welcomeStore.name}
+              placeholder={"최대 10자, 한글, 영문, 숫자 사용 가능"}
+            />
+            <div
+              className={`typography__caption ${welcomeStyles["error-message"]}`}
+            >
+              {welcomeStore.nameErrorMessage}
+            </div>
+          </div>
+          <div id={"introduce"}>
+            <label className={`${welcomeStyles["title"]}`}>
+              자기소개 메시지
+            </label>
+            <label className={`${welcomeStyles["sub-title"]}`}>
+              나를 나타낼 수 있는 소개 내용을 입력해주세요
+            </label>
+            <input
+              className={`${welcomeStyles["common-input"]}`}
+              type={"text"}
+              onChange={(e) => welcomeStore.changeIntroduce(e.target.value)}
+              value={welcomeStore.introduce}
+              placeholder={"최대 100자 이내로 작성"}
+            />
+            <div
+              className={`typography__caption ${welcomeStyles["error-message"]}`}
+            >
+              {welcomeStore.introduceErrorMessage}
+            </div>
+          </div>
+          <div id={"tags"}>
+            <label className={`${welcomeStyles["title"]}`} htmlFor={"tagInput"}>
+              관심분야 해시태그
+            </label>
+            <TagsInput welcomeStore={welcomeStore}></TagsInput>
+            <div
+              className={`typography__caption ${welcomeStyles["error-message"]}`}
+            >
+              {welcomeStore.tagsErrorMessage}
+            </div>
           </div>
         </div>
-        <div id={"introduce"}>
-          <label className={`${welcomeStyles["title"]}`}>자기소개 메시지</label>
-          <label className={`${welcomeStyles["sub-title"]}`}>
-            나를 나타낼 수 있는 소개 내용을 입력해주세요
-          </label>
-          <input
-            className={`${welcomeStyles["common-input"]}`}
-            type={"text"}
-            onChange={(e) => welcomeStore.changeIntroduce(e.target.value)}
-            value={welcomeStore.introduce}
-            placeholder={"최대 100자 이내로 작성"}
-          />
-          <div
-            className={`typography__caption ${welcomeStyles["error-message"]}`}
-          >
-            {welcomeStore.introduceErrorMessage}
-          </div>
-        </div>
-        <div id={"tags"}>
-          <label className={`${welcomeStyles["title"]}`} htmlFor={"tagInput"}>
-            관심분야 해시태그
-          </label>
-          <TagsInput welcomeStore={welcomeStore}></TagsInput>
-          <div
-            className={`typography__caption ${welcomeStyles["error-message"]}`}
-          >
-            {welcomeStore.tagsErrorMessage}
-          </div>
-        </div>
-      </div>
 
-      <div
-        className={`${welcomeStyles["button-group"]}`}
-        style={{ marginTop: "3rem" }}
-      >
-        <button
-          className={`${welcomeStyles["back-button"]}`}
-          onClick={() =>
-            userStore.signOut().then(() => {
-              router.push("/login");
-            })
-          }
-          style={{ marginRight: "0.5rem" }}
+        <div
+          className={`${welcomeStyles["button-group"]}`}
+          style={{ marginTop: "3rem" }}
         >
-          뒤로가기
-        </button>
-        <button
-          disabled={welcomeStore.disabledSubmitButton}
-          className={`${welcomeStyles["save-button"]}`}
-          onClick={() => welcomeStore.createUser(user!.uid)}
+          <button
+            className={`${welcomeStyles["back-button"]}`}
+            onClick={() =>
+              userStore.signOut().then(() => {
+                router.push("/login");
+              })
+            }
+            style={{ marginRight: "0.5rem" }}
+          >
+            뒤로가기
+          </button>
+          <button
+            disabled={welcomeStore.disabledSubmitButton}
+            className={`${welcomeStyles["save-button"]}`}
+            onClick={() => welcomeStore.createUser(user!.uid)}
+          >
+            프로필 저장하고 시작
+          </button>
+        </div>
+        <div
+          className={`typography__caption ${welcomeStyles["error-message"]}`}
         >
-          프로필 저장하고 시작
-        </button>
-      </div>
-      <div className={`typography__caption ${welcomeStyles["error-message"]}`}>
-        {welcomeStore.errorMessage}
+          {welcomeStore.errorMessage}
+        </div>
       </div>
     </div>
   );
