@@ -138,11 +138,24 @@ const FriendOverview: NextPage<{ item: UserOverview }> = observer(
           height={50}
           src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
           alt={`${name}-profileImg`}
+          className={`${friendStyles["friend-profile"]} `}
         />
         <p className={`${friendStyles["friend-name"]} typography__text`}>
           {name}
         </p>{" "}
-        {status === UserStatus.LOGIN ? <p>접속 중</p> : <p>로그오프</p>}{" "}
+        {status === UserStatus.LOGIN ? (
+          <p
+            className={`${friendStyles["friend-status-online"]} typography__caption`}
+          >
+            접속 중
+          </p>
+        ) : (
+          <p
+            className={`${friendStyles["friend-status-offline"]} typography__caption`}
+          >
+            로그오프
+          </p>
+        )}{" "}
         <p>{introduce}</p>
         <h3
           onClick={async () => {
@@ -170,13 +183,15 @@ const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
             alt={"friend-list-icon"}
             width={24}
             height={24}
-            className={`${friendStyles["friend-list-frame"]}`}
+            className={`${friendStyles["friend-list-icon"]}`}
           />
           <label>내 친구</label>
         </div>
-        {items.map((item, key) => (
-          <FriendOverview item={item} key={key} />
-        ))}
+        <div className={`${friendStyles["friend-list-grid"]}`}>
+          {items.map((item, key) => (
+            <FriendOverview item={item} key={key} />
+          ))}
+        </div>
       </div>
     );
   }
