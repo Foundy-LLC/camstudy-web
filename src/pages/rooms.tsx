@@ -16,52 +16,35 @@ import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
 import Router from "next/router";
 
-const RoomTag: NextPage<{ userTag: string }> = observer(({ userTag }) => {
-  return <a>{userTag.toString() + " "}</a>;
-});
-
-const RoomTagGroup: NextPage<{ userTags: string[] }> = observer(
-  ({ userTags }) => {
+const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
+  ({ items }) => {
     return (
-      <div className={`${roomListStyles["room-tags"]} typography__text`}>
-        {userTags.map((userTag, key) => (
-          <RoomTag userTag={userTag} key={key} />
-        ))}
+      <div
+        className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
+      >
+        <div style={{ display: "flex" }}>
+          <Image
+            src={roomListIcon}
+            alt={"room-list-icon"}
+            width={20}
+            height={20}
+            className={`${roomListStyles["room-list-icon"]}`}
+          />
+          <p
+            className={`${roomListStyles["room-list-title"]} typography__text--big`}
+          >
+            현재 활성화 룸 목록
+          </p>
+        </div>
+        <div className={`${roomListStyles["room-list-grid"]}`}>
+          {items.map((item) => (
+            <RoomItem roomOverview={item} key={item.id} />
+          ))}
+        </div>
       </div>
     );
   }
 );
-
-const JoinedUserProfiles: NextPage<{
-  joinedUsers: UserOverview[];
-  maxCount: number;
-}> = observer(({ joinedUsers, maxCount }) => {
-  //TODO (건우): 최대 인원에 맞춰 slice 처리 수정 필요
-  const users = joinedUsers.slice(0, maxCount).map((user) => user.profileImage);
-  const blank = maxCount - users.length;
-  for (var i = 0; i < blank; i++) {
-    users.push("*blank#");
-  }
-  return (
-    <>
-      {users.map((user) => {
-        return user === "*blank#" ? (
-          <button
-            className={`${roomListStyles["room-joiner-img-blank"]}`}
-          ></button>
-        ) : (
-          <Image
-            className={`${roomListStyles["room-joiner-img"]}`}
-            alt={`user-profile-img`}
-            src={user ? user : DEFAULT_THUMBNAIL_URL}
-            width={32}
-            height={32}
-          ></Image>
-        );
-      })}
-    </>
-  );
-});
 
 const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
   ({ roomOverview }) => {
@@ -88,11 +71,11 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
           }}
         >
           <div style={{ display: "inline-flex" }}>
-            <h3
+            <p
               className={`${roomListStyles["room-title"]} typography__text--big`}
             >
               {roomOverview.title}
-            </h3>
+            </p>
             {!roomOverview.hasPassword ? null : (
               <Image
                 src={locked_icon}
@@ -145,33 +128,52 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
   }
 );
 
-const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
-  ({ items }) => {
+const RoomTagGroup: NextPage<{ userTags: string[] }> = observer(
+  ({ userTags }) => {
     return (
-      <div
-        className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
-      >
-        <Image
-          src={roomListIcon}
-          alt={"room-list-icon"}
-          width={20}
-          height={20}
-          className={`${roomListStyles["room-list-icon"]}`}
-        />
-        <label
-          className={`${roomListStyles["room-list-title"]} typography__text--big`}
-        >
-          현재 활성화 룸 목록
-        </label>
-        <div className={`${roomListStyles["room-list-grid"]}`}>
-          {items.map((item) => (
-            <RoomItem roomOverview={item} key={item.id} />
-          ))}
-        </div>
+      <div className={`${roomListStyles["room-tags"]} typography__text`}>
+        {userTags.map((userTag, key) => (
+          <RoomTag userTag={userTag} key={key} />
+        ))}
       </div>
     );
   }
 );
+
+const RoomTag: NextPage<{ userTag: string }> = observer(({ userTag }) => {
+  return <a>{userTag.toString() + " "}</a>;
+});
+
+const JoinedUserProfiles: NextPage<{
+  joinedUsers: UserOverview[];
+  maxCount: number;
+}> = observer(({ joinedUsers, maxCount }) => {
+  //TODO (건우): 최대 인원에 맞춰 slice 처리 수정 필요
+  const users = joinedUsers.slice(0, maxCount).map((user) => user.profileImage);
+  const blank = maxCount - users.length;
+  for (var i = 0; i < blank; i++) {
+    users.push("*blank#");
+  }
+  return (
+    <>
+      {users.map((user) => {
+        return user === "*blank#" ? (
+          <button
+            className={`${roomListStyles["room-joiner-img-blank"]}`}
+          ></button>
+        ) : (
+          <Image
+            className={`${roomListStyles["room-joiner-img"]}`}
+            alt={`user-profile-img`}
+            src={user ? user : DEFAULT_THUMBNAIL_URL}
+            width={32}
+            height={32}
+          ></Image>
+        );
+      })}
+    </>
+  );
+});
 
 const SelectedThumbnailImage: NextPage<{ imageUrl: string }> = observer(
   ({ imageUrl }) => {
