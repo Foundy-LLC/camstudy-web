@@ -36,7 +36,8 @@ const JoinedUserProfiles: NextPage<{
   joinedUsers: UserOverview[];
   maxCount: number;
 }> = observer(({ joinedUsers, maxCount }) => {
-  const users = joinedUsers.slice(0, 4).map((user) => user.profileImage);
+  //TODO (건우): 최대 인원에 맞춰 slice 처리 수정 필요
+  const users = joinedUsers.slice(0, maxCount).map((user) => user.profileImage);
   const blank = maxCount - users.length;
   for (var i = 0; i < blank; i++) {
     users.push("*blank#");
@@ -123,7 +124,7 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
                 maxCount={roomOverview.maxCount}
               />
             </div>
-            <div
+            <button
               className={`${roomListStyles["room-enter-button"]}`}
               style={{
                 marginLeft: "auto",
@@ -136,7 +137,7 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
               }}
             >
               <p>입장하기</p>
-            </div>
+            </button>
           </div>
         </div>
       </div>

@@ -93,19 +93,20 @@
           user-select: none;
           cursor:default;
         }
+        &:hover{
+          background: $-primary-300;
+        }
+        &:active{
+          background: $-primary-600;
+        }
+        &:disabled{
+          background: $-primary-100;
+        }
+        &:focus{
+          background: $-primary-400;
+        }
       }
-      .room-enter-button:hover{
-        background: $-primary-300;
-      }
-      .room-enter-button:active{
-        background: $-primary-600;
-      }
-      .room-enter-button:disabled{
-        background: $-primary-100;
-      }
-      .room-enter-button:focus{
-        background: $-primary-400;
-      }
+
   }
   }
 }
