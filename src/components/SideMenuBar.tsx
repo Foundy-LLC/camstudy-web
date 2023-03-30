@@ -30,13 +30,11 @@ const menus: Menu[] = [
         icon: "dashboard",
         text: "대시보드",
         path: "/",
-        notification: undefined,
       },
       {
         icon: "chat_bubble",
         text: "스터디룸",
         path: "/rooms",
-        notification: undefined,
       },
     ],
   },
@@ -47,7 +45,6 @@ const menus: Menu[] = [
         icon: "potted_plant",
         text: "내 작물 관리하기",
         path: "",
-        notification: undefined,
       },
     ],
   },
@@ -58,7 +55,6 @@ const menus: Menu[] = [
         icon: "bar_chart",
         text: "랭킹 목록",
         path: "",
-        notification: undefined,
       },
     ],
   },
@@ -69,21 +65,18 @@ const menus: Menu[] = [
         icon: "person",
         text: "내 프로필",
         path: "",
-        notification: undefined,
       },
       {
         icon: "group",
         text: "친구 목록",
         path: "/friends",
         notification: function (userId: string) {
-          console.log(userId);
           const fetcher = (args: string) =>
             fetch(args).then((res) => res.json());
           const { data, error, isLoading } = useSWR(
             `api/users/${userId}/friends?accepted=false`,
             fetcher
           );
-          console.log(data);
           if (data?.data.length === 0) return "";
           return data?.data.length;
         },
@@ -92,7 +85,6 @@ const menus: Menu[] = [
         icon: "person_search",
         text: "유저 검색",
         path: "",
-        notification: undefined,
       },
     ],
   },
@@ -103,13 +95,11 @@ const menus: Menu[] = [
         icon: "settings",
         text: "환경 설정",
         path: "",
-        notification: undefined,
       },
       {
         icon: "info",
         text: "도움말",
         path: "",
-        notification: undefined,
       },
     ],
   },

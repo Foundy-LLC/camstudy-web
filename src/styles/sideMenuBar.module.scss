@@ -33,6 +33,8 @@ $--side-menu-bar-content-gap: 1rem;
     align-items: center; /* 수직 가운데 정렬 */
     padding-left: $--side-menu-bar-content-gap;
     font-weight: 600;
+    border-radius: 8px;
+
     li {
       padding-left: 0.75rem;
     }
@@ -43,15 +45,12 @@ $--side-menu-bar-content-gap: 1rem;
 
     &:hover{
       background-color: $-gray_cool-50;
-      border-radius: 8px;
     }
     &:active{
       background-color: $-gray_cool-200;
-      border-radius: 8px;
     }
     &:focus{
       background-color: $-gray_cool-100;
-      border-radius: 8px;
     }
   }
 
@@ -61,15 +60,12 @@ $--side-menu-bar-content-gap: 1rem;
 
     &:hover{
       background-color: $-caution-100;
-      border-radius: 8px;
     }
     &:active{
       background-color: $-caution-300;
-      border-radius: 8px;
     }
     &:focus{
       background-color: $-caution-200;
-      border-radius: 8px;
     }
   }
 
