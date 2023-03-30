@@ -132,6 +132,7 @@ model user_account {
   report_report_suspect_idTouser_account   report[]        @relation("report_suspect_idTouser_account")
   room                                     room[]
   study_history                            study_history[]
+  user_ranking                             user_ranking?
   user_tag                                 user_tag[]
 }
 
@@ -142,6 +143,15 @@ model user_tag {
   user_account user_account @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_account_to_user_tag_1")
 
   @@id([tag_id, user_id], map: "pk_user_tag")
+}
+
+model user_ranking {
+  user_id           String       @id(map: "user_ranking_pk") @db.VarChar(100)
+  weekly_study_time BigInt
+  total_study_time  BigInt
+  weekly_score      BigInt
+  total_score       BigInt
+  user_account      user_account @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum crops_type {

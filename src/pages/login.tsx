@@ -31,25 +31,27 @@ const Login: NextPage = () => {
   }
 
   return (
-    <div
-      className={`${loginStyles["login-form"]} ${loginStyles[theme]} elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
-    >
-      <h1 className={`sr-only`}>{PROJECT_TITLE}</h1>
-      <Image
-        className={`${loginStyles["title"]}`}
-        title={PROJECT_TITLE}
-        src={logo}
-        alt={"logo image"}
-        width={220}
-        height={42}
-        priority={true}
-      ></Image>
-      <h2 className={`sr-only`}>{PROJECT_SUB_TITLE}</h2>
-      <div className={`${loginStyles["sub-title"]} typography__text--big`}>
-        {PROJECT_SUB_TITLE}
+    <div className={"flex"}>
+      <div
+        className={`${loginStyles["login-form"]} ${loginStyles[theme]} elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
+      >
+        <h1 className={`sr-only`}>{PROJECT_TITLE}</h1>
+        <Image
+          className={`${loginStyles["title"]}`}
+          title={PROJECT_TITLE}
+          src={logo}
+          alt={"logo image"}
+          width={220}
+          height={42}
+          priority={true}
+        ></Image>
+        <h2 className={`sr-only`}>{PROJECT_SUB_TITLE}</h2>
+        <div className={`${loginStyles["sub-title"]} typography__text--big`}>
+          {PROJECT_SUB_TITLE}
+        </div>
+        <GoogleLoginButton />
+        <GithubLoginButton />
       </div>
-      <GoogleLoginButton />
-      <GithubLoginButton />
     </div>
   );
 };
