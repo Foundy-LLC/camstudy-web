@@ -22,6 +22,16 @@ interface MenuListProps extends React.HTMLAttributes<HTMLUListElement> {
   userId: string;
 }
 
+const FetchFriendsRequest = (userId: string) => {
+  const fetcher = (args: string) => fetch(args).then((res) => res.json());
+  const { data, error, isLoading } = useSWR(
+    `api/users/${userId}/friends?accepted=false`,
+    fetcher
+  );
+  if (data?.data.length === 0) return "";
+  return data?.data.length;
+};
+
 const menus: Menu[] = [
   {
     title: "메인",
@@ -70,16 +80,7 @@ const menus: Menu[] = [
         icon: "group",
         text: "친구 목록",
         path: "/friends",
-        notification: function (userId: string) {
-          const fetcher = (args: string) =>
-            fetch(args).then((res) => res.json());
-          const { data, error, isLoading } = useSWR(
-            `api/users/${userId}/friends?accepted=false`,
-            fetcher
-          );
-          if (data?.data.length === 0) return "";
-          return data?.data.length;
-        },
+        notification: FetchFriendsRequest,
       },
       {
         icon: "person_search",
@@ -130,6 +131,7 @@ const MenuGroup = ({ menus, userId, ...props }: MenuListProps) => {
                         : ""
                     }`}
                     href={item.path}
+                    key={item.text}
                   >
                     <span className="material-symbols-outlined">
                       {item.icon}
