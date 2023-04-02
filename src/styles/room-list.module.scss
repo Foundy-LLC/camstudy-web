@@ -6,6 +6,8 @@
   border: 0.5px solid $-gray_cool-200;
   border-radius: 16px;
   overflow: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 
   .room-list-icon {
     margin: 20px 0px 0px 20px;
@@ -110,4 +112,7 @@
 
   }
   }
+}
+.room-list-frame::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
 }

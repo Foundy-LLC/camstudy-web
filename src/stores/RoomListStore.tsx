@@ -33,6 +33,7 @@ export class RoomListStore {
   private _selectedImageFile?: File = undefined;
   private _imageUrl: string = "";
   private _uploadedImgUrl?: string = "";
+  private _isExistNextPage: boolean = true;
   private _rooms: Room[] = [];
   private _roomOverviews: RoomOverview[] = [];
   private _pageNum: number = 0;
@@ -83,6 +84,10 @@ export class RoomListStore {
     return this._imageUrl !== "";
   }
 
+  get isExistNextPage() {
+    return this._isExistNextPage;
+  }
+
   private _initErrorMessage() {
     this._errorMessage = "";
   }
@@ -114,12 +119,17 @@ export class RoomListStore {
   }
 
   public fetchRooms = async (): Promise<void> => {
-    const getRoomsResult = await this._roomService.getRooms(this._pageNum);
+    const getRoomsResult = await this._roomService.getRooms(this._pageNum++);
     if (getRoomsResult.isSuccess) {
       runInAction(() => {
         this._initErrorMessage();
         this._isSuccessGet = true;
-        this._roomOverviews = getRoomsResult.getOrNull()!!;
+        const roomList = getRoomsResult.getOrNull()!!;
+        if (roomList.length === 0) {
+          this._isExistNextPage = false;
+        } else {
+          this._roomOverviews = this._roomOverviews.concat(roomList);
+        }
       });
     } else {
       runInAction(() => {
