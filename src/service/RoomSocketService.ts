@@ -15,7 +15,6 @@ import {
   JOIN_WAITING_ROOM,
   KICK_USER,
   MUTE_HEADSET,
-  NAME_SPACE,
   NEW_PRODUCER,
   OTHER_PEER_DISCONNECTED,
   OTHER_PEER_EXITED_ROOM,
@@ -57,8 +56,8 @@ import { JoinRoomFailureCallbackProperty } from "@/models/room/JoinRoomFailureCa
 import { PeerState } from "@/models/room/PeerState";
 import userStore from "@/stores/UserStore";
 
-const PORT = 2000;
-const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
+const MEDIA_SERVER_BASE_URL: string =
+  process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
 
 interface CreateWebRtcTransportParams {
   readonly id: string;
@@ -117,7 +116,7 @@ export class RoomSocketService {
     if (this._socket != null) {
       return;
     }
-    this._socket = io(SOCKET_SERVER_URL);
+    this._socket = io(MEDIA_SERVER_BASE_URL);
     this._socket.on(
       CONNECTION_SUCCESS,
       async ({ socketId }: { socketId: string }) => {
