@@ -1,16 +1,19 @@
 @import "./color/colorPalette";
 .room-list-frame{
+  margin: 0 auto;
   width: 1040px;
-  height: 638px;
+  height: 700px;
   background: $-system_white;
   border: 0.5px solid $-gray_cool-200;
   border-radius: 16px;
-  overflow: scroll;
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+
+  .room-list-info{
+    border-radius: 16px;
+    width: 1040px;
+  }
 
   .room-list-icon {
-    margin: 20px 0px 0px 20px;
+    margin: 24px 0px 0px 22px;
     height: 20px;
     width: 20px;
   }
@@ -18,101 +21,121 @@
   .room-list-title{
     width: 148px;
     height: 28px;
-    margin-top: 15px;
+    margin-top: 20px;
     margin-left: 6px;
     font-weight: 700;
     color: $-gray_cool-800;
   }
-  .room-list-grid{
-    margin: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(40%, auto));
-    column-gap: 20px;
+  .room-scroll {
+    height: 632px;
+    overflow: scroll;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 
-    .room-list-form{
-      height: 128px;
-      background: $-system_white;
-      border: 0.5px solid $-gray_cool-200;
-      border-radius: 12px;
-      display: inline-flex;
-      margin-bottom: 20px;
+    .room-list-grid {
+      margin: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(40%, auto));
+      column-gap: 20px;
 
-      .room-thumbnail-img{
-        width: 96px;
-        height: 96px;
-        left: 16px;
-        top: 16px;
-        margin: 16px;
-        background: $-gray_cool-100 ;
+      .room-list-form {
+        height: 128px;
+        background: $-system_white;
+        border: 0.5px solid $-gray_cool-200;
         border-radius: 12px;
-      }
+        display: inline-flex;
+        margin-bottom: 20px;
 
-      .room-title{
-        margin: 16px 12px 0px 0px;
-        height: 28px;
-        font-weight: 700;
-      }
+        .room-thumbnail-img {
+          width: 96px;
+          height: 96px;
+          left: 16px;
+          top: 16px;
+          margin: 16px;
+          background: $-gray_cool-100;
+          border-radius: 12px;
+        }
 
-      .room-tags{
-        width: 232px;
-        height: 22px;
-        margin-top:4px;
-        font-weight: 400;
-        color: $-gray_cool-400;
-      }
-      .room-joiner-img-blank{
-        height: 32px;
-        width: 32px;
-        margin-top: 8px;
-        border: none;
-        background:$-gray_cool-50;
-        border-radius: 8px;
-        margin-right: 8px;
-      }
-      .room-joiner-img{
-        height: 32px;
-        width: 32px;
-        margin-top: 8px;
-        border: none;
-        border-radius: 8px;
-        margin-right: 8px;
-      }
-      .room-enter-button{
-        width: 86px;
-        height: 38px;
-        margin-top: 7px;
-        background: $-primary-500;
-        border: none;
-        border-radius: 8px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        p{
-          font-style: normal;
-          font-weight: 500;
-          font-size: 16px;
-          line-height: 22px;
-          color: $-system_white;
-          user-select: none;
-          cursor:default;
+        .room-title {
+          margin: 16px 12px 0px 0px;
+          height: 28px;
+          font-weight: 700;
         }
-        &:hover{
-          background: $-primary-300;
-        }
-        &:active{
-          background: $-primary-600;
-        }
-        &:disabled{
-          background: $-primary-100;
-        }
-        &:focus{
-          background: $-primary-400;
-        }
-      }
 
+        .room-tags {
+          width: 232px;
+          height: 22px;
+          margin-top: 4px;
+          font-weight: 400;
+          color: $-gray_cool-400;
+        }
+
+        .room-joiner-img-blank {
+          height: 32px;
+          width: 32px;
+          margin-top: 8px;
+          border: none;
+          background: $-gray_cool-50;
+          border-radius: 8px;
+          margin-right: 8px;
+        }
+
+        .room-joiner-img {
+          height: 32px;
+          width: 32px;
+          margin-top: 8px;
+          border: none;
+          border-radius: 8px;
+          margin-right: 8px;
+        }
+
+        .room-enter-button {
+          width: 86px;
+          height: 38px;
+          margin-top: 7px;
+          background: $-primary-500;
+          border: none;
+          border-radius: 8px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          p {
+            font-style: normal;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 22px;
+            color: $-system_white;
+            user-select: none;
+            cursor: default;
+          }
+
+          &:hover {
+            background: $-primary-300;
+          }
+
+          &:active {
+            background: $-primary-600;
+          }
+
+          &:disabled {
+            background: $-primary-100;
+          }
+
+          &:focus {
+            background: $-primary-400;
+          }
+        }
+      }
+    }
   }
+
+  .room-scroll::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+  }
+
+  .room-scroll-text{
+    color: $-gray_cool-400;
   }
 }
-.room-list-frame::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera*/
-}
+

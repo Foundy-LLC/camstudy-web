@@ -26,7 +26,10 @@ const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
           id="room-list-frame"
           className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
         >
-          <div style={{ display: "flex" }}>
+          <div
+            className={`${roomListStyles["room-list-info"]}`}
+            style={{ display: "flex" }}
+          >
             <Image
               src={roomListIcon}
               alt={"room-list-icon"}
@@ -41,40 +44,40 @@ const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
             </p>
           </div>
 
-          <InfiniteScroll
-            dataLength={items.length} //This is important field to render the next data
-            next={() =>
-              setTimeout(() => {
-                roomListStore.fetchRooms();
-              }, 800)
-            }
-            hasMore={roomListStore.isExistNextPage}
-            loader={
-              <p
-                className={`typography__text--small`}
-                style={{ textAlign: "center" }}
-              >
-                <b style={{ color: "$-gray_cool-500" }}>방 불러오는 중..</b>
-              </p>
-            }
-            endMessage={
-              <p
-                className={`typography__text--small`}
-                style={{ textAlign: "center" }}
-              >
-                <b style={{ color: "$-gray_cool-500" }}>
-                  더 이상 방이 없습니다.
-                </b>
-              </p>
-            }
-            scrollableTarget="room-list-frame"
-          >
-            <div className={`${roomListStyles["room-list-grid"]}`}>
-              {items.map((item) => (
-                <RoomItem roomOverview={item} key={item.id} />
-              ))}
-            </div>
-          </InfiniteScroll>
+          <div id="room-scroll" className={`${roomListStyles["room-scroll"]} `}>
+            <InfiniteScroll
+              dataLength={items.length}
+              next={() =>
+                setTimeout(() => {
+                  roomListStore.fetchRooms();
+                }, 800)
+              }
+              hasMore={roomListStore.isExistNextPage}
+              loader={
+                <p
+                  className={`${roomListStyles["room-scroll-text"]} typography__text--big`}
+                  style={{ textAlign: "center", color: "$-gray_cool-400" }}
+                >
+                  <b>스터디 룸 목록 불러오는 중...</b>
+                </p>
+              }
+              endMessage={
+                <p
+                  className={`${roomListStyles["room-scroll-text"]} typography__text--big`}
+                  style={{ textAlign: "center", color: "$-gray_cool-400" }}
+                >
+                  <b>더 이상 방이 없습니다.</b>
+                </p>
+              }
+              scrollableTarget="room-scroll"
+            >
+              <div className={`${roomListStyles["room-list-grid"]}`}>
+                {items.map((item) => (
+                  <RoomItem roomOverview={item} key={item.id} />
+                ))}
+              </div>
+            </InfiniteScroll>
+          </div>
         </div>
       </>
     );
@@ -209,16 +212,7 @@ const JoinedUserProfiles: NextPage<{
     </>
   );
 });
-
-const SelectedThumbnailImage: NextPage<{ imageUrl: string }> = observer(
-  ({ imageUrl }) => {
-    if (imageUrl === "") return <></>;
-    return (
-      <Image src={imageUrl} alt="방 썸네일 사진" width={100} height={100} />
-    );
-  }
-);
-
+//TODO(건우): 최근 방 조회 ui 만들 때 참고용, 주석 삭제 필요
 const RoomList: NextPage = observer(() => {
   const router = useRouter();
   const { roomListStore } = useStores();
@@ -276,7 +270,6 @@ const RoomList: NextPage = observer(() => {
         {/*    }*/}
         {/*  }}*/}
         {/*></input>*/}
-        <SelectedThumbnailImage imageUrl={roomListStore.imageUrl} />
         <RoomItemGroup items={roomListStore.roomOverviews} />
         {roomListStore.errorMessage === undefined ? null : (
           <h3>{roomListStore.errorMessage}</h3>
