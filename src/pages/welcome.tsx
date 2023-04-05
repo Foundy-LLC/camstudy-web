@@ -6,8 +6,8 @@ import { observer } from "mobx-react";
 import { useAuth } from "@/components/AuthProvider";
 import { verifyUserToken } from "@/service/verifyUserToken";
 import welcomeStyles from "@/styles/welcome.module.scss";
-import userStore from "@/stores/UserStore";
 import { useDebounce } from "@/components/UseDebounce";
+import { useStores } from "@/stores/context";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return await verifyUserToken(ctx);
@@ -15,7 +15,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
 const Welcome: NextPage = () => {
   const { user } = useAuth();
-  const [welcomeStore] = useState(new WelcomeStore());
+  const { userStore, welcomeStore } = useStores();
   const successToCreate = welcomeStore.successToCreate;
   const router = useRouter();
 

@@ -9,19 +9,23 @@ import userService, { UserService } from "@/service/user.service";
 import { User } from "@/models/user/User";
 import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
 import { auth } from "@/service/firebase";
+import { RootStore } from "@/stores/RootStore";
 
 export class UserStore {
-  private _currentUser: User | undefined;
+  readonly rootStore: RootStore;
+  private _currentUser: User | undefined = undefined;
   private _googleAuthProvider = new GoogleAuthProvider();
   private _githubAuthProvider = new GithubAuthProvider();
   private _isNewUser: boolean | undefined = undefined;
   private _errorMessage?: string = undefined;
 
   constructor(
+    root: RootStore,
     private readonly _userService: UserService = userService,
     private readonly _auth: Auth = auth
   ) {
     makeAutoObservable(this);
+    this.rootStore = root;
     this.fetchAuth().then();
   }
 
@@ -40,7 +44,6 @@ export class UserStore {
   signOut = async () => {
     await this._auth.signOut();
     if (this._auth.currentUser == null) {
-      console.log(this._auth.currentUser);
       this._isNewUser = undefined;
     }
   };
@@ -63,6 +66,7 @@ export class UserStore {
 
   fetchCurrentUser = async (userId: string) => {
     const result = await this._userService.getUser(userId);
+    console.log("1", this);
     if (result.isSuccess) {
       runInAction(() => {
         this._currentUser = result.getOrNull();
@@ -115,5 +119,5 @@ export class UserStore {
   };
 }
 
-const userStore = new UserStore();
-export default userStore;
+// const userStore = new UserStore();
+// export default userStore;

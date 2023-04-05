@@ -13,6 +13,7 @@ import PopupMenu from "@/components/PopupMenu";
 import { getEnumKeyByEnumValue } from "@/utils/EnumUtil";
 import Button from "@mui/material/Button";
 import { RoomSettingDialog } from "@/components/RoomSettingDialog";
+import { useStores } from "@/stores/context";
 
 enum MasterPopupMenus {
   Kick = "강퇴",
@@ -20,7 +21,8 @@ enum MasterPopupMenus {
 }
 
 const RoomScaffold: NextPage = observer(() => {
-  const [roomStore] = useState(new RoomStore());
+  const { userStore } = useStores();
+  const [roomStore] = useState(() => new RoomStore(userStore));
   const router = useRouter();
   const roomId = router.query.roomId;
 
