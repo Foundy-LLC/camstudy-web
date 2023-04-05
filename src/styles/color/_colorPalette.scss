@@ -1,3 +1,6 @@
+
+//TODO: 수정 전 (변경 후 삭제)
+
 // System Color
 $-system_white: #FFFFFF;
 $-system_gray: #808080;
@@ -69,3 +72,169 @@ $-error-600: #A50B11;
 $-error-700: #6E080B;
 $-error-800: #370406;
 $-error-900: #160202;
+
+//수정 후
+
+// System Color (light)
+$-White: #FFFFFF;
+$-Gray-01: #F0F0F0;
+$-Gray-02: #E0E0E0;
+$-Gray-03: #C1C1C1;
+$-Gray-04: #A2A2A2;
+$-Gray-05: #838383;
+$-Gray-06: #646464;
+$-Gray-07: #4B4B4B;
+$-Gray-08: #323232;
+$-Gray-09: #191919;
+$-Gray-10: #0A0A0A;
+
+// System Color (dark)
+$-Black: #171717;
+$-Dark-01: #242424;
+$-Dark-02: #333333;
+$-Dark-03: #3D3D3D;
+$-Dark-04: #555555;
+$-Dark-05: #6F6F6F;
+$-Dark-06: #8B8B8B;
+$-Dark-07: #A5A5A5;
+$-Dark-08: #C1C1C1;
+$-Dark-09: #ECECEC;
+$-Dark-10: #F5F5F5;
+
+// Brand Primary Color
+$-Primary-01: #FFF8E8;
+$-Primary-02: #FFEAB6;
+$-Primary-03: #FFDC83;
+$-Primary-04: #FFCE51;
+$-Primary-05: #FFC01F;
+$-Primary-06: #DDA30E;
+$-Primary-07: #BB8701;
+$-Primary-08: #996E00;
+$-Primary-09: #775600;
+$-Primary-10: #553D00;
+
+// Process Success Color
+$-Success-01: #E9FDFF;
+$-Success-02: #C3FBFF;
+$-Success-03: #9CF9FF;
+$-Success-04: #75F6FF;
+$-Success-05: #4FF4FF;
+$-Success-06: #26E5F2;
+$-Success-07: #0FBEC9;
+$-Success-08: #0096A0;
+$-Success-09: #007077;
+$-Success-10: #004A4E;
+
+// Process Error Color
+$-Error-01: #FFEEE5;
+$-Error-02: #FFD1B7;
+$-Error-03: #FFB489;
+$-Error-04: #FF965C;
+$-Error-05: #FF792E;
+$-Error-06: #FF5C00;
+$-Error-07: #D64D00;
+$-Error-08: #AD3F00;
+$-Error-09: #843000;
+$-Error-10: #5C2100;
+
+// Process Danger Color
+$-Danger-01: #FFEAE8;
+$-Danger-02: #FFBAB6;
+$-Danger-03: #FF8B83;
+$-Danger-04: #FF5C51;
+$-Danger-05: #FF2C1F;
+$-Danger-06: #DD1A0E;
+$-Danger-07: #BB0C01;
+$-Danger-08: #990900;
+$-Danger-09: #770700;
+$-Danger-10: #550500;
+
+
+:root{
+  //System Color
+  $-system_background: $-White;
+  $-system_ui-01: $-Gray-01;
+  $-system_ui-02: $-Gray-02;
+  $-system_ui-03: $-Gray-03;
+  $-system_ui-04: $-Gray-04;
+  $-system_ui-05: $-Gray-05;
+  $-system_ui-06: $-Gray-06;
+  $-system_ui-07: $-Gray-07;
+  $-system_ui-08: $-Gray-08;
+  $-system_ui-09: $-Gray-09;
+  $-system_ui-10: $-Gray-10;
+
+  //UI Background Color
+  $-ui-cardui:$-White;
+  $-ui-cardui-01:$-White;
+  $-ui-cardui-02:$-White;
+  $-ui-cardui-03:$-White;
+  $-ui-cardui-04:$-White;
+
+  //Process Color
+  $-primary:$-Primary-05;
+  $-primary-press:$-Primary-06;
+  $-secondary:$-Gray-08;
+  $-secondary-press:$-Gray-09;
+  $-tertiary:$-White;
+  $-tertiary-press:$-Gray-02;
+  $-success:$-Success-07;
+  $-error:$-Error-06;
+  $-cancel:$-Gray-03;
+  $-cancel-press:$-Gray-04;
+  $-danger:$-Danger-06;
+  $-danger-press:$-Danger-07;
+
+  //Text Color
+  $-text-emphasize:$-Black;
+  $-text-01:$-Gray-09;
+  $-text-02:$-Gray-07;
+  $-text-03:$-Gray-06;
+  $-text-04:$-Gray-04;
+}
+
+//Dark mode
+@media (prefers-color-scheme: dark) {
+  :root {
+    //System Color
+    $-system_background: $-Black;
+    $-system_ui-01: $-Dark-01;
+    $-system_ui-02: $-Dark-02;
+    $-system_ui-03: $-Dark-03;
+    $-system_ui-04: $-Dark-04;
+    $-system_ui-05: $-Dark-05;
+    $-system_ui-06: $-Dark-06;
+    $-system_ui-07: $-Dark-07;
+    $-system_ui-08: $-Dark-08;
+    $-system_ui-09: $-Dark-09;
+    $-system_ui-10: $-Dark-10;
+
+    //UI Background Color
+    $-ui-cardui:$-Dark-01;
+    $-ui-cardui-01:$-Dark-02;
+    $-ui-cardui-02:$-Dark-03;
+    $-ui-cardui-03:$-Dark-04;
+    $-ui-cardui-04:$-Dark-05;
+
+    //Process Color
+    $-primary:$-Primary-03;
+    $-primary-press:$-Primary-02;
+    $-secondary:$-Dark-09;
+    $-secondary-press:$-White;
+    $-tertiary:$-Black;
+    $-tertiary-press:$-Dark-02;
+    $-success:$-Success-04;
+    $-error:$-Error-04;
+    $-cancel:$-Dark-05;
+    $-cancel-press:$-Dark-06;
+    $-danger:$-Danger-04;
+    $-danger-press:$-Danger-03;
+
+    //Text Color
+    $-text-emphasize:$-White;
+    $-text-01:$-Dark-10;
+    $-text-02:$-Dark-09;
+    $-text-03:$-Dark-08;
+    $-text-04:$-Dark-07;
+  }
+}
