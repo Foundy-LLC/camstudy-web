@@ -10,6 +10,7 @@
   .room-list-info{
     border-radius: 16px;
     width: 1040px;
+    display: flex;
   }
 
   .room-list-icon {
@@ -31,6 +32,11 @@
     overflow: scroll;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+
+    .room-scroll-text{
+      textAlign: center;
+      color: $-gray_cool-400;
+    }
 
     .room-list-grid {
       margin: 20px;

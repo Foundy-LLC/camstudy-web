@@ -26,10 +26,7 @@ const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
           id="room-list-frame"
           className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
         >
-          <div
-            className={`${roomListStyles["room-list-info"]}`}
-            style={{ display: "flex" }}
-          >
+          <div className={`${roomListStyles["room-list-info"]}`}>
             <Image
               src={roomListIcon}
               alt={"room-list-icon"}
@@ -56,7 +53,6 @@ const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
               loader={
                 <p
                   className={`${roomListStyles["room-scroll-text"]} typography__text--big`}
-                  style={{ textAlign: "center", color: "$-gray_cool-400" }}
                 >
                   <b>스터디 룸 목록 불러오는 중...</b>
                 </p>
@@ -64,7 +60,6 @@ const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
               endMessage={
                 <p
                   className={`${roomListStyles["room-scroll-text"]} typography__text--big`}
-                  style={{ textAlign: "center", color: "$-gray_cool-400" }}
                 >
                   <b>더 이상 방이 없습니다.</b>
                 </p>
