@@ -28,6 +28,7 @@ export const UserProfileImage: NextPage<{
         setSrc(USER_DEFAULT_IMAGE_SRC);
       }}
       alt="User profile image"
+      style={{ borderRadius: "8px" }}
     />
   );
 };
