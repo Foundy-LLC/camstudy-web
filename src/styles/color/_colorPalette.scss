@@ -1,4 +1,5 @@
 
+
 //TODO: 수정 전 (변경 후 삭제)
 
 // System Color
@@ -148,93 +149,3 @@ $-Danger-07: #BB0C01;
 $-Danger-08: #990900;
 $-Danger-09: #770700;
 $-Danger-10: #550500;
-
-
-:root{
-  //System Color
-  $-system_background: $-White;
-  $-system_ui-01: $-Gray-01;
-  $-system_ui-02: $-Gray-02;
-  $-system_ui-03: $-Gray-03;
-  $-system_ui-04: $-Gray-04;
-  $-system_ui-05: $-Gray-05;
-  $-system_ui-06: $-Gray-06;
-  $-system_ui-07: $-Gray-07;
-  $-system_ui-08: $-Gray-08;
-  $-system_ui-09: $-Gray-09;
-  $-system_ui-10: $-Gray-10;
-
-  //UI Background Color
-  $-ui-cardui:$-White;
-  $-ui-cardui-01:$-White;
-  $-ui-cardui-02:$-White;
-  $-ui-cardui-03:$-White;
-  $-ui-cardui-04:$-White;
-
-  //Process Color
-  $-primary:$-Primary-05;
-  $-primary-press:$-Primary-06;
-  $-secondary:$-Gray-08;
-  $-secondary-press:$-Gray-09;
-  $-tertiary:$-White;
-  $-tertiary-press:$-Gray-02;
-  $-success:$-Success-07;
-  $-error:$-Error-06;
-  $-cancel:$-Gray-03;
-  $-cancel-press:$-Gray-04;
-  $-danger:$-Danger-06;
-  $-danger-press:$-Danger-07;
-
-  //Text Color
-  $-text-emphasize:$-Black;
-  $-text-01:$-Gray-09;
-  $-text-02:$-Gray-07;
-  $-text-03:$-Gray-06;
-  $-text-04:$-Gray-04;
-}
-
-//Dark mode
-@media (prefers-color-scheme: dark) {
-  :root {
-    //System Color
-    $-system_background: $-Black;
-    $-system_ui-01: $-Dark-01;
-    $-system_ui-02: $-Dark-02;
-    $-system_ui-03: $-Dark-03;
-    $-system_ui-04: $-Dark-04;
-    $-system_ui-05: $-Dark-05;
-    $-system_ui-06: $-Dark-06;
-    $-system_ui-07: $-Dark-07;
-    $-system_ui-08: $-Dark-08;
-    $-system_ui-09: $-Dark-09;
-    $-system_ui-10: $-Dark-10;
-
-    //UI Background Color
-    $-ui-cardui:$-Dark-01;
-    $-ui-cardui-01:$-Dark-02;
-    $-ui-cardui-02:$-Dark-03;
-    $-ui-cardui-03:$-Dark-04;
-    $-ui-cardui-04:$-Dark-05;
-
-    //Process Color
-    $-primary:$-Primary-03;
-    $-primary-press:$-Primary-02;
-    $-secondary:$-Dark-09;
-    $-secondary-press:$-White;
-    $-tertiary:$-Black;
-    $-tertiary-press:$-Dark-02;
-    $-success:$-Success-04;
-    $-error:$-Error-04;
-    $-cancel:$-Dark-05;
-    $-cancel-press:$-Dark-06;
-    $-danger:$-Danger-04;
-    $-danger-press:$-Danger-03;
-
-    //Text Color
-    $-text-emphasize:$-White;
-    $-text-01:$-Dark-10;
-    $-text-02:$-Dark-09;
-    $-text-03:$-Dark-08;
-    $-text-04:$-Dark-07;
-  }
-}

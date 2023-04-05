@@ -18,6 +18,43 @@ import { useStores } from "@/stores/context";
 import { Crop } from "@/models/crop/Crop";
 import { SideMenuBar } from "@/components/SideMenuBar";
 import { Header } from "@/components/Header";
+import roomListStyles from "@/styles/room-list.module.scss";
+
+export const ThemeModeToggle: NextPage = ({}) => {
+  const savedTheme = localStorage.getItem("color-theme");
+  const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+  const [darkMode, setDarkMode] = useState<string>(
+    savedTheme ? savedTheme : systemTheme
+  );
+  useEffect(() => {
+    if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+      console.log("light");
+    }
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      console.log("dark");
+    }
+  }, []);
+  useEffect(() => {
+    darkMode
+      ? document.body.setAttribute("data-theme", "dark")
+      : document.body.setAttribute("data-theme", "light");
+  }, [darkMode]);
+
+  return (
+    <>
+      <button
+        onClick={() => {
+          setDarkMode(!darkMode);
+        }}
+      >
+        {darkMode ? "다크 모드" : "라이트 모드"}
+      </button>
+      <p className={`${roomListStyles["color-check"]}`}>color</p>
+    </>
+  );
+};
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
@@ -80,6 +117,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       <div className={"box-contents-margin"}>
         <div className={"box-contents"}>
           <div className={"box-contents-side-menu"}>
+            <ThemeModeToggle />
             <SideMenuBar userId={props.uid}></SideMenuBar>
           </div>
           <div className={"box-contents-item"}>

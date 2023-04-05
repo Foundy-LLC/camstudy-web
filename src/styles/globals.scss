@@ -1,6 +1,7 @@
 /* Typography */
 @import url('https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css');
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.6/dist/web/static/pretendard.css");
+@import "./color/colorPalette";
 /* 스크린 리더에서는 읽히게 해주고 안보이게 해주는 역할 */
 .sr-only {
   position: absolute;
@@ -10,10 +11,11 @@
   padding: 0;
   margin: -1px;
   border: 0;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
 }
+
 /* 디스플레이 용도로 사용 */
-.typography__display{
+.typography__display {
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 700;
@@ -22,8 +24,9 @@
   /* identical to box height, or 123% */
   letter-spacing: -0.5px;
 }
+
 /* 큰 타이틀에 사용_1 */
-.typography__title1--big{
+.typography__title1--big {
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 700;
@@ -32,8 +35,9 @@
   /* identical to box height, or 125% */
   letter-spacing: -0.5px;
 }
+
 /* 큰 타이틀에 사용_2 */
-.typography__title2--big{
+.typography__title2--big {
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 700;
@@ -42,8 +46,9 @@
   /* identical to box height, or 125% */
   letter-spacing: -0.5px;
 }
+
 /* 헤드라인에 사용 */
-.typography__headline{
+.typography__headline {
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 700;
@@ -52,8 +57,9 @@
   /* identical to box height, or 128% */
   letter-spacing: -0.5px;
 }
+
 /* 서브 헤드라인에 사용 */
-.typography__sub-headline{
+.typography__sub-headline {
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 600;
@@ -62,8 +68,9 @@
   /* identical to box height, or 131% */
   letter-spacing: -0.5px;
 }
+
 /* 작은 서브 헤드라인에 사용 */
-.typography__sub-headline--small{
+.typography__sub-headline--small {
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 600;
@@ -72,8 +79,9 @@
   /* identical to box height, or 133% */
   letter-spacing: -0.5px;
 }
+
 /* 큰 본문에 사용 */
-.typography__text--big{
+.typography__text--big {
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 500;
@@ -82,8 +90,9 @@
   /* identical to box height, or 140% */
   letter-spacing: -0.5px;
 }
+
 /* 본문에 사용 */
-.typography__text{
+.typography__text {
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 400;
@@ -92,8 +101,9 @@
   /* identical to box height, or 138% */
   letter-spacing: -0.5px;
 }
+
 /* 작은 본문에 사용 */
-.typography__text--small{
+.typography__text--small {
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 400;
@@ -102,8 +112,9 @@
   /* identical to box height, or 129% */
   letter-spacing: -0.5px;
 }
+
 /* 캡션 */
-.typography__caption{
+.typography__caption {
   font-family: 'Pretendard';
   font-style: normal;
   font-weight: 400;
@@ -115,46 +126,142 @@
 
 /* Elevation */
 /* 상단 App Bar(대기 중) */
-.elevation__top-app-bar--waiting{
+.elevation__top-app-bar--waiting {
   elevation: 0;
 }
+
 /* 카드, 서치 바, 컨테인드 버튼(대기 중) 등 */
-.elevation__card__search-bar__contained-button--waiting__etc{
+.elevation__card__search-bar__contained-button--waiting__etc {
   background: #D9D9D9;
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.12);
 }
+
 /* 상단 App Bar(상승) */
-.elevation__top-app-bar--rise{
+.elevation__top-app-bar--rise {
   background: #D9D9D9;
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.06), 0px 2px 4px rgba(0, 0, 0, 0.13);
 }
+
 /* 스낵 바, FAB(대기 중) */
-.elevation__snack-bar__FAB--waiting{
+.elevation__snack-bar__FAB--waiting {
   background: #D9D9D9;
   box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.06), 0px 2px 6px rgba(0, 0, 0, 0.14);
 }
+
 /* 메뉴, 네비게이션 바, 컨테인드 버튼(눌림) 등 */
-.elevation__menu__navigation-bar__contained-button--pressed__etc{
+.elevation__menu__navigation-bar__contained-button--pressed__etc {
   background: #D9D9D9;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08), 0px 2px 8px rgba(0, 0, 0, 0.14);
 }
+
 /* FAB(눌림) */
-.elevation__FAB--pressed{
+.elevation__FAB--pressed {
   background: #D9D9D9;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1), 0px 2px 12px rgba(0, 0, 0, 0.15);
 }
+
 /* 네비게이션 드로어, 모달 사이드/바텀 시트 등 */
-.elevation__navigation-drawer__modal-side-bottom-sheet__etc{
+.elevation__navigation-drawer__modal-side-bottom-sheet__etc {
   /* background: #D9D9D9; */
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 2px 16px rgba(0, 0, 0, 0.15);
 }
+
 /* -(필요에 따라 재량껏 사용) */
-.elevation__discretion{
+.elevation__discretion {
   background: #D9D9D9;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.14), 0px 4px 20px rgba(0, 0, 0, 0.16);
 }
+
 /* 모달, 팝업 등의 Dialog */
-.elevation__modal__popup__etc--dialog{
+.elevation__modal__popup__etc--dialog {
   background: #D9D9D9;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.22), 0px 4px 24px rgba(0, 0, 0, 0.16);
+}
+
+body[data-theme='light'] {
+  //System Color
+  --system_background: #{$-Success-07};
+  --system_ui-01: #{$-Gray-01};
+  --system_ui-02: #{$-Gray-02};
+  --system_ui-03: #{$-Gray-03};
+  --system_ui-04: #{$-Gray-04};
+  --system_ui-05: #{$-Gray-05};
+  --system_ui-06: #{$-Gray-06};
+  --system_ui-07: #{$-Gray-07};
+  --system_ui-08: #{$-Gray-08};
+  --system_ui-09: #{$-Gray-09};
+  --system_ui-10: #{$-Gray-10};
+
+  //UI Background Color
+  --ui-cardui: #{$-White};
+  --ui-cardui-01: #{$-White};
+  --ui-cardui-02: #{$-White};
+  --ui-cardui-03: #{$-White};
+  --ui-cardui-04: #{$-White};
+
+  //Process Color
+  --primary: #{$-Primary-05};
+  --primary-press: #{$-Primary-06};
+  --secondary: #{$-Gray-08};
+  --secondary-press: #{$-Gray-09};
+  --tertiary: #{$-White};
+  --tertiary-press: #{$-Gray-02};
+  --success: #{$-Success-07};
+  --error: #{$-Error-06};
+  --cancel: #{$-Gray-03};
+  --cancel-press: #{$-Gray-04};
+  --danger: #{$-Danger-06};
+  --danger-press: #{$-Danger-07};
+
+  //Text Color
+  --text-emphasize: #{$-Black};
+  --text-01: #{$-Gray-09};
+  --text-02: #{$-Gray-07};
+  --text-03: #{$-Gray-06};
+  --text-04: #{$-Gray-04};
+}
+
+
+//Dark mode
+
+body[data-theme='dark'] {
+  --system_background: #{$-Black};
+  --system_ui-01: #{$-Dark-01};
+  --system_ui-02: #{$-Dark-02};
+  --system_ui-03: #{$-Dark-03};
+  --system_ui-04: #{$-Dark-04};
+  --system_ui-05: #{$-Dark-05};
+  --system_ui-06: #{$-Dark-06};
+  --system_ui-07: #{$-Dark-07};
+  --system_ui-08: #{$-Dark-08};
+  --system_ui-09: #{$-Dark-09};
+  --system_ui-10: #{$-Dark-10};
+
+  //UI Background Color
+  --ui-cardui: #{$-Dark-01};
+  --ui-cardui-01: #{$-Dark-02};
+  --ui-cardui-02: #{$-Dark-03};
+  --ui-cardui-03: #{$-Dark-04};
+  --ui-cardui-04: #{$-Dark-05};
+
+  //Process Color
+  --primary: #{$-Primary-03};
+  --primary-press: #{$-Primary-02};
+  --secondary: #{$-Dark-09};
+  --secondary-press: #{$-White};
+  --tertiary: #{$-Black};
+  --tertiary-press: #{$-Dark-02};
+  --success: #{$-Success-04};
+  --error: #{$-Error-04};
+  --cancel: #{$-Dark-05};
+  --cancel-press: #{$-Dark-06};
+  --danger: #{$-Danger-04};
+  --danger-press: #{$-Danger-03};
+
+  //Text Color
+  --text-emphasize: #{$-White};
+  --text-01: #{$-Dark-10};
+  --text-02: #{$-Dark-09};
+  --text-03: #{$-Dark-08};
+  --text-04: #{$-Dark-07};
 }

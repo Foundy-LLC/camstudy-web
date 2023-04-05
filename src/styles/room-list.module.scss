@@ -1,4 +1,10 @@
 @import "./color/colorPalette";
+
+.color-check{
+  background-color: var(--system_background);
+  color: var(--text-01);
+  font-size: 100px;
+}
 .room-list-frame{
   margin: 0 auto;
   width: 1040px;
@@ -34,7 +40,7 @@
     scrollbar-width: none; /* Firefox */
 
     .room-scroll-text{
-      textAlign: center;
+      text-align: center;
       color: $-gray_cool-400;
     }
 

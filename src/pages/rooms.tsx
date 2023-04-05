@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useStores } from "@/stores/context";
 import { observer } from "mobx-react-lite";
 import { RoomOverview } from "@/models/room/RoomOverview";
@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import Router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import roomListStyles from "@/styles/room-list.module.scss";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import locked_icon from "/public/room/locked.png";

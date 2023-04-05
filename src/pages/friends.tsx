@@ -7,7 +7,6 @@ import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
-import { FRIEND_REQUEST_REFUSE_SUCCESS } from "@/constants/FriendMessage";
 import { UserOverview } from "@/models/user/UserOverview";
 import { UserStatus } from "@/models/user/UserStatus";
 
