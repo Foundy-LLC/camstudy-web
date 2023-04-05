@@ -15,34 +15,66 @@ import option_icon from "/public/room/option.png";
 import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
 import Router from "next/router";
-import { SideMenuBar } from "@/components/SideMenuBar";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
+    const { roomListStore } = useStores();
     return (
-      <div
-        className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
-      >
-        <div style={{ display: "flex" }}>
-          <Image
-            src={roomListIcon}
-            alt={"room-list-icon"}
-            width={20}
-            height={20}
-            className={`${roomListStyles["room-list-icon"]}`}
-          />
-          <p
-            className={`${roomListStyles["room-list-title"]} typography__text--big`}
-          >
-            현재 활성화 룸 목록
-          </p>
+      <>
+        <div
+          id="room-list-frame"
+          className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
+        >
+          <div className={`${roomListStyles["room-list-info"]}`}>
+            <Image
+              src={roomListIcon}
+              alt={"room-list-icon"}
+              width={20}
+              height={20}
+              className={`${roomListStyles["room-list-icon"]}`}
+            />
+            <p
+              className={`${roomListStyles["room-list-title"]} typography__text--big`}
+            >
+              현재 활성화 룸 목록
+            </p>
+          </div>
+
+          <div id="room-scroll" className={`${roomListStyles["room-scroll"]} `}>
+            <InfiniteScroll
+              dataLength={items.length}
+              next={() =>
+                setTimeout(() => {
+                  roomListStore.fetchRooms();
+                }, 800)
+              }
+              hasMore={roomListStore.isExistNextPage}
+              loader={
+                <p
+                  className={`${roomListStyles["room-scroll-text"]} typography__text--big`}
+                >
+                  <b>스터디 룸 목록 불러오는 중...</b>
+                </p>
+              }
+              endMessage={
+                <p
+                  className={`${roomListStyles["room-scroll-text"]} typography__text--big`}
+                >
+                  <b>더 이상 방이 없습니다.</b>
+                </p>
+              }
+              scrollableTarget="room-scroll"
+            >
+              <div className={`${roomListStyles["room-list-grid"]}`}>
+                {items.map((item) => (
+                  <RoomItem roomOverview={item} key={item.id} />
+                ))}
+              </div>
+            </InfiniteScroll>
+          </div>
         </div>
-        <div className={`${roomListStyles["room-list-grid"]}`}>
-          {items.map((item) => (
-            <RoomItem roomOverview={item} key={item.id} />
-          ))}
-        </div>
-      </div>
+      </>
     );
   }
 );
@@ -109,7 +141,7 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
               />
             </div>
             <button
-              className={`${roomListStyles["room-enter-button"]}`}
+              className={`${roomListStyles["room-enter-button"]} typography__text`}
               style={{
                 marginLeft: "auto",
                 marginRight: "16px",
@@ -175,16 +207,7 @@ const JoinedUserProfiles: NextPage<{
     </>
   );
 });
-
-const SelectedThumbnailImage: NextPage<{ imageUrl: string }> = observer(
-  ({ imageUrl }) => {
-    if (imageUrl === "") return <></>;
-    return (
-      <Image src={imageUrl} alt="방 썸네일 사진" width={100} height={100} />
-    );
-  }
-);
-
+//TODO(건우): 최근 방 조회 ui 만들 때 참고용, 주석 삭제 필요
 const RoomList: NextPage = observer(() => {
   const router = useRouter();
   const { roomListStore } = useStores();
@@ -193,6 +216,7 @@ const RoomList: NextPage = observer(() => {
   useEffect(() => {
     if (user) {
       roomListStore.setMasterId(user.uid);
+      roomListStore.fetchRooms();
     }
   }, [user]);
 
@@ -204,139 +228,50 @@ const RoomList: NextPage = observer(() => {
     return <div>Please sign in to continue</div>;
   }
   return (
-    <section className={"box"}>
-      <header className={"box-header"}>header</header>
-      <div className={"box-contents-margin"}>
-        <div className={"box-contents"}>
-          <div className={"box-contents-side-menu"}>
-            <SideMenuBar userId={user.uid}></SideMenuBar>
-          </div>
-          <div className={"box-contents-item"}>
-            <div>
-              <button
-                id="sign-out"
-                style={{
-                  float: "right",
-                  marginRight: "30px",
-                  width: "100px",
-                  height: "30px",
-                }}
-                onClick={() => userStore.signOut()}
-              >
-                sign out
-              </button>
-            </div>
-            <div>
-              <h1>rooms page</h1>
-
-              <input
-                id="pageNum"
-                placeholder="페이지 번호"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  console.log(e.target.value);
-                  roomListStore.changeRoomNum(e.target.value);
-                }}
-              ></input>
-              <button
-                id="getBtn"
-                onClick={async () => {
-                  await roomListStore.fetchRooms();
-                }}
-              >
-                GET
-              </button>
-              <button
-                id="recentRoomBtn"
-                onClick={async () => {
-                  await roomListStore.fetchRecentRooms(user.uid);
-                }}
-              >
-                최근 방 조회
-              </button>
-              <br />
-              <input
-                id="roomName"
-                placeholder="방 제목"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  roomListStore.setRoomTitleInput(e.target.value);
-                }}
-              ></input>
-              <button
-                id="PostBtn"
-                onClick={async () => {
-                  await roomListStore.createRoom();
-                }}
-              >
-                POST
-              </button>
-              <br />
-              <input
-                id="roomThumbnail"
-                type="file"
-                accept="image/png, image/jpeg"
-                onChange={(e) => {
-                  if (e.target.files) {
-                    roomListStore.importRoomThumbnail(e.target.files[0]);
-                  }
-                }}
-              ></input>
-              <SelectedThumbnailImage imageUrl={roomListStore.imageUrl} />
-              <RoomItemGroup items={roomListStore.roomOverviews} />
-              <div>
-                <br />
-                <h3>생성한 방:</h3>
-                <p>{roomListStore.createdTitle}</p>
-              </div>
-
-              {roomListStore.errorMessage === undefined ? null : (
-                <h3>{roomListStore.errorMessage}</h3>
-              )}
-              {/*{RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}*/}
-            </div>
-          </div>
-        </div>
+    <>
+      <div>
+        {/*<button*/}
+        {/*  id="recentRoomBtn"*/}
+        {/*  onClick={async () => {*/}
+        {/*    await roomListStore.fetchRecentRooms(user.uid);*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  최근 방 조회*/}
+        {/*</button>*/}
+        {/*<br />*/}
+        {/*<input*/}
+        {/*  id="roomName"*/}
+        {/*  placeholder="방 제목"*/}
+        {/*  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {*/}
+        {/*    roomListStore.setRoomTitleInput(e.target.value);*/}
+        {/*  }}*/}
+        {/*></input>*/}
+        {/*<button*/}
+        {/*  id="PostBtn"*/}
+        {/*  onClick={async () => {*/}
+        {/*    await roomListStore.createRoom();*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  POST*/}
+        {/*</button>*/}
+        {/*<br />*/}
+        {/*<input*/}
+        {/*  id="roomThumbnail"*/}
+        {/*  type="file"*/}
+        {/*  accept="image/png, image/jpeg"*/}
+        {/*  onChange={(e) => {*/}
+        {/*    if (e.target.files) {*/}
+        {/*      roomListStore.importRoomThumbnail(e.target.files[0]);*/}
+        {/*    }*/}
+        {/*  }}*/}
+        {/*></input>*/}
+        <RoomItemGroup items={roomListStore.roomOverviews} />
+        {roomListStore.errorMessage === undefined ? null : (
+          <h3>{roomListStore.errorMessage}</h3>
+        )}
+        {/*{RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}*/}
       </div>
-      <style jsx>{`
-        //스크롤바 아예 지울때
-        //::-webkit-scrollbar {
-        //  width: 0;
-        //  height: 0;
-        //}
-        //test
-        section {
-          background-color: #0a0a0a;
-        }
-        .box {
-          height: 100vh;
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .box-header {
-          min-height: 4rem;
-          background-color: rebeccapurple;
-        }
-        .box-contents-margin {
-          display: flex;
-          min-height: 0; /* 필수는 아님 */
-          justify-content: center; /* 가로 중앙 정렬 */
-        }
-        .box-contents {
-          display: flex;
-          flex-grow: 1;
-          max-width: 1440px;
-        }
-        .box-contents-side-menu {
-          overflow: auto;
-        }
-        .box-contents-item {
-          overflow: auto;
-          flex-grow: 1;
-          background-color: green;
-        }
-      `}</style>
-    </section>
+    </>
   );
 });
 export default RoomList;
