@@ -178,7 +178,7 @@
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.22), 0px 4px 24px rgba(0, 0, 0, 0.16);
 }
 
-body[data-theme='light'] {
+body[color-theme='light'] {
   //System Color
   --system_background: #{$-Success-07};
   --system_ui-01: #{$-Gray-01};
@@ -224,7 +224,7 @@ body[data-theme='light'] {
 
 //Dark mode
 
-body[data-theme='dark'] {
+body[color-theme='dark'] {
   --system_background: #{$-Black};
   --system_ui-01: #{$-Dark-01};
   --system_ui-02: #{$-Dark-02};

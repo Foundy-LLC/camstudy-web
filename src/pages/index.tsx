@@ -19,27 +19,24 @@ import { Crop } from "@/models/crop/Crop";
 import { SideMenuBar } from "@/components/SideMenuBar";
 import { Header } from "@/components/Header";
 import roomListStyles from "@/styles/room-list.module.scss";
+import { set } from "mobx";
 
 export const ThemeModeToggle: NextPage = ({}) => {
-  const savedTheme = localStorage.getItem("color-theme");
-  const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-  const [darkMode, setDarkMode] = useState<string>(
-    savedTheme ? savedTheme : systemTheme
-  );
+  const [darkMode, setDarkMode] = useState<boolean>(true);
   useEffect(() => {
-    if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-      console.log("light");
-    }
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      console.log("dark");
-    }
+    const savedTheme = localStorage.getItem("color-theme");
+    const systemTheme = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    savedTheme
+      ? setDarkMode(savedTheme === "dark" ? true : false)
+      : setDarkMode(systemTheme ? true : false);
   }, []);
   useEffect(() => {
+    localStorage.setItem("color-theme", darkMode ? "true" : "false");
     darkMode
-      ? document.body.setAttribute("data-theme", "dark")
-      : document.body.setAttribute("data-theme", "light");
+      ? document.body.setAttribute("color-theme", "dark")
+      : document.body.setAttribute("color-theme", "light");
   }, [darkMode]);
 
   return (
