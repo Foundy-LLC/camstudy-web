@@ -12,11 +12,13 @@ import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { Auth, User } from "@firebase/auth";
 import { auth } from "@/service/firebase";
 import { RoomSocketService } from "@/service/RoomSocketService";
+import { RootStore } from "@/stores/RootStore";
 
 describe("RoomStore.onJoined", () => {
   it("should set state to JOINED", () => {
     // given
-    const roomStore = new RoomStore();
+    const rootStore: RootStore = new RootStore();
+    const roomStore = new RoomStore(rootStore.userStore);
 
     // when
     roomStore.onJoined([], new Date().toISOString(), mock(), mock());
@@ -29,7 +31,8 @@ describe("RoomStore.onJoined", () => {
 describe("after invoking RoomStore.onUpdatedPomodoroTimer", () => {
   it("should timer state to be STOPPED", () => {
     // given
-    const roomStore = new RoomStore();
+    const rootStore: RootStore = new RootStore();
+    const roomStore = new RoomStore(rootStore.userStore);
 
     // when
     roomStore.onUpdatedPomodoroTimer(mock());
@@ -40,7 +43,8 @@ describe("after invoking RoomStore.onUpdatedPomodoroTimer", () => {
 
   it("should elapsed time to be 0", () => {
     // given
-    const roomStore = new RoomStore();
+    const rootStore: RootStore = new RootStore();
+    const roomStore = new RoomStore(rootStore.userStore);
 
     // when
     roomStore.onUpdatedPomodoroTimer(mock());
@@ -55,7 +59,8 @@ describe("RoomStore.onWaitingRoomEvent", () => {
 
   beforeAll(async () => {
     const mediaUtil: MediaUtil = mock();
-    roomStore = new RoomStore(instance(mediaUtil));
+    const rootStore: RootStore = new RootStore();
+    roomStore = new RoomStore(rootStore.userStore, instance(mediaUtil));
     await roomStore.onConnectedWaitingRoom({
       joinerList: [],
       masterId: "masterId",
@@ -99,9 +104,11 @@ describe("RoomStore.enabledJoinRoomButton", () => {
     const mockMediaUtil = mock<MediaUtil>();
     const mockAuth = mock<Auth>();
     const mockUser = mock<User>();
+    const rootStore: RootStore = new RootStore();
     when(mockUser.uid).thenReturn(id);
     when(mockAuth.currentUser).thenReturn(instance(mockUser));
     const roomStore = new RoomStore(
+      rootStore.userStore,
       instance(mockMediaUtil),
       instance(mockAuth)
     );
@@ -125,9 +132,11 @@ describe("RoomStore.enabledJoinRoomButton", () => {
     const mockMediaUtil = mock<MediaUtil>();
     const mockAuth = mock<Auth>();
     const mockUser = mock<User>();
+    const rootStore: RootStore = new RootStore();
     when(mockUser.uid).thenReturn(id);
     when(mockAuth.currentUser).thenReturn(instance(mockUser));
     const roomStore = new RoomStore(
+      rootStore.userStore,
       instance(mockMediaUtil),
       instance(mockAuth)
     );
@@ -151,9 +160,11 @@ describe("RoomStore.enabledJoinRoomButton", () => {
     const mockMediaUtil = mock<MediaUtil>();
     const mockAuth = mock<Auth>();
     const mockUser = mock<User>();
+    const rootStore: RootStore = new RootStore();
     when(mockUser.uid).thenReturn(id);
     when(mockAuth.currentUser).thenReturn(instance(mockUser));
     const roomStore = new RoomStore(
+      rootStore.userStore,
       instance(mockMediaUtil),
       instance(mockAuth)
     );
@@ -174,7 +185,8 @@ describe("RoomStore.enabledJoinRoomButton", () => {
 
 describe("RoomStore.onFailedToJoin", () => {
   it("should update failedToJoinMessage", () => {
-    const roomStore = new RoomStore();
+    const rootStore: RootStore = new RootStore();
+    const roomStore = new RoomStore(rootStore.userStore);
     const message = "message";
     expect(roomStore.failedToJoinMessage).toBeUndefined();
 
@@ -184,7 +196,8 @@ describe("RoomStore.onFailedToJoin", () => {
   });
 
   it("should clear passwordInput", () => {
-    const roomStore = new RoomStore();
+    const rootStore: RootStore = new RootStore();
+    const roomStore = new RoomStore(rootStore);
     const passwordInput = "password";
     roomStore.updatePasswordInput(passwordInput);
     expect(roomStore.passwordInput).toBe(passwordInput);
@@ -201,9 +214,14 @@ describe("RoomStore.onKicked", () => {
     const uid = "uid";
     const mockAuth = mock<Auth>();
     const mockUser = mock<User>();
+    const rootStore: RootStore = new RootStore();
     when(mockUser.uid).thenReturn(uid);
     when(mockAuth.currentUser).thenReturn(instance(mockUser));
-    const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
+    const roomStore = new RoomStore(
+      rootStore.userStore,
+      new MediaUtil(),
+      instance(mockAuth)
+    );
     expect(roomStore.kicked).toBe(false);
 
     // when
@@ -216,9 +234,14 @@ describe("RoomStore.onKicked", () => {
     // given
     const mockAuth = mock<Auth>();
     const mockUser = mock<User>();
+    const rootStore: RootStore = new RootStore();
     when(mockUser.uid).thenReturn("uid");
     when(mockAuth.currentUser).thenReturn(instance(mockUser));
-    const roomStore = new RoomStore(new MediaUtil(), instance(mockAuth));
+    const roomStore = new RoomStore(
+      rootStore.userStore,
+      new MediaUtil(),
+      instance(mockAuth)
+    );
     roomStore.onChangePeerState({
       uid: "other",
       name: "name",
@@ -240,8 +263,10 @@ describe("RoomStore.unblockUser", () => {
     const userId = "userId";
     const mockService = mock<RoomSocketService>();
     const mediaUtil = mock<MediaUtil>();
+    const rootStore: RootStore = new RootStore();
     when(mockService.unblockUser(userId)).thenResolve();
     const roomStore = new RoomStore(
+      rootStore.userStore,
       instance(mediaUtil),
       auth,
       instance(mockService)
