@@ -27,6 +27,7 @@ import { PeerState } from "@/models/room/PeerState";
 import { auth } from "@/service/firebase";
 import { BlockedUser } from "@/models/room/BlockedUser";
 import { convertToKoreaDate } from "@/utils/DateUtil";
+import { UserStore } from "@/stores/UserStore";
 
 export interface RoomViewModel {
   onConnectedWaitingRoom: (waitingRoomData: WaitingRoomData) => void;
@@ -93,19 +94,20 @@ export class RoomStore implements RoomViewModel {
   private _currentAudioDeviceId: string | undefined = undefined;
   private _currentSpeakerDeviceId: string | undefined = undefined;
 
-  /**
-   * 회원에게 알림을 보내기위한 메시지이다.
-   */
-  private _userMessage?: string = undefined;
-
   constructor(
+    userStore: UserStore,
     private _mediaUtil: MediaUtil = new MediaUtil(),
     private readonly _auth: Auth = auth,
     roomService?: RoomSocketService
   ) {
     makeAutoObservable(this);
-    this._roomService = roomService ?? new RoomSocketService(this);
+    this._roomService = roomService ?? new RoomSocketService(this, userStore);
   }
+
+  /**
+   * 회원에게 알림을 보내기위한 메시지이다.
+   */
+  private _userMessage?: string = undefined;
 
   public get videoDeviceList() {
     return this._videoDeviceList;

@@ -5,7 +5,6 @@ import {
   IMAGE_SERVER_URL,
   USER_DEFAULT_IMAGE_SRC,
 } from "@/constants/image.constant";
-import userStore from "@/stores/UserStore";
 import {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
@@ -18,6 +17,7 @@ import { fetchAbsolute } from "@/utils/fetchAbsolute";
 import { useStores } from "@/stores/context";
 import { Crop } from "@/models/crop/Crop";
 import { SideMenuBar } from "@/components/SideMenuBar";
+import { Header } from "@/components/Header";
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
@@ -44,7 +44,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const [src, setSrc] = useState(props.uid);
   const [errorMessage, setErrorMessage] = useState("");
-  const { cropStore } = useStores();
+  const { cropStore, userStore } = useStores();
   // TODO(민성): UserProfileImage와 중복되는 코드 제거하기.
   const userProfileImageLoader = ({ src }: { src: string }): string => {
     return `${IMAGE_SERVER_URL}/users/${src}.png`;
@@ -74,7 +74,9 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
   return (
     <section className={"box"}>
-      <header className={"box-header"}>header</header>
+      <div className={"box-header-margin"}>
+        <Header userId={props.uid} />
+      </div>
       <div className={"box-contents-margin"}>
         <div className={"box-contents"}>
           <div className={"box-contents-side-menu"}>
@@ -123,46 +125,6 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
           </div>
         </div>
       </div>
-      <style jsx>{`
-        //스크롤바 아예 지울때
-        //::-webkit-scrollbar {
-        //  width: 0;
-        //  height: 0;
-        //}
-        //test
-        section {
-          background-color: #0a0a0a;
-        }
-        .box {
-          height: 100vh;
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .box-header {
-          min-height: 4rem;
-          background-color: rebeccapurple;
-        }
-        .box-contents-margin {
-          display: flex;
-          min-height: 0; /* 필수는 아님 */
-          justify-content: center; /* 가로 중앙 정렬 */
-        }
-        .box-contents {
-          display: flex;
-          flex-grow: 1;
-          max-width: 1440px;
-        }
-        .box-contents-side-menu {
-          overflow: auto;
-        }
-        .box-contents-item {
-          overflow: auto;
-          flex-grow: 1;
-          background-color: green;
-        }
-      `}</style>
     </section>
   );
 }

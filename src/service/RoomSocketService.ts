@@ -54,10 +54,14 @@ import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { JoinRoomSuccessCallbackProperty } from "@/models/room/JoinRoomSuccessCallbackProperty";
 import { JoinRoomFailureCallbackProperty } from "@/models/room/JoinRoomFailureCallbackProperty";
 import { PeerState } from "@/models/room/PeerState";
-import userStore from "@/stores/UserStore";
+import { UserStore } from "@/stores/UserStore";
+import process from "process";
 
 const MEDIA_SERVER_BASE_URL: string =
   process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
+// const MEDIA_SERVER_BASE_URL:string = process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
+const PORT = 2000;
+const SOCKET_SERVER_URL = process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
 
 interface CreateWebRtcTransportParams {
   readonly id: string;
@@ -92,6 +96,8 @@ interface UserAndProducerId {
 }
 
 export class RoomSocketService {
+  private _userStore: UserStore;
+
   private _socket?: Socket;
 
   private _sendTransport?: Transport;
@@ -103,7 +109,12 @@ export class RoomSocketService {
   private _mutedHeadset: boolean = false;
   private _device?: Device;
 
-  constructor(private readonly _roomViewModel: RoomViewModel) {}
+  constructor(
+    private readonly _roomViewModel: RoomViewModel,
+    userStore: UserStore
+  ) {
+    this._userStore = userStore;
+  }
 
   private _requireSocket = (): Socket => {
     if (this._socket === undefined) {
@@ -163,7 +174,7 @@ export class RoomSocketService {
 
   public join = (localMediaStream: MediaStream, password: string) => {
     const socket = this._requireSocket();
-    const user = userStore.currentUser;
+    const user = this._userStore.currentUser;
     if (user == null) {
       throw Error("회원 정보가 없이 방 참여를 시도했습니다.");
     }

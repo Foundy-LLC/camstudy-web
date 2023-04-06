@@ -6,6 +6,15 @@ body, ul{
   font-family: Pretendard;
 }
 
+button{
+  margin: 0;
+  padding: 0;
+  border: none;
+  font: inherit;
+  box-sizing: border-box;
+  background-color: $-system_white;
+}
+
 li{
   list-style-type: none;
 }
@@ -39,4 +48,49 @@ hr {
   justify-content: center;
   align-content: center;
   height: 100vh;
+}
+
+section {
+  background-color: $-light-mode;
+}
+.box {
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.box-header-margin {
+  display: flex;
+  min-height: 4.063rem; /* 필수는 아님 */
+  justify-content: center; /* 가로 중앙 정렬 */
+}
+
+.box-contents-margin {
+  display: flex;
+  min-height: 0; /* 필수는 아님 */
+  justify-content: center; /* 가로 중앙 정렬 */
+}
+
+.box-header {
+  min-height: 4rem;
+  max-width: 87rem;
+  background-color: $-system_white;
+  border-bottom: 1px solid $-gray_cool-200;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  padding: 0 1.5rem;
+}
+.box-contents {
+  display: flex;
+  flex-grow: 1;
+  max-width: 1440px;
+}
+.box-contents-side-menu {
+  overflow: auto;
+}
+.box-contents-item {
+  overflow: auto;
+  flex-grow: 1;
 }

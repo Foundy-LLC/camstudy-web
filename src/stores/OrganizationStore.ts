@@ -3,7 +3,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import organizationService, {
   OrganizationService,
 } from "@/service/organization.service";
-import userStore from "@/stores/UserStore";
+import { UserStore } from "@/stores/UserStore";
 import { ORGANIZATIONS_EMAIL_CONFIRM_SUCCESS } from "@/constants/organizationMessage";
 import { OrganizationVerifyEmailForm } from "@/models/organization/OrganizationVerifyEmailForm";
 import { BelongOrganization } from "@/models/organization/BelongOrganization";
@@ -12,6 +12,7 @@ import { Organization } from "@/models/organization/Organization";
 //TODO(건우): 유저 아이디 불러오는 법 수정 필요
 export class OrganizationStore {
   readonly rootStore: RootStore;
+  private _userStore: UserStore;
   private _typedEmail: string = "";
   private _typedName: string = "";
   private _recommendOrganizations: Organization[] = [];
@@ -25,6 +26,7 @@ export class OrganizationStore {
     private readonly _organizationService: OrganizationService = organizationService
   ) {
     this.rootStore = root;
+    this._userStore = root.userStore;
     makeAutoObservable(this);
   }
 
@@ -143,8 +145,8 @@ export class OrganizationStore {
 
   public async sendOrganizationVerifyEmail() {
     const organizationVerifyEmailForm: OrganizationVerifyEmailForm = {
-      userId: userStore.currentUser!!.id,
-      userName: userStore.currentUser!!.name,
+      userId: this._userStore.currentUser!!.id,
+      userName: this._userStore.currentUser!!.name,
       email: this._typedEmail,
       organizationId: this.organizationId,
       organizationName: this._typedName,
@@ -168,7 +170,7 @@ export class OrganizationStore {
 
   public async fetchBelongOrganizations() {
     const result = await this._organizationService.getBelongOrganizations(
-      userStore.currentUser!.id
+      this._userStore.currentUser!.id
     );
     if (result.isSuccess) {
       runInAction(() => {

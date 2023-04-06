@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { NextPage } from "next";
 import { observer } from "mobx-react";
-import userStore from "@/stores/UserStore";
 import { useRouter } from "next/router";
 import { useAuth } from "@/components/AuthProvider";
 import Image from "next/image";
@@ -15,8 +14,10 @@ import {
 import loginStyles from "@/styles/login.module.scss";
 import { ThemeContext } from "@/context/ThemeContext";
 import { PROJECT_SUB_TITLE, PROJECT_TITLE } from "@/constants/common";
+import { useStores } from "@/stores/context";
 
 const Login: NextPage = () => {
+  const { userStore } = useStores();
   const router = useRouter();
   const auth = useAuth();
   const { theme } = useContext(ThemeContext);
@@ -57,6 +58,7 @@ const Login: NextPage = () => {
 };
 
 const GoogleLoginButton = () => {
+  const { userStore } = useStores();
   return (
     <>
       <h2 className={`sr-only`}>{GOOGLE_LOGIN_BUTTON_TEXT}</h2>
@@ -81,6 +83,7 @@ const GoogleLoginButton = () => {
 };
 
 const GithubLoginButton = () => {
+  const { userStore } = useStores();
   return (
     <>
       <h2 className={`sr-only`}>{GITHUB_LOGIN_BUTTON_TEXT}</h2>

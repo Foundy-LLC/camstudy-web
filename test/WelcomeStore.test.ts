@@ -3,8 +3,8 @@ import { deepEqual, instance, mock, when } from "ts-mockito";
 import { Result } from "@/models/common/Result";
 import { UserService } from "@/service/user.service";
 import {
-  PROFILE_IMAGE_INVALID_EXTENSION,
   IMAGE_SIZE_EXCEED_MESSAGE,
+  PROFILE_IMAGE_INVALID_EXTENSION,
   TAG_COUNT_ERROR_MESSAGE,
   TAG_LENGTH_ERROR_MESSAGE,
   USER_INTRODUCE_LENGTH_ERROR_MESSAGE,
@@ -12,6 +12,7 @@ import {
 } from "@/constants/message";
 import { USER_INTRODUCE_MAX_LENGTH } from "@/constants/user.constant";
 import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
+import { RootStore } from "@/stores/RootStore";
 
 describe("WelcomeStore.createUser", () => {
   it("success", async () => {
@@ -21,10 +22,11 @@ describe("WelcomeStore.createUser", () => {
     const introduce = "intro";
     const tags = ["tag"];
     const stubService: UserService = mock(UserService);
+    const rootStore: RootStore = new RootStore();
     when(
       stubService.createUser(userId, name, introduce, deepEqual(tags))
     ).thenResolve(Result.success(undefined));
-    const welcomeStore = new WelcomeStore(instance(stubService));
+    const welcomeStore = new WelcomeStore(rootStore, instance(stubService));
     expect(welcomeStore.successToCreate).toBe(false);
 
     // when
@@ -45,10 +47,11 @@ describe("WelcomeStore.createUser", () => {
     const tags = ["tag"];
     const error = Error("failed");
     const stubService: UserService = mock(UserService);
+    const rootStore: RootStore = new RootStore();
     when(
       stubService.createUser(userId, name, introduce, deepEqual(tags))
     ).thenResolve(Result.createErrorUsingException(error));
-    const welcomeStore = new WelcomeStore(instance(stubService));
+    const welcomeStore = new WelcomeStore(rootStore, instance(stubService));
     expect(welcomeStore.errorMessage).toBeUndefined();
 
     // when
@@ -65,7 +68,8 @@ describe("WelcomeStore.createUser", () => {
 describe("WelcomeStore.nameErrorMessage", () => {
   it("no error", () => {
     // given
-    const welcomeStore = new WelcomeStore();
+    const rootStore: RootStore = new RootStore();
+    const welcomeStore = new WelcomeStore(rootStore);
     expect(welcomeStore.nameErrorMessage).toBeUndefined();
 
     // when
@@ -78,7 +82,8 @@ describe("WelcomeStore.nameErrorMessage", () => {
     "should have error message when name is updated and not valid",
     (name) => {
       // given
-      const welcomeStore = new WelcomeStore();
+      const rootStore: RootStore = new RootStore();
+      const welcomeStore = new WelcomeStore(rootStore);
       expect(welcomeStore.nameErrorMessage).toBeUndefined();
 
       // when
@@ -95,7 +100,8 @@ describe("WelcomeStore.nameErrorMessage", () => {
 describe("WelcomeStore.introduceErrorMessage", () => {
   it("no error", () => {
     // given
-    const welcomeStore = new WelcomeStore();
+    const rootStore: RootStore = new RootStore();
+    const welcomeStore = new WelcomeStore(rootStore);
     expect(welcomeStore.introduceErrorMessage).toBeUndefined();
 
     // when
@@ -106,7 +112,8 @@ describe("WelcomeStore.introduceErrorMessage", () => {
   });
   it("should have error message when introduce is updated and very long", () => {
     // given
-    const welcomeStore = new WelcomeStore();
+    const rootStore: RootStore = new RootStore();
+    const welcomeStore = new WelcomeStore(rootStore);
     expect(welcomeStore.introduceErrorMessage).toBeUndefined();
     let introduce = "";
     for (let i = 0; i < USER_INTRODUCE_MAX_LENGTH + 1; ++i) {
@@ -126,7 +133,8 @@ describe("WelcomeStore.introduceErrorMessage", () => {
 describe("WelcomeStore.tagsErrorMessage", () => {
   it("no error", () => {
     // given
-    const welcomeStore = new WelcomeStore();
+    const rootStore: RootStore = new RootStore();
+    const welcomeStore = new WelcomeStore(rootStore);
     expect(welcomeStore.tagsErrorMessage).toBeUndefined();
 
     // when
@@ -137,7 +145,8 @@ describe("WelcomeStore.tagsErrorMessage", () => {
   });
   it("should have error message tags are updated and exceed 3", () => {
     // given
-    const welcomeStore = new WelcomeStore();
+    const rootStore: RootStore = new RootStore();
+    const welcomeStore = new WelcomeStore(rootStore);
     expect(welcomeStore.tagsErrorMessage).toBeUndefined();
 
     // when
@@ -148,7 +157,8 @@ describe("WelcomeStore.tagsErrorMessage", () => {
   });
   it("should have error message tags are updated and length exceed", () => {
     // given
-    const welcomeStore = new WelcomeStore();
+    const rootStore: RootStore = new RootStore();
+    const welcomeStore = new WelcomeStore(rootStore);
     expect(welcomeStore.tagsErrorMessage).toBeUndefined();
 
     // when
@@ -163,9 +173,10 @@ describe("WelcomeStore.profileImageUrlErrorMessage", () => {
   it("no error", () => {
     //given
     const mockFile = mock<File>();
+    const rootStore: RootStore = new RootStore();
     when(mockFile.name).thenReturn("mock.png");
     when(mockFile.size).thenReturn(MAX_IMAGE_BYTE_SIZE - 1);
-    const welcomeStore = new WelcomeStore();
+    const welcomeStore = new WelcomeStore(rootStore);
     expect(welcomeStore.profileImageUrlErrorMessage).toBeUndefined();
 
     //when
@@ -178,9 +189,10 @@ describe("WelcomeStore.profileImageUrlErrorMessage", () => {
   it("should have error message profile when image invalid extension", () => {
     //given
     const mockFile = mock<File>();
+    const rootStore: RootStore = new RootStore();
     when(mockFile.name).thenReturn("mock.gif");
     when(mockFile.size).thenReturn(MAX_IMAGE_BYTE_SIZE - 1);
-    const welcomeStore = new WelcomeStore();
+    const welcomeStore = new WelcomeStore(rootStore);
     expect(welcomeStore.profileImageUrlErrorMessage).toBeUndefined();
 
     //when
@@ -195,9 +207,10 @@ describe("WelcomeStore.profileImageUrlErrorMessage", () => {
   it("should have error message profile when image size more than 5MB ", () => {
     //given
     const mockFile = mock<File>();
+    const rootStore: RootStore = new RootStore();
     when(mockFile.name).thenReturn("mock.png");
     when(mockFile.size).thenReturn(MAX_IMAGE_BYTE_SIZE + 1);
-    const welcomeStore = new WelcomeStore();
+    const welcomeStore = new WelcomeStore(rootStore);
     expect(welcomeStore.profileImageUrlErrorMessage).toBeUndefined();
 
     //when

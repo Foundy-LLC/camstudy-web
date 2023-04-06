@@ -1,16 +1,16 @@
 import { RootStore } from "@/stores/RootStore";
 import friendService, { FriendService } from "@/service/Friend.service";
-import userStore from "@/stores/UserStore";
+import { UserStore } from "@/stores/UserStore";
 import { makeAutoObservable, runInAction } from "mobx";
 import {
   APPROVE_FRIEND_REQUEST_SUCCESS,
-  REFUSE_FRIEND_REQUEST_SUCCESS,
+  FREIND_DELETE_SUCCESS,
+  FRIEND_LIST_GET_SUCCESS,
   FRIEND_REQUEST_REFUSE_SUCCESS,
   FRIEND_REQUEST_SUCCESS,
   FRIEND_REQUESTS_GET_SUCCESS,
+  REFUSE_FRIEND_REQUEST_SUCCESS,
   SEARCH_SIMILAR_NAMED_USERS_SUCCESS,
-  FRIEND_LIST_GET_SUCCESS,
-  FREIND_DELETE_SUCCESS,
 } from "@/constants/FriendMessage";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
@@ -20,6 +20,7 @@ import { UserOverview } from "@/models/user/UserOverview";
 
 export class FriendStore {
   readonly rootStore: RootStore;
+  private _userStore: UserStore;
   private _userSearchOverviews: UserSearchOverview[] = [];
   private _friendRequestUsers: FriendRequestUser[] = [];
   private _friendOverviews: UserOverview[] = [];
@@ -31,6 +32,7 @@ export class FriendStore {
     private readonly _friendService: FriendService = friendService
   ) {
     this.rootStore = root;
+    this._userStore = root.userStore;
     makeAutoObservable(this);
   }
 
@@ -94,10 +96,10 @@ export class FriendStore {
 
   public async getSimilarNamedUsers() {
     if (!this._friendRequestInput) return;
-    if (!userStore.currentUser) {
+    if (!this._userStore.currentUser) {
       throw new Error(NO_USER_STORE_ERROR_MESSAGE);
     }
-    const userId = userStore.currentUser.id;
+    const userId = this._userStore.currentUser.id;
     const result = await this._friendService.getSimilarNamedUsers(
       this._friendRequestInput,
       userId
@@ -119,10 +121,10 @@ export class FriendStore {
   public async sendFriendRequest(userId: string) {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
-      if (!userStore.currentUser) {
+      if (!this._userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
-      const requesterId = userStore.currentUser.id;
+      const requesterId = this._userStore.currentUser.id;
       const result = await this._friendService.sendFriendRequest(
         requesterId,
         userId
@@ -149,10 +151,10 @@ export class FriendStore {
   public async cancelFriendRequest(userId: string) {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
-      if (!userStore.currentUser) {
+      if (!this._userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
-      const requesterId = userStore.currentUser.id;
+      const requesterId = this._userStore.currentUser.id;
       const result = await this._friendService.deleteFriendOrRequest(
         requesterId,
         userId
@@ -179,10 +181,10 @@ export class FriendStore {
   public async fetchFriendRequests() {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
-      if (!userStore.currentUser) {
+      if (!this._userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
-      const requesterId = userStore.currentUser.id;
+      const requesterId = this._userStore.currentUser.id;
       const result = await this._friendService.getFriendRequests(requesterId);
       if (result.isSuccess) {
         runInAction(() => {
@@ -206,10 +208,10 @@ export class FriendStore {
   public async fetchFriendList() {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
-      if (!userStore.currentUser) {
+      if (!this._userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
-      const requesterId = userStore.currentUser.id;
+      const requesterId = this._userStore.currentUser.id;
       const result = await this._friendService.getFriendList(requesterId);
       if (result.isSuccess) {
         runInAction(() => {
@@ -233,10 +235,10 @@ export class FriendStore {
   public async acceptFriendRequest(userId: string) {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
-      if (!userStore.currentUser) {
+      if (!this._userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
-      const accepterId = userStore.currentUser.id;
+      const accepterId = this._userStore.currentUser.id;
       const result = await this._friendService.acceptFriendRequest(
         userId,
         accepterId
@@ -263,10 +265,10 @@ export class FriendStore {
   public async refuseFriendRequest(userId: string) {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
-      if (!userStore.currentUser) {
+      if (!this._userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
-      const accepterId = userStore.currentUser.id;
+      const accepterId = this._userStore.currentUser.id;
       const result = await this._friendService.deleteFriendOrRequest(
         userId,
         accepterId
@@ -292,10 +294,10 @@ export class FriendStore {
   public async deleteFriend(userId: string) {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
-      if (!userStore.currentUser) {
+      if (!this._userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
-      const accepterId = userStore.currentUser.id;
+      const accepterId = this._userStore.currentUser.id;
       const result = await this._friendService.deleteFriendOrRequest(
         userId,
         accepterId

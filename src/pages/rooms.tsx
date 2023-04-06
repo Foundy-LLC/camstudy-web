@@ -6,16 +6,15 @@ import { RoomOverview } from "@/models/room/RoomOverview";
 import Image from "next/image";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
-import { useRouter } from "next/router";
-import userStore from "@/stores/UserStore";
+import Router, { useRouter } from "next/router";
 import roomListStyles from "@/styles/room-list.module.scss";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import locked_icon from "/public/room/locked.png";
 import option_icon from "/public/room/option.png";
 import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
-import Router from "next/router";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { SideMenuBar } from "@/components/SideMenuBar";
 
 const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
@@ -210,7 +209,7 @@ const JoinedUserProfiles: NextPage<{
 //TODO(건우): 최근 방 조회 ui 만들 때 참고용, 주석 삭제 필요
 const RoomList: NextPage = observer(() => {
   const router = useRouter();
-  const { roomListStore } = useStores();
+  const { roomListStore, userStore } = useStores();
   const [user, loading] = useAuthState(auth);
 
   useEffect(() => {
