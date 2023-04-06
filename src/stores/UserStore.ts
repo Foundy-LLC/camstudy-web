@@ -66,7 +66,6 @@ export class UserStore {
 
   fetchCurrentUser = async (userId: string) => {
     const result = await this._userService.getUser(userId);
-    console.log("1", this);
     if (result.isSuccess) {
       runInAction(() => {
         this._currentUser = result.getOrNull();
