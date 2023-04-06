@@ -197,7 +197,7 @@ describe("RoomStore.onFailedToJoin", () => {
 
   it("should clear passwordInput", () => {
     const rootStore: RootStore = new RootStore();
-    const roomStore = new RoomStore(rootStore);
+    const roomStore = new RoomStore(rootStore.userStore);
     const passwordInput = "password";
     roomStore.updatePasswordInput(passwordInput);
     expect(roomStore.passwordInput).toBe(passwordInput);
