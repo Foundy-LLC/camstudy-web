@@ -8,13 +8,23 @@
   background: $-system_white;
   border: 0.5px solid $-gray_cool-300;
   border-radius: 16px;
-  .friend-list-icon{
-    margin: 22px 0px 0px 20px;
+
+  .friend-list-info{
+    width: 560px;
+    height: 28px;
+    display: flex;
+    margin: 20px;
+    align-items:center;
+    .friend-list-icon{
+    }
+    .friend-list-label{
+    }
   }
+
   .friend-list-grid{
     display: grid;
     row-gap: 20px;
-    margin: 28px 0px 0px 20px;
+    margin: 8px 0px 0px 20px;
     .friend-list-form{
       width: 560px;
       height: 72px;
@@ -24,15 +34,27 @@
       background: $-system_white;
       border: 0.5px solid $-gray_cool-300;
       border-radius: 8px;
+
       .friend-profile{
         margin:16px;
+        width: 40px;
+        height: 40px;
         border-radius: 8px;
       }
-      .friend-status-online{
-        color: $-success-500;
-      }
-      .friend-status-offline{
-        color: $-success-500;
+      .friend-info{
+        width: 240px;
+        margin-top: 0px;
+        display: flex;
+        flex-direction: column;
+        .friend-name{
+
+        }
+        .friend-status-online{
+          color: $-success-500;
+        }
+        .friend-status-offline{
+          color: $-success-500;
+        }
       }
     }
     .friend-name{

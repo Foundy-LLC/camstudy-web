@@ -140,23 +140,28 @@ const FriendOverview: NextPage<{ item: UserOverview }> = observer(
           alt={`${name}-profileImg`}
           className={`${friendStyles["friend-profile"]} `}
         />
-        <p className={`${friendStyles["friend-name"]} typography__text`}>
-          {name}
-        </p>{" "}
-        {status === UserStatus.LOGIN ? (
-          <p
-            className={`${friendStyles["friend-status-online"]} typography__caption`}
-          >
-            접속 중
-          </p>
-        ) : (
-          <p
-            className={`${friendStyles["friend-status-offline"]} typography__caption`}
-          >
-            로그오프
-          </p>
-        )}{" "}
-        <p>{introduce}</p>
+        <div className={`${friendStyles["friend-info"]} typography__text`}>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <p className={`${friendStyles["friend-name"]} typography__text`}>
+              {name}
+            </p>{" "}
+            {status === UserStatus.LOGIN ? (
+              <p
+                className={`${friendStyles["friend-status-online"]} typography__caption`}
+              >
+                접속 중
+              </p>
+            ) : (
+              <p
+                className={`${friendStyles["friend-status-offline"]} typography__caption`}
+              >
+                로그오프
+              </p>
+            )}{" "}
+          </div>
+          <p>{introduce}</p>
+        </div>
+
         <h3
           onClick={async () => {
             if (confirm(`${name}을 친구 목록에서 삭제하시겠어요?`) === true) {
@@ -177,7 +182,7 @@ const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
       <div
         className={`${friendStyles["friend-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
       >
-        <div>
+        <div className={`${friendStyles["friend-list-info"]}`}>
           <Image
             src={friendListIcon}
             alt={"friend-list-icon"}
@@ -185,7 +190,11 @@ const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
             height={24}
             className={`${friendStyles["friend-list-icon"]}`}
           />
-          <label>내 친구</label>
+          <label
+            className={`${friendStyles["friend-list-label"]} typography__text--big`}
+          >
+            내 친구
+          </label>
         </div>
         <div className={`${friendStyles["friend-list-grid"]}`}>
           {items.map((item, key) => (
