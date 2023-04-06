@@ -74,7 +74,9 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
   return (
     <section className={"box"}>
-      <Header userId={props.uid}></Header>
+      <div className={"box-header-margin"}>
+        <Header userId={props.uid} />
+      </div>
       <div className={"box-contents-margin"}>
         <div className={"box-contents"}>
           <div className={"box-contents-side-menu"}>
