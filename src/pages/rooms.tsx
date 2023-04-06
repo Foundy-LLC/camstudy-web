@@ -15,6 +15,7 @@ import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { SideMenuBar } from "@/components/SideMenuBar";
+import { Header } from "@/components/Header";
 
 const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
@@ -264,10 +265,27 @@ const RoomList: NextPage = observer(() => {
         {/*    }*/}
         {/*  }}*/}
         {/*></input>*/}
-        <RoomItemGroup items={roomListStore.roomOverviews} />
-        {roomListStore.errorMessage === undefined ? null : (
-          <h3>{roomListStore.errorMessage}</h3>
-        )}
+
+        <section className={"box"}>
+          <div className={"box-header-margin"}>
+            <Header userId={user.uid} />
+          </div>
+          <div className={"box-contents-margin"}>
+            <div className={"box-contents"}>
+              <div className={"box-contents-side-menu"}>
+                <SideMenuBar userId={user.uid}></SideMenuBar>
+              </div>
+              <div className={"box-contents-item"}>
+                {/* TODO(민성): UserProfileImage와 중복되는 코드 제거하기.*/}
+                <RoomItemGroup items={roomListStore.roomOverviews} />
+                {roomListStore.errorMessage === undefined ? null : (
+                  <h3>{roomListStore.errorMessage}</h3>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/*{RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}*/}
       </div>
     </>
