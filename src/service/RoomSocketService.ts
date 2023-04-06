@@ -54,11 +54,11 @@ import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { JoinRoomSuccessCallbackProperty } from "@/models/room/JoinRoomSuccessCallbackProperty";
 import { JoinRoomFailureCallbackProperty } from "@/models/room/JoinRoomFailureCallbackProperty";
 import { PeerState } from "@/models/room/PeerState";
-import userStore from "@/stores/UserStore";
-const MEDIA_SERVER_BASE_URL: string =
-  process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
 import { UserStore } from "@/stores/UserStore";
 import process from "process";
+
+const MEDIA_SERVER_BASE_URL: string =
+  process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
 // const MEDIA_SERVER_BASE_URL:string = process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
 const PORT = 2000;
 const SOCKET_SERVER_URL = process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
