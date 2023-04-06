@@ -7,7 +7,6 @@ import Image from "next/image";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import Router, { useRouter } from "next/router";
-import { useRouter } from "next/router";
 import roomListStyles from "@/styles/room-list.module.scss";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import locked_icon from "/public/room/locked.png";
@@ -15,13 +14,14 @@ import option_icon from "/public/room/option.png";
 import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { SideMenuBar } from "@/components/SideMenuBar";
+import { ThemeModeToggleButton } from "@/components/ThemeModeToggleButton";
 
 const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
     const { roomListStore } = useStores();
     return (
       <>
+        <ThemeModeToggleButton />
         <div
           id="room-list-frame"
           className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
