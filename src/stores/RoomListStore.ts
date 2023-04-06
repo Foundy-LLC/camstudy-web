@@ -2,9 +2,6 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { RootStore } from "@/stores/RootStore";
 import roomService, { RoomService } from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
-import React from "react";
-import expect from "expect";
-import roomId from "@/pages/rooms/[roomId]";
 
 //TODO(건우) 값을 임시로 할당하여 수정 필요
 export class Room {
@@ -36,6 +33,7 @@ export class RoomListStore {
   private _isExistNextPage: boolean = true;
   private _rooms: Room[] = [];
   private _roomOverviews: RoomOverview[] = [];
+  private _recentRoomOverviews: RoomOverview[] = [];
   private _pageNum: number = 0;
   private _isSuccessCreate: boolean = false;
   private _isSuccessGet: boolean = false;
@@ -68,6 +66,10 @@ export class RoomListStore {
     return this._roomOverviews;
   }
 
+  get recentRoomOverviews(): RoomOverview[] {
+    return this._recentRoomOverviews;
+  }
+
   get imageUrl(): string {
     return this._imageUrl;
   }
@@ -97,6 +99,7 @@ export class RoomListStore {
     date.setDate(date.getDate() + this._roomExpirate);
     this._tempRoom = { ...this._tempRoom, expiredAt: date };
   }
+
   public setMasterId = (masterId: string) => {
     this._tempRoom = { ...this._tempRoom, masterId: masterId };
   };
@@ -145,7 +148,7 @@ export class RoomListStore {
       runInAction(() => {
         this._initErrorMessage();
         this._isSuccessGet = true;
-        this._roomOverviews = getRecentRoomsResult.getOrNull()!!;
+        this._recentRoomOverviews = getRecentRoomsResult.getOrNull()!!;
       });
     } else {
       runInAction(() => {
