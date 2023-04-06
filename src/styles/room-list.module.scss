@@ -1,8 +1,11 @@
 @import "./color/colorPalette";
 .room-list-frame{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
   margin: 0 auto;
-  width: 1040px;
-  height: 700px;
+  max-width: 1040px;
   background: $-system_white;
   border: 0.5px solid $-gray_cool-200;
   border-radius: 16px;
@@ -28,13 +31,12 @@
     color: $-gray_cool-800;
   }
   .room-scroll {
-    height: 632px;
     overflow: scroll;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
 
     .room-scroll-text{
-      textAlign: center;
+      text-align: center;
       color: $-gray_cool-400;
     }
 
@@ -144,4 +146,3 @@
     color: $-gray_cool-400;
   }
 }
-
