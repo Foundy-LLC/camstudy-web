@@ -9,8 +9,8 @@ import { auth } from "@/service/firebase";
 import Router, { useRouter } from "next/router";
 import roomListStyles from "@/styles/room-list.module.scss";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
-import locked_icon from "/public/room/locked.png";
-import option_icon from "/public/room/option.png";
+import lockedIcon from "/public/room/locked.png";
+import optionIcon from "/public/room/option.png";
 import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -112,7 +112,7 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
             </p>
             {!roomOverview.hasPassword ? null : (
               <Image
-                src={locked_icon}
+                src={lockedIcon}
                 width={15}
                 height={20}
                 alt="locked"
@@ -120,7 +120,7 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
               />
             )}
             <Image
-              src={option_icon}
+              src={optionIcon}
               alt={"option_icon"}
               width={16}
               height={4}
@@ -230,65 +230,63 @@ const RoomList: NextPage = observer(() => {
   }
   return (
     <>
-      <div>
-        {/*<button*/}
-        {/*  id="recentRoomBtn"*/}
-        {/*  onClick={async () => {*/}
-        {/*    await roomListStore.fetchRecentRooms(user.uid);*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  최근 방 조회*/}
-        {/*</button>*/}
-        {/*<br />*/}
-        {/*<input*/}
-        {/*  id="roomName"*/}
-        {/*  placeholder="방 제목"*/}
-        {/*  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {*/}
-        {/*    roomListStore.setRoomTitleInput(e.target.value);*/}
-        {/*  }}*/}
-        {/*></input>*/}
-        {/*<button*/}
-        {/*  id="PostBtn"*/}
-        {/*  onClick={async () => {*/}
-        {/*    await roomListStore.createRoom();*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  POST*/}
-        {/*</button>*/}
-        {/*<br />*/}
-        {/*<input*/}
-        {/*  id="roomThumbnail"*/}
-        {/*  type="file"*/}
-        {/*  accept="image/png, image/jpeg"*/}
-        {/*  onChange={(e) => {*/}
-        {/*    if (e.target.files) {*/}
-        {/*      roomListStore.importRoomThumbnail(e.target.files[0]);*/}
-        {/*    }*/}
-        {/*  }}*/}
-        {/*></input>*/}
+      {/*<button*/}
+      {/*  id="recentRoomBtn"*/}
+      {/*  onClick={async () => {*/}
+      {/*    await roomListStore.fetchRecentRooms(user.uid);*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  최근 방 조회*/}
+      {/*</button>*/}
+      {/*<br />*/}
+      {/*<input*/}
+      {/*  id="roomName"*/}
+      {/*  placeholder="방 제목"*/}
+      {/*  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {*/}
+      {/*    roomListStore.setRoomTitleInput(e.target.value);*/}
+      {/*  }}*/}
+      {/*></input>*/}
+      {/*<button*/}
+      {/*  id="PostBtn"*/}
+      {/*  onClick={async () => {*/}
+      {/*    await roomListStore.createRoom();*/}
+      {/*  }}*/}
+      {/*>*/}
+      {/*  POST*/}
+      {/*</button>*/}
+      {/*<br />*/}
+      {/*<input*/}
+      {/*  id="roomThumbnail"*/}
+      {/*  type="file"*/}
+      {/*  accept="image/png, image/jpeg"*/}
+      {/*  onChange={(e) => {*/}
+      {/*    if (e.target.files) {*/}
+      {/*      roomListStore.importRoomThumbnail(e.target.files[0]);*/}
+      {/*    }*/}
+      {/*  }}*/}
+      {/*></input>*/}
 
-        <section className={"box"}>
-          <div className={"box-header-margin"}>
-            <Header userId={user.uid} />
-          </div>
-          <div className={"box-contents-margin"}>
-            <div className={"box-contents"}>
-              <div className={"box-contents-side-menu"}>
-                <SideMenuBar userId={user.uid}></SideMenuBar>
-              </div>
-              <div className={"box-contents-item"}>
-                {/* TODO(민성): UserProfileImage와 중복되는 코드 제거하기.*/}
-                <RoomItemGroup items={roomListStore.roomOverviews} />
-                {roomListStore.errorMessage === undefined ? null : (
-                  <h3>{roomListStore.errorMessage}</h3>
-                )}
-              </div>
+      <section className={"box"}>
+        <div className={"box-header-margin"}>
+          <Header userId={user.uid} />
+        </div>
+        <div className={"box-contents-margin"}>
+          <div className={"box-contents"}>
+            <div className={"box-contents-side-menu"}>
+              <SideMenuBar userId={user.uid}></SideMenuBar>
+            </div>
+            <div className={"box-contents-item"}>
+              {/* TODO(민성): UserProfileImage와 중복되는 코드 제거하기.*/}
+              <RoomItemGroup items={roomListStore.roomOverviews} />
+              {roomListStore.errorMessage === undefined ? null : (
+                <h3>{roomListStore.errorMessage}</h3>
+              )}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/*{RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}*/}
-      </div>
+      {/*{RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}*/}
     </>
   );
 });

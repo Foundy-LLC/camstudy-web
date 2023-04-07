@@ -1,11 +1,17 @@
 @import "./color/colorPalette";
 
+.title{
+  margin: 24px 0px 0px 20px;
+  color: var(--text-01);
+}
+
 .friend-list-frame{
   width: 600px;
   height: 906px;
+  margin: 24px 0px 0px 20px;
   display: flex;
   flex-direction: column;
-  background: $-system_white;
+  background-color: var(--ui-cardui);
   border: 0.5px solid $-gray_cool-300;
   border-radius: 16px;
 
@@ -13,11 +19,14 @@
     width: 560px;
     height: 28px;
     display: flex;
-    margin: 20px;
+    margin: 22px 0px 28px 20px;
     align-items:center;
     .friend-list-icon{
+
     }
     .friend-list-label{
+      margin-left: 4px;
+      color: var(--text-01);
     }
   }
 
@@ -28,10 +37,8 @@
     .friend-list-form{
       width: 560px;
       height: 72px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      background: $-system_white;
+      display: inline-flex;
+      background-color: var(--ui-cardui-01);
       border: 0.5px solid $-gray_cool-300;
       border-radius: 8px;
 
@@ -43,24 +50,44 @@
       }
       .friend-info{
         width: 240px;
-        margin-top: 0px;
-        display: flex;
-        flex-direction: column;
-        .friend-name{
+        height: 22px;
+        margin-top: 16px;
 
+        .friend-name{
+          width: 114px;
+          height: 22px;
+          color: var(--text-01);
+          font-weight: 500;
+          font-family: "Pretendard";
+          margin-right: 8px;
         }
         .friend-status-online{
-          color: $-success-500;
+          margin-top: 3px;
+          color: var(--success);
         }
         .friend-status-offline{
-          color: $-success-500;
+          margin-top: 3px;
+          color: var(--error);
         }
       }
-    }
-    .friend-name{
-      width: 114px;
-      height: 22px;
-      font-weight: 500;
+
+      .friend-option-button {
+        width: 24px;
+        height: 24px;
+        margin-left: auto;
+        margin-top: 24px;
+        margin-right: 16px;
+        background: var(--ui-cardui-01);
+
+        .friend-option-icon {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: auto;
+          width: 16px;
+          height: 4px;
+        }
+      }
     }
   }
   

@@ -1,19 +1,12 @@
 @import "./color/colorPalette";
 
-.color-check{
-  background-color: var(--system_background);
-  color: var(--text-01);
-  font-size: 100px;
-}
 .room-list-frame{
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-
   margin: 0 auto;
   width: 1040px;
-  height: 700px;
-  background: var(--system_background);
+  background: var(--ui-cardui);
   border: 0.5px solid var(--system_ui-04);
   border-radius: 16px;
 
@@ -73,6 +66,7 @@
 
         .room-title {
           margin: 16px 12px 0px 0px;
+          width: 114px;
           height: 28px;
           color: var(--text-03);
           font-weight: 700;
