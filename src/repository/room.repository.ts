@@ -44,9 +44,15 @@ export const isUserBlockedAtRoom = async (
   });
   return block != null;
 };
-export const findRooms = async (pageNum: number): Promise<RoomOverview[]> => {
+export const findRooms = async (
+  pageNum: number,
+  query: string | null
+): Promise<RoomOverview[]> => {
   const rooms = await client.room.findMany({
-    where: { deleted_at: null },
+    where: {
+      deleted_at: null,
+      title: query == null ? undefined : { startsWith: query },
+    },
     skip: pageNum * ROOM_NUM_PER_PAGE,
     take: ROOM_NUM_PER_PAGE,
     include: {
