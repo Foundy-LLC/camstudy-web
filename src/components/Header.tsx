@@ -32,18 +32,6 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
       <RecentRoomList userId={userId}></RecentRoomList>
       <div className={`${headerStyles["header-user-section"]}`}>
         <UserProfile userId={userId}></UserProfile>
-        <div className={`${headerStyles["button-group"]}`}>
-          {exButtonList.map((button) => {
-            return (
-              <button
-                key={button.icon}
-                onClick={() => buttonClickEvent(button.path)}
-              >
-                <span className="material-symbols-outlined">{button.icon}</span>
-              </button>
-            );
-          })}
-        </div>
         <div style={{ marginTop: "10px" }}>
           <ThemeModeToggleButton />
         </div>
