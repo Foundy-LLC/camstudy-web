@@ -26,6 +26,7 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
         className={`${headerStyles["header-image"]}`}
         src={logo}
         alt={"brand_logo"}
+        priority={true}
       ></Image>
       <RecentRoomList userId={userId}></RecentRoomList>
       <div className={`${headerStyles["header-user-section"]}`}>
@@ -59,7 +60,11 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
   useEffect(() => {
     roomListStore.fetchRecentRooms(userId);
   }, []);
-  const recentRoomList = roomListStore.roomOverviews;
+  let recentRoomList = roomListStore.recentRoomOverviews;
+
+  if (recentRoomList.length > 5) {
+    recentRoomList = recentRoomList.slice(0, 5);
+  }
 
   const joinRecentRoom = (roomId: string) => {
     Router.push(`rooms/${roomId}`);

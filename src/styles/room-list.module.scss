@@ -6,6 +6,10 @@
   font-size: 100px;
 }
 .room-list-frame{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
   margin: 0 auto;
   width: 1040px;
   height: 700px;
@@ -34,7 +38,6 @@
     color: var(--text-01);
   }
   .room-scroll {
-    height: 632px;
     overflow: scroll;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
@@ -151,4 +154,3 @@
     color: $-gray_cool-400;
   }
 }
-
