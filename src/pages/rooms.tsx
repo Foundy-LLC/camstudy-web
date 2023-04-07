@@ -18,13 +18,11 @@ import { ThemeModeToggleButton } from "@/components/ThemeModeToggleButton";
 import { SideMenuBar } from "@/components/SideMenuBar";
 import { Header } from "@/components/Header";
 
-
 const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
     const { roomListStore } = useStores();
     return (
       <>
-        <ThemeModeToggleButton />
         <div
           id="room-list-frame"
           className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
@@ -271,6 +269,7 @@ const RoomList: NextPage = observer(() => {
 
         <section className={"box"}>
           <div className={"box-header-margin"}>
+            <ThemeModeToggleButton />
             <Header userId={user.uid} />
           </div>
           <div className={"box-contents-margin"}>
