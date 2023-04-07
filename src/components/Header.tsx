@@ -8,6 +8,7 @@ import { useStores } from "@/stores/context";
 import { observer } from "mobx-react";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import Router from "next/router";
+import { ThemeModeToggleButton } from "@/components/ThemeModeToggleButton";
 
 export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
   const exButtonList = [
@@ -42,6 +43,9 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
               </button>
             );
           })}
+        </div>
+        <div style={{ marginTop: "10px" }}>
+          <ThemeModeToggleButton />
         </div>
       </div>
       <style jsx>

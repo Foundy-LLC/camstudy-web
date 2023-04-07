@@ -269,7 +269,6 @@ const RoomList: NextPage = observer(() => {
 
         <section className={"box"}>
           <div className={"box-header-margin"}>
-            <ThemeModeToggleButton />
             <Header userId={user.uid} />
           </div>
           <div className={"box-contents-margin"}>
