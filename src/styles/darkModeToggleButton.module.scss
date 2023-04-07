@@ -1,0 +1,59 @@
+@import "./color/colorPalette";
+
+@keyframes button-ani {
+  0% {
+    left: 26px;
+  }
+  100% {
+    left: 2px;
+  }
+}
+
+@keyframes button-active-ani {
+  0% {
+    left: 2px;
+  }
+  100% {
+    left: 26px;
+  }
+}
+
+.button {
+  width: 48px;
+  height: 24px;
+  margin-left: 8px;
+  background-color: $-Gray-02;
+  border-radius: 24px;
+  position: relative;
+  .circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: $-White;
+    position:absolute;
+    transform: translateY(-50%);
+    animation: button-ani 0.1s linear forwards;
+  }
+}
+
+.button-active {
+  width: 48px;
+  height: 24px;
+  margin-left: 8px;
+  background-color: $-Primary-03;
+  border-radius: 24px;
+  position: relative;
+
+  .circle {
+    width: 20px;
+    height: 20px;
+    position:absolute;
+    left: 26px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: $-White;
+    animation: button-active-ani 0.1s linear forwards;
+  }
+}
+
+

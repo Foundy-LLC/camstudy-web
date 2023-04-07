@@ -18,6 +18,7 @@ import { useStores } from "@/stores/context";
 import { Crop } from "@/models/crop/Crop";
 import { SideMenuBar } from "@/components/SideMenuBar";
 import { Header } from "@/components/Header";
+import { set } from "mobx";
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {

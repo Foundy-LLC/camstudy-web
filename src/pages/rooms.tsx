@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useStores } from "@/stores/context";
 import { observer } from "mobx-react-lite";
 import { RoomOverview } from "@/models/room/RoomOverview";
@@ -14,6 +14,7 @@ import option_icon from "/public/room/option.png";
 import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { ThemeModeToggleButton } from "@/components/ThemeModeToggleButton";
 import { SideMenuBar } from "@/components/SideMenuBar";
 import { Header } from "@/components/Header";
 

@@ -8,6 +8,7 @@ import { useStores } from "@/stores/context";
 import { observer } from "mobx-react";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import Router from "next/router";
+import { ThemeModeToggleButton } from "@/components/ThemeModeToggleButton";
 
 export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
   const exButtonList = [
@@ -31,17 +32,8 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
       <RecentRoomList userId={userId}></RecentRoomList>
       <div className={`${headerStyles["header-user-section"]}`}>
         <UserProfile userId={userId}></UserProfile>
-        <div className={`${headerStyles["button-group"]}`}>
-          {exButtonList.map((button) => {
-            return (
-              <button
-                key={button.icon}
-                onClick={() => buttonClickEvent(button.path)}
-              >
-                <span className="material-symbols-outlined">{button.icon}</span>
-              </button>
-            );
-          })}
+        <div style={{ marginTop: "10px" }}>
+          <ThemeModeToggleButton />
         </div>
       </div>
       <style jsx>
