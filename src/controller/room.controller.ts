@@ -88,12 +88,14 @@ export const getRoomAvailability = async (
 
 export const getRooms = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    if (typeof req.query.page !== "string") {
+    const page = req.query.page;
+    const query = req.query.query as string;
+    if (typeof page !== "string" || Array.isArray(query)) {
       res.status(400).send(new ResponseBody({ message: REQUEST_QUERY_ERROR }));
       return;
     }
-    const roomsGetBody = new RoomsGetRequest(req.query.page);
-    const result = await findRooms(roomsGetBody.pageNum);
+    const roomsGetBody = new RoomsGetRequest(page, query);
+    const result = await findRooms(roomsGetBody.pageNum, roomsGetBody.query);
     res.status(201).json(
       new ResponseBody({
         data: result,
