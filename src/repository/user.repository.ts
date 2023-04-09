@@ -68,39 +68,51 @@ export const isUserExists = async (userId: string): Promise<boolean> => {
 export const getSimilarNamedUsers = async (
   userName: string,
   userId: string
-): Promise<UserSearchOverview[]> => {
+): Promise<[number, UserSearchOverview[]]> => {
   const removeSpace = userName.replace(/ /g, "");
   const splitName = removeSpace.split("#");
-  const result = await prisma.user_account.findMany({
-    take: SEARCH_USERS_MAX_NUM,
-    where: {
-      name: { startsWith: splitName[0] },
-      id: { startsWith: splitName[1] },
-      NOT: { id: userId },
-    },
-    select: {
-      id: true,
-      name: true,
-      profile_image: true,
-      friend_friend_acceptor_idTouser_account: {
-        where: { requester_id: userId },
-        select: { accepted: true },
+  const result = await prisma.$transaction([
+    prisma.user_account.count({
+      where: {
+        name: { startsWith: splitName[0] },
+        id: { startsWith: splitName[1] },
+        NOT: { id: userId },
       },
-    },
-  });
+    }),
+    prisma.user_account.findMany({
+      take: SEARCH_USERS_MAX_NUM,
+      where: {
+        name: { startsWith: splitName[0] },
+        id: { startsWith: splitName[1] },
+        NOT: { id: userId },
+      },
+      select: {
+        id: true,
+        name: true,
+        profile_image: true,
+        friend_friend_acceptor_idTouser_account: {
+          where: { requester_id: userId },
+          select: { accepted: true },
+        },
+      },
+    }),
+  ]);
 
-  return result.map((item) => {
-    return {
-      id: item.id,
-      name: item.name,
-      profileImage: item.profile_image,
-      requestHistory: item.friend_friend_acceptor_idTouser_account[0]
-        ? item.friend_friend_acceptor_idTouser_account[0].accepted === true
-          ? friendStatus.ACCEPTED
-          : friendStatus.REQUESTED
-        : friendStatus.NONE,
-    };
-  });
+  return [
+    result[0],
+    result[1].map((item) => {
+      return {
+        id: item.id,
+        name: item.name,
+        profileImage: item.profile_image,
+        requestHistory: item.friend_friend_acceptor_idTouser_account[0]
+          ? item.friend_friend_acceptor_idTouser_account[0].accepted === true
+            ? friendStatus.ACCEPTED
+            : friendStatus.REQUESTED
+          : friendStatus.NONE,
+      };
+    }),
+  ];
 };
 
 export const createUser = async (

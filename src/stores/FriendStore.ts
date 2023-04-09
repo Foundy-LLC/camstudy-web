@@ -27,6 +27,8 @@ export class FriendStore {
   private _friendRequestInput: string | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
   private _successMessage: string | undefined = undefined;
+  private _friendListMaxPage: number | undefined = undefined;
+  private _searchFriendMaxPage: number | undefined = undefined;
   constructor(
     root: RootStore,
     private readonly _friendService: FriendService = friendService
@@ -34,6 +36,14 @@ export class FriendStore {
     this.rootStore = root;
     this._userStore = root.userStore;
     makeAutoObservable(this);
+  }
+
+  public get friendListMaxPage() {
+    return this._friendListMaxPage;
+  }
+
+  public get searchFriendMaxPage() {
+    return this._searchFriendMaxPage;
   }
 
   public get errorMessage() {
@@ -107,7 +117,9 @@ export class FriendStore {
     if (result.isSuccess) {
       runInAction(() => {
         this._errorMessage = undefined;
-        this._userSearchOverviews = result.getOrNull()!;
+        const dataArray = result.getOrNull()!;
+        this._searchFriendMaxPage = dataArray[0];
+        this._userSearchOverviews = dataArray[1];
         this._successMessage = SEARCH_SIMILAR_NAMED_USERS_SUCCESS;
       });
     } else {
@@ -218,7 +230,9 @@ export class FriendStore {
         runInAction(() => {
           this._errorMessage = undefined;
           this._successMessage = FRIEND_LIST_GET_SUCCESS;
-          this._friendOverviews = result.getOrNull()!;
+          const dataArray = result.getOrNull()!;
+          this._friendListMaxPage = dataArray[0];
+          this._friendOverviews = dataArray[1];
         });
       } else {
         runInAction(() => {
