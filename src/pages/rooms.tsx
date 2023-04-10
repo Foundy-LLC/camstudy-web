@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useStores } from "@/stores/context";
 import { observer } from "mobx-react-lite";
 import { RoomOverview } from "@/models/room/RoomOverview";
@@ -14,9 +14,7 @@ import optionIcon from "/public/room/option.png";
 import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { ThemeModeToggleButton } from "@/components/ThemeModeToggleButton";
-import { SideMenuBar } from "@/components/SideMenuBar";
-import { Header } from "@/components/Header";
+import { Layout } from "@/components/Layout";
 
 const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
@@ -229,65 +227,12 @@ const RoomList: NextPage = observer(() => {
     return <div>Please sign in to continue</div>;
   }
   return (
-    <>
-      {/*<button*/}
-      {/*  id="recentRoomBtn"*/}
-      {/*  onClick={async () => {*/}
-      {/*    await roomListStore.fetchRecentRooms(user.uid);*/}
-      {/*  }}*/}
-      {/*>*/}
-      {/*  최근 방 조회*/}
-      {/*</button>*/}
-      {/*<br />*/}
-      {/*<input*/}
-      {/*  id="roomName"*/}
-      {/*  placeholder="방 제목"*/}
-      {/*  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {*/}
-      {/*    roomListStore.setRoomTitleInput(e.target.value);*/}
-      {/*  }}*/}
-      {/*></input>*/}
-      {/*<button*/}
-      {/*  id="PostBtn"*/}
-      {/*  onClick={async () => {*/}
-      {/*    await roomListStore.createRoom();*/}
-      {/*  }}*/}
-      {/*>*/}
-      {/*  POST*/}
-      {/*</button>*/}
-      {/*<br />*/}
-      {/*<input*/}
-      {/*  id="roomThumbnail"*/}
-      {/*  type="file"*/}
-      {/*  accept="image/png, image/jpeg"*/}
-      {/*  onChange={(e) => {*/}
-      {/*    if (e.target.files) {*/}
-      {/*      roomListStore.importRoomThumbnail(e.target.files[0]);*/}
-      {/*    }*/}
-      {/*  }}*/}
-      {/*></input>*/}
-
-      <section className={"box"}>
-        <div className={"box-header-margin"}>
-          <Header userId={user.uid} />
-        </div>
-        <div className={"box-contents-margin"}>
-          <div className={"box-contents"}>
-            <div className={"box-contents-side-menu"}>
-              <SideMenuBar userId={user.uid}></SideMenuBar>
-            </div>
-            <div className={"box-contents-item"}>
-              {/* TODO(민성): UserProfileImage와 중복되는 코드 제거하기.*/}
-              <RoomItemGroup items={roomListStore.roomOverviews} />
-              {roomListStore.errorMessage === undefined ? null : (
-                <h3>{roomListStore.errorMessage}</h3>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/*{RoomsInfo && <p id="getResponse">{RoomsInfo}</p>}*/}
-    </>
+    <Layout>
+      <RoomItemGroup items={roomListStore.roomOverviews} />
+      {roomListStore.errorMessage === undefined ? null : (
+        <h3>{roomListStore.errorMessage}</h3>
+      )}
+    </Layout>
   );
 });
 export default RoomList;
