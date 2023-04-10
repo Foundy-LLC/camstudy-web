@@ -20,15 +20,26 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
       pageArray.push(i);
     }
     useEffect(() => {
+      console.log(previousPage);
+      console.log(page);
       if (page === 1) {
         // document.getElementById("previous")!.style.color = var(--system_ui-01)};
       }
-      document.getElementById(
-        page.toString()
-      )!.className += `${pagenationStyles["selected-color"]}`;
+      // document.getElementById(
+      //   page.toString()
+      // )!.className += `${pagenationStyles["selected-color"]}`;
     }, [page]);
 
-    const pageOnClick = (value: string) => {};
+    const pageOnClick = (value: string) => {
+      setPreviousPage(page);
+      if (value === "next") {
+        setPage(page + 1);
+      } else if (value === "previous") {
+        setPage(page - 1);
+      } else if (Number.isInteger(parseInt(value))) {
+        setPage(parseInt(value));
+      }
+    };
 
     return (
       <div>
@@ -58,9 +69,9 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
             {pageArray.map((num) => (
               <p
                 id={num.toString()}
-                className={"page-button typography__text--big "}
+                className={`${pagenationStyles["selected-color"]} page-button typography__text--big`}
                 onClick={(e) => {
-                  console.log(e.target);
+                  pageOnClick(num.toString());
                 }}
               >
                 {num}
@@ -106,6 +117,10 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
               font-weight: 400;
               line-height: 28px;
               margin-right: 8.22px;
+            }
+            .material-symbols-outlined {
+              font-variation-settings: "FILL" 0, "wght" 600, "GRAD" 0, "opsz" 48;
+              font-size: 20px;
             }
           `}
         </style>
