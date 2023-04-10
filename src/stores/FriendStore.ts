@@ -209,7 +209,7 @@ export class FriendStore {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
       if (!this._userStore.currentUser) {
-        console.log(this._userStore);
+        
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
       const requesterId = this._userStore.currentUser.id;
