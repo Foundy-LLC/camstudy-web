@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export const ThemeModeToggleButton: NextPage = () => {
   const [darkMode, setDarkMode] = useState<string>("");
-
+  const [clicked, setClicked] = useState<boolean>(false);
   useEffect(() => {
     const savedTheme = localStorage.getItem("color-theme");
     const systemTheme = window.matchMedia(
@@ -24,6 +24,15 @@ export const ThemeModeToggleButton: NextPage = () => {
       ? document.body.setAttribute("color-theme", "dark")
       : document.body.setAttribute("color-theme", "light");
   }, [darkMode]);
+
+  const toggleButtonOnClick = () => {
+    if (clicked === false) {
+      setClicked(true);
+      const button = document.getElementById("toggleButton");
+      button!.setAttribute("clicked", "true");
+    }
+    setDarkMode(darkMode === "true" ? "false" : "true");
+  };
 
   return (
     <div style={{ display: "flex" }}>
@@ -43,12 +52,11 @@ export const ThemeModeToggleButton: NextPage = () => {
         </label>
       </div>
       <button
+        id="toggleButton"
         className={`${
           buttonStyles[`button${darkMode === "true" ? "-active" : ""}`]
         }`}
-        onClick={() => {
-          setDarkMode(darkMode === "true" ? "false" : "true");
-        }}
+        onClick={toggleButtonOnClick}
       >
         <div className={`${buttonStyles[`circle`]}`}></div>
       </button>
