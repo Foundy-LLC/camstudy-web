@@ -16,6 +16,7 @@ import { auth } from "@/service/firebase";
 import { useRouter } from "next/router";
 import { Header } from "@/components/Header";
 import { SideMenuBar } from "@/components/SideMenuBar";
+import { PagenationBar } from "@/components/PagenationBar";
 
 // const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
 //   ({ item }) => {
@@ -200,6 +201,7 @@ const FriendOverview: NextPage<{ item: UserOverview }> = observer(
 
 const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
   ({ items }) => {
+    const { friendStore } = useStores();
     return (
       <div
         className={`${friendStyles["friend-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}

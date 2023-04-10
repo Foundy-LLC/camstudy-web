@@ -4,6 +4,7 @@ import { FriendStore } from "@/stores/FriendStore";
 import { CropStore } from "@/stores/CropStore";
 import { UserStore } from "@/stores/UserStore";
 import { WelcomeStore } from "@/stores/WelcomeStore";
+import { PagenationStore } from "@/stores/PagenationStore";
 
 export class RootStore {
   userStore;
@@ -12,6 +13,7 @@ export class RootStore {
   organizationStore;
   friendStore;
   cropStore;
+  PagenationStore;
   constructor() {
     this.userStore = new UserStore(this);
     this.welcomeStore = new WelcomeStore(this);
@@ -19,5 +21,6 @@ export class RootStore {
     this.organizationStore = new OrganizationStore(this);
     this.friendStore = new FriendStore(this);
     this.cropStore = new CropStore(this);
+    this.PagenationStore = new PagenationStore(this);
   }
 }

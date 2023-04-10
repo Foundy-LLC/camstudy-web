@@ -17,6 +17,7 @@ import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
 import { friendStatus } from "@/constants/FriendStatus";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { UserOverview } from "@/models/user/UserOverview";
+import { FRIEND_NUM_PER_PAGE } from "@/constants/friend.constant";
 
 export class FriendStore {
   readonly rootStore: RootStore;
@@ -27,7 +28,7 @@ export class FriendStore {
   private _friendRequestInput: string | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
   private _successMessage: string | undefined = undefined;
-  private _friendListMaxPage: number | undefined = undefined;
+  private _friendListMaxPage: number = 1;
   private _searchFriendMaxPage: number | undefined = undefined;
   constructor(
     root: RootStore,
@@ -118,7 +119,8 @@ export class FriendStore {
       runInAction(() => {
         this._errorMessage = undefined;
         const dataArray = result.getOrNull()!;
-        this._searchFriendMaxPage = dataArray[0];
+        this._searchFriendMaxPage =
+          Math.floor(dataArray[0] / FRIEND_NUM_PER_PAGE) + 1;
         this._userSearchOverviews = dataArray[1];
         this._successMessage = SEARCH_SIMILAR_NAMED_USERS_SUCCESS;
       });
@@ -231,7 +233,8 @@ export class FriendStore {
           this._errorMessage = undefined;
           this._successMessage = FRIEND_LIST_GET_SUCCESS;
           const dataArray = result.getOrNull()!;
-          this._friendListMaxPage = dataArray[0];
+          this._friendListMaxPage =
+            Math.floor(dataArray[0] / FRIEND_NUM_PER_PAGE) + 1;
           this._friendOverviews = dataArray[1];
         });
       } else {
