@@ -19,9 +19,9 @@
 }
 
 .selected-color{
-  color: #FF2C1F;
+  color:var(--danger);
 }
 
 .unselected-color{
-  color:var(--system_ui-03);
+  color:var(--system_ui-04);
 }

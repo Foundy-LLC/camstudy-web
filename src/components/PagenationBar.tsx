@@ -1,7 +1,6 @@
 import { NextPage } from "next";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import pagenationStyles from "@/styles/pagenation.module.scss";
 
 export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
@@ -19,16 +18,25 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
     ) {
       pageArray.push(i);
     }
+
     useEffect(() => {
       console.log(previousPage);
       console.log(page);
       if (page === 1) {
         // document.getElementById("previous")!.style.color = var(--system_ui-01)};
       }
-      // document.getElementById(
-      //   page.toString()
-      // )!.className += `${pagenationStyles["selected-color"]}`;
+      console.log(page);
+      document.getElementById(
+        page.toString()
+      )!.className += ` ${pagenationStyles["selected-color"]}`;
     }, [page]);
+
+    useEffect(() => {
+      if (previousPage === undefined) return;
+      const element = document.getElementById(previousPage.toString());
+      if (element == null) return;
+      element.classList.remove(`${pagenationStyles["selected-color"]}`);
+    }, [previousPage]);
 
     const pageOnClick = (value: string) => {
       setPreviousPage(page);
@@ -69,7 +77,7 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
             {pageArray.map((num) => (
               <p
                 id={num.toString()}
-                className={`${pagenationStyles["selected-color"]} page-button typography__text--big`}
+                className={`page-button typography__text--big`}
                 onClick={(e) => {
                   pageOnClick(num.toString());
                 }}
@@ -101,8 +109,8 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
               margin-right: 20px;
               height: 28px;
               line-height: 28px;
-              color: #c1c1c1;
             }
+
             .previous-button {
               display: inline;
               cursor: pointer;
@@ -111,6 +119,7 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
               margin-right: 28px;
               margin-left: 8.22px;
             }
+
             .next-button {
               display: inline;
               cursor: pointer;
