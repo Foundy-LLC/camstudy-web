@@ -107,7 +107,7 @@ export class FriendService {
 
   public getFriendRequests = async (
     userId: string
-  ): Promise<Result<FriendRequestUser[]>> => {
+  ): Promise<Result<UserOverview[]>> => {
     try {
       const friendRequestBody = new ValidateUid(userId);
       const response = await fetchAbsolute(

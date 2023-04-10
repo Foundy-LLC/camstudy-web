@@ -22,7 +22,7 @@ export class FriendStore {
   readonly rootStore: RootStore;
   private _userStore: UserStore;
   private _userSearchOverviews: UserSearchOverview[] = [];
-  private _friendRequestUsers: FriendRequestUser[] = [];
+  private _friendRequestUsers: UserOverview[] = [];
   private _friendOverviews: UserOverview[] = [];
   private _friendRequestInput: string | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
@@ -84,7 +84,7 @@ export class FriendStore {
 
   private _disposeFriendRequest(userId: string) {
     this._friendRequestUsers = this._friendRequestUsers!.filter(
-      (item) => item.requesterId !== userId
+      (item) => item.id !== userId
     );
   }
 
@@ -209,6 +209,7 @@ export class FriendStore {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
       if (!this._userStore.currentUser) {
+        
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
       const requesterId = this._userStore.currentUser.id;

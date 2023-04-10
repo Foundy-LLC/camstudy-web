@@ -68,6 +68,7 @@ export class UserStore {
     const result = await this._userService.getUser(userId);
     if (result.isSuccess) {
       runInAction(() => {
+        console.log("현재 유저 초기화 완료");
         this._currentUser = result.getOrNull();
       });
     } else {
