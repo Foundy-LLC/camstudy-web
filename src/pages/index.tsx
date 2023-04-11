@@ -16,9 +16,7 @@ import { CropsType } from "@/models/crop/CropsType";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
 import { useStores } from "@/stores/context";
 import { Crop } from "@/models/crop/Crop";
-import { SideMenuBar } from "@/components/SideMenuBar";
-import { Header } from "@/components/Header";
-import { set } from "mobx";
+import { Layout } from "@/components/Layout";
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
@@ -74,59 +72,46 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   }, []);
 
   return (
-    <section className={"box"}>
-      <div className={"box-header-margin"}>
-        <Header userId={props.uid} />
+    <Layout>
+      <div>
+        <Image
+          width={150}
+          height={150}
+          loader={userProfileImageLoader}
+          src={src}
+          alt={"user profile image"}
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            setSrc(USER_DEFAULT_IMAGE_SRC);
+          }}
+        ></Image>
+        <button onClick={() => loggingUserInformation()}>
+          getUserInformation
+        </button>
+        <button onClick={() => router.push(`/users/${props.uid}`)}>
+          내 프로필
+        </button>
+        <button onClick={() => setCrop()}>작물</button>
+        <button
+          onClick={() => {
+            cropStore.getHarvestedCrops();
+          }}
+        >
+          인벤토리
+        </button>
+        <button
+          onClick={() =>
+            userStore.signOut().then(() => {
+              router.push("/login");
+            })
+          }
+        >
+          sign out
+        </button>
+        <HarvestedCropGroup items={cropStore.harvestedCrops} />
+        <div>{errorMessage}</div>
       </div>
-      <div className={"box-contents-margin"}>
-        <div className={"box-contents"}>
-          <div className={"box-contents-side-menu"}>
-            <SideMenuBar userId={props.uid}></SideMenuBar>
-          </div>
-          <div className={"box-contents-item"}>
-            {/* TODO(민성): UserProfileImage와 중복되는 코드 제거하기.*/}
-            <div>
-              <Image
-                width={150}
-                height={150}
-                loader={userProfileImageLoader}
-                src={src}
-                alt={"user profile image"}
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  setSrc(USER_DEFAULT_IMAGE_SRC);
-                }}
-              ></Image>
-              <button onClick={() => loggingUserInformation()}>
-                getUserInformation
-              </button>
-              <button onClick={() => router.push(`/users/${props.uid}`)}>
-                내 프로필
-              </button>
-              <button onClick={() => setCrop()}>작물</button>
-              <button
-                onClick={() => {
-                  cropStore.getHarvestedCrops();
-                }}
-              >
-                인벤토리
-              </button>
-              <button
-                onClick={() =>
-                  userStore.signOut().then(() => {
-                    router.push("/login");
-                  })
-                }
-              >
-                sign out
-              </button>
-              <HarvestedCropGroup items={cropStore.harvestedCrops} />
-              <div>{errorMessage}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+    </Layout>
   );
 }
 
