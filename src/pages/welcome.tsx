@@ -156,7 +156,9 @@ const TagsInput: NextPage<{ welcomeStore: WelcomeStore }> = observer(
         (event.target as HTMLInputElement).value !== "" &&
         !event.nativeEvent.isComposing // 한글 키 중복 방지
       ) {
-        welcomeStore.changeTags([(event.target as HTMLInputElement).value]);
+        welcomeStore.changeTags([
+          (event.target as HTMLInputElement).value.slice(1),
+        ]);
         welcomeStore.clearRecommendTags();
         setTag("");
       }
@@ -184,17 +186,20 @@ const TagsInput: NextPage<{ welcomeStore: WelcomeStore }> = observer(
       e: React.MouseEvent<HTMLLabelElement, MouseEvent>
     ) => {
       if (isExistTag((e.target as HTMLLabelElement).innerText)) return;
-      welcomeStore.changeTags([(e.target as HTMLLabelElement).innerText]);
+      welcomeStore.changeTags([
+        (e.target as HTMLLabelElement).innerText.slice(1),
+      ]);
       welcomeStore.clearRecommendTags();
       setTag("");
     };
+
     return (
       <>
         <div className={`${welcomeStyles["tags-input"]}`}>
           <ul className={`${welcomeStyles["tags"]}`}>
             {...welcomeStore.tags.map((tag: string, index: number) => (
               <li key={index} className={`${welcomeStyles["tag"]}`}>
-                <span className={`${welcomeStyles["tag-title"]}`}>{tag}</span>
+                <span className={`${welcomeStyles["tag-title"]}`}>#{tag}</span>
                 <span
                   className={`${welcomeStyles["tag-close-icon"]}`}
                   onClick={() => removeTags(index)}
@@ -237,7 +242,7 @@ const TagsInput: NextPage<{ welcomeStore: WelcomeStore }> = observer(
                 key={idx}
                 onClick={(e) => selectRecommendTag(e)}
               >
-                {tag.name}
+                #{tag.name}
               </label>
             );
           })}
