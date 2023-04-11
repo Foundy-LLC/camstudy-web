@@ -15,7 +15,6 @@ import {
   JOIN_WAITING_ROOM,
   KICK_USER,
   MUTE_HEADSET,
-  NAME_SPACE,
   NEW_PRODUCER,
   OTHER_PEER_DISCONNECTED,
   OTHER_PEER_EXITED_ROOM,
@@ -55,9 +54,9 @@ import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { JoinRoomSuccessCallbackProperty } from "@/models/room/JoinRoomSuccessCallbackProperty";
 import { JoinRoomFailureCallbackProperty } from "@/models/room/JoinRoomFailureCallbackProperty";
 import { PeerState } from "@/models/room/PeerState";
+import process from "process";
 
-const PORT = 2000;
-const SOCKET_SERVER_URL = `http://localhost:${PORT}${NAME_SPACE}`;
+const SOCKET_SERVER_URL = process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
 
 interface CreateWebRtcTransportParams {
   readonly id: string;
