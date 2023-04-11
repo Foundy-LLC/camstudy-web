@@ -1,12 +1,10 @@
 @import "./color/colorPalette";
 
 .previous-button{
-  display: inline;
   cursor: pointer;
 }
 
 .next-button{
-  display: inline;
   cursor: pointer;
 }
 
@@ -19,9 +17,9 @@
 }
 
 .selected-color{
-  color:var(--danger);
+  color:var(--system_ui-03);
 }
 
 .unselected-color{
-  color:var(--system_ui-04);
+  color:var(--system_ui-06);
 }

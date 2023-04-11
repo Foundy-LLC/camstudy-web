@@ -2,9 +2,10 @@ import { NextPage } from "next";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import pagenationStyles from "@/styles/pagenation.module.scss";
+import { max } from "@popperjs/core/lib/utils/math";
 
-export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
-  ({ numPerPage }) => {
+export const PagenationBar: NextPage<{ maxPage: number }> = observer(
+  ({ maxPage }) => {
     const [page, setPage] = useState<number>(1);
     const [previousPage, setPreviousPage] = useState<number | undefined>(
       undefined
@@ -13,32 +14,41 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
     const pageArray: number[] = [];
     for (
       var i = firstpage === 0 ? 1 : firstpage;
-      i <= numPerPage && i < firstpage + 10;
+      i <= maxPage && i < firstpage + 10;
       i++
     ) {
       pageArray.push(i);
     }
 
     useEffect(() => {
-      console.log(previousPage);
-      console.log(page);
-      if (page === 1) {
-        // document.getElementById("previous")!.style.color = var(--system_ui-01)};
-      }
-      console.log(page);
-      document.getElementById(
-        page.toString()
-      )!.className += ` ${pagenationStyles["selected-color"]}`;
+      updateColor("previous", page !== 1);
+      updateColor("next", maxPage > page);
+      updateColor(page.toString(), true);
     }, [page]);
 
     useEffect(() => {
       if (previousPage === undefined) return;
-      const element = document.getElementById(previousPage.toString());
-      if (element == null) return;
-      element.classList.remove(`${pagenationStyles["selected-color"]}`);
+      updateColor(previousPage.toString(), false);
     }, [previousPage]);
 
-    const pageOnClick = (value: string) => {
+    /**
+     *
+     * @param id 색을 변경하고 싶은 태그의 id
+     * @param when 해당 조건이 만족될 때 해당 태그 classList에 selected-color를 추가함
+     */
+    function updateColor(id: string, when: boolean) {
+      const element = document.getElementById(id);
+      if (!element) return;
+      if (when) {
+        element.classList.remove(`${pagenationStyles["unselected-color"]}`);
+        element.classList.add(`${pagenationStyles["selected-color"]}`);
+      } else {
+        element.classList.remove(`${pagenationStyles["selected-color"]}`);
+        element.classList.add(`${pagenationStyles["unselected-color"]}`);
+      }
+    }
+
+    function pageOnClick(value: string) {
       setPreviousPage(page);
       if (value === "next") {
         setPage(page + 1);
@@ -47,25 +57,25 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
       } else if (Number.isInteger(parseInt(value))) {
         setPage(parseInt(value));
       }
-    };
+    }
 
     return (
       <div>
         <div>
-          <span
-            id={"previous"}
-            className={`${pagenationStyles["next-icon"]} material-symbols-outlined`}
-            onClick={() => pageOnClick("previous")}
-          >
-            arrow_back_ios_new
-          </span>
-          <p
-            id={"previous"}
-            className={"previous-button page-button typography__text--big"}
-            onClick={() => pageOnClick("previous")}
-          >
-            이전
-          </p>
+          <div id="previous">
+            <span
+              className={`${pagenationStyles["next-icon"]} material-symbols-outlined`}
+              onClick={() => pageOnClick("previous")}
+            >
+              arrow_back_ios_new
+            </span>
+            <p
+              className={"previous-button page-button typography__text--big"}
+              onClick={() => pageOnClick("previous")}
+            >
+              이전
+            </p>
+          </div>
           <div
             style={{
               width: "270px",
@@ -77,7 +87,7 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
             {pageArray.map((num) => (
               <p
                 id={num.toString()}
-                className={`page-button typography__text--big`}
+                className={`${pagenationStyles["unselected-color"]} page-button typography__text--big`}
                 onClick={(e) => {
                   pageOnClick(num.toString());
                 }}
@@ -86,22 +96,30 @@ export const PagenationBar: NextPage<{ numPerPage: number }> = observer(
               </p>
             ))}
           </div>
-          <p
-            className={"next-button typography__text--big"}
-            onClick={() => pageOnClick("next")}
-          >
-            다음
-          </p>
-          <span
-            className={`${pagenationStyles["next-icon"]} material-symbols-outlined`}
-            style={{ cursor: "pointer", height: "20px", width: "11.77px" }}
-            onClick={() => pageOnClick("next")}
-          >
-            arrow_forward_ios
-          </span>
+          <div id="next">
+            <p
+              className={" next-button typography__text--big"}
+              onClick={() => pageOnClick("next")}
+            >
+              다음
+            </p>
+            <span
+              className={`${pagenationStyles["next-icon"]} material-symbols-outlined`}
+              style={{ cursor: "pointer", height: "20px", width: "11.77px" }}
+              onClick={() => pageOnClick("next")}
+            >
+              arrow_forward_ios
+            </span>
+          </div>
         </div>
         <style jsx>
           {`
+            #previous {
+              display: inline;
+            }
+            #next {
+              display: inline;
+            }
             .page-button {
               display: inline;
               cursor: pointer;

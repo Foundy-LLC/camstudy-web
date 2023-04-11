@@ -17,6 +17,7 @@ import { useRouter } from "next/router";
 import { Header } from "@/components/Header";
 import { SideMenuBar } from "@/components/SideMenuBar";
 import { PagenationBar } from "@/components/PagenationBar";
+import { ThemeModeToggleButton } from "@/components/ThemeModeToggleButton";
 
 // const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
 //   ({ item }) => {
@@ -225,6 +226,7 @@ const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
             <FriendOverview item={item} key={key} />
           ))}
         </div>
+        <PagenationBar maxPage={1} />
       </div>
     );
   }
@@ -279,7 +281,6 @@ const friends: NextPage = observer(() => {
       {/*  친구 요청 조회*/}
       {/*</button>*/}
       {/*<br />*/}
-
       {/*<SimilarNamedUserGroup items={friendStore.userSearchOverviews} />*/}
       {/*<FriendRequestGroup items={friendStore.friendRequestUsers} />*/}
       <section className={"box"}>
