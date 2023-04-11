@@ -175,11 +175,11 @@ export class WelcomeStore {
   };
 
   public async onChangeTagInput(tag: string) {
-    this._tag = tag;
-    if (this._tag === "" || this._tag === "#") {
+    if (tag === "" || tag === "#") {
       this._recommendTags = [];
       return;
     }
+    this._tag = tag.slice(1);
     const result = await this._welcomeService.getTags(this._tag);
     if (result.isSuccess) {
       runInAction(() => {
