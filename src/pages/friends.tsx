@@ -221,12 +221,28 @@ const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
             내 친구
           </label>
         </div>
-        <div className={`${friendStyles["friend-list-grid"]}`}>
-          {items.map((item, key) => (
-            <FriendOverview item={item} key={key} />
-          ))}
+        {!friendStore.errorMessage ? (
+          <div className={`${friendStyles["friend-list-grid"]}`}>
+            {items.map((item, key) => (
+              <FriendOverview item={item} key={key} />
+            ))}
+          </div>
+        ) : (
+          <p>{friendStore.errorMessage}</p>
+        )}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 46,
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <PagenationBar
+            maxPage={friendStore.friendListMaxPage}
+            update={friendStore.fetchFriendList}
+          />
         </div>
-        <PagenationBar maxPage={1} />
       </div>
     );
   }
@@ -242,7 +258,7 @@ const friends: NextPage = observer(() => {
 
   useEffect(() => {
     if (userStore.currentUser) {
-      friendStore.fetchFriendList();
+      friendStore.fetchFriendList(1);
     }
   }, [userStore.currentUser]);
 
@@ -299,7 +315,9 @@ const friends: NextPage = observer(() => {
                 >
                   친구 목록
                 </p>
-                <FriendOverviewGroup items={friendStore.friendOverviews} />
+                {friendStore.friendListMaxPage !== -1 && (
+                  <FriendOverviewGroup items={friendStore.friendOverviews} />
+                )}
               </div>
             </div>
           </div>

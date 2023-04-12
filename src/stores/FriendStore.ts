@@ -1,7 +1,7 @@
 import { RootStore } from "@/stores/RootStore";
 import friendService, { FriendService } from "@/service/Friend.service";
 import { UserStore } from "@/stores/UserStore";
-import { makeAutoObservable, runInAction } from "mobx";
+import { action, makeAutoObservable, runInAction } from "mobx";
 import {
   APPROVE_FRIEND_REQUEST_SUCCESS,
   FREIND_DELETE_SUCCESS,
@@ -15,7 +15,6 @@ import {
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
 import { friendStatus } from "@/constants/FriendStatus";
-import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { UserOverview } from "@/models/user/UserOverview";
 import { FRIEND_NUM_PER_PAGE } from "@/constants/friend.constant";
 
@@ -28,15 +27,15 @@ export class FriendStore {
   private _friendRequestInput: string | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
   private _successMessage: string | undefined = undefined;
-  private _friendListMaxPage: number = 1;
+  private _friendListMaxPage: number = -1;
   private _searchFriendMaxPage: number | undefined = undefined;
   constructor(
     root: RootStore,
     private readonly _friendService: FriendService = friendService
   ) {
+    makeAutoObservable(this);
     this.rootStore = root;
     this._userStore = root.userStore;
-    makeAutoObservable(this);
   }
 
   public get friendListMaxPage() {
@@ -70,7 +69,6 @@ export class FriendStore {
   public async changeFriendRequestInput(str: string) {
     this._friendRequestInput = str;
   }
-
   public findIndexFromUserOverview(userId: string) {
     return this.userSearchOverviews.findIndex(
       (overview) => overview.id === userId
@@ -219,15 +217,14 @@ export class FriendStore {
     }
   }
 
-  public async fetchFriendList() {
+  fetchFriendList = async (page: number) => {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
       if (!this._userStore.currentUser) {
-        
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
       const requesterId = this._userStore.currentUser.id;
-      const result = await this._friendService.getFriendList(requesterId);
+      const result = await this._friendService.getFriendList(requesterId, page);
       if (result.isSuccess) {
         runInAction(() => {
           this._errorMessage = undefined;
@@ -248,7 +245,7 @@ export class FriendStore {
         if (e instanceof Error) this._errorMessage = e.message;
       });
     }
-  }
+  };
 
   public async acceptFriendRequest(userId: string) {
     try {
