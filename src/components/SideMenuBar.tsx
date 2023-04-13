@@ -74,7 +74,7 @@ const menus: Menu[] = [
       {
         icon: "person",
         text: "내 프로필",
-        path: "",
+        path: "/profile",
       },
       {
         icon: "group",
