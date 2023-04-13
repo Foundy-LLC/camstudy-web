@@ -1,49 +1,9 @@
-.page-title{
-  display: flex;
-  flex-direction: row;
-  .title{
-    width: 117px;
-    height: 42px;
-    margin:24px 24px 4px 20px;
-  }
-  .save-button{
-    width: 186px;
-    height: 38px;
-    background-color: var(--primary);
-    color: var(--tertiary);
-    padding: 8px 16px 8px 16px;
-    border-radius: 8px;
-
-    margin-top: 26px;
-    &:disabled {
-      background-color: var(--system_ui-02 );
-      color: var(--system_ui-05);
-    }
-  }
-  .undo-button{
-    width: 86px;
-    height: 38px;
-    background-color: var(--primary);
-    color: var(--tertiary);
-    padding: 8px 16px 8px 16px;
-    border-radius: 8px;
-    margin-top: 26px;
-    margin-left: 8px;
-    &:disabled {
-      background-color: var(--system_ui-02 );
-      color: var(--system_ui-05);
-    }
-  }
-}
-
 .profile-image-form{
   width: 380px;
   height: 240px;
   border-radius: 16px;
   background-color: var(--system_background);
   border: 0.5px solid var(--system_ui-04);
-  margin-top: 20px;
-  margin-left: 20px;
   .title{
     width: 117px;
     height: 28px;
@@ -51,9 +11,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color:var(--text-01);
-    label{
-      margin-left: 4px;
+    span{
+
     }
   }
   .image-upload{
@@ -61,7 +20,7 @@
     .image{
       width: 152px;
       height: 152px;
-      background-color: var(--system_ui-01);
+      background-color: var(--system_ui-02);
       border-radius: 16px;
       margin-left: 20px;
 
@@ -75,7 +34,7 @@
         width: 170px;
         height: 64px;
         color: var(--text-04);
-        font-weight: 200;
+        font-weight: 400;
         line-height: 16px;
         margin-left: 16px;
         margin-top: 8px;
@@ -104,68 +63,6 @@
           }
         }
       }
-    }
-  }
-}
-
-.nickname-form{
-  height: 330px;
-  width: 380px;
-  border-radius: 16px;
-  border: 0.5px solid var(--system_ui-04);
-  background-color: var(--system_background);
-  margin: 20px;
-  .title{
-    width: 172px;
-    height: 28px;
-    margin: 20px 0px 0px 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color:var(--text-01);
-    span{
-
-    }
-    label{
-      margin-left: 4px;
-    }
-  }
-  .nickname{
-    display: flex;
-    flex-direction: column;
-    margin: 24px 0px 0px 20px;
-    label{
-      color: var(--text-04);
-    }
-    input{
-      width: 260px;
-      height: 30px;
-      padding: 10px;
-      background-color: var(--system_ui-01);
-      border-radius: 8px;
-      border: none;
-      color: var(--system_ui-08);
-      margin-top: 6px;
-      margin-bottom: 4px;
-    }
-  }
-  .introduce{
-    display: flex;
-    flex-direction: column;
-    margin: 24px 0px 0px 20px;
-    label{
-      color: var(--text-04);
-    }
-    input{
-      width: 260px;
-      height: 30px;
-      padding: 10px;
-      background-color: var(--system_ui-01);
-      border-radius: 8px;
-      border: none;
-      color: var(--system_ui-08);
-      margin-top: 6px;
-      margin-bottom: 4px;
     }
   }
 }
