@@ -1,13 +1,7 @@
 import { NextPage } from "next";
-import useSWR from "swr";
-import { User } from "@/models/user/User";
-import React from "react";
-import { ResponseBody } from "@/models/common/ResponseBody";
+import React, { useEffect } from "react";
 import { UserProfileImage } from "@/components/UserProfileImage";
-import { NOT_FOUND_USER_MESSAGE } from "@/constants/message";
 import { useRouter } from "next/router";
-import { Header } from "@/components/Header";
-import { SideMenuBar } from "@/components/SideMenuBar";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import profileStyles from "@/styles/profile.module.scss";
@@ -19,13 +13,13 @@ import { Layout } from "@/components/Layout";
 const UserProfile: NextPage = observer(() => {
   const router = useRouter();
   const [user, loading] = useAuthState(auth);
-  const { roomListStore } = useStores();
-  const fetcher = (args: string) => fetch(args).then((res) => res.json());
-  const { data, isLoading } = useSWR<ResponseBody<User>>(
-    `/api/users/${user?.uid}`,
-    fetcher
-  );
-  const profile = data?.data;
+  const { profileStore, userStore } = useStores();
+
+  useEffect(() => {
+    if (!userStore.currentUser) return;
+    console.log(userStore.currentUser);
+    profileStore.getUserProfile();
+  }, [userStore.currentUser]);
 
   if (loading) {
     return <div>Loading</div>;
@@ -36,18 +30,6 @@ const UserProfile: NextPage = observer(() => {
     return <div>Please sign in to continue</div>;
   }
 
-  if (data?.message === NOT_FOUND_USER_MESSAGE || profile === undefined)
-    return (
-      <>
-        <h3>{NOT_FOUND_USER_MESSAGE}</h3>
-      </>
-    );
-  if (isLoading)
-    return (
-      <>
-        <h3>loading</h3>
-      </>
-    );
   return (
     <>
       <Layout>
@@ -75,13 +57,13 @@ const UserProfile: NextPage = observer(() => {
                   <label className={"typography__text--big"}>프로필 사진</label>
                 </div>
                 <div className={`${profileStyles["image-upload"]}`}>
-                  {roomListStore.imageUrl === "" ? (
+                  {profileStore.imageUrl === "" ? (
                     <div className={`${profileStyles["image"]}`}></div>
                   ) : (
                     <Image
                       className={`${profileStyles["image"]}`}
                       alt={"selected-img"}
-                      src={roomListStore.imageUrl}
+                      src={profileStore.imageUrl}
                       width={152}
                       height={152}
                     />
@@ -103,9 +85,7 @@ const UserProfile: NextPage = observer(() => {
                         accept="image/png, image/jpeg"
                         onChange={(e) => {
                           if (e.target.files) {
-                            roomListStore.importRoomThumbnail(
-                              e.target.files[0]
-                            );
+                            profileStore.importProfileImage(e.target.files[0]);
                           }
                         }}
                         hidden
@@ -153,13 +133,15 @@ const UserProfile: NextPage = observer(() => {
         </div>
         <div>
           <UserProfileImage userId={user.uid} width={150} height={150} />
-          <h1>아이디: {profile.id}</h1>
-          <h1>이름: {profile.name}</h1>
-          <h1>태그: {profile.tags}</h1>
-          <h1>소개: {profile.introduce}</h1>
-          <h1>총 공부 시간(분): {profile.totalStudyMinute}</h1>
-          <h1>소속: {profile.organizations}</h1>
-          <h1>랭킹: {profile.rankingScore}</h1>
+          {profileStore.userOverview && (
+            <div>
+              <h1>아이디: {profileStore.userOverview.id}</h1>
+              <h1>이름: {profileStore.userOverview.name}</h1>
+              <h1>태그: {profileStore.userOverview.tags}</h1>
+              <h1>소개: {profileStore.userOverview.introduce}</h1>
+              <h1>소속: {profileStore.userOverview.organizations}</h1>
+            </div>
+          )}
         </div>
       </Layout>
       <style jsx>
