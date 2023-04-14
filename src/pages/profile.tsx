@@ -66,10 +66,14 @@ const UserProfile: NextPage = observer(() => {
                   >
                     내 프로필
                   </label>
-                  <div>
+                  <div
+                    className={`${profileStyles["save-button"]} typography__text`}
+                  >
                     <label>프로필 변경사항 저장하기</label>
                   </div>
-                  <div>
+                  <div
+                    className={`${profileStyles["undo-button"]} typography__text`}
+                  >
                     <label>되돌리기</label>
                   </div>
                 </div>
