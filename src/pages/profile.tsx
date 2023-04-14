@@ -51,7 +51,7 @@ const UserProfile: NextPage = observer(() => {
   return (
     <>
       <Layout>
-        <div className={`${profileStyles["page-form"]}`}>
+        <div>
           <div className={`${profileStyles["page-title"]}`}>
             <label
               className={`${profileStyles["title"]} typography__sub-headline`}
