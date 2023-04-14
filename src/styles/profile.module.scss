@@ -100,7 +100,7 @@
 }
 
 .nickname-form{
-  height: 300px;
+  height: 330px;
   width: 380px;
   border-radius: 16px;
   border: 0.5px solid var(--system_ui-04);
@@ -142,7 +142,7 @@
   .introduce{
     display: flex;
     flex-direction: column;
-    margin: 16px 0px 0px 20px;
+    margin: 24px 0px 0px 20px;
     label{
       color: var(--text-04);
     }
@@ -162,12 +162,11 @@
 
 .organization-form{
   height: 560px;
-  width: 286px;
+  width: 300px;
   border-radius: 16px;
   border: 0.5px solid var(--system_ui-04);
   background-color: var(--system_background);
-  margin-top: 20px;
-  margin-right: 20px;
+  margin: 20px;
   .title{
     width: 63px;
     height: 28px;
@@ -184,47 +183,45 @@
     }
   }
   .organization-name{
-    max-width: 246px;;
+    width: 260px;
     height: 94px;
     display: flex;
     flex-direction: column;
-    margin: 20px 20px 0px 20px;
+    margin: 24px 20px 0px 20px;
     label{
-      max-width: 246px;;
       color: var(--text-04);
     }
     input{
-      width: 216px;
-      height: 18px;
-      padding: 15px;
+      width: 260px;
+      height: 30px;
+      padding: 10px;
       background-color: var(--system_ui-01);
       border-radius: 8px;
       border: none;
       color: var(--system_ui-08);
       margin-top: 6px;
       margin-bottom: 4px;
-
+      margin-right: 20px;
     }
   }
   .email{
-    max-width: 246px;;
     display: flex;
     flex-direction: column;
-    margin: 20px 20px 0px 20px;
+    margin: 24px 20px 0px 20px;
     label{
-      max-width: 246px;;
       color: var(--text-04);
     }
     input{
-      width: 216px;
-      height: 18px;
-      padding: 15px;
+      width: 260px;
+      height: 30px;
+      padding: 10px;
       background-color: var(--system_ui-01);
       border-radius: 8px;
       border: none;
       color: var(--system_ui-08);
       margin-top: 6px;
       margin-bottom: 4px;
+      margin-right: 20px;
     }
   }
 }
