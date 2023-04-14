@@ -94,6 +94,9 @@ export const fetchFriendRequests = async (
   });
 };
 
+/**
+ * @return [마지막 페이지 값, 현재 페이지의 친구 목록]
+ */
 export const fetchFriendList = async (
   userId: string,
   pageNum: number

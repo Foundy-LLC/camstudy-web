@@ -65,6 +65,9 @@ export const isUserExists = async (userId: string): Promise<boolean> => {
   return result !== null;
 };
 
+/**
+ * @return [마지막 페이지 값, 현재 페이지의 친구 검색 결과 목록]
+ */
 export const getSimilarNamedUsers = async (
   userName: string,
   userId: string
