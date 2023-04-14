@@ -100,7 +100,7 @@
 }
 
 .nickname-form{
-  height: 330px;
+  height: 300px;
   width: 380px;
   border-radius: 16px;
   border: 0.5px solid var(--system_ui-04);
@@ -111,7 +111,6 @@
     height: 28px;
     margin: 20px 0px 0px 20px;
     display: flex;
-    justify-content: center;
     align-items: center;
     color:var(--text-01);
     span{
@@ -143,7 +142,7 @@
   .introduce{
     display: flex;
     flex-direction: column;
-    margin: 24px 0px 0px 20px;
+    margin: 16px 0px 0px 20px;
     label{
       color: var(--text-04);
     }
@@ -151,6 +150,75 @@
       width: 260px;
       height: 30px;
       padding: 10px;
+      background-color: var(--system_ui-01);
+      border-radius: 8px;
+      border: none;
+      color: var(--system_ui-08);
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+  }
+}
+
+.organization-form{
+  height: 560px;
+  width: 286px;
+  border-radius: 16px;
+  border: 0.5px solid var(--system_ui-04);
+  background-color: var(--system_background);
+  margin-top: 20px;
+  margin-right: 20px;
+  .title{
+    width: 63px;
+    height: 28px;
+    margin: 20px 0px 0px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:var(--text-01);
+    span{
+
+    }
+    label{
+      margin-left: 4px;
+    }
+  }
+  .organization-name{
+    max-width: 246px;;
+    height: 94px;
+    display: flex;
+    flex-direction: column;
+    margin: 20px 20px 0px 20px;
+    label{
+      max-width: 246px;;
+      color: var(--text-04);
+    }
+    input{
+      width: 216px;
+      height: 18px;
+      padding: 15px;
+      background-color: var(--system_ui-01);
+      border-radius: 8px;
+      border: none;
+      color: var(--system_ui-08);
+      margin-top: 6px;
+      margin-bottom: 4px;
+
+    }
+  }
+  .email{
+    max-width: 246px;;
+    display: flex;
+    flex-direction: column;
+    margin: 20px 20px 0px 20px;
+    label{
+      max-width: 246px;;
+      color: var(--text-04);
+    }
+    input{
+      width: 216px;
+      height: 18px;
+      padding: 15px;
       background-color: var(--system_ui-01);
       border-radius: 8px;
       border: none;

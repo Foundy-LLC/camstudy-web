@@ -77,7 +77,7 @@ const UserProfile: NextPage = observer(() => {
                     <label>되돌리기</label>
                   </div>
                 </div>
-                <div>
+                <div style={{ display: "flex", flexDirection: "row" }}>
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <div
                       className={`${profileStyles["profile-image-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
@@ -150,36 +150,69 @@ const UserProfile: NextPage = observer(() => {
                         </div>
                       </div>
                     </div>
+                    <div
+                      className={`${profileStyles["nickname-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+                    >
+                      <div className={`${profileStyles["title"]}`}>
+                        <span className="material-symbols-sharp">
+                          text_snippet
+                        </span>
+                        <label className={"typography__text--big"}>
+                          닉네임 및 자기소개
+                        </label>
+                      </div>
+                      <div className={`${profileStyles["nickname"]} `}>
+                        <label className={"typography__caption"}>닉네임</label>
+                        <input
+                          type={"text"}
+                          className={"typography__text--small"}
+                        />
+                        <label className={"typography__caption"}>
+                          다른 농부들에게 표시되는 닉네임입니다
+                        </label>
+                      </div>
+                      <div className={`${profileStyles["introduce"]}`}>
+                        <label className={"typography__caption"}>
+                          자기소개
+                        </label>
+                        <input
+                          type={"text"}
+                          className={"typography__text--small"}
+                        />
+                        <label className={"typography__caption"}>
+                          나를 나타낼 수 있는 소개 내용을 입력해주세요
+                        </label>
+                      </div>
+                    </div>
                   </div>
+
                   <div
-                    className={`${profileStyles["nickname-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+                    className={`${profileStyles["organization-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
                   >
                     <div className={`${profileStyles["title"]}`}>
                       <span className="material-symbols-sharp">
                         text_snippet
                       </span>
-                      <label className={"typography__text--big"}>
-                        닉네임 및 자기소개
-                      </label>
+                      <label className={"typography__text--big"}>소속</label>
                     </div>
-                    <div className={`${profileStyles["nickname"]} `}>
-                      <label className={"typography__caption"}>닉네임</label>
+                    <div className={`${profileStyles["organization-name"]} `}>
+                      <label className={"typography__caption"}>소속명</label>
                       <input
                         type={"text"}
                         className={"typography__text--small"}
                       />
                       <label className={"typography__caption"}>
-                        다른 농부들에게 표시되는 닉네임입니다
+                        소속된 학교/회사 등을 검색해주세요
                       </label>
                     </div>
-                    <div className={`${profileStyles["introduce"]}`}>
-                      <label className={"typography__caption"}>자기소개</label>
+                    <div className={`${profileStyles["email"]}`}>
+                      <label className={"typography__caption"}>이메일</label>
                       <input
                         type={"text"}
                         className={"typography__text--small"}
                       />
                       <label className={"typography__caption"}>
-                        나를 나타낼 수 있는 소개 내용을 입력해주세요
+                        소속된 학교/회사의 이메일 주소를 입력해주세요
                       </label>
                     </div>
                   </div>
