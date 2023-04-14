@@ -33,7 +33,7 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
       <div className={`${headerStyles["header-user-section"]}`}>
         <UserProfile userId={userId}></UserProfile>
         <div style={{ marginTop: "10px" }}>
-          <ThemeModeToggleButton />
+            <ThemeModeToggleButton />
         </div>
       </div>
       <style jsx>

@@ -1,0 +1,25 @@
+@import "./color/colorPalette";
+
+.previous-button{
+  cursor: pointer;
+}
+
+.next-button{
+  cursor: pointer;
+}
+
+.next-icon{
+  cursor: pointer;
+}
+
+.previous-icon {
+  cursor: pointer;
+}
+
+.selected-color{
+  color:var(--system_ui-06);
+}
+
+.unselected-color{
+  color:var(--system_ui-03);
+}

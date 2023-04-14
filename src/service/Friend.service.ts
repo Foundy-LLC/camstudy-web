@@ -14,7 +14,7 @@ export class FriendService {
   public getSimilarNamedUsers = async (
     userName: string,
     userId: string
-  ): Promise<Result<UserSearchOverview[]>> => {
+  ): Promise<Result<[number, UserSearchOverview[]]>> => {
     try {
       const friendGetRequestBody = new SimilarNamedFriendsGetRequestBody(
         userName,
@@ -40,12 +40,13 @@ export class FriendService {
   };
 
   public getFriendList = async (
-    userId: string
-  ): Promise<Result<UserOverview[]>> => {
+    userId: string,
+    page: number
+  ): Promise<Result<[number, UserOverview[]]>> => {
     try {
       const friendRequestBody = new ValidateUid(userId);
       const response = await fetchAbsolute(
-        `api/users/${friendRequestBody.userId}/friends?page=0`,
+        `api/users/${friendRequestBody.userId}/friends?page=${page - 1}`,
         {
           method: "GET",
           headers: HEADER,

@@ -94,37 +94,46 @@ export const fetchFriendRequests = async (
   });
 };
 
+/**
+ * @return [마지막 페이지 값, 현재 페이지의 친구 목록]
+ */
 export const fetchFriendList = async (
   userId: string,
   pageNum: number
-): Promise<UserOverview[]> => {
-  const requests = await client.friend.findMany({
-    skip: pageNum * FRIEND_NUM_PER_PAGE,
-    take: FRIEND_NUM_PER_PAGE,
-    where: { requester_id: userId, accepted: true },
-    select: {
-      user_account_friend_acceptor_idTouser_account: {
-        select: {
-          id: true,
-          name: true,
-          profile_image: true,
-          introduce: true,
-          status: true,
+): Promise<[number, UserOverview[]]> => {
+  const requests = await client.$transaction([
+    client.friend.count({ where: { requester_id: userId, accepted: true } }),
+    client.friend.findMany({
+      skip: pageNum * FRIEND_NUM_PER_PAGE,
+      take: FRIEND_NUM_PER_PAGE,
+      where: { requester_id: userId, accepted: true },
+      select: {
+        user_account_friend_acceptor_idTouser_account: {
+          select: {
+            id: true,
+            name: true,
+            profile_image: true,
+            introduce: true,
+            status: true,
+          },
         },
       },
-    },
-  });
-  return requests.map((request) => {
-    const { id, name, profile_image, introduce, status } =
-      request.user_account_friend_acceptor_idTouser_account;
-    return {
-      id: id,
-      name: name,
-      profileImage: profile_image,
-      introduce: introduce,
-      status: status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
-    };
-  });
+    }),
+  ]);
+  return [
+    requests[0],
+    requests[1].map((request) => {
+      const { id, name, profile_image, introduce, status } =
+        request.user_account_friend_acceptor_idTouser_account;
+      return {
+        id: id,
+        name: name,
+        profileImage: profile_image,
+        introduce: introduce,
+        status: status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
+      };
+    }),
+  ];
 };
 
 export const approveFriendRequest = async (

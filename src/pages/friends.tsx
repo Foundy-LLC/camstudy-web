@@ -16,6 +16,8 @@ import { auth } from "@/service/firebase";
 import { useRouter } from "next/router";
 import { Header } from "@/components/Header";
 import { SideMenuBar } from "@/components/SideMenuBar";
+import { PagenationBar } from "@/components/PagenationBar";
+import { ThemeModeToggleButton } from "@/components/ThemeModeToggleButton";
 
 // const SimilarNamedUser: NextPage<{ item: UserSearchOverview }> = observer(
 //   ({ item }) => {
@@ -200,6 +202,7 @@ const FriendOverview: NextPage<{ item: UserOverview }> = observer(
 
 const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
   ({ items }) => {
+    const { friendStore } = useStores();
     return (
       <div
         className={`${friendStyles["friend-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
@@ -218,10 +221,27 @@ const FriendOverviewGroup: NextPage<{ items: UserOverview[] }> = observer(
             내 친구
           </label>
         </div>
-        <div className={`${friendStyles["friend-list-grid"]}`}>
-          {items.map((item, key) => (
-            <FriendOverview item={item} key={key} />
-          ))}
+        {!friendStore.errorMessage ? (
+          <div className={`${friendStyles["friend-list-grid"]}`}>
+            {items.map((item, key) => (
+              <FriendOverview item={item} key={key} />
+            ))}
+          </div>
+        ) : (
+          <p>{friendStore.errorMessage}</p>
+        )}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 46,
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <PagenationBar
+            maxPage={friendStore.friendListMaxPage}
+            update={friendStore.fetchFriendList}
+          />
         </div>
       </div>
     );
@@ -238,7 +258,7 @@ const friends: NextPage = observer(() => {
 
   useEffect(() => {
     if (userStore.currentUser) {
-      friendStore.fetchFriendList();
+      friendStore.fetchFriendList(1);
     }
   }, [userStore.currentUser]);
 
@@ -277,7 +297,6 @@ const friends: NextPage = observer(() => {
       {/*  친구 요청 조회*/}
       {/*</button>*/}
       {/*<br />*/}
-
       {/*<SimilarNamedUserGroup items={friendStore.userSearchOverviews} />*/}
       {/*<FriendRequestGroup items={friendStore.friendRequestUsers} />*/}
       <section className={"box"}>
@@ -296,7 +315,9 @@ const friends: NextPage = observer(() => {
                 >
                   친구 목록
                 </p>
-                <FriendOverviewGroup items={friendStore.friendOverviews} />
+                {friendStore.friendListMaxPage !== -1 && (
+                  <FriendOverviewGroup items={friendStore.friendOverviews} />
+                )}
               </div>
             </div>
           </div>
