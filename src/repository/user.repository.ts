@@ -71,7 +71,7 @@ export const isUserExists = async (userId: string): Promise<boolean> => {
 export const getSimilarNamedUsers = async (
   userName: string,
   userId: string
-): Promise<[number, UserSearchOverview[]]> => {
+): Promise<{ maxPage: number; users: UserSearchOverview[] }> => {
   const removeSpace = userName.replace(/ /g, "");
   const splitName = removeSpace.split("#");
   const result = await prisma.$transaction([
@@ -101,9 +101,9 @@ export const getSimilarNamedUsers = async (
     }),
   ]);
 
-  return [
-    result[0],
-    result[1].map((item) => {
+  return {
+    maxPage: result[0],
+    users: result[1].map((item) => {
       return {
         id: item.id,
         name: item.name,
@@ -115,7 +115,7 @@ export const getSimilarNamedUsers = async (
           : friendStatus.NONE,
       };
     }),
-  ];
+  };
 };
 
 export const createUser = async (

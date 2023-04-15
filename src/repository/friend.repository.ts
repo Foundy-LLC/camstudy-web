@@ -100,7 +100,7 @@ export const fetchFriendRequests = async (
 export const fetchFriendList = async (
   userId: string,
   pageNum: number
-): Promise<[number, UserOverview[]]> => {
+): Promise<{ maxPage: number; friends: UserOverview[] }> => {
   const requests = await client.$transaction([
     client.friend.count({ where: { requester_id: userId, accepted: true } }),
     client.friend.findMany({
@@ -120,9 +120,9 @@ export const fetchFriendList = async (
       },
     }),
   ]);
-  return [
-    requests[0],
-    requests[1].map((request) => {
+  return {
+    maxPage: requests[0],
+    friends: requests[1].map((request) => {
       const { id, name, profile_image, introduce, status } =
         request.user_account_friend_acceptor_idTouser_account;
       return {
@@ -133,7 +133,7 @@ export const fetchFriendList = async (
         status: status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
       };
     }),
-  ];
+  };
 };
 
 export const approveFriendRequest = async (
