@@ -10,9 +10,13 @@ export class ProfileStore {
   readonly userStore: UserStore;
   private _userOverview?: User = undefined;
   private _selectedImageFile?: File = undefined;
-  private _imageUrl: string = "";
-  private _errorMessage: string = "";
+  private _imageUrl?: string = undefined;
+  private _nickName?: string = undefined;
+  private _tags?: string[] = undefined;
+  private _introduce?: string | null = undefined;
+  private _organizations?: string[] = undefined;
 
+  private _errorMessage: string = "";
   constructor(
     root: RootStore,
     private readonly _profileService: ProfileService = profileService
@@ -26,9 +30,53 @@ export class ProfileStore {
     return this._userOverview;
   }
 
-  get imageUrl(): string {
+  public get nickName() {
+    return this._nickName;
+  }
+
+  public get tags() {
+    return this._tags;
+  }
+
+  public get introduce() {
+    return this._introduce;
+  }
+
+  public get organizations() {
+    return this._organizations;
+  }
+
+  public get imageUrl() {
     return this._imageUrl;
   }
+
+  importUserProfile = (profile: User) => {
+    this._nickName = profile.name;
+    this._introduce = profile.introduce;
+    this._tags = profile.tags;
+    this._organizations = profile.organizations;
+  };
+
+  public onChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    switch (e.target.id) {
+      case "nickName":
+        this._nickName = e.target.value;
+        break;
+      case "tags":
+        this._tags = this._tags
+          ? [...this._tags, e.target.value]
+          : [e.target.value];
+        break;
+      case "introduce":
+        this._introduce = e.target.value;
+        break;
+      case "organization":
+        this._organizations = this._organizations
+          ? [...this._organizations, e.target.value]
+          : [e.target.value];
+        break;
+    }
+  };
 
   public importProfileImage = (thumbnail: File) => {
     this._selectedImageFile = thumbnail;
@@ -45,8 +93,8 @@ export class ProfileStore {
       );
       if (result.isSuccess) {
         runInAction(() => {
-          console.log(result);
           this._userOverview = result.getOrNull();
+          this.importUserProfile(this._userOverview!);
         });
       } else {
         runInAction(() => {
@@ -58,5 +106,16 @@ export class ProfileStore {
         if (e instanceof Error) this._errorMessage = e.message;
       });
     }
+  };
+
+  public amendProfile = async () => {
+    try {
+      if (!this.userStore.currentUser) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      const result = await this._profileService.amendProfile(
+        this.userStore.currentUser.id
+      );
+    } catch (e) {}
   };
 }

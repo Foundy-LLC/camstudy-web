@@ -24,6 +24,23 @@ export class ProfileService {
       return Result.createErrorUsingException(e);
     }
   };
+
+  public amendProfile = async () => {
+    try {
+      const RequestBody = new ValidateUid(userId);
+      const response = await fetchAbsolute(`api/users/${RequestBody.userId}`, {
+        method: "GET",
+        headers: HEADER,
+      });
+      if (response.ok) {
+        return Result.createSuccessUsingResponseData(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  };
 }
 const profileService = new ProfileService();
 export default profileService;

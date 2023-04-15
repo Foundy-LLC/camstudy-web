@@ -7,23 +7,32 @@
     margin:24px 24px 4px 20px;
   }
   .save-button{
-    width: 154px;
-    height: 22px;
-    background-color: var(--system_ui-02 );
+    width: 186px;
+    height: 38px;
+    background-color: var(--primary);
+    color: var(--tertiary);
     padding: 8px 16px 8px 16px;
     border-radius: 8px;
-    color: var(--system_ui-05);
+
     margin-top: 26px;
+    &:disabled {
+      background-color: var(--system_ui-02 );
+      color: var(--system_ui-05);
+    }
   }
   .undo-button{
-    width: 54px;
-    height: 22px;
-    background-color: var(--system_ui-02 );
+    width: 86px;
+    height: 38px;
+    background-color: var(--primary);
+    color: var(--tertiary);
     padding: 8px 16px 8px 16px;
     border-radius: 8px;
-    color: var(--system_ui-05);
     margin-top: 26px;
     margin-left: 8px;
+    &:disabled {
+      background-color: var(--system_ui-02 );
+      color: var(--system_ui-05);
+    }
   }
 }
 
