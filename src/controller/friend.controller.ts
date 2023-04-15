@@ -137,7 +137,7 @@ export const getFriendList = async (
         friendRequestBody.userId,
         friendRequestBody.page
       );
-      if (result[1].length === 0 && friendRequestBody.page !== 0) {
+      if (result.friends.length === 0 && friendRequestBody.page !== 0) {
         throw PAGE_NUM_OUT_OF_RANGE_ERROR;
       }
       res.status(200).send(

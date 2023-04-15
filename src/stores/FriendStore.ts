@@ -1,5 +1,5 @@
 import { RootStore } from "@/stores/RootStore";
-import friendService, { FriendService } from "@/service/Friend.service";
+import friendService, { FriendService } from "@/service/friend.service";
 import { UserStore } from "@/stores/UserStore";
 import { action, makeAutoObservable, runInAction } from "mobx";
 import {
@@ -118,8 +118,8 @@ export class FriendStore {
         this._errorMessage = undefined;
         const dataArray = result.getOrNull()!;
         this._searchFriendMaxPage =
-          Math.floor(dataArray[0] / FRIEND_NUM_PER_PAGE) + 1;
-        this._userSearchOverviews = dataArray[1];
+          Math.floor(dataArray.maxPage / FRIEND_NUM_PER_PAGE) + 1;
+        this._userSearchOverviews = dataArray.users;
         this._successMessage = SEARCH_SIMILAR_NAMED_USERS_SUCCESS;
       });
     } else {
@@ -231,8 +231,8 @@ export class FriendStore {
           this._successMessage = FRIEND_LIST_GET_SUCCESS;
           const dataArray = result.getOrNull()!;
           this._friendListMaxPage =
-            Math.floor(dataArray[0] / FRIEND_NUM_PER_PAGE) + 1;
-          this._friendOverviews = dataArray[1];
+            Math.floor(dataArray.maxPage / FRIEND_NUM_PER_PAGE) + 1;
+          this._friendOverviews = dataArray.friends;
         });
       } else {
         runInAction(() => {
