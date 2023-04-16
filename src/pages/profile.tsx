@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useStores } from "@/stores/context";
 import { observer } from "mobx-react";
 import { Layout } from "@/components/Layout";
+import profileService from "@/service/profile.service";
 
 const UserProfile: NextPage = observer(() => {
   const router = useRouter();
@@ -19,6 +20,13 @@ const UserProfile: NextPage = observer(() => {
     if (!userStore.currentUser) return;
     profileStore.getUserProfile();
   }, [userStore.currentUser]);
+
+  useEffect(() => {
+    if (profileStore.amendSuccess === true) {
+      setChanged(false);
+      console.log("프로필 변경 성공");
+    }
+  }, [profileStore.amendSuccess]);
 
   if (loading) {
     return <div>Loading</div>;

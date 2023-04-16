@@ -106,7 +106,7 @@ export const getSimilarNamedUsers = async (
 export const createUser = async (
   userId: string,
   name: string,
-  introduce: string | undefined,
+  introduce: string | null,
   tagIds: { id: string }[]
 ): Promise<user_account> => {
   const tagIdsDto: { tag_id: string }[] = tagIds.map((tag) => {
@@ -125,6 +125,29 @@ export const createUser = async (
         },
       },
     },
+  });
+};
+
+export const editUserProfile = async (
+  userId: string,
+  nickName: string,
+  introduce: string,
+  tags: { id: string }[]
+) => {
+  const tagIdsDto: { tag_id: string }[] = tags.map((tag) => {
+    return { tag_id: tag.id };
+  });
+  await prisma.user_account.update({
+    data: {
+      name: nickName,
+      introduce: introduce,
+      user_tag: {
+        createMany: {
+          data: [...tagIdsDto],
+        },
+      },
+    },
+    where: { id: userId },
   });
 };
 

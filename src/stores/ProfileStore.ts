@@ -15,8 +15,8 @@ export class ProfileStore {
   private _tags?: string[] = undefined;
   private _introduce?: string | null = undefined;
   private _organizations?: string[] = undefined;
-
   private _errorMessage: string = "";
+  private _amendSuccess?: boolean;
   constructor(
     root: RootStore,
     private readonly _profileService: ProfileService = profileService
@@ -50,6 +50,10 @@ export class ProfileStore {
     return this._imageUrl;
   }
 
+  public get amendSuccess() {
+    return this._amendSuccess;
+  }
+
   importUserProfile = (profile: User) => {
     this._nickName = profile.name;
     this._introduce = profile.introduce;
@@ -58,6 +62,7 @@ export class ProfileStore {
   };
 
   public onChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this._amendSuccess = undefined;
     switch (e.target.id) {
       case "nickName":
         this._nickName = e.target.value;
@@ -113,9 +118,41 @@ export class ProfileStore {
       if (!this.userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
+      if (
+        !this._nickName ||
+        !this._introduce ||
+        !this._organizations ||
+        !this._tags
+      ) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
       const result = await this._profileService.amendProfile(
-        this.userStore.currentUser.id
+        this.userStore.currentUser.id,
+        this._nickName,
+        this._introduce,
+        this._tags
       );
-    } catch (e) {}
+      if (result.isSuccess) {
+        console.log("success");
+        runInAction(() => {
+          this._amendSuccess = true;
+          this._userOverview = {
+            id: this._userOverview!.id,
+            name: this._nickName!,
+            introduce: this._introduce!,
+            tags: this._tags!,
+            organizations: this._userOverview!.organizations,
+          };
+        });
+      } else {
+        runInAction(() => {
+          throw new Error(result.throwableOrNull()!.message);
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
   };
 }

@@ -5,6 +5,7 @@ export const SERVER_INTERNAL_ERROR_MESSAGE: string =
   "서버 내부에 에러가 발생했습니다.";
 export const REQUEST_QUERY_ERROR = "query 요청이 잘못되었습니다";
 export const PROFILE_CREATE_SUCCESS = "프로필이 생성되었습니다.";
+export const PROFILE_AMEND_SUCCESS = "회원 프로필을 성공적으로 수정했습니다.";
 export const PROFILE_IMAGE_UPDATE: string = "프로필 이미지가 설정되었습니다.";
 export const IMAGE_SIZE_EXCEED_MESSAGE: string = `파일 사이즈가이 너무 큽니다. 파일 사이즈는 최대 ${
   MAX_IMAGE_BYTE_SIZE / 1000 / 1000
