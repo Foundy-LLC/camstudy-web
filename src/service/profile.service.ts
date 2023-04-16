@@ -2,6 +2,7 @@ import { Result } from "@/models/common/Result";
 import { User } from "@/models/user/User";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
+import { AmendUserRequestBody } from "@/models/user/AmendUserRequestBody";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -25,11 +26,22 @@ export class ProfileService {
     }
   };
 
-  public amendProfile = async () => {
+  public amendProfile = async (
+    userId: string,
+    nickName: string,
+    introduce: string,
+    tags: string[]
+  ) => {
     try {
-      const RequestBody = new ValidateUid(userId);
+      const RequestBody = new AmendUserRequestBody(
+        userId,
+        nickName,
+        introduce,
+        tags
+      );
       const response = await fetchAbsolute(`api/users/${RequestBody.userId}`, {
-        method: "GET",
+        method: "PATCH",
+        body: JSON.stringify(RequestBody),
         headers: HEADER,
       });
       if (response.ok) {

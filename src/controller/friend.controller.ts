@@ -123,6 +123,7 @@ export const getFriendList = async (
         friendRequestBody.userId,
         friendRequestBody.page
       );
+      console.log(result);
       res.status(200).send(
         new ResponseBody({
           data: result,

@@ -5,6 +5,7 @@ import {
 } from "@/repository/tag.repository";
 import {
   createUser,
+  editUserProfile,
   findUser,
   getSimilarNamedUsers,
   isUserExists,
@@ -15,6 +16,7 @@ import {
   IMAGE_SIZE_EXCEED_MESSAGE,
   NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
   NOT_FOUND_USER_MESSAGE,
+  PROFILE_AMEND_SUCCESS,
   PROFILE_CREATE_SUCCESS,
   PROFILE_IMAGE_UPDATE,
   REQUEST_QUERY_ERROR,
@@ -31,6 +33,7 @@ import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedFriendsGetRequestBody";
 import { SEARCH_SIMILAR_NAMED_USERS_SUCCESS } from "@/constants/FriendMessage";
+import { AmendUserRequestBody } from "@/models/user/AmendUserRequestBody";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -57,7 +60,7 @@ export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     res
       .status(500)
-      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };
@@ -83,7 +86,7 @@ export const getUserExistence = async (
     }
     res
       .status(500)
-      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };
@@ -115,7 +118,7 @@ export const getUsers = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     res
       .status(500)
-      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };
@@ -148,7 +151,38 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     res
       .status(500)
-      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+    return;
+  }
+};
+
+export const amendUser = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const { userId, nickName, introduce, tags } = req.body;
+    const requestBody = new AmendUserRequestBody(
+      userId,
+      nickName,
+      introduce,
+      tags
+    );
+
+    await createTagsIfNotExists(requestBody.tags);
+    const tagIds = await findTagIdsByTagName(requestBody.tags);
+    await editUserProfile(
+      requestBody.userId,
+      requestBody.nickName,
+      requestBody.introduce,
+      tagIds
+    );
+    res.status(200).json(new ResponseBody({ message: PROFILE_AMEND_SUCCESS }));
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };
@@ -211,7 +245,7 @@ export const postProfileImage = async (
     }
     res
       .status(500)
-      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };
