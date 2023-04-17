@@ -16,7 +16,7 @@ export class ProfileStore {
   private _introduce?: string | null = undefined;
   private _organizations?: string[] = undefined;
   private _errorMessage: string = "";
-  private _amendSuccess?: boolean = undefined;
+  private _editSuccess?: boolean = undefined;
   constructor(
     root: RootStore,
     private readonly _profileService: ProfileService = profileService
@@ -50,8 +50,8 @@ export class ProfileStore {
     return this._imageUrl;
   }
 
-  public get amendSuccess() {
-    return this._amendSuccess;
+  public get editSuccess() {
+    return this._editSuccess;
   }
 
   importUserProfile = (profile: User) => {
@@ -62,7 +62,7 @@ export class ProfileStore {
   };
 
   public onChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this._amendSuccess = undefined;
+    this._editSuccess = undefined;
     switch (e.target.id) {
       case "nickName":
         this._nickName = e.target.value;
@@ -113,7 +113,7 @@ export class ProfileStore {
     }
   };
 
-  public amendProfile = async () => {
+  public updateProfile = async () => {
     try {
       if (!this.userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
@@ -126,7 +126,7 @@ export class ProfileStore {
       ) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
-      const result = await this._profileService.amendProfile(
+      const result = await this._profileService.updateProfile(
         this.userStore.currentUser.id,
         this._nickName,
         this._introduce,
@@ -134,7 +134,7 @@ export class ProfileStore {
       );
       if (result.isSuccess) {
         runInAction(() => {
-          this._amendSuccess = true;
+          this._editSuccess = true;
           this._userOverview = {
             id: this._userOverview!.id,
             name: this._nickName!,

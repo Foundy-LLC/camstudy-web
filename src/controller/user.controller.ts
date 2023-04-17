@@ -16,7 +16,7 @@ import {
   IMAGE_SIZE_EXCEED_MESSAGE,
   NO_EXISTS_INITIAL_INFORMATION_MESSAGE,
   NOT_FOUND_USER_MESSAGE,
-  PROFILE_AMEND_SUCCESS,
+  PROFILE_EDIT_SUCCESS,
   PROFILE_CREATE_SUCCESS,
   PROFILE_IMAGE_UPDATE,
   REQUEST_QUERY_ERROR,
@@ -33,7 +33,7 @@ import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedFriendsGetRequestBody";
 import { SEARCH_SIMILAR_NAMED_USERS_SUCCESS } from "@/constants/FriendMessage";
-import { AmendUserRequestBody } from "@/models/user/AmendUserRequestBody";
+import { updateUserRequestBody } from "@/models/user/UpdateUserRequestBody";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -156,10 +156,10 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export const amendUser = async (req: NextApiRequest, res: NextApiResponse) => {
+export const updateUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { userId, nickName, introduce, tags } = req.body;
-    const requestBody = new AmendUserRequestBody(
+    const requestBody = new updateUserRequestBody(
       userId,
       nickName,
       introduce,
@@ -175,7 +175,7 @@ export const amendUser = async (req: NextApiRequest, res: NextApiResponse) => {
       requestBody.introduce,
       tagIds
     );
-    res.status(200).json(new ResponseBody({ message: PROFILE_AMEND_SUCCESS }));
+    res.status(200).json(new ResponseBody({ message: PROFILE_EDIT_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
