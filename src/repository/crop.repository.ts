@@ -78,35 +78,39 @@ export const getTargetCropTypeAndPlantedDate = async (
   });
 };
 
+/**
+ * 회원의 최근 연속 출석 일자를 반환한다.
+ * @param userId 회원의 아이디이다.
+ * @param startDate 출석 기간을 확인할 시작 시간이다.
+ * @param dayDuration 출석 기간에 포함할 기간이다. 시작 시간에 이 기간을 더하면 종료 시간이 된다.
+ */
 export const getConsecutiveAttendanceDays = async (
   userId: string,
-  start: Date,
-  requireDay: number
+  startDate: Date,
+  dayDuration: number
 ): Promise<number> => {
-  const msToAdd = requireDay * 24 * 60 * 60 * 1000;
+  const milliDuration = dayDuration * 24 * 60 * 60 * 1000;
+  const endDate = new Date(startDate.getTime() + milliDuration);
 
   const result: { num_continuous_days: number }[] = await prisma.$queryRaw(
-    Prisma.sql`WITH study_days AS (SELECT DISTINCT CASE
-                                                       WHEN DATE_PART('hour', sh.join_at::timestamp with time zone) >= 6
-                                                           THEN date_trunc('day', sh.join_at::timestamp with time zone + interval '6 hours')
-                                                       ELSE date_trunc('day', sh.join_at::timestamp with time zone - interval '18 hours')
-                                                       END AS day
+    Prisma.sql`WITH study_days AS (SELECT DISTINCT date_trunc('day', sh.join_at + interval '-6 hours')
+                   AS day
                FROM study_history sh
                WHERE sh.user_id = ${userId}
-                 AND sh.join_at >= ${start}
+                 AND sh.join_at >= ${startDate}
                  AND sh.join_at
-                   < ${new Date(start.getTime() + msToAdd)}
-                   )
+                   < ${endDate})
                    , continuous_days AS (
-               SELECT
-                   day, ROW_NUMBER() OVER () - DATE_PART('day', day) AS day_number
-               FROM study_days
-                   )
+               SELECT day, ROW_NUMBER() OVER () - DATE_PART('day', day) AS day_number
+               FROM study_days)
     SELECT COUNT(*) AS num_continuous_days
     FROM continuous_days
     GROUP BY day_number
     ORDER BY num_continuous_days DESC LIMIT 1;`
   );
+  if (result.length === 0) {
+    return 0;
+  }
   return Number(result[0].num_continuous_days);
 };
 
