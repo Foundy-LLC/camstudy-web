@@ -91,7 +91,10 @@ export const deleteGrowingCrop = async (
   res: NextApiResponse
 ) => {
   try {
-    const { userId, cropId } = req.body;
+    const { userId, cropId } = req.query;
+    if (typeof userId !== "string" || typeof cropId !== "string") {
+      throw REQUEST_QUERY_ERROR;
+    }
     const reqBody = new CropDeleteRequestBody(userId, cropId);
 
     const growingCrop = await getGrowingCrop(reqBody.userId);
@@ -119,7 +122,10 @@ export const harvestGrowingCrop = async (
   res: NextApiResponse
 ) => {
   try {
-    const { userId, cropId } = req.body;
+    const { userId, cropId } = req.query;
+    if (typeof userId !== "string" || typeof cropId !== "string") {
+      throw REQUEST_QUERY_ERROR;
+    }
     const reqBody = new CropHarvestRequestBody(userId, cropId);
 
     const growingCrop = await getGrowingCrop(reqBody.userId);
