@@ -113,7 +113,7 @@ export class ProfileStore {
     }
   };
 
-  public amendProfile = async () => {
+  public updateProfile = async () => {
     try {
       if (!this.userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
@@ -126,7 +126,7 @@ export class ProfileStore {
       ) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
-      const result = await this._profileService.amendProfile(
+      const result = await this._profileService.updateProfile(
         this.userStore.currentUser.id,
         this._nickName,
         this._introduce,

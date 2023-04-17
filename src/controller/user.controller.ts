@@ -33,7 +33,7 @@ import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedFriendsGetRequestBody";
 import { SEARCH_SIMILAR_NAMED_USERS_SUCCESS } from "@/constants/FriendMessage";
-import { AmendUserRequestBody } from "@/models/user/AmendUserRequestBody";
+import { updateUserRequestBody } from "@/models/user/UpdateUserRequestBody";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
@@ -156,10 +156,10 @@ export const postUser = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export const amendUser = async (req: NextApiRequest, res: NextApiResponse) => {
+export const updateUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { userId, nickName, introduce, tags } = req.body;
-    const requestBody = new AmendUserRequestBody(
+    const requestBody = new updateUserRequestBody(
       userId,
       nickName,
       introduce,

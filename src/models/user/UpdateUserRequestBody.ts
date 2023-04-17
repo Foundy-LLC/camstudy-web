@@ -6,7 +6,7 @@ import {
 } from "@/utils/user.validator";
 import { User } from "@/models/user/User";
 
-export class AmendUserRequestBody {
+export class updateUserRequestBody {
   constructor(
     readonly userId: string,
     readonly nickName: string,

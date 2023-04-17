@@ -2,7 +2,7 @@ import { Result } from "@/models/common/Result";
 import { User } from "@/models/user/User";
 import { ValidateUid } from "@/models/common/ValidateUid";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
-import { AmendUserRequestBody } from "@/models/user/AmendUserRequestBody";
+import { updateUserRequestBody } from "@/models/user/UpdateUserRequestBody";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -26,14 +26,14 @@ export class ProfileService {
     }
   };
 
-  public amendProfile = async (
+  public updateProfile = async (
     userId: string,
     nickName: string,
     introduce: string,
     tags: string[]
   ) => {
     try {
-      const RequestBody = new AmendUserRequestBody(
+      const RequestBody = new updateUserRequestBody(
         userId,
         nickName,
         introduce,

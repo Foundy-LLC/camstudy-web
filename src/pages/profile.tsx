@@ -51,7 +51,7 @@ const UserProfile: NextPage = observer(() => {
               className={`${profileStyles["save-button"]} typography__text`}
               disabled={!changed}
               onClick={() => {
-                profileStore.amendProfile();
+                profileStore.updateProfile();
               }}
             >
               <label>프로필 변경사항 저장하기</label>
