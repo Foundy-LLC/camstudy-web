@@ -151,7 +151,6 @@ export class ProfileStore {
     } catch (e) {
       runInAction(() => {
         if (e instanceof Error) this._errorMessage = e.message;
-        console.log(this._errorMessage);
       });
     }
   };

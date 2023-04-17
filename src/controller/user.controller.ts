@@ -187,6 +187,38 @@ export const amendUser = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
+export const amendUser = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const { userId, nickName, introduce, tags } = req.body;
+    const requestBody = new AmendUserRequestBody(
+      userId,
+      nickName,
+      introduce,
+      tags
+    );
+
+    await createTagsIfNotExists(requestBody.tags);
+
+    const tagIds = await findTagIdsByTagName(requestBody.tags);
+    await editUserProfile(
+      requestBody.userId,
+      requestBody.nickName,
+      requestBody.introduce,
+      tagIds
+    );
+    res.status(200).json(new ResponseBody({ message: PROFILE_AMEND_SUCCESS }));
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+    return;
+  }
+};
+
 export const config = {
   api: {
     bodyParser: false,

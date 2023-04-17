@@ -137,7 +137,6 @@ export const editUserProfile = async (
   const tagIdsDto: { tag_id: string }[] = tags.map((tag) => {
     return { tag_id: tag.id };
   });
-
   await prisma.user_account.update({
     data: {
       name: nickName,
