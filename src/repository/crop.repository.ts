@@ -27,8 +27,14 @@ export const getHarvestedCrops = async (userId: string): Promise<Crop[]> => {
   });
 };
 
-export const getGrowingCrop = async (userId: string) => {
+export const fetchGrowingCrop = async (userId: string) => {
   const result = await prisma.crops.findMany({
+    select: {
+      id: true,
+      user_id: true,
+      type: true,
+      planted_at: true,
+    },
     where: {
       user_id: userId,
       harvested_at: null,

@@ -12,5 +12,7 @@ export const CROP_DEAD =
 export const CROP_ID_DOES_NOT_MATCH = "작물 아이디가 일치하지 않습니다.";
 export const FETCH_HARVESTED_CROPS_SUCCESS =
   "수확한 작물을 성공적으로 조회했습니다.";
+export const FETCH_GROWING_CROPS_SUCCESS =
+  "성장 중인 작물을 성공적으로 조회했습니다.";
 export const NO_CROP_TYPE_AND_PLANTED_DATE =
   "targetCropTypeAndPlantedDate 가 없습니다.";

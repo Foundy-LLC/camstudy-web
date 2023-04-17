@@ -10,7 +10,7 @@ import {
   deleteCrop,
   getAverageStudyTime,
   getConsecutiveAttendanceDays,
-  getGrowingCrop,
+  fetchGrowingCrop,
   getHarvestedCrops,
   getTargetCropTypeAndPlantedDate,
   harvestCrop,
@@ -21,6 +21,7 @@ import {
   CROP_DEAD,
   CROP_ID_DOES_NOT_MATCH,
   DELETE_CROP_SUCCESS,
+  FETCH_GROWING_CROPS_SUCCESS,
   FETCH_HARVESTED_CROPS_SUCCESS,
   HARVEST_CROP_SUCCESS,
   NO_CROP_TYPE_AND_PLANTED_DATE,
@@ -66,7 +67,7 @@ export const setCrop = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, cropType } = req.body;
     const reqBody = new CropCreateRequestBody(userId, cropType);
 
-    const growingCrop = await getGrowingCrop(reqBody.userId);
+    const growingCrop = await fetchGrowingCrop(reqBody.userId);
     if (growingCrop != null) {
       throw ALREADY_EXIST_CROP;
     }
@@ -74,6 +75,40 @@ export const setCrop = async (req: NextApiRequest, res: NextApiResponse) => {
     await createCrop(reqBody);
 
     res.status(200).json(new ResponseBody({ message: SET_CROP_SUCCESS }));
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+    return;
+  }
+};
+
+export const getGrowingCrop = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  try {
+    const { userId } = req.query;
+
+    if (typeof userId !== "string") throw REQUEST_QUERY_ERROR;
+    const reqBody = new ValidateUid(userId);
+
+    const growingCrop = await fetchGrowingCrop(reqBody.userId);
+
+    if (growingCrop == null) {
+      throw NOT_EXIST_GROWING_CROP;
+    }
+
+    res.status(200).json(
+      new ResponseBody({
+        data: growingCrop,
+        message: FETCH_GROWING_CROPS_SUCCESS,
+      })
+    );
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
@@ -97,7 +132,7 @@ export const deleteGrowingCrop = async (
     }
     const reqBody = new CropDeleteRequestBody(userId, cropId);
 
-    const growingCrop = await getGrowingCrop(reqBody.userId);
+    const growingCrop = await fetchGrowingCrop(reqBody.userId);
     if (growingCrop == null) {
       throw NOT_EXIST_GROWING_CROP;
     }
@@ -128,7 +163,7 @@ export const harvestGrowingCrop = async (
     }
     const reqBody = new CropHarvestRequestBody(userId, cropId);
 
-    const growingCrop = await getGrowingCrop(reqBody.userId);
+    const growingCrop = await fetchGrowingCrop(reqBody.userId);
     if (growingCrop == null) {
       throw NOT_EXIST_GROWING_CROP;
     }
