@@ -6,6 +6,7 @@ import { Prisma } from ".prisma/client";
 import { fruit_grade } from "@prisma/client";
 import { Crop } from "@/models/crop/Crop";
 import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
+import { STANDARD_END_HOUR_OF_DAY } from "@/constants/common";
 
 export const getHarvestedCrops = async (userId: string): Promise<Crop[]> => {
   const harvestedCrops = await prisma.crops.findMany({
@@ -97,9 +98,10 @@ export const getConsecutiveAttendanceDays = async (
 ): Promise<number> => {
   const milliDuration = dayDuration * 24 * 60 * 60 * 1000;
   const endDate = new Date(startDate.getTime() + milliDuration);
+  const minusUsingStandardHourText = `-${STANDARD_END_HOUR_OF_DAY} hours`;
 
   const result: { num_continuous_days: number }[] = await prisma.$queryRaw(
-    Prisma.sql`WITH study_days AS (SELECT DISTINCT date_trunc('day', sh.join_at + interval '-6 hours')
+    Prisma.sql`WITH study_days AS (SELECT DISTINCT date_trunc('day', sh.join_at + interval '${minusUsingStandardHourText}')
                    AS day
                FROM study_history sh
                WHERE sh.user_id = ${userId}
@@ -120,7 +122,7 @@ export const getConsecutiveAttendanceDays = async (
   return Number(result[0].num_continuous_days);
 };
 
-export const getAverageStudyTime = async (
+export const getAverageStudyHours = async (
   body: CropHarvestRequestBody,
   plantedAt: Date,
   requireDay: number
@@ -133,6 +135,26 @@ export const getAverageStudyTime = async (
     )}) - join_at))) / (3600 * ${requireDay}) as average_study_time
                FROM study_history
                WHERE user_id = ${body.userId}
+                 AND join_at >= ${plantedAt}
+                 AND join_at < ${new Date(plantedAt.getTime() + msToAdd)}
+               GROUP BY user_id;`
+  );
+
+  return result[0].average_study_time;
+};
+
+export const getExpectedAverageStudyHours = async (
+  body: CropHarvestRequestBody,
+  plantedAt: Date,
+  dayDuration: number
+): Promise<number> => {
+  const msToAdd = dayDuration * 24 * 60 * 60 * 1000;
+
+  const result: { average_study_time: number }[] = await prisma.$queryRaw(
+    Prisma.sql`SELECT SUM(extract(epoch from (exit_at - join_at))) / (3600 * ${dayDuration}) as average_study_time
+               FROM study_history
+               WHERE user_id = ${body.userId}
+                 AND exit_at is NOT NULL
                  AND join_at >= ${plantedAt}
                  AND join_at < ${new Date(plantedAt.getTime() + msToAdd)}
                GROUP BY user_id;`

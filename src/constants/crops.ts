@@ -3,13 +3,18 @@ import { crops_type } from "@prisma/client";
 export interface Crops {
   type: crops_type;
   requireDay: number;
+  /**
+   * 작물의 단계별 이미지들이다.
+   *
+   * 이 필드의 length는 작물의 최대 단계이다.
+   */
   imageUrls: string[];
 }
 
 export const CROPS: Crops[] = [
   {
     type: crops_type.strawberry,
-    requireDay: 3,
+    requireDay: 7,
     imageUrls: [
       "src/assets/strawberry/plant_strawberry_1.png",
       "src/assets/strawberry/plant_strawberry_2.png",
@@ -31,7 +36,7 @@ export const CROPS: Crops[] = [
   },
   {
     type: crops_type.carrot,
-    requireDay: 7,
+    requireDay: 3,
     imageUrls: [
       "src/assets/carrot/plant_carrot_1.png",
       "src/assets/carrot/plant_carrot_2.png",

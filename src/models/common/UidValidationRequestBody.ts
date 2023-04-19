@@ -1,6 +1,6 @@
 import { NO_USER_UID_ERROR_MESSAGE } from "@/constants/message";
 
-export class ValidateUid {
+export class UidValidationRequestBody {
   constructor(readonly userId: string) {
     this._validateUid();
   }

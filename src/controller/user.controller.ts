@@ -30,14 +30,14 @@ import { multipartUploader } from "@/service/imageUploader";
 import { uuidv4 } from "@firebase/util";
 import runMiddleware from "@/utils/runMiddleware";
 import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
-import { ValidateUid } from "@/models/common/ValidateUid";
+import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedFriendsGetRequestBody";
 import { SEARCH_SIMILAR_NAMED_USERS_SUCCESS } from "@/constants/FriendMessage";
 import { updateUserRequestBody } from "@/models/user/UpdateUserRequestBody";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const requestBody = new ValidateUid(<string>req.query.userId);
+    const requestBody = new UidValidationRequestBody(<string>req.query.userId);
     const user = await findUser(requestBody.userId);
     console.log(user);
     if (user == null) {
@@ -69,7 +69,7 @@ export const getUserExistence = async (
   res: NextApiResponse
 ) => {
   try {
-    const requestBody = new ValidateUid(<string>req.query.userId);
+    const requestBody = new UidValidationRequestBody(<string>req.query.userId);
     const exists = await isUserExists(requestBody.userId);
     res.status(200).send(
       new ResponseBody({

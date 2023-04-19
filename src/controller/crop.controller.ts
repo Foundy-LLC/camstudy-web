@@ -8,9 +8,10 @@ import {
 import {
   createCrop,
   deleteCrop,
-  getAverageStudyTime,
-  getConsecutiveAttendanceDays,
   fetchGrowingCrop,
+  getAverageStudyHours,
+  getConsecutiveAttendanceDays,
+  getExpectedAverageStudyHours,
   getHarvestedCrops,
   getTargetCropTypeAndPlantedDate,
   harvestCrop,
@@ -25,15 +26,16 @@ import {
   FETCH_HARVESTED_CROPS_SUCCESS,
   HARVEST_CROP_SUCCESS,
   NO_CROP_TYPE_AND_PLANTED_DATE,
-  NOT_EXIST_CROP,
   NOT_EXIST_GROWING_CROP,
   SET_CROP_SUCCESS,
 } from "@/constants/cropMessage";
 import { CropHarvestRequestBody } from "@/models/crop/CropHarvestRequestBody";
-import { CROPS } from "@/constants/crops";
 import { determineCropsGrade } from "@/utils/CropUtil";
-import { ValidateUid } from "@/models/common/ValidateUid";
+import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
+import { STANDARD_END_HOUR_OF_DAY } from "@/constants/common";
+import { getCropsByType } from "@/models/crop/CropsType";
+import { GrowingCrop } from "@/models/crop/GrowingCrop";
 
 export const fetchHarvestedCrops = async (
   req: NextApiRequest,
@@ -42,7 +44,7 @@ export const fetchHarvestedCrops = async (
   try {
     const { userId } = req.query;
     if (typeof userId !== "string") throw REQUEST_QUERY_ERROR;
-    const requestBody = new ValidateUid(userId);
+    const requestBody = new UidValidationRequestBody(userId);
     const harvestedCrops = await getHarvestedCrops(requestBody.userId);
     res.status(200).send(
       new ResponseBody({
@@ -87,6 +89,56 @@ export const setCrop = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
+const getDifferenceInDays = (a: Date, b: Date): number => {
+  // 두 날짜 간의 차이 (밀리초)
+  const differenceInMs = Math.abs(a.getTime() - b.getTime());
+
+  // 차이를 일(day) 단위로 변환
+  return Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+};
+
+export const getRequiredConsecutiveAttendanceDays = (
+  plantedDateTime: Date,
+  maxDay: number,
+  currentDateTime: Date = new Date()
+) => {
+  const standardCurrentDateTime = shiftToStandardDate(currentDateTime);
+  const standardPlantedDateTime = shiftToStandardDate(plantedDateTime);
+
+  const standardCurrentDate = getDateWithoutTime(standardCurrentDateTime);
+  const standardPlantedDate = getDateWithoutTime(standardPlantedDateTime);
+
+  return Math.min(
+    getDifferenceInDays(standardCurrentDate, standardPlantedDate),
+    maxDay
+  );
+};
+
+export const getDateWithoutTime = (date: Date) => {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};
+
+export const shiftToStandardDate = (date: Date): Date => {
+  const time = date.getTime() - STANDARD_END_HOUR_OF_DAY * 60 * 60 * 1000;
+  return new Date(time);
+};
+
+export const calculateCropLevel = (
+  plantedAt: Date,
+  requiredDay: number,
+  maxLevel: number,
+  currentDateTime: Date = new Date()
+): number => {
+  const elapsedMillis = currentDateTime.getTime() - plantedAt.getTime();
+  const currentProgressPercent =
+    (100.0 * elapsedMillis) / (requiredDay * 24 * 60 * 60 * 1000);
+  if (currentProgressPercent >= 100) {
+    return maxLevel;
+  }
+  const oneLevelPercent = 100.0 / maxLevel;
+  return Math.floor(currentProgressPercent / oneLevelPercent) + 1;
+};
+
 export const getGrowingCrop = async (
   req: NextApiRequest,
   res: NextApiResponse
@@ -95,7 +147,7 @@ export const getGrowingCrop = async (
     const { userId } = req.query;
 
     if (typeof userId !== "string") throw REQUEST_QUERY_ERROR;
-    const reqBody = new ValidateUid(userId);
+    const reqBody = new UidValidationRequestBody(userId);
 
     const growingCrop = await fetchGrowingCrop(reqBody.userId);
 
@@ -103,9 +155,51 @@ export const getGrowingCrop = async (
       throw NOT_EXIST_GROWING_CROP;
     }
 
+    const reqBody2 = new CropHarvestRequestBody(userId, growingCrop.id);
+
+    const cropDto = getCropsByType(growingCrop.type);
+
+    const requireConsecutiveAttendanceDays =
+      getRequiredConsecutiveAttendanceDays(
+        growingCrop.planted_at,
+        cropDto.requireDay
+      );
+
+    const averageStudyTimes = await getExpectedAverageStudyHours(
+      reqBody2,
+      growingCrop.planted_at,
+      requireConsecutiveAttendanceDays
+    );
+
+    const expectedGrade = determineCropsGrade(averageStudyTimes);
+
+    const consecutiveAttendanceDay = await getConsecutiveAttendanceDays(
+      userId,
+      growingCrop.planted_at,
+      requireConsecutiveAttendanceDays
+    );
+
+    const isDead = requireConsecutiveAttendanceDays > consecutiveAttendanceDay;
+
+    const level = calculateCropLevel(
+      growingCrop.planted_at,
+      cropDto.requireDay,
+      cropDto.imageUrls.length
+    );
+
+    const data: GrowingCrop = {
+      id: growingCrop.id,
+      ownerId: growingCrop.user_id,
+      type: cropDto.type,
+      level: level,
+      expectedGrade: expectedGrade,
+      isDead: isDead,
+      plantedAt: growingCrop.planted_at,
+    };
+
     res.status(200).json(
       new ResponseBody({
-        data: growingCrop,
+        data: data,
         message: FETCH_GROWING_CROPS_SUCCESS,
       })
     );
@@ -116,7 +210,7 @@ export const getGrowingCrop = async (
     }
     res
       .status(500)
-      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
     return;
   }
 };
@@ -179,20 +273,13 @@ export const harvestGrowingCrop = async (
     if (targetCropTypeAndPlantedDate == null) {
       throw NO_CROP_TYPE_AND_PLANTED_DATE;
     }
-
-    const targetCropType = CROPS.find(
-      (crop) => crop.type === targetCropTypeAndPlantedDate.type
-    );
-
-    if (targetCropType == null) {
-      throw NOT_EXIST_CROP;
-    }
+    const targetCrop = getCropsByType(targetCropTypeAndPlantedDate.type);
 
     const plantedAt = targetCropTypeAndPlantedDate.planted_at;
     const currentDate = new Date();
     const isPossibleToHarvest: boolean =
       (currentDate.getTime() - plantedAt.getTime()) / (1000 * 60 * 60 * 24) >
-      targetCropType.requireDay;
+      targetCrop.requireDay;
 
     if (!isPossibleToHarvest) {
       throw CAN_NOT_HARVEST_CROP_YET;
@@ -201,17 +288,17 @@ export const harvestGrowingCrop = async (
     const consecutiveAttendanceDays = await getConsecutiveAttendanceDays(
       reqBody.userId,
       plantedAt,
-      targetCropType.requireDay
+      targetCrop.requireDay
     );
 
-    if (consecutiveAttendanceDays !== targetCropType.requireDay) {
+    if (consecutiveAttendanceDays !== targetCrop.requireDay) {
       throw CROP_DEAD;
     }
 
-    const averageStudyTimes = await getAverageStudyTime(
+    const averageStudyTimes = await getAverageStudyHours(
       reqBody,
       plantedAt,
-      targetCropType.requireDay
+      targetCrop.requireDay
     );
 
     const grade = determineCropsGrade(averageStudyTimes);

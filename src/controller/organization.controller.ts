@@ -28,7 +28,7 @@ import { Prisma } from "@prisma/client";
 import { OrganizationsBelongRequestBody } from "@/models/organization/OrganizationsBelongRequestBody";
 import { verifyEmailToken } from "@/service/manageVerifyToken";
 import { TokenExpiredError } from "jsonwebtoken";
-import { ValidateUid } from "@/models/common/ValidateUid";
+import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 import { BelongOrganization } from "@/models/organization/BelongOrganization";
 import { OrganizationsBelongConfirmRequestBody } from "@/models/organization/OrganizationsBelongConfirmRequestBody";
 
@@ -233,7 +233,7 @@ export const getBelongOrganizations = async (
   const { userId } = req.query;
   try {
     if (typeof userId !== "string") throw REQUEST_QUERY_ERROR;
-    const organizationsGetBody = new ValidateUid(userId);
+    const organizationsGetBody = new UidValidationRequestBody(userId);
     const result = await findBelongOrganizations(organizationsGetBody.userId);
     res.status(201).json(
       new ResponseBody({
