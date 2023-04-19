@@ -16,6 +16,90 @@ import { useStores } from "@/stores/context";
 import { observer } from "mobx-react";
 import { Layout } from "@/components/Layout";
 import { BelongOrganization } from "@/models/organization/BelongOrganization";
+import { useDebounce } from "@/components/UseDebounce";
+import { Organization } from "@/models/organization/Organization";
+
+const BelongOrganizationsName: NextPage<{ item: BelongOrganization }> =
+  observer(({ item }) => {
+    const { organizationStore } = useStores();
+    const { organizationName } = item;
+    return (
+      <>
+        <div
+          className={`${profileStyles["belong__item"]} typography__text--small`}
+        >
+          <button
+            onClick={() => {
+              if (
+                confirm(
+                  `"${organizationName}"을 소속에서 삭제하시겠습니까?`
+                ) === true
+              ) {
+                organizationStore.deleteBelongOrganization(item);
+                console.log(
+                  `${organizationName}가(이) 소속에서 삭제되었습니다`
+                );
+              }
+            }}
+          >
+            <span className="material-symbols-sharp">close</span>
+          </button>
+          <div>
+            <label>{organizationName}</label>
+          </div>
+        </div>
+        <br />
+      </>
+    );
+  });
+
+const BelongOrganizationsNameGroup: NextPage<{ items: BelongOrganization[] }> =
+  observer(({ items }) => {
+    return (
+      <div className={`${profileStyles["belong"]}`}>
+        {items.map((item, key) => (
+          <BelongOrganizationsName item={item} key={key} />
+        ))}
+      </div>
+    );
+  });
+
+const RecommendedOrganizationsNameGroup: NextPage<{ items: Organization[] }> =
+  observer(({ items }) => {
+    const slicedItems = items.slice(0, 5);
+    return (
+      <div className={`${profileStyles["organization__content"]}`}>
+        {slicedItems.map((item, key) => (
+          <RecommendedOrganizationsName item={item} key={key} />
+        ))}
+      </div>
+    );
+  });
+
+const RecommendedOrganizationsName: NextPage<{ item: Organization }> = observer(
+  ({ item }) => {
+    const { organizationStore } = useStores();
+    return (
+      <>
+        <div
+          id={"organizations__item"}
+          className={`${profileStyles["organization__item"]} typography__text--small`}
+          onClick={(e) => {
+            const text = e.target as HTMLElement;
+            const input = document.getElementById(
+              "organization__input"
+            ) as HTMLInputElement;
+            organizationStore.onChangeNameInput(text.innerHTML);
+            input!.value = organizationStore.typedName;
+            organizationStore.setDropDownHidden(true);
+          }}
+        >
+          <label>{item.name}</label>
+        </div>
+      </>
+    );
+  }
+);
 
 const NicknameForm: NextPage = observer(() => {
   return (
@@ -46,16 +130,22 @@ const NicknameForm: NextPage = observer(() => {
 
 const OrganizationForm: NextPage = observer(() => {
   const { organizationStore } = useStores();
-  const [dropDownHidden, setDropDownHidden] = useState<boolean>(true);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [searchInput, setSearchInput] = useState("");
+  const debounceSearch = useDebounce(searchInput, 500);
 
   useEffect(() => {
+    organizationStore.onChangeNameInput(debounceSearch);
+  }, [debounceSearch]);
+
+  useEffect(() => {
+    organizationStore.fetchBelongOrganizations();
     if (inputRef.current) {
       inputRef.current.addEventListener("focus", () => {
-        setDropDownHidden(false);
+        organizationStore.setDropDownHidden(false);
       });
       inputRef.current.addEventListener("blur", () => {
-        setTimeout(() => setDropDownHidden(true), 100);
+        setTimeout(() => organizationStore.setDropDownHidden(true), 100);
       });
     }
   }, []);
@@ -67,12 +157,12 @@ const OrganizationForm: NextPage = observer(() => {
 
     if (!content) return;
 
-    if (dropDownHidden) {
+    if (organizationStore.dropDownHidden) {
       content.style.display = "none";
     } else {
       content.style.display = "block";
     }
-  }, [dropDownHidden]);
+  }, [organizationStore.dropDownHidden]);
 
   return (
     <div
@@ -87,29 +177,13 @@ const OrganizationForm: NextPage = observer(() => {
       >
         <label>현재 설정된 조직</label>
       </div>
-      <div className={`${profileStyles["belong"]}`}>
-        <div
-          className={`${profileStyles["belong__item"]} typography__text--small`}
-        >
-          <button>
-            <span className="material-symbols-sharp">close</span>
-          </button>
-          <div>
-            <label>한성대학교</label>
-          </div>
-        </div>
-
-        <div
-          className={`${profileStyles["belong__item"]} typography__text--small`}
-        >
-          <button>
-            <span className="material-symbols-sharp">close</span>
-          </button>
-          <div>
-            <label>서울골프대학교</label>
-          </div>
-        </div>
-      </div>
+      <BelongOrganizationsNameGroup
+        items={
+          organizationStore.belongOrganizations
+            ? organizationStore.belongOrganizations
+            : []
+        }
+      />
       <div className={`${profileStyles["organization__name"]} `}>
         <label
           className={`${profileStyles["organization__subtitle"]} typography__caption`}
@@ -118,28 +192,19 @@ const OrganizationForm: NextPage = observer(() => {
         </label>
         <input
           type={"text"}
+          id={"organization__input"}
           className={"typography__text--small"}
           ref={inputRef}
-          value={organizationStore.typedName}
-          onChange={(e) => {
-            organizationStore.onChangeNameInput(e.target.value);
+          onChange={async (e) => {
+            setSearchInput(e.target.value);
           }}
         />
-        <div className={`${profileStyles["organization__content"]}`}>
-          <div
-            id={"organizations__item"}
-            className={`${profileStyles["organization__item"]} typography__text--small`}
-            onClick={async (e) => {
-              const target = e.target as HTMLLabelElement;
-              await organizationStore.onChangeNameInput(
-                target.textContent || ""
-              );
-              setDropDownHidden(true);
-            }}
-          >
-            <label>한성대학교</label>
-          </div>
-        </div>
+        {organizationStore.recommendOrganizations.length !== 0 && (
+          <RecommendedOrganizationsNameGroup
+            items={organizationStore.recommendOrganizations}
+          />
+        )}
+
         <label
           className={`${profileStyles["organization__subtitle"]} typography__caption`}
         >

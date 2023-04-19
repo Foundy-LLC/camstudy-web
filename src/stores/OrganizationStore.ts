@@ -140,7 +140,6 @@ export class OrganizationStore {
       this._typedName
     );
     if (result.isSuccess) {
-      console.log(this._typedName);
       runInAction(() => {
         this._errorMessage = undefined;
         this.setRecommendOrganizations(result.getOrNull()!!);
