@@ -15,6 +15,7 @@ export class OrganizationStore {
   private _userStore: UserStore;
   private _typedEmail: string = "";
   private _typedName: string = "";
+  private _dropDownHidden: boolean = true;
   private _recommendOrganizations: Organization[] = [];
   private _belongOrganizations: BelongOrganization[] | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
@@ -60,6 +61,14 @@ export class OrganizationStore {
 
   get organizationId() {
     return this.checkIfNameIncluded()!!.id;
+  }
+
+  get dropDownHidden() {
+    return this._dropDownHidden;
+  }
+
+  public setDropDownHidden(hidden: boolean) {
+    this._dropDownHidden = hidden;
   }
 
   public checkIfNameIncluded() {
@@ -121,7 +130,7 @@ export class OrganizationStore {
     }
   }
 
-  public async onChangeNameInput(name: string) {
+  public onChangeNameInput = async (name: string) => {
     this._typedName = name;
     if (this._typedName === "") {
       this._recommendOrganizations = [];
@@ -131,6 +140,7 @@ export class OrganizationStore {
       this._typedName
     );
     if (result.isSuccess) {
+      console.log(this._typedName);
       runInAction(() => {
         this._errorMessage = undefined;
         this.setRecommendOrganizations(result.getOrNull()!!);
@@ -141,7 +151,7 @@ export class OrganizationStore {
         this._errorMessage = result.throwableOrNull()!.message;
       });
     }
-  }
+  };
 
   public async sendOrganizationVerifyEmail() {
     const organizationVerifyEmailForm: OrganizationVerifyEmailForm = {
@@ -158,6 +168,7 @@ export class OrganizationStore {
       runInAction(() => {
         this._errorMessage = undefined;
         this._successMessage = result.getOrNull()!;
+        console.log("success");
       });
     } else {
       runInAction(() => {
