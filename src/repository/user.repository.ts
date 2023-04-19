@@ -13,13 +13,6 @@ export const findUser = async (userId: string): Promise<User | null> => {
       id: userId,
     },
     include: {
-      study_history: {
-        where: {
-          NOT: {
-            exit_at: null,
-          },
-        },
-      },
       user_tag: {
         include: {
           tag: true,
@@ -36,11 +29,6 @@ export const findUser = async (userId: string): Promise<User | null> => {
   if (userAccount == null) {
     return null;
   }
-  let totalStudyMinutes = 0;
-  for (const history of userAccount.study_history) {
-    totalStudyMinutes += getMinutesDiff(history.exit_at!!, history.join_at);
-  }
-
   const organizations = userAccount.belong.map((b) => b.organization.name);
   const tags = userAccount.user_tag.map((t) => t.tag.name);
 
@@ -48,9 +36,6 @@ export const findUser = async (userId: string): Promise<User | null> => {
     id: userAccount.id,
     name: userAccount.name,
     introduce: userAccount.introduce,
-    // TODO: 실제 랭킹 산정방식 구체화되면 적용하기. 지금은 임시로 공부 시간만 산정하였음.
-    rankingScore: totalStudyMinutes,
-    totalStudyMinute: totalStudyMinutes,
     organizations: organizations,
     tags: tags,
   };
@@ -121,7 +106,7 @@ export const getSimilarNamedUsers = async (
 export const createUser = async (
   userId: string,
   name: string,
-  introduce: string | undefined,
+  introduce: string | null,
   tagIds: { id: string }[]
 ): Promise<user_account> => {
   const tagIdsDto: { tag_id: string }[] = tagIds.map((tag) => {
@@ -140,6 +125,30 @@ export const createUser = async (
         },
       },
     },
+  });
+};
+
+export const editUserProfile = async (
+  userId: string,
+  nickName: string,
+  introduce: string,
+  tags: { id: string }[]
+) => {
+  const tagIdsDto: { tag_id: string }[] = tags.map((tag) => {
+    return { tag_id: tag.id };
+  });
+  await prisma.user_account.update({
+    data: {
+      name: nickName,
+      introduce: introduce,
+      user_tag: {
+        createMany: {
+          data: [...tagIdsDto],
+          skipDuplicates: true,
+        },
+      },
+    },
+    where: { id: userId },
   });
 };
 

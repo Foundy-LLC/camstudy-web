@@ -1,13 +1,7 @@
 import { NextPage } from "next";
-import useSWR from "swr";
-import { User } from "@/models/user/User";
-import React from "react";
-import { ResponseBody } from "@/models/common/ResponseBody";
+import React, { useEffect, useState } from "react";
 import { UserProfileImage } from "@/components/UserProfileImage";
-import { NOT_FOUND_USER_MESSAGE } from "@/constants/message";
 import { useRouter } from "next/router";
-import { Header } from "@/components/Header";
-import { SideMenuBar } from "@/components/SideMenuBar";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import profileStyles from "@/styles/profile.module.scss";
@@ -19,13 +13,19 @@ import { Layout } from "@/components/Layout";
 const UserProfile: NextPage = observer(() => {
   const router = useRouter();
   const [user, loading] = useAuthState(auth);
-  const { roomListStore } = useStores();
-  const fetcher = (args: string) => fetch(args).then((res) => res.json());
-  const { data, isLoading } = useSWR<ResponseBody<User>>(
-    `/api/users/${user?.uid}`,
-    fetcher
-  );
-  const profile = data?.data;
+  const { profileStore, userStore } = useStores();
+  const [changed, setChanged] = useState<boolean>(false);
+  useEffect(() => {
+    if (!userStore.currentUser) return;
+    profileStore.getUserProfile();
+  }, [userStore.currentUser]);
+
+  useEffect(() => {
+    if (profileStore.editSuccess === true) {
+      setChanged(false);
+      console.log("프로필 변경 성공");
+    }
+  }, [profileStore.editSuccess]);
 
   if (loading) {
     return <div>Loading</div>;
@@ -36,18 +36,6 @@ const UserProfile: NextPage = observer(() => {
     return <div>Please sign in to continue</div>;
   }
 
-  if (data?.message === NOT_FOUND_USER_MESSAGE || profile === undefined)
-    return (
-      <>
-        <h3>{NOT_FOUND_USER_MESSAGE}</h3>
-      </>
-    );
-  if (isLoading)
-    return (
-      <>
-        <h3>loading</h3>
-      </>
-    );
   return (
     <>
       <Layout>
@@ -58,12 +46,21 @@ const UserProfile: NextPage = observer(() => {
             >
               내 프로필
             </label>
-            <div className={`${profileStyles["save-button"]} typography__text`}>
+            <button
+              className={`${profileStyles["save-button"]} typography__text`}
+              disabled={!changed}
+              onClick={() => {
+                profileStore.updateProfile();
+              }}
+            >
               <label>프로필 변경사항 저장하기</label>
-            </div>
-            <div className={`${profileStyles["undo-button"]} typography__text`}>
+            </button>
+            <button
+              className={`${profileStyles["undo-button"]} typography__text`}
+              disabled={!changed}
+            >
               <label>되돌리기</label>
-            </div>
+            </button>
           </div>
           <div>
             <div style={{ display: "flex", flexDirection: "column" }}>
@@ -75,13 +72,13 @@ const UserProfile: NextPage = observer(() => {
                   <label className={"typography__text--big"}>프로필 사진</label>
                 </div>
                 <div className={`${profileStyles["image-upload"]}`}>
-                  {roomListStore.imageUrl === "" ? (
+                  {!profileStore.imageUrl ? (
                     <div className={`${profileStyles["image"]}`}></div>
                   ) : (
                     <Image
                       className={`${profileStyles["image"]}`}
                       alt={"selected-img"}
-                      src={roomListStore.imageUrl}
+                      src={profileStore.imageUrl}
                       width={152}
                       height={152}
                     />
@@ -103,9 +100,8 @@ const UserProfile: NextPage = observer(() => {
                         accept="image/png, image/jpeg"
                         onChange={(e) => {
                           if (e.target.files) {
-                            roomListStore.importRoomThumbnail(
-                              e.target.files[0]
-                            );
+                            profileStore.importProfileImage(e.target.files[0]);
+                            setChanged(true);
                           }
                         }}
                         hidden
@@ -153,13 +149,58 @@ const UserProfile: NextPage = observer(() => {
         </div>
         <div>
           <UserProfileImage userId={user.uid} width={150} height={150} />
-          <h1>아이디: {profile.id}</h1>
-          <h1>이름: {profile.name}</h1>
-          <h1>태그: {profile.tags}</h1>
-          <h1>소개: {profile.introduce}</h1>
-          <h1>총 공부 시간(분): {profile.totalStudyMinute}</h1>
-          <h1>소속: {profile.organizations}</h1>
-          <h1>랭킹: {profile.rankingScore}</h1>
+          {profileStore.userOverview && (
+            <div style={{ display: "inline" }}>
+              <h1>아이디</h1>
+              <label id={"id"} style={{ width: "300px", display: "block" }}>
+                {profileStore.userOverview.id}
+              </label>
+              <h1>이름</h1>
+              <input
+                id={"nickName"}
+                type={"text"}
+                value={profileStore.nickName}
+                style={{ width: "300px" }}
+                onChange={(e) => {
+                  setChanged(true);
+                  profileStore.onChanged(e);
+                }}
+              />
+              <h1>태그</h1>
+              <input
+                id={"tags"}
+                type={"text"}
+                value={profileStore.tags}
+                style={{ width: "300px" }}
+                onChange={(e) => {
+                  setChanged(true);
+                  profileStore.onChanged(e);
+                }}
+              />
+              <h1>소개 </h1>
+              <input
+                id={"introduce"}
+                type={"text"}
+                value={profileStore.introduce ? profileStore.introduce : ""}
+                style={{ width: "300px" }}
+                onChange={(e) => {
+                  setChanged(true);
+                  profileStore.onChanged(e);
+                }}
+              />
+              <h1>소속</h1>
+              <input
+                id={"organization"}
+                type={"text"}
+                value={profileStore.organizations}
+                style={{ width: "300px" }}
+                onChange={(e) => {
+                  setChanged(true);
+                  profileStore.onChanged(e);
+                }}
+              />
+            </div>
+          )}
         </div>
       </Layout>
       <style jsx>

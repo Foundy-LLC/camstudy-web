@@ -48,7 +48,7 @@ export const validateUserName = (name: string) => {
   }
 };
 
-export const validateUserIntroduce = (introduce: string | undefined) => {
+export const validateUserIntroduce = (introduce: string | null) => {
   if (introduce != null && introduce.length > USER_INTRODUCE_MAX_LENGTH) {
     throw USER_INTRODUCE_LENGTH_ERROR_MESSAGE;
   }

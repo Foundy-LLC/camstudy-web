@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUser } from "@/controller/user.controller";
+import { updateUser, getUser } from "@/controller/user.controller";
 
 export default async function userInformationHandler(
   req: NextApiRequest,
@@ -10,6 +10,8 @@ export default async function userInformationHandler(
     case "GET":
       await getUser(req, res);
       break;
+    case "PATCH":
+      await updateUser(req, res);
     default:
       res.status(405).end(`Method ${method} Not Allowed`);
   }

@@ -36,9 +36,7 @@ function UserProfile(
         <h1>이름: {user.name}</h1>
         <h1>태그: {user.tags}</h1>
         <h1>소개: {user.introduce}</h1>
-        <h1>총 공부 시간(분): {user.totalStudyMinute}</h1>
         <h1>소속: {user.organizations}</h1>
-        <h1>랭킹: {user.rankingScore}</h1>
       </div>
     );
 }

@@ -4,20 +4,20 @@ import {
   validateUserName,
   validateUserTags,
 } from "@/utils/user.validator";
+import { User } from "@/models/user/User";
 
-// TODO: CreateUserRequestBody 로 이름 바꾸기
-export class UserPostRequestBody {
+export class updateUserRequestBody {
   constructor(
     readonly userId: string,
-    readonly name: string,
-    readonly introduce: string | null,
+    readonly nickName: string,
+    readonly introduce: string,
     readonly tags: string[]
   ) {
     this._validateUid();
     this._validateName();
     this._validateIntroduce();
-    this.tags = this._filterNotEmptyTags(this.tags);
-    this.tags = this._filterDuplicatedTags(this.tags);
+    this._filterNotEmptyTags(tags);
+    this._filterDuplicatedTags(tags);
     this._validateTags();
   }
 
@@ -28,7 +28,7 @@ export class UserPostRequestBody {
   };
 
   private _validateName = () => {
-    validateUserName(this.name);
+    validateUserName(this.nickName);
   };
 
   private _validateIntroduce = () => {

@@ -6,7 +6,6 @@ export default async function userHandler(
   res: NextApiResponse
 ) {
   const { method } = req;
-  console.log(req.body);
 
   switch (method) {
     case "GET":
@@ -16,6 +15,6 @@ export default async function userHandler(
       await postUser(req, res);
       break;
     default:
-      res.status(405).end(`Method ${method} Not Allowed`);
+      res.status(405).send(`Method ${method} Not Allowed`);
   }
 }
