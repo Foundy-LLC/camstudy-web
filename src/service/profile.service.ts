@@ -1,6 +1,6 @@
 import { Result } from "@/models/common/Result";
 import { User } from "@/models/user/User";
-import { ValidateUid } from "@/models/common/ValidateUid";
+import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
 import { updateUserRequestBody } from "@/models/user/UpdateUserRequestBody";
 
@@ -11,7 +11,7 @@ const HEADER = {
 export class ProfileService {
   public getUserProfile = async (userId: string): Promise<Result<User>> => {
     try {
-      const RequestBody = new ValidateUid(userId);
+      const RequestBody = new UidValidationRequestBody(userId);
       const response = await fetchAbsolute(`api/users/${RequestBody.userId}`, {
         method: "GET",
         headers: HEADER,
