@@ -159,7 +159,9 @@ export const getExpectedAverageStudyHours = async (
                  AND join_at < ${new Date(plantedAt.getTime() + msToAdd)}
                GROUP BY user_id;`
   );
-
+  if (result.length === 0) {
+    return 0;
+  }
   return result[0].average_study_time;
 };
 
