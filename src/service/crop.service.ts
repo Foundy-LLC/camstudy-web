@@ -1,4 +1,4 @@
-import { ValidateUid } from "@/models/common/ValidateUid";
+import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 import { Result } from "@/models/common/Result";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
 import { Crop } from "@/models/crop/Crop";
@@ -8,7 +8,7 @@ export class CropService {
     userId: string
   ): Promise<Result<Crop[]>> => {
     try {
-      const requestBody = new ValidateUid(userId);
+      const requestBody = new UidValidationRequestBody(userId);
       const response = await fetchAbsolute(
         `api/crops?userId=${requestBody.userId}`,
         {

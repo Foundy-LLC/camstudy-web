@@ -66,7 +66,9 @@ model report {
   reported_at                                   DateTime        @db.Timestamp(6)
   screenshot                                    String?         @db.VarChar(500)
   accepted                                      Boolean?
+  room_id                                       String          @db.VarChar(100)
   user_account_report_reporter_idTouser_account user_account    @relation("report_reporter_idTouser_account", fields: [reporter_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "report_reporter_id__fk")
+  room                                          room            @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "report_room_id__fk")
   user_account_report_suspect_idTouser_account  user_account    @relation("report_suspect_idTouser_account", fields: [suspect_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "report_suspect_id__fk")
 }
 
@@ -83,7 +85,9 @@ model room {
   expired_at          DateTime        @db.Timestamp(6)
   deleted_at          DateTime?       @db.Timestamp(6)
   block               block[]
+  report              report[]
   user_account        user_account    @relation(fields: [master_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "room_master_id__fk")
+  room_ignition       room_ignition[]
   room_tag            room_tag[]
   study_history       study_history[]
 }
@@ -151,7 +155,18 @@ model user_ranking {
   total_study_time  BigInt
   weekly_score      BigInt
   total_score       BigInt
+  weekly_ranking    BigInt       @default(0)
+  total_ranking     BigInt       @default(0)
   user_account      user_account @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model room_ignition {
+  id             String    @db.VarChar(100)
+  start_datetime DateTime  @db.Timestamp(6)
+  end_datetime   DateTime? @db.Timestamp(6)
+  room           room      @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([id, start_datetime], map: "room_ignition_pk")
 }
 
 enum crops_type {

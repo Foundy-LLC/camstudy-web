@@ -2,7 +2,7 @@ import { Result } from "@/models/common/Result";
 import { FriendPostRequestBody } from "@/models/friend/FriendPostRequestBody";
 import { SimilarNamedFriendsGetRequestBody } from "@/models/friend/SimilarNamedFriendsGetRequestBody";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
-import { ValidateUid } from "@/models/common/ValidateUid";
+import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { UserOverview } from "@/models/user/UserOverview";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
@@ -44,7 +44,7 @@ export class FriendService {
     page: number
   ): Promise<Result<{ maxPage: number; friends: UserOverview[] }>> => {
     try {
-      const friendRequestBody = new ValidateUid(userId);
+      const friendRequestBody = new UidValidationRequestBody(userId);
       const response = await fetchAbsolute(
         `api/users/${friendRequestBody.userId}/friends?page=${page - 1}`,
         {
@@ -110,7 +110,7 @@ export class FriendService {
     userId: string
   ): Promise<Result<UserOverview[]>> => {
     try {
-      const friendRequestBody = new ValidateUid(userId);
+      const friendRequestBody = new UidValidationRequestBody(userId);
       const response = await fetchAbsolute(
         `api/users/${friendRequestBody.userId}/friends?accepted=false`,
         {

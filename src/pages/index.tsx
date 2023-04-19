@@ -12,11 +12,11 @@ import {
 } from "next";
 import { useRouter } from "next/router";
 import { verifyUserToken } from "@/service/verifyUserToken";
-import { CropsType } from "@/models/crop/CropsType";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
 import { useStores } from "@/stores/context";
 import { Crop } from "@/models/crop/Crop";
 import { Layout } from "@/components/Layout";
+import { crops_type } from "@prisma/client";
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
@@ -56,7 +56,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const setCrop = async () => {
     const data = {
       userId: "B9j6GEh2PTSHgcrdNnNBRVAPkuX2",
-      cropType: CropsType.STRAWBERRY,
+      cropType: crops_type.strawberry,
     };
     await fetchAbsolute("/api/crops", {
       method: "POST",

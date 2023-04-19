@@ -14,6 +14,7 @@ export const createReport = async (
       category: body.category,
       content: body.content,
       reported_at: new Date(),
+      room_id: body.roomId,
     },
   });
 };
