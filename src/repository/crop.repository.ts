@@ -144,7 +144,7 @@ export const getAverageStudyHours = async (
 };
 
 export const getExpectedAverageStudyHours = async (
-  body: CropHarvestRequestBody,
+  userId: string,
   plantedAt: Date,
   dayDuration: number
 ): Promise<number> => {
@@ -153,13 +153,15 @@ export const getExpectedAverageStudyHours = async (
   const result: { average_study_time: number }[] = await prisma.$queryRaw(
     Prisma.sql`SELECT SUM(extract(epoch from (exit_at - join_at))) / (3600 * ${dayDuration}) as average_study_time
                FROM study_history
-               WHERE user_id = ${body.userId}
+               WHERE user_id = ${userId}
                  AND exit_at is NOT NULL
                  AND join_at >= ${plantedAt}
                  AND join_at < ${new Date(plantedAt.getTime() + msToAdd)}
                GROUP BY user_id;`
   );
-
+  if (result.length === 0) {
+    return 0;
+  }
   return result[0].average_study_time;
 };
 

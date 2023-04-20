@@ -147,15 +147,15 @@ export const getGrowingCrop = async (
     const { userId } = req.query;
 
     if (typeof userId !== "string") throw REQUEST_QUERY_ERROR;
-    const reqBody = new UidValidationRequestBody(userId);
+    const uidReqBody = new UidValidationRequestBody(userId);
 
-    const growingCrop = await fetchGrowingCrop(reqBody.userId);
+    const growingCrop = await fetchGrowingCrop(uidReqBody.userId);
 
     if (growingCrop == null) {
       throw NOT_EXIST_GROWING_CROP;
     }
 
-    const reqBody2 = new CropHarvestRequestBody(userId, growingCrop.id);
+    const cropReqBody = new CropHarvestRequestBody(userId, growingCrop.id);
 
     const cropDto = getCropsByType(growingCrop.type);
 
@@ -166,7 +166,7 @@ export const getGrowingCrop = async (
       );
 
     const averageStudyTimes = await getExpectedAverageStudyHours(
-      reqBody2,
+      cropReqBody.userId,
       growingCrop.planted_at,
       requireConsecutiveAttendanceDays
     );
