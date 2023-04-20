@@ -14,18 +14,17 @@ const mailGunSendMail = (email: Mail.Options) => {
     },
   };
   const nodemailerMailgun = nodemailer.createTransport(mg(auth));
-  try {
+  return new Promise<boolean>((resolve, reject) => {
     nodemailerMailgun.sendMail(email, (err, info) => {
       if (err) {
         console.log(`Error: ${err}`);
+        reject(false);
       } else {
         console.log(`Response: ${info}`);
+        resolve(true);
       }
     });
-    return true;
-  } catch (e) {
-    return false;
-  }
+  });
 };
 
 export const sendSecretMail = (
@@ -37,10 +36,16 @@ export const sendSecretMail = (
 ) => {
   const token = createEmailToken(userId, organizationId, organizationName);
   const email = {
-    from: "studyingFarmer@developer.com",
+    from: "studyingFarmer@example.com",
     to: address,
     subject: "공부하는 농부 - 소속 인증 이메일",
     html: emailHtml(token, userName),
   };
-  return mailGunSendMail(email);
+  return mailGunSendMail(email)
+    .then((result) => {
+      return true;
+    })
+    .catch((error) => {
+      return false;
+    });
 };

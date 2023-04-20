@@ -89,7 +89,7 @@ const RecommendedOrganizationsName: NextPage<{ item: Organization }> = observer(
             const input = document.getElementById(
               "organization__input"
             ) as HTMLInputElement;
-            organizationStore.onChangeNameInput(text.innerHTML);
+            organizationStore.onChangeNameInput(text.textContent || "");
             input!.value = organizationStore.typedName;
             organizationStore.setDropDownHidden(true);
           }}
@@ -223,13 +223,31 @@ const OrganizationForm: NextPage = observer(() => {
         <label className={"typography__caption"}>
           소속된 학교/회사의 이메일 주소를 입력해주세요
         </label>
+        {organizationStore.successMessage ? (
+          <label
+            className={`${profileStyles["organization__success"]} typography__caption`}
+          >
+            {organizationStore.successMessage}
+          </label>
+        ) : (
+          <label
+            className={`${profileStyles["organization__error"]} typography__caption`}
+          >
+            {organizationStore.errorMessage}
+          </label>
+        )}
       </div>
       <button
         className={`${profileStyles["image-upload-button"]}`}
         onClick={() => {
           organizationStore.sendOrganizationVerifyEmail();
         }}
-        disabled={organizationStore.checkIfNameIncluded() ? false : true}
+        disabled={
+          organizationStore.checkTypedName &&
+          !organizationStore.emailVerityButtonDisable
+            ? false
+            : true
+        }
       >
         <span className="material-symbols-sharp">add</span>
         <label className={"typography__text"}>소속 등록하기</label>
@@ -358,9 +376,7 @@ const UserProfile: NextPage = observer(() => {
           <h1>이름: {profile.name}</h1>
           <h1>태그: {profile.tags}</h1>
           <h1>소개: {profile.introduce}</h1>
-          <h1>총 공부 시간(분): {profile.totalStudyMinute}</h1>
           <h1>소속: {profile.organizations}</h1>
-          <h1>랭킹: {profile.rankingScore}</h1>
         </div>
       </Layout>
       <style jsx>

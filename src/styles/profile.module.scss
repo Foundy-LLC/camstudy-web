@@ -223,11 +223,15 @@
       height: 18px;
       margin: 20px 0px 0px 20px;
       color: var(--);
+      label{
+        color: var(--text-02);
+      }
     }
     .belong{
       display: flex;
+      flex-wrap: wrap;
       margin:0 auto;
-      margin: 12px 0px 0px 8px;
+      margin: 0px 0px 0px 8px;
       .belong__item{
         width: auto;
         height: 18px;
@@ -235,6 +239,7 @@
         padding: 8px 12px 8px 12px;
         border-radius: 8px;
         color: var(--primary-press);
+        margin-top: 12px;
         margin-left:12px;
         position: relative;
         button{
@@ -314,7 +319,16 @@
         color: var(--text-04);
         font-weight: 300;
       }
-
+      .organization__success{
+        margin-top: 4px;
+        color: var(--success);
+        width: 250px;
+      }
+      .organization__error{
+        margin-top: 4px;
+        color: var(--error);
+        width: 250px;
+      }
       input {
         width: 216px;
         height: 30px;

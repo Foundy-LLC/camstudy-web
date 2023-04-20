@@ -71,7 +71,7 @@ const RecommendedOrganizationsName: NextPage<{ item: Organization }> = observer(
           organizationStore.onChangeNameInput(text.innerHTML);
           input!.value = organizationStore.typedName;
           organizationStore.setEmailVerifyButtonDisable(
-            organizationStore.checkIfNameIncluded() === undefined
+            organizationStore.checkTypedName
           );
         }}
       >
@@ -90,7 +90,7 @@ const organizations: NextPage = observer(() => {
     if (debounceSearch) {
       organizationStore.onChangeNameInput(debounceSearch);
       organizationStore.setEmailVerifyButtonDisable(
-        organizationStore.checkIfNameIncluded() === undefined
+        organizationStore.checkTypedName
       );
     }
   }, [debounceSearch]);

@@ -60,7 +60,7 @@ export class OrganizationStore {
   }
 
   get organizationId() {
-    return this.checkIfNameIncluded()!!.id;
+    return this.checkTypedName ? this.recommendOrganizations[0].id : null;
   }
 
   get dropDownHidden() {
@@ -71,10 +71,15 @@ export class OrganizationStore {
     this._dropDownHidden = hidden;
   }
 
-  public checkIfNameIncluded() {
-    return this._recommendOrganizations.find((element) => {
-      if (element.name === this._typedName) return true;
-    });
+  public get checkTypedName() {
+    if (
+      this.recommendOrganizations.length === 1 &&
+      this.typedName === this.recommendOrganizations[0]?.name
+    )
+      return true;
+    else {
+      return false;
+    }
   }
 
   private setRecommendOrganizations(nameList: Organization[]) {
@@ -83,6 +88,25 @@ export class OrganizationStore {
 
   public onChangeEmailInput(email: string) {
     this._typedEmail = email;
+    if (!this.checkTypedName) {
+      this.setEmailVerifyButtonDisable(true);
+      return;
+    }
+    const address = this.recommendOrganizations[0].address;
+    if (
+      email.includes("@") &&
+      email.slice(email.indexOf("@") + 1) === address
+    ) {
+      this.setEmailVerifyButtonDisable(false);
+      this._errorMessage = undefined;
+    } else {
+      this.setEmailVerifyButtonDisable(true);
+      if (email.includes("@") && email.includes(".")) {
+        this._errorMessage = `이메일 형식이 소속 웹메일 형식(${address})과 다릅니다.`;
+      } else {
+        this._errorMessage = undefined;
+      }
+    }
   }
 
   public async verifyEmailConfirm(AccessToken: string) {
@@ -157,17 +181,18 @@ export class OrganizationStore {
       userId: this._userStore.currentUser!!.id,
       userName: this._userStore.currentUser!!.name,
       email: this._typedEmail,
-      organizationId: this.organizationId,
+      organizationId: this.organizationId!,
       organizationName: this._typedName,
     };
+    console.log(organizationVerifyEmailForm);
     const result = await this._organizationService.setOrganizationEmail(
       organizationVerifyEmailForm
     );
     if (result.isSuccess) {
       runInAction(() => {
+        console.log("success");
         this._errorMessage = undefined;
         this._successMessage = result.getOrNull()!;
-        console.log("success");
       });
     } else {
       runInAction(() => {

@@ -160,10 +160,17 @@ export const setOrganizationEmail = async (
 
     //이메일 전송
     if (
-      !sendSecretMail(email, userId, userName, organizationId, organizationName)
+      !(await sendSecretMail(
+        email,
+        userId,
+        userName,
+        organizationId,
+        organizationName
+      ))
     ) {
       throw ORGANIZATIONS_EMAIL_SEND_FAIL;
     }
+
     res.status(201).json(
       new ResponseBody({
         message: ORGANIZATIONS_EMAIL_SEND_SUCCESS,
