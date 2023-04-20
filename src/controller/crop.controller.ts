@@ -152,7 +152,10 @@ export const getGrowingCrop = async (
     const growingCrop = await fetchGrowingCrop(uidReqBody.userId);
 
     if (growingCrop == null) {
-      throw NOT_EXIST_GROWING_CROP;
+      res
+        .status(404)
+        .send(new ResponseBody({ message: NOT_EXIST_GROWING_CROP }));
+      return;
     }
 
     const cropReqBody = new CropHarvestRequestBody(userId, growingCrop.id);
