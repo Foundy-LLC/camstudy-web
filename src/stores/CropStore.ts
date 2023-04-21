@@ -1,5 +1,5 @@
 import { RootStore } from "@/stores/RootStore";
-import { Crop } from "@/models/crop/Crop";
+import { HarvestedCrop } from "@/models/crop/HarvestedCrop";
 import { CropService, cropService } from "@/service/crop.service";
 import { UserStore } from "@/stores/UserStore";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
@@ -8,7 +8,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 export class CropStore {
   readonly rootStore: RootStore;
   private _userStore: UserStore;
-  private _harvestedCrops: Crop[] = [];
+  private _harvestedCrops: HarvestedCrop[] = [];
   constructor(
     root: RootStore,
     private readonly _cropService: CropService = cropService
