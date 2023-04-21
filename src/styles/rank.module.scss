@@ -1,0 +1,62 @@
+.rank-header{
+  display: flex;
+  margin: 24px 0px 0px 20px;
+  .rank-header__title{
+    font-weight: 500;
+    color: var(--text-01);
+    margin-right: 12px;
+  }
+  .rank-header__menu{
+    width: 72px;
+    height: 28px;
+    color: var(--text-04);
+    margin-left: 32px;
+    margin-top: 7px;
+  }
+  .rank-header__info{
+    font-size: 28px;
+    margin-left: 36px;
+    margin-top: 7px;
+    color: var(--text-03);
+    cursor: default;
+  }
+}
+
+.rank-form{
+  width: 1040px;
+  height: 906px;
+  border: 0.5px solid var(--system_ui-04);
+  border-radius: 16px;
+  margin-top: 22px;
+  margin-left: 20px;
+  .rank-header__menu{
+
+  }
+  .rank-form__subtitle{
+
+  }
+  .rank-form__content{
+
+  }
+  .rank-form__content__ranking{
+
+  }
+  .rank-form__content__profile-img{
+
+  }
+  .rank-form__content__profile{
+
+  }
+  .rank-form__content__score{
+
+  }
+  .rank-form__content__study-time{
+
+  }
+  .rank-form__content__add-friend{
+
+  }
+  .rank-form__content__option{
+
+  }
+}

@@ -64,7 +64,7 @@ const menus: Menu[] = [
       {
         icon: "bar_chart",
         text: "랭킹 목록",
-        path: "",
+        path: "/rank",
       },
     ],
   },
