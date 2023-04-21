@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { verifyUserToken } from "@/service/verifyUserToken";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
 import { useStores } from "@/stores/context";
-import { Crop } from "@/models/crop/Crop";
+import { HarvestedCrop } from "@/models/crop/HarvestedCrop";
 import { Layout } from "@/components/Layout";
 import { crops_type } from "@prisma/client";
 
@@ -23,7 +23,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return await verifyUserToken(ctx);
 };
 
-const HarvestedCropGroup: NextPage<{ items: Crop[] }> = observer(
+const HarvestedCropGroup: NextPage<{ items: HarvestedCrop[] }> = observer(
   ({ items }) => {
     return (
       <>

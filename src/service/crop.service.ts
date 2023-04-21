@@ -1,12 +1,12 @@
 import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 import { Result } from "@/models/common/Result";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
-import { Crop } from "@/models/crop/Crop";
+import { HarvestedCrop } from "@/models/crop/HarvestedCrop";
 
 export class CropService {
   public getHarvestedCrops = async (
     userId: string
-  ): Promise<Result<Crop[]>> => {
+  ): Promise<Result<HarvestedCrop[]>> => {
     try {
       const requestBody = new UidValidationRequestBody(userId);
       const response = await fetchAbsolute(
