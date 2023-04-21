@@ -3,7 +3,7 @@ import { CropCreateRequestBody } from "@/models/crop/CropCreateRequestBody";
 import prisma from "../../prisma/client";
 import { CropHarvestRequestBody } from "@/models/crop/CropHarvestRequestBody";
 import { Prisma } from ".prisma/client";
-import { fruit_grade } from "@prisma/client";
+import { crops, fruit_grade } from "@prisma/client";
 import { Crop } from "@/models/crop/Crop";
 import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
 import { STANDARD_END_HOUR_OF_DAY } from "@/constants/common";
@@ -20,10 +20,12 @@ export const getHarvestedCrops = async (userId: string): Promise<Crop[]> => {
       harvested_at: "desc",
     },
   });
-  return harvestedCrops.map((crop) => {
+  return harvestedCrops.map((crop: crops) => {
     return {
       type: crop.type,
       grade: crop.grade!,
+      plantedAt: crop.planted_at,
+      harvestedAt: crop.harvested_at!,
     };
   });
 };

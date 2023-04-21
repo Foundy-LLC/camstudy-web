@@ -1,6 +1,8 @@
-import { CROP_GRADE } from "@/constants/CropGrade";
+import { crops_type, fruit_grade } from "@prisma/client";
 
 export interface Crop {
-  type: string;
-  grade: CROP_GRADE;
+  type: crops_type;
+  grade: fruit_grade;
+  plantedAt: Date;
+  harvestedAt: Date;
 }
