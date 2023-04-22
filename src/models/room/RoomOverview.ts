@@ -11,7 +11,7 @@ export class RoomOverview {
     readonly joinCount: number,
     readonly maxCount: number,
     readonly joinedUsers: UserOverview[],
-    readonly tags?: Array<string>
+    readonly tags: Array<string>
   ) {
     makeAutoObservable(this);
   }

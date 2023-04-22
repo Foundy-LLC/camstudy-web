@@ -11,6 +11,7 @@ import { room } from "@prisma/client";
 import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
 import { UserStatus } from "@/models/user/UserStatus";
 import { uuidv4 } from "@firebase/util";
+import { UserOverview } from "@/models/user/UserOverview";
 
 export const findRoomById = async (roomId: string): Promise<room | null> => {
   return await prisma.room.findUnique({
@@ -92,26 +93,51 @@ export const findRooms = async (
   });
 };
 
-export const findRecentRooms = async (userId: string) => {
-  const rooms = await client.study_history.findMany({
+export const findRecentRooms = async (
+  userId: string
+): Promise<RoomOverview[]> => {
+  const queryResults = await client.study_history.findMany({
     where: { user_id: userId, room: { deleted_at: null } },
     distinct: "room_id",
     take: MAX_RECENT_ROOM_NUM,
     orderBy: { join_at: "desc" },
     include: {
-      room: { include: { study_history: { where: { exit_at: null } } } },
+      room: {
+        include: {
+          study_history: {
+            where: { exit_at: null },
+            include: { user_account: true },
+          },
+          room_tag: { include: { tag: true } },
+        },
+      },
     },
   });
-  return rooms.map((rooms) => {
+  return queryResults.map((queryResult) => {
+    const joinedUsers = queryResult.room.study_history.map<UserOverview>(
+      (history) => {
+        const { id, name, profile_image, score, status, introduce } =
+          history.user_account;
+        return {
+          id: id,
+          name: name,
+          profileImage: profile_image,
+          rankingScore: Number(score),
+          introduce: introduce,
+          status: status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
+        };
+      }
+    );
     return new RoomOverview(
-      rooms.room.id,
-      rooms.room.master_id,
-      rooms.room.title,
-      rooms.room.password ? true : false,
-      rooms.room.thumbnail,
-      rooms.room.study_history.length,
+      queryResult.room.id,
+      queryResult.room.master_id,
+      queryResult.room.title,
+      queryResult.room.password != null,
+      queryResult.room.thumbnail,
+      queryResult.room.study_history.length,
       MAX_ROOM_CAPACITY,
-      [] //room.room_tags
+      joinedUsers,
+      queryResult.room.room_tag.map((tagEntity) => tagEntity.tag.name)
     );
   });
 };
