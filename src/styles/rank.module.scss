@@ -1,8 +1,17 @@
+.rank-page{
+  background-color: var(--ui-cardui);
+  overflow-y: scroll;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.rank-page::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
+}
 .rank-header{
   display: flex;
   margin: 24px 0px 0px 20px;
   .rank-header__title{
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text-01);
     margin-right: 12px;
   }
@@ -29,34 +38,99 @@
   border-radius: 16px;
   margin-top: 22px;
   margin-left: 20px;
+  margin-right: 40px;
   .rank-header__menu{
-
   }
   .rank-form__subtitle{
-
+    display: flex;
+    margin-top: 20px;
+    margin-left: 20px;
+    align-items: center;
+    .rank-form__subtitle__icon{
+      font-size:25px;
+      color: var(--text-emphasize);
+    }
+    .rank-form__subtitle__label{
+      margin-left: 3px;
+      color: var(--text-01);
+      font-weight: 600;
+    }
   }
   .rank-form__content{
+    width: 1000px;
+    height: 72px;
+    border: 0.5px solid var(--system_ui-04);
+    border-radius: 8px;
+    margin-top: 28px;
+    margin-left: 20px;
+    background-color: var(--ui-cardui-01);
+    display: flex;
+    align-items: center;
+    .rank-form__content__ranking{
+      width: 40px;
+      height: 40px;
+      background-color: var(--system_ui-02);
+      border-radius: 8px;
+      margin: 16px
+    }
+    .rank-form__content__profile-img{
+      width: 40px;
+      height: 40px;
+      background-color: var(--system_ui-02);
+      border-radius: 8px;
+    }
+    .rank-form__content__profile{
+      margin-left: 16px;
+      display: flex;
+      flex-direction: column;
+      .rank-form__content__info{
+        display: flex;
+        align-items: center;
+        .rank-form__content__nickname{
+          width: 66px;
+          height: 22px;
+          font-weight: 500;
+        }
+        .rank-form__content__status{
+          margin-left:8px;
+          font-weight: 600;
+          color: var(--status-login);
+        }
+      }
+      .rank-form__content__introduce{
+        display: block;
+        width: 240px;
+        height: 18px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        color:var(--system_ui-05);
+      }
+    }
+    .rank-form__content__record{
+      width: 280px;
+      height: 32px;
+      display: flex;
+      justify-content: space-between;
+      margin-left: 132px;
+      font-weight: 500;
+      color: var(--system_ui-05);
+      .rank-form__content__score{
+      }
+      .rank-form__content__study-time{
+      }
+    }
 
-  }
-  .rank-form__content__ranking{
-
-  }
-  .rank-form__content__profile-img{
-
-  }
-  .rank-form__content__profile{
-
-  }
-  .rank-form__content__score{
-
-  }
-  .rank-form__content__study-time{
-
-  }
-  .rank-form__content__add-friend{
-
-  }
-  .rank-form__content__option{
-
+    .rank-form__content__add-friend{
+      margin-left: 133px;
+      font-size: 30px;
+      color: var(--text-emphasize);
+    }
+    .rank-form__content__option{
+      margin-left: 29px;
+      margin-right: 20px;
+      font-size: 30px;
+      color: var(--text-emphasize);
+    }
   }
 }
