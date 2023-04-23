@@ -1,7 +1,13 @@
 import { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import useSWR from "swr";
+import { User } from "@/models/user/User";
+import React, { useEffect, useRef, useState } from "react";
+import { ResponseBody } from "@/models/common/ResponseBody";
 import { UserProfileImage } from "@/components/UserProfileImage";
+import { NOT_FOUND_USER_MESSAGE } from "@/constants/message";
 import { useRouter } from "next/router";
+import { Header } from "@/components/Header";
+import { SideMenuBar } from "@/components/SideMenuBar";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import profileStyles from "@/styles/profile.module.scss";
@@ -9,23 +15,257 @@ import Image from "next/image";
 import { useStores } from "@/stores/context";
 import { observer } from "mobx-react";
 import { Layout } from "@/components/Layout";
+import { BelongOrganization } from "@/models/organization/BelongOrganization";
+import { useDebounce } from "@/components/UseDebounce";
+import { Organization } from "@/models/organization/Organization";
+
+const BelongOrganizationsName: NextPage<{ item: BelongOrganization }> =
+  observer(({ item }) => {
+    const { organizationStore } = useStores();
+    const { organizationName } = item;
+    return (
+      <>
+        <div
+          className={`${profileStyles["belong__item"]} typography__text--small`}
+        >
+          <button
+            onClick={() => {
+              if (
+                confirm(
+                  `"${organizationName}"을 소속에서 삭제하시겠습니까?`
+                ) === true
+              ) {
+                organizationStore.deleteBelongOrganization(item);
+                console.log(
+                  `${organizationName}가(이) 소속에서 삭제되었습니다`
+                );
+              }
+            }}
+          >
+            <span className="material-symbols-sharp">close</span>
+          </button>
+          <div>
+            <label>{organizationName}</label>
+          </div>
+        </div>
+        <br />
+      </>
+    );
+  });
+
+const BelongOrganizationsNameGroup: NextPage<{ items: BelongOrganization[] }> =
+  observer(({ items }) => {
+    return (
+      <div className={`${profileStyles["belong"]}`}>
+        {items.map((item, key) => (
+          <BelongOrganizationsName item={item} key={key} />
+        ))}
+      </div>
+    );
+  });
+
+const RecommendedOrganizationsNameGroup: NextPage<{ items: Organization[] }> =
+  observer(({ items }) => {
+    const slicedItems = items.slice(0, 5);
+    return (
+      <div className={`${profileStyles["organization__content"]}`}>
+        {slicedItems.map((item, key) => (
+          <RecommendedOrganizationsName item={item} key={key} />
+        ))}
+      </div>
+    );
+  });
+
+const RecommendedOrganizationsName: NextPage<{ item: Organization }> = observer(
+  ({ item }) => {
+    const { organizationStore } = useStores();
+    return (
+      <>
+        <div
+          id={"organizations__item"}
+          className={`${profileStyles["organization__item"]} typography__text--small`}
+          onClick={(e) => {
+            const text = e.target as HTMLElement;
+            const input = document.getElementById(
+              "organization__input"
+            ) as HTMLInputElement;
+            organizationStore.onChangeNameInput(text.textContent || "");
+            input!.value = organizationStore.typedName;
+            organizationStore.setDropDownHidden(true);
+          }}
+        >
+          <label>{item.name}</label>
+        </div>
+      </>
+    );
+  }
+);
+
+const NicknameForm: NextPage = observer(() => {
+  return (
+    <div
+      className={`${profileStyles["nickname-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+    >
+      <div className={`${profileStyles["title"]}`}>
+        <span className="material-symbols-sharp">text_snippet</span>
+        <label className={"typography__text--big"}>닉네임 및 자기소개</label>
+      </div>
+      <div className={`${profileStyles["nickname"]} `}>
+        <label className={"typography__caption"}>닉네임</label>
+        <input type={"text"} className={"typography__text--small"} />
+        <label className={"typography__caption"}>
+          다른 농부들에게 표시되는 닉네임입니다
+        </label>
+      </div>
+      <div className={`${profileStyles["introduce"]}`}>
+        <label className={"typography__caption"}>자기소개</label>
+        <input type={"text"} className={"typography__text--small"} />
+        <label className={"typography__caption"}>
+          나를 나타낼 수 있는 소개 내용을 입력해주세요
+        </label>
+      </div>
+    </div>
+  );
+});
+
+const OrganizationForm: NextPage = observer(() => {
+  const { organizationStore } = useStores();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [searchInput, setSearchInput] = useState("");
+  const debounceSearch = useDebounce(searchInput, 500);
+
+  useEffect(() => {
+    organizationStore.onChangeNameInput(debounceSearch);
+  }, [debounceSearch]);
+
+  useEffect(() => {
+    organizationStore.fetchBelongOrganizations();
+    if (inputRef.current) {
+      inputRef.current.addEventListener("focus", () => {
+        organizationStore.setDropDownHidden(false);
+      });
+      inputRef.current.addEventListener("blur", () => {
+        setTimeout(() => organizationStore.setDropDownHidden(true), 100);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const content = document.querySelector<HTMLDivElement>(
+      `.${profileStyles["organization__content"]}`
+    );
+
+    if (!content) return;
+
+    if (organizationStore.dropDownHidden) {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  }, [organizationStore.dropDownHidden]);
+
+  return (
+    <div
+      className={`${profileStyles["organization-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+    >
+      <div className={`${profileStyles["title"]}`}>
+        <span className="material-symbols-sharp">business_center</span>
+        <label className={"typography__text--big"}>소속</label>
+      </div>
+      <div
+        className={`${profileStyles["belong__title"]} typography__text--small`}
+      >
+        <label>현재 설정된 조직</label>
+      </div>
+      <BelongOrganizationsNameGroup
+        items={
+          organizationStore.belongOrganizations
+            ? organizationStore.belongOrganizations
+            : []
+        }
+      />
+      <div className={`${profileStyles["organization__name"]} `}>
+        <label
+          className={`${profileStyles["organization__subtitle"]} typography__caption`}
+        >
+          소속명
+        </label>
+        <input
+          type={"text"}
+          id={"organization__input"}
+          className={"typography__text--small"}
+          ref={inputRef}
+          onChange={async (e) => {
+            setSearchInput(e.target.value);
+          }}
+        />
+        {organizationStore.recommendOrganizations.length !== 0 && (
+          <RecommendedOrganizationsNameGroup
+            items={organizationStore.recommendOrganizations}
+          />
+        )}
+
+        <label
+          className={`${profileStyles["organization__subtitle"]} typography__caption`}
+        >
+          소속된 학교/회사 등을 검색해주세요
+        </label>
+      </div>
+      <div className={`${profileStyles["email"]}`}>
+        <label className={"typography__caption"}>이메일</label>
+        <input
+          type={"text"}
+          className={"typography__text--small"}
+          onChange={(e) => {
+            organizationStore.onChangeEmailInput(e.target.value);
+          }}
+        />
+        <label className={"typography__caption"}>
+          소속된 학교/회사의 이메일 주소를 입력해주세요
+        </label>
+        {organizationStore.successMessage ? (
+          <label
+            className={`${profileStyles["organization__success"]} typography__caption`}
+          >
+            {organizationStore.successMessage}
+          </label>
+        ) : (
+          <label
+            className={`${profileStyles["organization__error"]} typography__caption`}
+          >
+            {organizationStore.errorMessage}
+          </label>
+        )}
+      </div>
+      <button
+        className={`${profileStyles["image-upload-button"]}`}
+        onClick={() => {
+          organizationStore.sendOrganizationVerifyEmail();
+        }}
+        disabled={
+          organizationStore.checkTypedName &&
+          !organizationStore.emailVerityButtonDisable
+            ? false
+            : true
+        }
+      >
+        <span className="material-symbols-sharp">add</span>
+        <label className={"typography__text"}>소속 등록하기</label>
+      </button>
+    </div>
+  );
+});
 
 const UserProfile: NextPage = observer(() => {
   const router = useRouter();
   const [user, loading] = useAuthState(auth);
-  const { profileStore, userStore } = useStores();
-  const [changed, setChanged] = useState<boolean>(false);
-  useEffect(() => {
-    if (!userStore.currentUser) return;
-    profileStore.getUserProfile();
-  }, [userStore.currentUser]);
-
-  useEffect(() => {
-    if (profileStore.editSuccess === true) {
-      setChanged(false);
-      console.log("프로필 변경 성공");
-    }
-  }, [profileStore.editSuccess]);
+  const { roomListStore, organizationStore } = useStores();
+  const fetcher = (args: string) => fetch(args).then((res) => res.json());
+  const { data, isLoading } = useSWR<ResponseBody<User>>(
+    `/api/users/${user?.uid}`,
+    fetcher
+  );
+  const profile = data?.data;
 
   if (loading) {
     return <div>Loading</div>;
@@ -36,33 +276,36 @@ const UserProfile: NextPage = observer(() => {
     return <div>Please sign in to continue</div>;
   }
 
+  if (data?.message === NOT_FOUND_USER_MESSAGE || profile === undefined)
+    return (
+      <>
+        <h3>{NOT_FOUND_USER_MESSAGE}</h3>
+      </>
+    );
+  if (isLoading)
+    return (
+      <>
+        <h3>loading</h3>
+      </>
+    );
   return (
     <>
       <Layout>
-        <div>
+        <div className={`${profileStyles["page-form"]}`}>
           <div className={`${profileStyles["page-title"]}`}>
             <label
               className={`${profileStyles["title"]} typography__sub-headline`}
             >
               내 프로필
             </label>
-            <button
-              className={`${profileStyles["save-button"]} typography__text`}
-              disabled={!changed}
-              onClick={() => {
-                profileStore.updateProfile();
-              }}
-            >
+            <div className={`${profileStyles["save-button"]} typography__text`}>
               <label>프로필 변경사항 저장하기</label>
-            </button>
-            <button
-              className={`${profileStyles["undo-button"]} typography__text`}
-              disabled={!changed}
-            >
+            </div>
+            <div className={`${profileStyles["undo-button"]} typography__text`}>
               <label>되돌리기</label>
-            </button>
+            </div>
           </div>
-          <div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div
                 className={`${profileStyles["profile-image-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
@@ -72,13 +315,13 @@ const UserProfile: NextPage = observer(() => {
                   <label className={"typography__text--big"}>프로필 사진</label>
                 </div>
                 <div className={`${profileStyles["image-upload"]}`}>
-                  {!profileStore.imageUrl ? (
+                  {roomListStore.imageUrl === "" ? (
                     <div className={`${profileStyles["image"]}`}></div>
                   ) : (
                     <Image
                       className={`${profileStyles["image"]}`}
                       alt={"selected-img"}
-                      src={profileStore.imageUrl}
+                      src={roomListStore.imageUrl}
                       width={152}
                       height={152}
                     />
@@ -100,8 +343,9 @@ const UserProfile: NextPage = observer(() => {
                         accept="image/png, image/jpeg"
                         onChange={(e) => {
                           if (e.target.files) {
-                            profileStore.importProfileImage(e.target.files[0]);
-                            setChanged(true);
+                            roomListStore.importRoomThumbnail(
+                              e.target.files[0]
+                            );
                           }
                         }}
                         hidden
@@ -120,87 +364,19 @@ const UserProfile: NextPage = observer(() => {
                   </div>
                 </div>
               </div>
+              <NicknameForm />
             </div>
-            <div
-              className={`${profileStyles["nickname-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
-            >
-              <div className={`${profileStyles["title"]}`}>
-                <span className="material-symbols-sharp">text_snippet</span>
-                <label className={"typography__text--big"}>
-                  닉네임 및 자기소개
-                </label>
-              </div>
-              <div className={`${profileStyles["nickname"]} `}>
-                <label className={"typography__caption"}>닉네임</label>
-                <input type={"text"} className={"typography__text--small"} />
-                <label className={"typography__caption"}>
-                  다른 농부들에게 표시되는 닉네임입니다
-                </label>
-              </div>
-              <div className={`${profileStyles["introduce"]}`}>
-                <label className={"typography__caption"}>자기소개</label>
-                <input type={"text"} className={"typography__text--small"} />
-                <label className={"typography__caption"}>
-                  나를 나타낼 수 있는 소개 내용을 입력해주세요
-                </label>
-              </div>
-            </div>
+
+            <OrganizationForm />
           </div>
         </div>
         <div>
           <UserProfileImage userId={user.uid} width={150} height={150} />
-          {profileStore.userOverview && (
-            <div style={{ display: "inline" }}>
-              <h1>아이디</h1>
-              <label id={"id"} style={{ width: "300px", display: "block" }}>
-                {profileStore.userOverview.id}
-              </label>
-              <h1>이름</h1>
-              <input
-                id={"nickName"}
-                type={"text"}
-                value={profileStore.nickName}
-                style={{ width: "300px" }}
-                onChange={(e) => {
-                  setChanged(true);
-                  profileStore.onChanged(e);
-                }}
-              />
-              <h1>태그</h1>
-              <input
-                id={"tags"}
-                type={"text"}
-                value={profileStore.tags}
-                style={{ width: "300px" }}
-                onChange={(e) => {
-                  setChanged(true);
-                  profileStore.onChanged(e);
-                }}
-              />
-              <h1>소개 </h1>
-              <input
-                id={"introduce"}
-                type={"text"}
-                value={profileStore.introduce ? profileStore.introduce : ""}
-                style={{ width: "300px" }}
-                onChange={(e) => {
-                  setChanged(true);
-                  profileStore.onChanged(e);
-                }}
-              />
-              <h1>소속</h1>
-              <input
-                id={"organization"}
-                type={"text"}
-                value={profileStore.organizations}
-                style={{ width: "300px" }}
-                onChange={(e) => {
-                  setChanged(true);
-                  profileStore.onChanged(e);
-                }}
-              />
-            </div>
-          )}
+          <h1>아이디: {profile.id}</h1>
+          <h1>이름: {profile.name}</h1>
+          <h1>태그: {profile.tags}</h1>
+          <h1>소개: {profile.introduce}</h1>
+          <h1>소속: {profile.organizations}</h1>
         </div>
       </Layout>
       <style jsx>

@@ -15,6 +15,7 @@ export class OrganizationStore {
   private _userStore: UserStore;
   private _typedEmail: string = "";
   private _typedName: string = "";
+  private _dropDownHidden: boolean = true;
   private _recommendOrganizations: Organization[] = [];
   private _belongOrganizations: BelongOrganization[] | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
@@ -59,13 +60,26 @@ export class OrganizationStore {
   }
 
   get organizationId() {
-    return this.checkIfNameIncluded()!!.id;
+    return this.checkTypedName ? this.recommendOrganizations[0].id : null;
   }
 
-  public checkIfNameIncluded() {
-    return this._recommendOrganizations.find((element) => {
-      if (element.name === this._typedName) return true;
-    });
+  get dropDownHidden() {
+    return this._dropDownHidden;
+  }
+
+  public setDropDownHidden(hidden: boolean) {
+    this._dropDownHidden = hidden;
+  }
+
+  public get checkTypedName() {
+    if (
+      this.recommendOrganizations.length === 1 &&
+      this.typedName === this.recommendOrganizations[0]?.name
+    )
+      return true;
+    else {
+      return false;
+    }
   }
 
   private setRecommendOrganizations(nameList: Organization[]) {
@@ -74,6 +88,25 @@ export class OrganizationStore {
 
   public onChangeEmailInput(email: string) {
     this._typedEmail = email;
+    if (!this.checkTypedName) {
+      this.setEmailVerifyButtonDisable(true);
+      return;
+    }
+    const address = this.recommendOrganizations[0].address;
+    if (
+      email.includes("@") &&
+      email.slice(email.indexOf("@") + 1) === address
+    ) {
+      this.setEmailVerifyButtonDisable(false);
+      this._errorMessage = undefined;
+    } else {
+      this.setEmailVerifyButtonDisable(true);
+      if (email.includes("@") && email.includes(".")) {
+        this._errorMessage = `이메일 형식이 소속 웹메일 형식(${address})과 다릅니다.`;
+      } else {
+        this._errorMessage = undefined;
+      }
+    }
   }
 
   public async verifyEmailConfirm(AccessToken: string) {
@@ -121,7 +154,7 @@ export class OrganizationStore {
     }
   }
 
-  public async onChangeNameInput(name: string) {
+  public onChangeNameInput = async (name: string) => {
     this._typedName = name;
     if (this._typedName === "") {
       this._recommendOrganizations = [];
@@ -141,21 +174,23 @@ export class OrganizationStore {
         this._errorMessage = result.throwableOrNull()!.message;
       });
     }
-  }
+  };
 
   public async sendOrganizationVerifyEmail() {
     const organizationVerifyEmailForm: OrganizationVerifyEmailForm = {
       userId: this._userStore.currentUser!!.id,
       userName: this._userStore.currentUser!!.name,
       email: this._typedEmail,
-      organizationId: this.organizationId,
+      organizationId: this.organizationId!,
       organizationName: this._typedName,
     };
+    console.log(organizationVerifyEmailForm);
     const result = await this._organizationService.setOrganizationEmail(
       organizationVerifyEmailForm
     );
     if (result.isSuccess) {
       runInAction(() => {
+        console.log("success");
         this._errorMessage = undefined;
         this._successMessage = result.getOrNull()!;
       });
