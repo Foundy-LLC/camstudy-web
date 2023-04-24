@@ -143,6 +143,9 @@ export const findRecentRooms = async (
 };
 
 export const createRoom = async (body: RoomCreateRequestBody) => {
+  const tagIdsDto: { tag_id: string }[] = body.tagIds!.map((tag) => {
+    return { tag_id: tag.id };
+  });
   await client.room.create({
     data: {
       id: uuidv4(),
@@ -154,6 +157,11 @@ export const createRoom = async (body: RoomCreateRequestBody) => {
       long_break: body.longBreak,
       long_break_interval: body.longBreakInterval,
       expired_at: body.expiredAt,
+      room_tag: {
+        createMany: {
+          data: [...tagIdsDto],
+        },
+      },
     },
   });
 };
