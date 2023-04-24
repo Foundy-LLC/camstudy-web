@@ -1,9 +1,4 @@
 import { validateUid } from "@/utils/user.validator";
-import { validatePage, validatePageNum } from "@/utils/rooms.validator";
-import {
-  validateAccepted,
-  validateAcceptedBoolean,
-} from "@/utils/friend.validator";
 
 export class FriendGetOverviewsBody {
   readonly page: number;

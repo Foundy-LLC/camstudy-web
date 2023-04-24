@@ -5,6 +5,7 @@ import { CropStore } from "@/stores/CropStore";
 import { UserStore } from "@/stores/UserStore";
 import { WelcomeStore } from "@/stores/WelcomeStore";
 import { ProfileStore } from "@/stores/ProfileStore";
+import { RankStore } from "@/stores/RankStore";
 
 export class RootStore {
   userStore;
@@ -14,6 +15,7 @@ export class RootStore {
   friendStore;
   cropStore;
   profileStore;
+  rankStore;
   constructor() {
     this.userStore = new UserStore(this);
     this.welcomeStore = new WelcomeStore(this);
@@ -22,5 +24,6 @@ export class RootStore {
     this.friendStore = new FriendStore(this);
     this.cropStore = new CropStore(this);
     this.profileStore = new ProfileStore(this);
+    this.rankStore = new RankStore(this);
   }
 }

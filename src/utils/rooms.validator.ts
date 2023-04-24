@@ -47,8 +47,8 @@ export const validatePage = (page: string | undefined) => {
   }
 };
 
-export const validatePageNum = (page_num: number | null) => {
-  if (page_num === null) {
+export const validatePageNum = (pageNum: number | null) => {
+  if (pageNum === null) {
     throw ROOM_PAGE_NUM_NULL_ERROR;
   }
 };

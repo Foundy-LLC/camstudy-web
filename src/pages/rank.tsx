@@ -3,8 +3,12 @@ import { observer } from "mobx-react";
 import { Layout } from "@/components/Layout";
 import React from "react";
 import rankStyles from "@/styles/rank.module.scss";
+import Image from "next/image";
+import { useStores } from "@/stores/context";
 
 const UserRanking: NextPage = observer(() => {
+  const { rankStore } = useStores();
+  console.log(rankStore.getRank());
   return (
     <>
       <Layout>
