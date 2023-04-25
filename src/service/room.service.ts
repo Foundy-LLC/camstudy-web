@@ -47,7 +47,17 @@ export class RoomService {
 
   public async createRoom(room: Room): Promise<Result<string>> {
     try {
-      const requestBody = new RoomCreateRequestBody(room);
+      const requestBody = new RoomCreateRequestBody(
+        room.masterId,
+        room.title,
+        room.timer,
+        room.password,
+        room.shortBreak,
+        room.longBreak,
+        room.longBreakInterval,
+        room.expiredAt,
+        room.tags
+      );
       const response = await fetchAbsolute(`api/rooms`, {
         method: "POST",
         body: JSON.stringify(requestBody),
