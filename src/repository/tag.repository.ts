@@ -41,6 +41,18 @@ export const findTagIdsByTagName = async (
   });
 };
 
+export const findUserTags = async (userId: string): Promise<string[]> => {
+  const tags = await prisma.user_tag.findMany({
+    where: {
+      user_id: userId,
+    },
+    include: {
+      tag: true,
+    },
+  });
+  return tags.map((t) => t.tag.name);
+};
+
 export const findSimilarTags = async (pageNum: number, name?: string) => {
   return await client.tag.findMany({
     skip: pageNum * TAG_NUM_PER_PAGE,

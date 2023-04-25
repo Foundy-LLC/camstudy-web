@@ -26,7 +26,6 @@ import { multipartUploader } from "@/service/imageUploader";
 import {
   GET_RECENT_ROOM_SUCCESS,
   GET_ROOMS_SUCCESS,
-  NO_ROOM_TAG_ERROR_MESSAGE,
   ROOM_BODY_INVALID_ERROR_MESSAGE,
   ROOM_CREATE_SUCCESS,
   ROOM_DELETE_SUCCESS,
@@ -41,6 +40,7 @@ import { uuidv4 } from "@firebase/util";
 import {
   createTagsIfNotExists,
   findTagIdsByTagName,
+  findUserTags,
 } from "@/repository/tag.repository";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
@@ -157,6 +157,9 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
         .send(new ResponseBody({ message: ROOM_BODY_INVALID_ERROR_MESSAGE }));
       return;
     }
+    if (body.tags == null || body.tags.length === 0) {
+      body.tags = await findUserTags(body.masterId);
+    }
     const requestBody = new RoomCreateRequestBody(
       body.masterId,
       body.title,
@@ -168,12 +171,6 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
       body.expiredAt,
       body.tags
     );
-    if (requestBody.tags.length === 0) {
-      res
-        .status(400)
-        .send(new ResponseBody({ message: NO_ROOM_TAG_ERROR_MESSAGE }));
-      return;
-    }
     await createTagsIfNotExists(requestBody.tags);
     const tagIds = await findTagIdsByTagName(requestBody.tags);
     const roomEntity = await createRoom(requestBody, tagIds);
