@@ -145,11 +145,11 @@ export const findRecentRooms = async (
 export const createRoom = async (
   body: RoomCreateRequestBody,
   tags: { id: string }[]
-) => {
+): Promise<room> => {
   const tagIdsDto: { tag_id: string }[] = tags!.map((tag) => {
     return { tag_id: tag.id };
   });
-  await client.room.create({
+  return await client.room.create({
     data: {
       id: uuidv4(),
       master_id: body.masterId,

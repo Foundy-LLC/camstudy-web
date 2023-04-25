@@ -42,6 +42,8 @@ import {
   createTagsIfNotExists,
   findTagIdsByTagName,
 } from "@/repository/tag.repository";
+import { RoomOverview } from "@/models/room/RoomOverview";
+import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -174,9 +176,23 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     await createTagsIfNotExists(requestBody.tags);
     const tagIds = await findTagIdsByTagName(requestBody.tags);
-
-    await createRoom(requestBody, tagIds);
-    res.status(201).send(new ResponseBody({ message: ROOM_CREATE_SUCCESS }));
+    const roomEntity = await createRoom(requestBody, tagIds);
+    res.status(201).send(
+      new ResponseBody({
+        message: ROOM_CREATE_SUCCESS,
+        data: new RoomOverview(
+          roomEntity.id,
+          roomEntity.master_id,
+          roomEntity.title,
+          roomEntity.password != null,
+          roomEntity.thumbnail,
+          0,
+          MAX_ROOM_CAPACITY,
+          [],
+          requestBody.tags
+        ),
+      })
+    );
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
