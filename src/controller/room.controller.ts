@@ -37,11 +37,6 @@ import { RoomDeleteRequestBody } from "@/models/room/RoomDeleteRequestBody";
 import { RecentRoomsGetRequest } from "@/models/room/RecentRoomsGetRequest";
 import runMiddleware from "@/utils/runMiddleware";
 import { uuidv4 } from "@firebase/util";
-import {
-  createTagsIfNotExists,
-  findTagIdsByTagName,
-} from "@/repository/tag.repository";
-import { Room } from "@/stores/RoomListStore";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -148,32 +143,22 @@ export const getRecentRooms = async (
 
 export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const body = req.body;
-    console.log(body);
-    const requestBody = new RoomCreateRequestBody(
-      body.masterId,
-      body.title,
-      body.timer,
-      body.password,
-      body.shortBreak,
-      body.longBreak,
-      body.longBreakInterval,
-      body.expiredAt,
-      body.tags
-    );
-    if (requestBody == null) {
+    const body = req.body as RoomCreateRequestBody | null;
+    if (body == null) {
       res
         .status(400)
         .send(new ResponseBody({ message: ROOM_BODY_INVALID_ERROR_MESSAGE }));
       return;
     }
-    await createRoom(requestBody);
+    await createRoom(body);
     res.status(201).send(new ResponseBody({ message: ROOM_CREATE_SUCCESS }));
   } catch (e) {
     if (typeof e === "string") {
+      console.log("error:400", e);
       res.status(400).send(new ResponseBody({ message: e }));
       return;
     }
+    console.log("error: 500");
     res
       .status(500)
       .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
