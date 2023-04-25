@@ -26,6 +26,7 @@ import { multipartUploader } from "@/service/imageUploader";
 import {
   GET_RECENT_ROOM_SUCCESS,
   GET_ROOMS_SUCCESS,
+  NO_ROOM_TAG_ERROR_MESSAGE,
   ROOM_BODY_INVALID_ERROR_MESSAGE,
   ROOM_CREATE_SUCCESS,
   ROOM_DELETE_SUCCESS,
@@ -41,7 +42,6 @@ import {
   createTagsIfNotExists,
   findTagIdsByTagName,
 } from "@/repository/tag.repository";
-import { Room } from "@/stores/RoomListStore";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -166,6 +166,12 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
       body.expiredAt,
       body.tags
     );
+    if (requestBody.tags.length === 0) {
+      res
+        .status(400)
+        .send(new ResponseBody({ message: NO_ROOM_TAG_ERROR_MESSAGE }));
+      return;
+    }
     await createTagsIfNotExists(requestBody.tags);
     const tagIds = await findTagIdsByTagName(requestBody.tags);
 
