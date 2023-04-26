@@ -17,6 +17,8 @@ export const BLACKLIST_CANNOT_JOIN_ROOM_MESSAGE: string =
   "방 접근이 차단되어 입장할 수 없습니다.";
 
 export const NO_ROOM_ID_ERROR_MESSAGE: string = "방 아이디가 누락 되었습니다";
+export const NO_ROOM_TAG_ERROR_MESSAGE: string =
+  "방 태그는 최소 1개 이상입니다.";
 export const NO_ROOM_MASTER_ID_ERROR_MESSAGE: string =
   "방장 아이디가 누락 되었습니다";
 export const NO_ROOM_TITLE_ERROR_MESSAGE: string =

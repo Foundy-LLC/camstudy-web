@@ -40,8 +40,10 @@ import { uuidv4 } from "@firebase/util";
 import {
   createTagsIfNotExists,
   findTagIdsByTagName,
+  findUserTags,
 } from "@/repository/tag.repository";
-import { Room } from "@/stores/RoomListStore";
+import { RoomOverview } from "@/models/room/RoomOverview";
+import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -101,7 +103,7 @@ export const getRooms = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     const roomsGetBody = new RoomsGetRequest(page, query);
     const result = await findRooms(roomsGetBody.pageNum, roomsGetBody.query);
-    res.status(201).json(
+    res.status(200).json(
       new ResponseBody({
         data: result,
         message: GET_ROOMS_SUCCESS,
@@ -155,6 +157,9 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
         .send(new ResponseBody({ message: ROOM_BODY_INVALID_ERROR_MESSAGE }));
       return;
     }
+    if (body.tags == null || body.tags.length === 0) {
+      body.tags = await findUserTags(body.masterId);
+    }
     const requestBody = new RoomCreateRequestBody(
       body.masterId,
       body.title,
@@ -168,9 +173,23 @@ export const postRoom = async (req: NextApiRequest, res: NextApiResponse) => {
     );
     await createTagsIfNotExists(requestBody.tags);
     const tagIds = await findTagIdsByTagName(requestBody.tags);
-
-    await createRoom(requestBody, tagIds);
-    res.status(201).send(new ResponseBody({ message: ROOM_CREATE_SUCCESS }));
+    const roomEntity = await createRoom(requestBody, tagIds);
+    res.status(201).send(
+      new ResponseBody({
+        message: ROOM_CREATE_SUCCESS,
+        data: new RoomOverview(
+          roomEntity.id,
+          roomEntity.master_id,
+          roomEntity.title,
+          roomEntity.password != null,
+          roomEntity.thumbnail,
+          0,
+          MAX_ROOM_CAPACITY,
+          [],
+          requestBody.tags
+        ),
+      })
+    );
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
