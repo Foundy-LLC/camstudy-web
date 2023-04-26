@@ -102,23 +102,28 @@ export const getConsecutiveAttendanceDays = async (
 ): Promise<number> => {
   const milliDuration = dayDuration * 24 * 60 * 60 * 1000;
   const endDate = new Date(startDate.getTime() + milliDuration);
-  const minusUsingStandardHourText = `-${STANDARD_END_HOUR_OF_DAY} hours`;
+  const minusUsingStandardHourText: string = `-${STANDARD_END_HOUR_OF_DAY} hours`;
 
   const result: { num_continuous_days: number }[] = await prisma.$queryRaw(
-    Prisma.sql`WITH study_days AS (SELECT DISTINCT date_trunc('day', sh.join_at + interval '${minusUsingStandardHourText}')
-                   AS day
-               FROM study_history sh
-               WHERE sh.user_id = ${userId}
-                 AND sh.join_at >= ${startDate}
-                 AND sh.join_at
-                   < ${endDate})
-                   , continuous_days AS (
-               SELECT day, ROW_NUMBER() OVER () - DATE_PART('day', day) AS day_number
-               FROM study_days)
-    SELECT COUNT(*) AS num_continuous_days
-    FROM continuous_days
-    GROUP BY day_number
-    ORDER BY num_continuous_days DESC LIMIT 1;`
+    Prisma.sql`
+            WITH study_days AS (
+                SELECT DISTINCT date_trunc('day', sh.join_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Seoul' +
+                    interval ${Prisma.raw(
+                      `'${minusUsingStandardHourText}'`
+                    )}) AS day
+                FROM study_history sh
+                WHERE sh.user_id = ${userId}
+                  AND sh.join_at >= (${startDate} AT TIME ZONE 'UTC')
+                  AND sh.join_at < (${endDate} AT TIME ZONE 'UTC')), 
+            continuous_days AS (
+                SELECT day, ROW_NUMBER() OVER () - DATE_PART('day', day) AS day_number
+                FROM study_days
+            )
+            SELECT COUNT(*) AS num_continuous_days
+            FROM continuous_days
+            GROUP BY day_number
+            ORDER BY num_continuous_days DESC LIMIT 1;
+        `
   );
   if (result.length === 0) {
     return 0;
@@ -132,15 +137,15 @@ export const getAverageStudyHours = async (
   requireDay: number
 ): Promise<number> => {
   const msToAdd = requireDay * 24 * 60 * 60 * 1000;
+  const endDate = new Date(plantedAt.getTime() + msToAdd);
 
   const result: { average_study_time: number }[] = await prisma.$queryRaw(
-    Prisma.sql`SELECT SUM(extract(epoch from (COALESCE(exit_at, ${new Date(
-      plantedAt.getTime() + msToAdd
-    )}) - join_at))) / (3600 * ${requireDay}) as average_study_time
+    Prisma.sql`SELECT SUM(extract(epoch from (COALESCE(exit_at, ${endDate}) - join_at))) /
+                    (3600 * ${requireDay}) as average_study_time
                FROM study_history
                WHERE user_id = ${body.userId}
-                 AND join_at >= ${plantedAt}
-                 AND join_at < ${new Date(plantedAt.getTime() + msToAdd)}
+                 AND join_at >= (${plantedAt} AT TIME ZONE 'UTC')
+                 AND join_at < (${endDate} AT TIME ZONE 'UTC')
                GROUP BY user_id;`
   );
 
@@ -153,14 +158,15 @@ export const getExpectedAverageStudyHours = async (
   dayDuration: number
 ): Promise<number> => {
   const msToAdd = dayDuration * 24 * 60 * 60 * 1000;
+  const endDate = new Date(plantedAt.getTime() + msToAdd);
 
   const result: { average_study_time: number }[] = await prisma.$queryRaw(
     Prisma.sql`SELECT SUM(extract(epoch from (exit_at - join_at))) / (3600 * ${dayDuration}) as average_study_time
                FROM study_history
                WHERE user_id = ${userId}
                  AND exit_at is NOT NULL
-                 AND join_at >= ${plantedAt}
-                 AND join_at < ${new Date(plantedAt.getTime() + msToAdd)}
+                 AND join_at >= (${plantedAt} AT TIME ZONE 'UTC')
+                 AND join_at < (${endDate} AT TIME ZONE 'UTC')
                GROUP BY user_id;`
   );
   if (result.length === 0) {
