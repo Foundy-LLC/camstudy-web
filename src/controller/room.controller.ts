@@ -103,7 +103,7 @@ export const getRooms = async (req: NextApiRequest, res: NextApiResponse) => {
     }
     const roomsGetBody = new RoomsGetRequest(page, query);
     const result = await findRooms(roomsGetBody.pageNum, roomsGetBody.query);
-    res.status(201).json(
+    res.status(200).json(
       new ResponseBody({
         data: result,
         message: GET_ROOMS_SUCCESS,
