@@ -231,7 +231,9 @@ export class FriendStore {
           this._successMessage = FRIEND_LIST_GET_SUCCESS;
           const dataArray = result.getOrNull()!;
           this._friendListMaxPage =
-            Math.floor(dataArray.maxPage / FRIEND_NUM_PER_PAGE) + 1;
+            dataArray.maxPage % FRIEND_NUM_PER_PAGE === 0
+              ? Math.floor(dataArray.maxPage / FRIEND_NUM_PER_PAGE)
+              : Math.floor(dataArray.maxPage / FRIEND_NUM_PER_PAGE) + 1;
           this._friendOverviews = dataArray.friends;
         });
       } else {

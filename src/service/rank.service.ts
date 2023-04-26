@@ -17,7 +17,7 @@ export class RankService {
       let response;
       // if (requestBody.isWeeklyRank) {
       response = await fetch(
-        `${process.env.NEXT_PUBLIC_RANK_SERVER_BASE_URL}/ranking?page=${requestBody.pageNum}`,
+        `/rank-server/ranking?page=${requestBody.pageNum}`,
         {
           method: "GET",
           headers: {
@@ -26,7 +26,6 @@ export class RankService {
         }
       );
       // }
-      console.log(response);
       if (response.ok) {
         return Result.createSuccessUsingResponseData(response);
       } else {
