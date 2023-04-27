@@ -1,50 +1,30 @@
-.dashboard-frame{
-  box-sizing: border-box;
-
-  /* Auto layout */
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
+.box {
   padding: 24px;
-  gap: 143px;
-
-  width: 333px;
-  height: 248px;
 
   /* White */
-  background: #FFFFFF;
+  background: var(--system_background);
   /* Gray-04 */
-  border: 0.5px solid #A2A2A2;
+  border: 0.5px solid var(--system_ui-04);
   /* elevation shadow / 2 */
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.12);
   border-radius: 16px;
 
-  .inner-frame{
+  color: var(--text-emphasize);
+
+  .inner-box {
+    padding: 12px 16px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 12px 16px;
     gap: 32px;
+    align-items: center;
 
-    width: 268px;
-    height: 200px;
-
-    border-radius: 8px;
-
-    /* Inside auto layout */
-    flex: none;
-    order: 0;
-    flex-grow: 0;
-
-    .title{
+    .title {
       display: flex;
       flex-direction: row;
       align-items: center;
       padding: 0px;
       gap: 4px;
 
-      width: 134px;
       height: 28px;
 
       /* Inside auto layout */
@@ -53,20 +33,64 @@
       flex-grow: 0;
     }
 
-    .content{
+    .content {
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 0px;
       gap: 8px;
 
-      width: 197px;
-      height: 90px;
+      width:251px;
+      height: 114px;
 
       /* Inside auto layout */
       flex: none;
       order: 1;
       flex-grow: 0;
     }
+  }
+
+  .crop-inner-box{
+    padding: 12px 16px 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+
+    .title {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 0px;
+      gap: 4px;
+
+      height: 28px;
+
+      /* Inside auto layout */
+      flex: none;
+      order: 0;
+      flex-grow: 0;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 70px 28px;
+      background: var(--system_ui-01);
+      border-radius: 12px;
+
+      width:111px;
+      height: 114px;
+
+      /* Inside auto layout */
+      flex: none;
+      order: 1;
+      flex-grow: 0;
+    }
+  }
+
+  .content-text{
+    color: var(--system_ui-06);
   }
 }

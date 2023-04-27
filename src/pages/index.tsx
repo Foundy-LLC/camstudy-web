@@ -15,6 +15,9 @@ import { Layout } from "@/components/Layout";
 import { crops_type } from "@prisma/client";
 import { RoomItemGroup } from "@/pages/rooms";
 import dashboardStyles from "@/styles/dashboard.module.scss";
+import { GrowingCrop } from "@/models/crop/GrowingCrop";
+import { CROPS } from "@/constants/crops";
+import Image from "next/image";
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
@@ -63,9 +66,10 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { roomListStore } = useStores();
 
   useEffect(() => {
+    userStore.fetchCurrentUser(src);
     roomListStore.setMasterId(src);
     roomListStore.fetchRooms();
-  });
+  }, []);
 
   useEffect(() => {
     setErrorMessage(
@@ -78,7 +82,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       <div className={"typography__sub-headline"} style={{ padding: "20px" }}>
         대시보드
       </div>
-      <Dashboard />
+      <Dashboard userId={src} />
       <RoomItemGroup items={roomListStore.roomOverviews} />
       {roomListStore.errorMessage === undefined ? null : (
         <h3>{roomListStore.errorMessage}</h3>
@@ -87,65 +91,137 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   );
 }
 
-export const Dashboard: NextPage = () => {
+export const Dashboard: NextPage<{ userId: string }> = observer(
+  ({ userId }) => {
+    const { cropStore } = useStores();
+    const [exist, setExist] = useState<boolean>(false);
+
+    useEffect(() => {
+      cropStore.fetchGrowingCrop(userId);
+      if (cropStore.growingCrop != null && !cropStore.growingCrop.isDead)
+        setExist(true);
+    }, [cropStore.growingCrop]);
+
+    return (
+      <div className={"dashboard"}>
+        <div className={`${dashboardStyles["box"]}`}>
+          <div className={`${dashboardStyles["inner-box"]}`}>
+            <div className={`${dashboardStyles["title"]}`}>
+              <span className="material-symbols-outlined">schedule</span>
+              <span>주간 공부시간</span>
+            </div>
+            <div className={`${dashboardStyles["content"]}`}>
+              <div
+                className={"typography__title1--big time"}
+                style={{ color: "#DDA30E" }}
+              >
+                56:38:17
+              </div>
+              <div
+                className={`typography__text ${dashboardStyles["content-text"]}`}
+              >
+                전체 유저 기준 상위 6%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className={`${dashboardStyles["box"]}`}>
+          <div className={`${dashboardStyles["inner-box"]}`}>
+            <div className={`${dashboardStyles["title"]}`}>
+              <span className="material-symbols-outlined">insert_chart</span>
+              <span>이번 주 랭킹</span>
+            </div>
+            <div className={`${dashboardStyles["content"]}`}>
+              <div
+                className={"typography__title1--big time"}
+                style={{ color: "#DDA30E" }}
+              >
+                7위
+              </div>
+              <div
+                className={`typography__text ${dashboardStyles["content-text"]}`}
+              >
+                전체 유저 기준 862등
+              </div>
+            </div>
+          </div>
+        </div>
+        {exist ? <CropDashBoard /> : ""}
+
+        <style jsx>{`
+          .dashboard {
+            display: flex;
+            gap: 20px;
+            margin: auto;
+            margin-bottom: 24px;
+          }
+
+          .material-symbols-outlined {
+            font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+          }
+        `}</style>
+      </div>
+    );
+  }
+);
+
+const CropDashBoard = () => {
+  const { cropStore, userStore } = useStores();
+  const [cropSrc, setCropSrc] = useState<string | undefined>(undefined);
+  const [cropName, setCropName] = useState<string>("");
+
+  useEffect(() => {
+    setCropImage(cropStore.growingCrop!);
+  }, [cropStore.growingCrop]);
+
+  const setCropImage = (growingCrop: GrowingCrop) => {
+    CROPS.map((crop) => {
+      if (crop.type == growingCrop.type) {
+        switch (growingCrop.type) {
+          case "cabbage":
+            setCropName("양배추");
+            break;
+          case "strawberry":
+            setCropName("딸기");
+            break;
+          case "tomato":
+            setCropName("토마토");
+            break;
+          case "pumpkin":
+            setCropName("호박");
+            break;
+          case "carrot":
+            setCropName("당근");
+            break;
+        }
+        setCropSrc(crop.imageUrls[growingCrop.level]);
+        return;
+      }
+    });
+  };
+
   return (
-    <div className={"dashboard"}>
-      <div className={`${dashboardStyles["dashboard-frame"]}`}>
-        <div className={`${dashboardStyles["inner-frame"]}`}>
-          <div className={`${dashboardStyles["title"]}`}>
-            <span className="material-symbols-outlined">schedule</span>
-            <span>주간 공부시간</span>
-          </div>
-          <div className={`${dashboardStyles["content"]}`}>
-            <div
-              className={"typography__title1--big time"}
-              style={{ color: "#DDA30E" }}
-            >
-              56:38:17
-            </div>
-            <div className={"typography__text"} style={{ color: "#646464" }}>
-              전체 유저 기준 상위 6%
-            </div>
-          </div>
+    <div className={`${dashboardStyles["box"]}`}>
+      <div className={`${dashboardStyles["crop-inner-box"]}`}>
+        <div className={`${dashboardStyles["title"]}`}>
+          <span className="material-symbols-outlined">eco</span>
+          <span>내 작물</span>
         </div>
-      </div>
-
-      <div className={`${dashboardStyles["dashboard-frame"]}`}>
-        <div className={`${dashboardStyles["inner-frame"]}`}>
-          <div className={`${dashboardStyles["title"]}`}>
-            <span className="material-symbols-outlined">insert_chart</span>
-            <span>이번 주 랭킹</span>
-          </div>
-          <div className={`${dashboardStyles["content"]}`}>
-            <div
-              className={"typography__title1--big time"}
-              style={{ color: "#DDA30E" }}
-            >
-              7위
-            </div>
-            <div className={"typography__text"} style={{ color: "#646464" }}>
-              전체 유저 기준 862등
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className={`${dashboardStyles["dashboard-frame"]}`}>
-        <div className={`${dashboardStyles["inner-frame"]}`}>
-          <div className={`${dashboardStyles["title"]}`}>
-            <span className="material-symbols-outlined">eco</span>
-            <span>내 작물</span>
-          </div>
-          <div className={`${dashboardStyles["content"]}`}></div>
+        <div className={`${dashboardStyles["content"]}`}>
+          {cropSrc != undefined ? (
+            <>
+              <Image width={96} height={96} src={cropSrc} alt={"작물"} />
+              <div
+                className={`${dashboardStyles["content-text"]} typography__text`}
+              >{`${cropName} ${cropStore.growingCrop!.level}단계`}</div>
+            </>
+          ) : (
+            "작물을 등록하세요."
+          )}
         </div>
       </div>
       <style jsx>{`
-        .dashboard {
-          display: flex;
-          gap: 20px;
-          margin: auto;
-          margin-bottom: 24px;
-        }
         .material-symbols-outlined {
           font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
         }
