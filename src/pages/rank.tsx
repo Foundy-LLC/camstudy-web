@@ -9,12 +9,12 @@ import { UserStatus } from "@/models/user/UserStatus";
 import Image from "next/image";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import { PagenationBar } from "@/components/PagenationBar";
-import { number } from "prop-types";
 
 const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
   ({ item }) => {
     useEffect(() => {
-      const rankDiv = document.getElementById(item.ranking.toString());
+      let id = item.ranking.toString();
+      const rankDiv = document.getElementById(id);
       if (rankDiv) {
         let rank: string;
         switch (item.ranking.toString()) {
@@ -31,6 +31,7 @@ const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
             rank = "etc";
         }
         rankDiv.setAttribute("rank", rank);
+        rankDiv.id = "";
       }
     }, [item.ranking]);
 
@@ -111,11 +112,7 @@ const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
               {timeToString(item.studyTime)}
             </label>
           </div>
-          <span
-            className={`${rankStyles["rank-form__content__add-friend"]} material-symbols-sharp`}
-          >
-            person_add
-          </span>
+
           <span
             className={`${rankStyles["rank-form__content__option"]} material-symbols-sharp`}
           >
@@ -187,7 +184,9 @@ const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
                 전체 랭킹
               </label>
             </div>
-
+            <div className={`${rankStyles["my-rank-form"]}`}>
+              <RankItem item={rankStore.userRank!} />
+            </div>
             {items.map((item) => (
               <RankItem item={item} key={item.id} />
             ))}
@@ -219,6 +218,7 @@ const UserRanking: NextPage = observer(() => {
   useEffect(() => {
     if (!userStore.currentUser) return;
     rankStore.getRank();
+    rankStore.getUserRank(userStore.currentUser.id);
   }, [userStore.currentUser]);
 
   return (

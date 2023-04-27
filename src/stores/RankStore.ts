@@ -1,11 +1,8 @@
 import { RootStore } from "@/stores/RootStore";
 import { UserStore } from "@/stores/UserStore";
-import profileService, { ProfileService } from "@/service/profile.service";
 import { makeAutoObservable, runInAction } from "mobx";
 import rankService, { RankService } from "@/service/rank.service";
-import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
 import { UserRankingOverview } from "@/models/rank/UserRankingOverview";
-import { FRIEND_NUM_PER_PAGE } from "@/constants/friend.constant";
 
 export class RankStore {
   readonly rootStore: RootStore;
@@ -16,6 +13,7 @@ export class RankStore {
   private _errorMessage: string = "";
   private _successMessage: string = "";
   private _rankList?: UserRankingOverview[] = undefined;
+  private _userRank?: UserRankingOverview = undefined;
   private _rankMaxPage?: number = undefined;
 
   constructor(
@@ -39,15 +37,16 @@ export class RankStore {
     return this._rankList;
   }
 
+  public get userRank() {
+    return this._userRank;
+  }
+
   public get rankMaxPage() {
     return this._rankMaxPage;
   }
 
   public getRank = async () => {
     try {
-      if (!this.userStore.currentUser) {
-        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
-      }
       const result = await this._rankService.getRank(
         this._selectedOrganizationId,
         this._pageNum,
@@ -55,14 +54,45 @@ export class RankStore {
       );
       if (result.isSuccess) {
         runInAction(() => {
-          const { totalUserCount, users } = result.getOrNull();
+          const { totalUserCount, users } = result.getOrNull()!;
           this._rankList = users;
           this._rankMaxPage =
-            totalUserCount % 50 === 0
-              ? Math.floor(totalUserCount / 50)
-              : Math.floor(totalUserCount / 50) + 1;
+            Number(totalUserCount) % 50 === 0
+              ? Math.floor(Number(totalUserCount) / 50)
+              : Math.floor(Number(totalUserCount) / 50) + 1;
         });
       } else {
+        runInAction(() => {
+          this._errorMessage = result.throwableOrNull()!.message;
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  };
+
+  public getUserRank = async (userId: string) => {
+    try {
+      const result = await this._rankService.getUserRank(
+        userId,
+        this._selectedOrganizationId,
+        this._isWeeklyRank
+      );
+      if (result.isSuccess) {
+        runInAction(() => {
+          const { totalUserCount, users } = result.getOrNull()!;
+          this._userRank = users;
+          this._rankMaxPage =
+            Number(totalUserCount) % 50 === 0
+              ? Math.floor(Number(totalUserCount) / 50)
+              : Math.floor(Number(totalUserCount) / 50) + 1;
+        });
+      } else {
+        runInAction(() => {
+          this._errorMessage = result.throwableOrNull()!.message;
+        });
       }
     } catch (e) {
       runInAction(() => {
