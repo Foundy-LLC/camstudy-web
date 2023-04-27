@@ -1,4 +1,4 @@
-import { validateRankOrganizationId } from "@/utils/rank.validator";
+import { ValidateRankOrganizationId } from "@/utils/rank.validator";
 import {
   IS_WEEKLY_TYPE_ERROR,
   PAGENATION_NUM_TYPE_ERROR,
@@ -13,7 +13,7 @@ export class UserRankGetRequestBody {
   ) {
     validateUid(userId);
     if (this.organizationId !== undefined) {
-      validateRankOrganizationId(this.organizationId);
+      ValidateRankOrganizationId(this.organizationId);
     }
     if (isWeeklyRank === undefined) throw IS_WEEKLY_TYPE_ERROR;
   }

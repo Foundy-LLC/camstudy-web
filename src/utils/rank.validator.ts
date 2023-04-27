@@ -4,7 +4,7 @@ import {
 } from "@/constants/organizationMessage";
 import { useStores } from "@/stores/context";
 
-export const validateRankOrganizationId = (organizationId: string) => {
+export const ValidateRankOrganizationId = (organizationId: string) => {
   const { organizationStore } = useStores();
   if (!organizationStore.belongOrganizations) {
     throw BELONG_ORGANIZATION_NULL_ERROR;
