@@ -1,4 +1,3 @@
-import { ValidateRankOrganizationId } from "@/utils/rank.validator";
 import {
   IS_WEEKLY_TYPE_ERROR,
   PAGENATION_NUM_TYPE_ERROR,
@@ -10,9 +9,6 @@ export class RankGetRequestBody {
     readonly pageNum: number,
     readonly isWeeklyRank: boolean
   ) {
-    if (this.organizationId !== undefined) {
-      ValidateRankOrganizationId(this.organizationId);
-    }
     if (!Number.isInteger(pageNum)) throw PAGENATION_NUM_TYPE_ERROR;
     if (isWeeklyRank === undefined) throw IS_WEEKLY_TYPE_ERROR;
   }

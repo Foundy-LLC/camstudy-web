@@ -217,8 +217,8 @@ const UserRanking: NextPage = observer(() => {
 
   useEffect(() => {
     if (!userStore.currentUser) return;
-    rankStore.getRank();
     rankStore.getUserRank(userStore.currentUser.id);
+    rankStore.getRank();
   }, [userStore.currentUser]);
 
   return (

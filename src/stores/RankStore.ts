@@ -3,6 +3,7 @@ import { UserStore } from "@/stores/UserStore";
 import { makeAutoObservable, runInAction } from "mobx";
 import rankService, { RankService } from "@/service/rank.service";
 import { UserRankingOverview } from "@/models/rank/UserRankingOverview";
+import { RANKING_NUM_PER_PAGE } from "@/constants/rank.constant";
 
 export class RankStore {
   readonly rootStore: RootStore;
@@ -57,9 +58,9 @@ export class RankStore {
           const { totalUserCount, users } = result.getOrNull()!;
           this._rankList = users;
           this._rankMaxPage =
-            Number(totalUserCount) % 50 === 0
-              ? Math.floor(Number(totalUserCount) / 50)
-              : Math.floor(Number(totalUserCount) / 50) + 1;
+            Number(totalUserCount) % RANKING_NUM_PER_PAGE === 0
+              ? Math.floor(Number(totalUserCount) / RANKING_NUM_PER_PAGE)
+              : Math.floor(Number(totalUserCount) / RANKING_NUM_PER_PAGE) + 1;
         });
       } else {
         runInAction(() => {
@@ -85,9 +86,9 @@ export class RankStore {
           const { totalUserCount, users } = result.getOrNull()!;
           this._userRank = users;
           this._rankMaxPage =
-            Number(totalUserCount) % 50 === 0
-              ? Math.floor(Number(totalUserCount) / 50)
-              : Math.floor(Number(totalUserCount) / 50) + 1;
+            Number(totalUserCount) % RANKING_NUM_PER_PAGE === 0
+              ? Math.floor(Number(totalUserCount) / RANKING_NUM_PER_PAGE)
+              : Math.floor(Number(totalUserCount) / RANKING_NUM_PER_PAGE) + 1;
         });
       } else {
         runInAction(() => {
