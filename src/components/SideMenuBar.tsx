@@ -54,7 +54,7 @@ const menus: Menu[] = [
       {
         icon: "potted_plant",
         text: "내 작물 관리하기",
-        path: "",
+        path: "/crop",
       },
     ],
   },
