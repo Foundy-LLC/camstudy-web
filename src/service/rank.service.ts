@@ -1,9 +1,9 @@
-import { RoomService } from "@/service/room.service";
 import { RankGetRequestBody } from "@/models/rank/RankGetRequestBody";
 import { Result } from "@/models/common/Result";
 import { UserRankingOverview } from "@/models/rank/UserRankingOverview";
-import { async } from "@firebase/util";
 import { UserRankGetRequestBody } from "@/models/rank/UserRankGetRequestBody";
+import { fetchAbsolute } from "@/utils/fetchAbsolute";
+import { rankingApiFetch } from "@/utils/rankingApiFetch";
 
 export class RankService {
   public getRank = async (
@@ -22,8 +22,8 @@ export class RankService {
       let response;
       // if (requestBody.isWeeklyRank) {
       // }else{
-      response = await fetch(
-        `/rank-server/ranking?page=${requestBody.pageNum}&weekly=${requestBody.isWeeklyRank}`,
+      response = await rankingApiFetch(
+        `api/ranking?page=${requestBody.pageNum}&weekly=${requestBody.isWeeklyRank}`,
         {
           method: "GET",
           headers: {
@@ -56,8 +56,8 @@ export class RankService {
         organizationId,
         isWeeklyRank
       );
-      const response = await fetch(
-        `/rank-server/ranking/${requestBody.userId}?&weekly=${requestBody.isWeeklyRank}`,
+      const response = await rankingApiFetch(
+        `api/ranking/${requestBody.userId}?&weekly=${requestBody.isWeeklyRank}`,
         {
           method: "GET",
           headers: {

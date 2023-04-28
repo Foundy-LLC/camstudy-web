@@ -26,7 +26,7 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: "/rank-server/:path*",
+        source: "/rank-server/api/:path*",
         destination: `${process.env.NEXT_PUBLIC_RANK_SERVER_BASE_URL}/:path*`,
       },
     ];
