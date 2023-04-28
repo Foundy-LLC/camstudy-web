@@ -39,8 +39,8 @@ const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
       let score = rankingScore.toString();
       let arr: string[] = [];
       while (score.length > 3) {
-        arr.push(score.slice(length - 4));
-        score = score.slice(0, length - 4);
+        arr.push(score.slice(score.length - 3));
+        score = score.slice(0, score.length - 3);
       }
       arr.push(score);
       return arr.reverse().join(",");
