@@ -42,7 +42,7 @@ const HarvestedCropGroup: NextPage<{ items: HarvestedCrop[] }> = observer(
 
 function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
-  const [src, setSrc] = useState(props.uid);
+  const [uid, setUid] = useState(props.uid);
   const [errorMessage, setErrorMessage] = useState("");
   const { cropStore, userStore } = useStores();
   // TODO(민성): UserProfileImage와 중복되는 코드 제거하기.
@@ -66,8 +66,8 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { roomListStore } = useStores();
 
   useEffect(() => {
-    userStore.fetchCurrentUser(src);
-    roomListStore.setMasterId(src);
+    userStore.fetchCurrentUser(uid);
+    roomListStore.setMasterId(uid);
     roomListStore.fetchRooms();
   }, []);
 
@@ -82,7 +82,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       <div className={"typography__sub-headline"} style={{ padding: "20px" }}>
         대시보드
       </div>
-      <Dashboard userId={src} />
+      <Dashboard userId={uid} />
       <RoomItemGroup items={roomListStore.roomOverviews} />
       {roomListStore.errorMessage === undefined ? null : (
         <h3>{roomListStore.errorMessage}</h3>
@@ -170,39 +170,7 @@ export const Dashboard: NextPage<{ userId: string }> = observer(
 );
 
 const CropDashBoard = () => {
-  const { cropStore, userStore } = useStores();
-  const [cropSrc, setCropSrc] = useState<string | undefined>(undefined);
-  const [cropName, setCropName] = useState<string>("");
-
-  useEffect(() => {
-    setCropImage(cropStore.growingCrop!);
-  }, [cropStore.growingCrop]);
-
-  const setCropImage = (growingCrop: GrowingCrop) => {
-    CROPS.map((crop) => {
-      if (crop.type == growingCrop.type) {
-        switch (growingCrop.type) {
-          case "cabbage":
-            setCropName("양배추");
-            break;
-          case "strawberry":
-            setCropName("딸기");
-            break;
-          case "tomato":
-            setCropName("토마토");
-            break;
-          case "pumpkin":
-            setCropName("호박");
-            break;
-          case "carrot":
-            setCropName("당근");
-            break;
-        }
-        setCropSrc(crop.imageUrls[growingCrop.level]);
-        return;
-      }
-    });
-  };
+  const { cropStore } = useStores();
 
   return (
     <div className={`${dashboardStyles["box"]}`}>
@@ -212,12 +180,19 @@ const CropDashBoard = () => {
           <span>내 작물</span>
         </div>
         <div className={`${dashboardStyles["content"]}`}>
-          {cropSrc != undefined ? (
+          {cropStore.cropImageSrc != undefined ? (
             <>
-              <Image width={96} height={96} src={cropSrc} alt={"작물"} />
+              <Image
+                width={96}
+                height={96}
+                src={cropStore.cropImageSrc}
+                alt={"작물"}
+              />
               <div
                 className={`${dashboardStyles["content-text"]} typography__text`}
-              >{`${cropName} ${cropStore.growingCrop!.level}단계`}</div>
+              >{`${cropStore.cropName} ${
+                cropStore.growingCrop!.level
+              }단계`}</div>
             </>
           ) : (
             "작물을 등록하세요."
