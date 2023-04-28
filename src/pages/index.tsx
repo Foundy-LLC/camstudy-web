@@ -98,6 +98,9 @@ export const Dashboard: NextPage<{ userId: string }> = observer(
 
     useEffect(() => {
       cropStore.fetchGrowingCrop(userId);
+    }, []);
+
+    useEffect(() => {
       if (cropStore.growingCrop != null && !cropStore.growingCrop.isDead)
         setExist(true);
     }, [cropStore.growingCrop]);
