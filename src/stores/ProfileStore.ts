@@ -16,6 +16,7 @@ export class ProfileStore {
   private _introduce?: string | null = undefined;
   private _organizations?: string[] = undefined;
   private _errorMessage: string = "";
+  private _successMessage: string = "";
   private _editSuccess?: boolean = undefined;
   constructor(
     root: RootStore,
@@ -24,6 +25,14 @@ export class ProfileStore {
     makeAutoObservable(this);
     this.rootStore = root;
     this.userStore = root.userStore;
+  }
+
+  public get errorMessage() {
+    return this._errorMessage;
+  }
+
+  public get successMessage() {
+    return this._successMessage;
   }
 
   public get userOverview() {

@@ -62,6 +62,38 @@ const BelongOrganizationsNameGroup: NextPage<{ items: BelongOrganization[] }> =
     );
   });
 
+const TagName: NextPage<{ item: string }> = observer(({ item }) => {
+  return (
+    <>
+      <div className={`${profileStyles["tag__item"]} typography__text--small`}>
+        <button
+          onClick={() => {
+            if (confirm(`"${item}"을 소속에서 삭제하시겠습니까?`) === true) {
+              console.log(`${item}가(이) 소속에서 삭제되었습니다`);
+            }
+          }}
+        >
+          <span className="material-symbols-sharp">close</span>
+        </button>
+        <div>
+          <label>{item}</label>
+        </div>
+      </div>
+      <br />
+    </>
+  );
+});
+
+const TagNameGroup: NextPage<{ items: string[] }> = observer(({ items }) => {
+  return (
+    <div className={`${profileStyles["tag"]}`}>
+      {items.map((tag, key) => (
+        <TagName item={tag} />
+      ))}
+    </div>
+  );
+});
+
 const RecommendedOrganizationsNameGroup: NextPage<{ items: Organization[] }> =
   observer(({ items }) => {
     const slicedItems = items.slice(0, 5);
@@ -254,16 +286,68 @@ const OrganizationForm: NextPage = observer(() => {
   );
 });
 
+const TagForm: NextPage = observer(() => {
+  const { profileStore } = useStores();
+  return (
+    <div
+      className={`${profileStyles["tag-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+    >
+      <div className={`${profileStyles["title"]}`}>
+        <span className="material-symbols-outlined">tag</span>
+        <label className={"typography__text--big"}>관심분야</label>
+      </div>
+      <div className={`${profileStyles["tag__title"]} typography__text--small`}>
+        <label>현재 설정된 관심분야</label>
+      </div>
+
+      {profileStore.tags && <TagNameGroup items={profileStore.tags} />}
+      <div className={`${profileStyles["tag__name"]} `}>
+        <label
+          className={`${profileStyles["tag__subtitle"]} typography__caption`}
+        >
+          관심분야 태그
+        </label>
+        <input
+          type={"text"}
+          id={"tag__input"}
+          className={"typography__text--small"}
+          placeholder="#수능, #개발, #공시 등 검색해주세요"
+          onChange={async (e) => {}}
+        />
+
+        <label
+          className={`${profileStyles["tag__caution"]} typography__caption`}
+        >
+          태그는 최대 3개까지 설정 가능합니다
+        </label>
+      </div>
+
+      <button
+        className={`${profileStyles["edit-tag__button"]}`}
+        onClick={() => {}}
+      >
+        <label className={"typography__text"}>태그 저장하기</label>
+      </button>
+    </div>
+  );
+});
+
 const UserProfile: NextPage = observer(() => {
   const router = useRouter();
   const [user, loading] = useAuthState(auth);
-  const { roomListStore, profileStore } = useStores();
-  const fetcher = (args: string) => fetch(args).then((res) => res.json());
-  const { data, isLoading } = useSWR<ResponseBody<User>>(
-    `/api/users/${user?.uid}`,
-    fetcher
-  );
-  const profile = data?.data;
+  const { userStore, roomListStore, profileStore } = useStores();
+  const [changed, setChanged] = useState<boolean>(false);
+  useEffect(() => {
+    if (!userStore.currentUser) return;
+    profileStore.getUserProfile();
+  }, [userStore.currentUser]);
+
+  useEffect(() => {
+    if (profileStore.editSuccess === true) {
+      setChanged(false);
+      console.log("프로필 변경 성공");
+    }
+  }, [profileStore.editSuccess]);
 
   if (loading) {
     return <div>Loading</div>;
@@ -274,18 +358,6 @@ const UserProfile: NextPage = observer(() => {
     return <div>Please sign in to continue</div>;
   }
 
-  if (data?.message === NOT_FOUND_USER_MESSAGE || profile === undefined)
-    return (
-      <>
-        <h3>{NOT_FOUND_USER_MESSAGE}</h3>
-      </>
-    );
-  if (isLoading)
-    return (
-      <>
-        <h3>loading</h3>
-      </>
-    );
   return (
     <>
       <Layout>
@@ -366,27 +438,65 @@ const UserProfile: NextPage = observer(() => {
             </div>
 
             <OrganizationForm />
+            <TagForm />
           </div>
         </div>
         <div>
           <UserProfileImage userId={user.uid} width={150} height={150} />
-          <h1>아이디: {profile.id}</h1>
-          <h1>이름: {profile.name}</h1>
-          <h1>태그: {profile.tags}</h1>
-          <h1>소개: {profile.introduce}</h1>
-          <h1>소속: {profile.organizations}</h1>
-          <input type={"text"} id="tag-input"></input>
-          <button
-            onClick={() => {
-              const tag = document.getElementById(
-                "tag-input"
-              ) as HTMLInputElement;
-              if (tag.value == null) return;
-              profileStore.deleteTag(tag.value);
-            }}
-          >
-            태그 삭제
-          </button>
+        </div>
+        <div>
+          {profileStore.userOverview && (
+            <div style={{ display: "inline" }}>
+              <h1>아이디</h1>
+              <label id={"id"} style={{ width: "300px", display: "block" }}>
+                {profileStore.userOverview.id}
+              </label>
+              <h1>이름</h1>
+              <input
+                id={"nickName"}
+                type={"text"}
+                value={profileStore.nickName}
+                style={{ width: "300px" }}
+                onChange={(e) => {
+                  setChanged(true);
+                  profileStore.onChanged(e);
+                }}
+              />
+              <h1>태그</h1>
+              <input
+                id={"tags"}
+                type={"text"}
+                value={profileStore.tags}
+                style={{ width: "300px" }}
+                onChange={(e) => {
+                  setChanged(true);
+                  profileStore.onChanged(e);
+                }}
+              />
+              <h1>소개 </h1>
+              <input
+                id={"introduce"}
+                type={"text"}
+                value={profileStore.introduce ? profileStore.introduce : ""}
+                style={{ width: "300px" }}
+                onChange={(e) => {
+                  setChanged(true);
+                  profileStore.onChanged(e);
+                }}
+              />
+              <h1>소속</h1>
+              <input
+                id={"organization"}
+                type={"text"}
+                value={profileStore.organizations}
+                style={{ width: "300px" }}
+                onChange={(e) => {
+                  setChanged(true);
+                  profileStore.onChanged(e);
+                }}
+              />
+            </div>
+          )}
         </div>
       </Layout>
       <style jsx>
