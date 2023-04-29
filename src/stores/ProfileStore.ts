@@ -55,10 +55,12 @@ export class ProfileStore {
   }
 
   importUserProfile = (profile: User) => {
-    this._nickName = profile.name;
-    this._introduce = profile.introduce;
-    this._tags = profile.tags;
-    this._organizations = profile.organizations;
+    runInAction(() => {
+      this._nickName = profile.name;
+      this._introduce = profile.introduce;
+      this._tags = profile.tags;
+      this._organizations = profile.organizations;
+    });
   };
 
   public onChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,6 +144,35 @@ export class ProfileStore {
             tags: this._tags!,
             organizations: this._userOverview!.organizations,
           };
+        });
+      } else {
+        runInAction(() => {
+          throw new Error(result.throwableOrNull()!.message);
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  };
+
+  public deleteTag = async (tagName: string) => {
+    try {
+      if (!this.userStore.currentUser) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      const result = await this._profileService.deleteTag(
+        this.userStore.currentUser.id,
+        tagName
+      );
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._userOverview = {
+            ...this._userOverview!,
+            tags: this._userOverview!.tags.filter((tag) => tag !== tagName),
+          };
+          console.log(tagName, "삭제 성공");
         });
       } else {
         runInAction(() => {
