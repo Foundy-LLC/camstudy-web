@@ -6,8 +6,6 @@ import { ResponseBody } from "@/models/common/ResponseBody";
 import { UserProfileImage } from "@/components/UserProfileImage";
 import { NOT_FOUND_USER_MESSAGE } from "@/constants/message";
 import { useRouter } from "next/router";
-import { Header } from "@/components/Header";
-import { SideMenuBar } from "@/components/SideMenuBar";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import profileStyles from "@/styles/profile.module.scss";
@@ -259,7 +257,7 @@ const OrganizationForm: NextPage = observer(() => {
 const UserProfile: NextPage = observer(() => {
   const router = useRouter();
   const [user, loading] = useAuthState(auth);
-  const { roomListStore, organizationStore } = useStores();
+  const { roomListStore, profileStore } = useStores();
   const fetcher = (args: string) => fetch(args).then((res) => res.json());
   const { data, isLoading } = useSWR<ResponseBody<User>>(
     `/api/users/${user?.uid}`,
@@ -377,6 +375,18 @@ const UserProfile: NextPage = observer(() => {
           <h1>태그: {profile.tags}</h1>
           <h1>소개: {profile.introduce}</h1>
           <h1>소속: {profile.organizations}</h1>
+          <input type={"text"} id="tag-input"></input>
+          <button
+            onClick={() => {
+              const tag = document.getElementById(
+                "tag-input"
+              ) as HTMLInputElement;
+              if (tag.value == null) return;
+              profileStore.deleteTag(tag.value);
+            }}
+          >
+            태그 삭제
+          </button>
         </div>
       </Layout>
       <style jsx>

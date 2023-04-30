@@ -4,9 +4,8 @@ import {
   validateUserName,
   validateUserTags,
 } from "@/utils/user.validator";
-import { User } from "@/models/user/User";
 
-export class updateUserRequestBody {
+export class UserUpdateRequestBody {
   constructor(
     readonly userId: string,
     readonly nickName: string,
