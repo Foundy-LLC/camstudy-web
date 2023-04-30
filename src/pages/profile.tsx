@@ -63,12 +63,14 @@ const BelongOrganizationsNameGroup: NextPage<{ items: BelongOrganization[] }> =
   });
 
 const TagName: NextPage<{ item: string }> = observer(({ item }) => {
+  const { profileStore } = useStores();
   return (
     <>
       <div className={`${profileStyles["tag__item"]} typography__text--small`}>
         <button
           onClick={() => {
             if (confirm(`"${item}"을 소속에서 삭제하시겠습니까?`) === true) {
+              profileStore.deleteTag(item);
               console.log(`${item}가(이) 소속에서 삭제되었습니다`);
             }
           }}
@@ -305,26 +307,53 @@ const TagForm: NextPage = observer(() => {
         <label
           className={`${profileStyles["tag__subtitle"]} typography__caption`}
         >
-          관심분야 태그
+          관심 관심분야 태그
         </label>
         <input
           type={"text"}
-          id={"tag__input"}
+          id={"tags"}
           className={"typography__text--small"}
+          value={profileStore.typedTag}
           placeholder="#수능, #개발, #공시 등 검색해주세요"
-          onChange={async (e) => {}}
+          onKeyUp={(e) => {
+            let key = e.key || e.keyCode;
+            if (key === "Enter" || key === 13) {
+              profileStore.enterTag();
+            }
+          }}
+          onChange={async (e) => {
+            profileStore.onChanged(e);
+          }}
         />
-
-        <label
-          className={`${profileStyles["tag__caution"]} typography__caption`}
-        >
-          태그는 최대 3개까지 설정 가능합니다
-        </label>
+        {profileStore.tagUpdateSuccessMessage === "" ? (
+          profileStore.tagUpdateErrorMessage === "" ? (
+            <label
+              className={`${profileStyles["tag__caution"]} typography__caption`}
+            >
+              태그는 최대 3개까지 설정 가능합니다
+            </label>
+          ) : (
+            <label
+              className={`${profileStyles["tag__error"]} typography__caption`}
+            >
+              {profileStore.tagUpdateErrorMessage}
+            </label>
+          )
+        ) : (
+          <label
+            className={`${profileStyles["tag__success"]} typography__caption`}
+          >
+            {profileStore.tagUpdateSuccessMessage}
+          </label>
+        )}
       </div>
 
       <button
         className={`${profileStyles["edit-tag__button"]}`}
-        onClick={() => {}}
+        onClick={() => {
+          profileStore.updateTags();
+        }}
+        disabled={profileStore.updateTagSuccess}
       >
         <label className={"typography__text"}>태그 저장하기</label>
       </button>
@@ -440,63 +469,6 @@ const UserProfile: NextPage = observer(() => {
             <OrganizationForm />
             <TagForm />
           </div>
-        </div>
-        <div>
-          <UserProfileImage userId={user.uid} width={150} height={150} />
-        </div>
-        <div>
-          {profileStore.userOverview && (
-            <div style={{ display: "inline" }}>
-              <h1>아이디</h1>
-              <label id={"id"} style={{ width: "300px", display: "block" }}>
-                {profileStore.userOverview.id}
-              </label>
-              <h1>이름</h1>
-              <input
-                id={"nickName"}
-                type={"text"}
-                value={profileStore.nickName}
-                style={{ width: "300px" }}
-                onChange={(e) => {
-                  setChanged(true);
-                  profileStore.onChanged(e);
-                }}
-              />
-              <h1>태그</h1>
-              <input
-                id={"tags"}
-                type={"text"}
-                value={profileStore.tags}
-                style={{ width: "300px" }}
-                onChange={(e) => {
-                  setChanged(true);
-                  profileStore.onChanged(e);
-                }}
-              />
-              <h1>소개 </h1>
-              <input
-                id={"introduce"}
-                type={"text"}
-                value={profileStore.introduce ? profileStore.introduce : ""}
-                style={{ width: "300px" }}
-                onChange={(e) => {
-                  setChanged(true);
-                  profileStore.onChanged(e);
-                }}
-              />
-              <h1>소속</h1>
-              <input
-                id={"organization"}
-                type={"text"}
-                value={profileStore.organizations}
-                style={{ width: "300px" }}
-                onChange={(e) => {
-                  setChanged(true);
-                  profileStore.onChanged(e);
-                }}
-              />
-            </div>
-          )}
         </div>
       </Layout>
       <style jsx>

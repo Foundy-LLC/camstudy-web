@@ -451,15 +451,19 @@
       flex-direction: column;
       margin: 24px 20px 0px 20px;
       position: relative;
+      font-weight: 300;
       .tag__subtitle {
         color: var(--system_ui-04);
-        font-weight: 300;
       }
       .tag__caution{
         color: var(--system_ui-04);
-        font-weight: 300;
       }
-
+      .tag__success{
+        color: var(--success);
+      }
+      .tag__error{
+        color: var(--error);
+      }
       input {
         width: 216px;
         height: 30px;

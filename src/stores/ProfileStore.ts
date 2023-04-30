@@ -10,6 +10,7 @@ export class ProfileStore {
   readonly userStore: UserStore;
   private _userOverview?: User = undefined;
   private _selectedImageFile?: File = undefined;
+  private _typedTag?: string = undefined;
   private _imageUrl?: string = undefined;
   private _nickName?: string = undefined;
   private _tags?: string[] = undefined;
@@ -17,7 +18,10 @@ export class ProfileStore {
   private _organizations?: string[] = undefined;
   private _errorMessage: string = "";
   private _successMessage: string = "";
+  private _tagUpdateSuccessMessage: string = "";
+  private _tagUpdateErrorMessage: string = "";
   private _editSuccess?: boolean = undefined;
+  private _updateTagSuccess?: boolean = true;
   constructor(
     root: RootStore,
     private readonly _profileService: ProfileService = profileService
@@ -35,6 +39,18 @@ export class ProfileStore {
     return this._successMessage;
   }
 
+  public get tagUpdateSuccessMessage() {
+    return this._tagUpdateSuccessMessage;
+  }
+
+  public get tagUpdateErrorMessage() {
+    return this._tagUpdateErrorMessage;
+  }
+
+  public get updateTagSuccess() {
+    return this._updateTagSuccess;
+  }
+
   public get userOverview() {
     return this._userOverview;
   }
@@ -45,6 +61,10 @@ export class ProfileStore {
 
   public get tags() {
     return this._tags;
+  }
+
+  public get typedTag() {
+    return this._typedTag;
   }
 
   public get introduce() {
@@ -79,9 +99,7 @@ export class ProfileStore {
         this._nickName = e.target.value;
         break;
       case "tags":
-        this._tags = this._tags
-          ? [...this._tags, e.target.value]
-          : [e.target.value];
+        this._typedTag = e.target.value;
         break;
       case "introduce":
         this._introduce = e.target.value;
@@ -91,6 +109,19 @@ export class ProfileStore {
           ? [...this._organizations, e.target.value]
           : [e.target.value];
         break;
+    }
+  };
+
+  public enterTag = () => {
+    if (this._tags!.length >= 3) {
+      this._tagUpdateErrorMessage = "태그는 최대 3개까지 설정 가능합니다.";
+      this._tagUpdateSuccessMessage = "";
+      return;
+    }
+    if (this._typedTag) {
+      this._tags!.push(this._typedTag);
+      this._typedTag = "";
+      this._updateTagSuccess = false;
     }
   };
 
@@ -141,7 +172,7 @@ export class ProfileStore {
         this.userStore.currentUser.id,
         this._nickName,
         this._introduce,
-        this._tags
+        this._userOverview!.tags
       );
       if (result.isSuccess) {
         runInAction(() => {
@@ -153,6 +184,44 @@ export class ProfileStore {
             tags: this._tags!,
             organizations: this._userOverview!.organizations,
           };
+        });
+      } else {
+        runInAction(() => {
+          throw new Error(result.throwableOrNull()!.message);
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  };
+
+  public updateTags = async () => {
+    try {
+      if (!this.userStore.currentUser) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      if (
+        !this._userOverview ||
+        !this._userOverview.name ||
+        !this._userOverview.introduce ||
+        !this._tags
+      ) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      const result = await this._profileService.updateProfile(
+        this.userStore.currentUser.id,
+        this._userOverview.name,
+        this._userOverview.introduce,
+        this._tags
+      );
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._updateTagSuccess = true;
+          this._tagUpdateSuccessMessage = "태그를 성공적으로 저장하였습니다.";
+          this._tagUpdateErrorMessage = "";
+          this._updateTagSuccess = true;
         });
       } else {
         runInAction(() => {
@@ -181,7 +250,8 @@ export class ProfileStore {
             ...this._userOverview!,
             tags: this._userOverview!.tags.filter((tag) => tag !== tagName),
           };
-          console.log(tagName, "삭제 성공");
+          this._tags = this._tags!.filter((tag) => tag !== tagName);
+          this._tagUpdateSuccessMessage = "태그를 성공적으로 삭제했습니다.";
         });
       } else {
         runInAction(() => {
