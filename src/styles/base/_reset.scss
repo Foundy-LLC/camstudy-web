@@ -92,6 +92,7 @@ section {
 }
 .box-contents-item {
   display: flex;
+  flex-direction: column;
   overflow: auto;
   flex-grow: 1;
 }

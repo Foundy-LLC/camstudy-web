@@ -16,7 +16,7 @@ import { UserOverview } from "@/models/user/UserOverview";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Layout } from "@/components/Layout";
 
-const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
+export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
     const { roomListStore } = useStores();
     return (
