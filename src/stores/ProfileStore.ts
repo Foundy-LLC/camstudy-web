@@ -4,6 +4,11 @@ import profileService, { ProfileService } from "@/service/profile.service";
 import { User } from "@/models/user/User";
 import { UserStore } from "@/stores/UserStore";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
+import {
+  TAG_DELETE_SUCCESS,
+  TAG_MAX_LENGTH_ERROR,
+  TAG_SAVE_SUCCESS,
+} from "@/constants/tag.constant";
 
 export class ProfileStore {
   readonly rootStore: RootStore;
@@ -114,7 +119,7 @@ export class ProfileStore {
 
   public enterTag = () => {
     if (this._tags!.length >= 3) {
-      this._tagUpdateErrorMessage = "태그는 최대 3개까지 설정 가능합니다.";
+      this._tagUpdateErrorMessage = TAG_MAX_LENGTH_ERROR;
       this._tagUpdateSuccessMessage = "";
       return;
     }
@@ -219,7 +224,7 @@ export class ProfileStore {
       if (result.isSuccess) {
         runInAction(() => {
           this._updateTagSuccess = true;
-          this._tagUpdateSuccessMessage = "태그를 성공적으로 저장하였습니다.";
+          this._tagUpdateSuccessMessage = TAG_SAVE_SUCCESS;
           this._tagUpdateErrorMessage = "";
           this._updateTagSuccess = true;
         });
@@ -251,7 +256,7 @@ export class ProfileStore {
             tags: this._userOverview!.tags.filter((tag) => tag !== tagName),
           };
           this._tags = this._tags!.filter((tag) => tag !== tagName);
-          this._tagUpdateSuccessMessage = "태그를 성공적으로 삭제했습니다.";
+          this._tagUpdateSuccessMessage = TAG_DELETE_SUCCESS;
         });
       } else {
         runInAction(() => {
