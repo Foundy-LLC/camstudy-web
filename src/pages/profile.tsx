@@ -90,7 +90,7 @@ const TagNameGroup: NextPage<{ items: string[] }> = observer(({ items }) => {
   return (
     <div className={`${profileStyles["tag"]}`}>
       {items.map((tag, key) => (
-        <TagName item={tag} />
+        <TagName item={tag} key={key} />
       ))}
     </div>
   );
@@ -372,6 +372,7 @@ const UserProfile: NextPage = observer(() => {
   }, [userStore.currentUser]);
 
   useEffect(() => {
+    if (!userStore.currentUser) return;
     if (profileStore.editSuccess === true) {
       setChanged(false);
       console.log("프로필 변경 성공");
