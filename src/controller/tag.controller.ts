@@ -15,7 +15,7 @@ import {
   TAGS_DELETE_SUCCESS,
   TAGS_GET_SUCCESS,
 } from "@/constants/tag.constant";
-import { tagDeleteRequestBody } from "@/models/tag/TagDeleteRequestBody";
+import { TagDeleteRequestBody } from "@/models/tag/TagDeleteRequestBody";
 import { Prisma } from "@prisma/client";
 
 export const getTags = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -54,7 +54,7 @@ export const deleteTag = async (req: NextApiRequest, res: NextApiResponse) => {
     const { userId, tag } = req.query;
     if (typeof userId !== "string" || typeof tag !== "string")
       throw REQUEST_QUERY_ERROR;
-    const requestBody = new tagDeleteRequestBody(userId, tag);
+    const requestBody = new TagDeleteRequestBody(userId, tag);
     const tagId = await findTagIdByTagName(requestBody.tag);
     await deleteTageById(userId, tagId);
     res.status(200).json(

@@ -2,9 +2,9 @@ import { Result } from "@/models/common/Result";
 import { User } from "@/models/user/User";
 import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
-import { userUpdateRequestBody } from "@/models/user/UserUpdateRequestBody";
+import { UserUpdateRequestBody } from "@/models/user/UserUpdateRequestBody";
 import { validateUid } from "@/utils/user.validator";
-import { tagDeleteRequestBody } from "@/models/tag/TagDeleteRequestBody";
+import { TagDeleteRequestBody } from "@/models/tag/TagDeleteRequestBody";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -35,7 +35,7 @@ export class ProfileService {
     tags: string[]
   ) => {
     try {
-      const RequestBody = new userUpdateRequestBody(
+      const RequestBody = new UserUpdateRequestBody(
         userId,
         nickName,
         introduce,
@@ -61,7 +61,7 @@ export class ProfileService {
     tag: string
   ): Promise<Result<string>> => {
     try {
-      const RequestBody = new tagDeleteRequestBody(userId, tag);
+      const RequestBody = new TagDeleteRequestBody(userId, tag);
       const response = await fetchAbsolute(
         `api/users/${RequestBody.userId}/tag?tag=${RequestBody.tag}`,
         {

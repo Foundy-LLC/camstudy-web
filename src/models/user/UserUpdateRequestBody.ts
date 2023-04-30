@@ -5,7 +5,7 @@ import {
   validateUserTags,
 } from "@/utils/user.validator";
 
-export class userUpdateRequestBody {
+export class UserUpdateRequestBody {
   constructor(
     readonly userId: string,
     readonly nickName: string,
