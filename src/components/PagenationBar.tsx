@@ -113,7 +113,7 @@ export const PagenationBar: NextPage<{
         </div>
         <div id="next">
           <p
-            className={" next-button typography__text--big"}
+            className={"next-button typography__text--big"}
             onClick={() => pageOnClick("next")}
           >
             다음

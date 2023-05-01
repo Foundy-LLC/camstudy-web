@@ -17,3 +17,7 @@ export const ORGANIZATIONS_EMAIL_TOKEN_NULL_ERROR: string =
   "이메일 인증 토큰이 누락되었습니다.";
 export const ORGANIZATION_EMAIL_VERIFY_DUPLICATED: string =
   "이미 인증된 소속입니다.";
+export const BELONG_ORGANIZATION_NULL_ERROR: string =
+  "소속된 조직이 존재하지 않습니다.";
+export const BELONG_ORGANIZATION_ID_NOT_INCLUEDED: string =
+  "소속 아이디와 일치하는 소속 조직이 존재하지 않습니다.";
