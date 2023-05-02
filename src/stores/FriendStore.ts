@@ -202,7 +202,7 @@ export class FriendStore {
         runInAction(() => {
           this._errorMessage = undefined;
           this._successMessage = FRIEND_REQUESTS_GET_SUCCESS;
-          this._friendRequestUsers = result.getOrNull()!;
+          this._friendRequestUsers = result.getOrNull()!.slice(0, 4);
         });
       } else {
         runInAction(() => {
@@ -264,7 +264,11 @@ export class FriendStore {
         runInAction(() => {
           this._errorMessage = undefined;
           this._successMessage = APPROVE_FRIEND_REQUEST_SUCCESS;
+          const user = this._friendRequestUsers.filter(
+            (user) => user.id === userId
+          )[0];
           this._disposeFriendRequest(userId);
+          this._friendOverviews.push(user);
         });
       } else {
         runInAction(() => {
