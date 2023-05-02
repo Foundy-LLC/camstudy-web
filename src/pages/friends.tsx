@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import { observer } from "mobx-react";
 import { useStores } from "@/stores/context";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { MouseEvent, useEffect, useState } from "react";
 import friendListIcon from "/public/friend-list/friend-list-icon.png";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import { UserOverview } from "@/models/user/UserOverview";
@@ -274,7 +274,7 @@ const FriendRequestGroup: NextPage<{ items: UserOverview[] }> = observer(
           </div>
           {friendStore.friendRequestUsers.length !== 0 ? (
             <div className={`${friendStyles["friend-requests__grid"]}`}>
-              {items.map((item, key) => (
+              {items.slice(0, 4).map((item, key) => (
                 <FriendRequest item={item} key={key} />
               ))}
             </div>
@@ -314,6 +314,33 @@ const FriendRequestGroup: NextPage<{ items: UserOverview[] }> = observer(
 const FriendRequest: NextPage<{ item: UserOverview }> = observer(({ item }) => {
   const { friendStore } = useStores();
   const { id, name, profileImage, introduce, status } = item;
+  const [isModalHidden, setIsModalHidden] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (isModalHidden === true) {
+      window.removeEventListener("click", windowClickHandler);
+    }
+  }, [isModalHidden]);
+  const windowClickHandler = (e: Event) => {
+    if (
+      (e.target as Element).id.includes(`${id}__icon--etc`) === false &&
+      (e.target as Element).className.includes(
+        "friend-requester__option__modal"
+      ) === false
+    ) {
+      if (!document.getElementById(`${id}__modal`)) {
+        return;
+      }
+      document.getElementById(`${id}__modal`)!.style.display = "none";
+    }
+  };
+
+  const optionOnClick = (e: MouseEvent) => {
+    setIsModalHidden(false);
+    const modal = document.getElementById(`${id}__modal`)!;
+    modal.style.display = "block";
+    window.addEventListener("click", windowClickHandler);
+  };
   return (
     <>
       <div
@@ -356,10 +383,44 @@ const FriendRequest: NextPage<{ item: UserOverview }> = observer(({ item }) => {
             person_add
           </span>
           <span
+            id={item.id + "__icon--etc"}
             className={`${friendStyles["friend-requester__icon--etc"]} material-symbols-sharp`}
+            onClick={(e) => optionOnClick(e)}
           >
             more_horiz
           </span>
+          <div
+            id={item.id + "__modal"}
+            className={`${friendStyles["friend-requester__option__modal"]} elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
+          >
+            <ul
+              className={`${friendStyles["friend-requester__option__modal__ul"]}`}
+            >
+              <li
+                className={`${friendStyles["friend-requester__option__modal__li"]} typography__caption`}
+                onClick={async () => {
+                  document.getElementById(`${id}__modal`)!.style.display =
+                    "none";
+                  if (
+                    confirm(`${name} 님의 친구 요청을 거절하시겠어요?`) === true
+                  ) {
+                    await window.removeEventListener(
+                      "click",
+                      windowClickHandler
+                    );
+                    await friendStore.refuseFriendRequest(id);
+                  }
+                }}
+              >
+                친구 요청 거절
+              </li>
+              <li
+                className={`${friendStyles["friend-requester__option__modal__li"]} typography__caption`}
+              >
+                프로필 보기
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <style jsx>
@@ -472,6 +533,7 @@ const friends: NextPage = observer(() => {
             </div>
             <div className={"box-contents-item"}>
               <div
+                className={`${friendStyles["friend-page"]}`}
                 style={{
                   display: "flex",
                   flexDirection: "column",

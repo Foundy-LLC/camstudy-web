@@ -202,7 +202,7 @@ export class FriendStore {
         runInAction(() => {
           this._errorMessage = undefined;
           this._successMessage = FRIEND_REQUESTS_GET_SUCCESS;
-          this._friendRequestUsers = result.getOrNull()!.slice(0, 4);
+          this._friendRequestUsers = result.getOrNull()!;
         });
       } else {
         runInAction(() => {
