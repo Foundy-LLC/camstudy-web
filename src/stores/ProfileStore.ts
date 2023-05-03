@@ -6,6 +6,7 @@ import { UserStore } from "@/stores/UserStore";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
 import {
   TAG_DELETE_SUCCESS,
+  TAG_DUPLICATED_ERROR,
   TAG_MAX_LENGTH_ERROR,
   TAG_SAVE_SUCCESS,
 } from "@/constants/tag.constant";
@@ -17,10 +18,11 @@ export class ProfileStore {
   readonly userStore: UserStore;
   private _userOverview?: User = undefined;
   private _selectedImageFile?: File = undefined;
-  private _typedTag?: string = undefined;
+  private _typedTag: string = "";
   private _imageUrl?: string = undefined;
   private _nickName?: string = undefined;
   private _tags?: string[] = undefined;
+  private _unsavedTags: string[] = [];
   private _introduce?: string | null = undefined;
   private _organizations?: string[] = undefined;
   private _errorMessage: string = "";
@@ -28,7 +30,6 @@ export class ProfileStore {
   private _tagUpdateSuccessMessage: string = "";
   private _tagUpdateErrorMessage: string = "";
   private _editSuccess?: boolean = undefined;
-  private _updateTagSuccess?: boolean = true;
   constructor(
     root: RootStore,
     private readonly _profileService: ProfileService = profileService
@@ -54,12 +55,8 @@ export class ProfileStore {
     return this._tagUpdateErrorMessage;
   }
 
-  public get updateTagSuccess() {
-    return this._updateTagSuccess;
-  }
-
-  public get userOverview() {
-    return this._userOverview;
+  public get unsavedTags() {
+    return this._unsavedTags;
   }
 
   public get nickName() {
@@ -120,15 +117,24 @@ export class ProfileStore {
   };
 
   public enterTag = () => {
-    if (this._tags!.length >= USER_TAG_MAX_COUNT) {
-      this._tagUpdateErrorMessage = TAG_MAX_LENGTH_ERROR;
-      this._tagUpdateSuccessMessage = "";
-      return;
-    }
-    if (this._typedTag) {
-      this._tags!.push(this._typedTag);
-      this._typedTag = "";
-      this._updateTagSuccess = false;
+    try {
+      if (this._tags!.some((tag) => tag === this._typedTag)) {
+        throw TAG_DUPLICATED_ERROR;
+      }
+      if (this._tags!.length >= USER_TAG_MAX_COUNT) {
+        this._tagUpdateErrorMessage = TAG_MAX_LENGTH_ERROR;
+        throw TAG_MAX_LENGTH_ERROR;
+      }
+      if (this._typedTag) {
+        this._tags!.push(this._typedTag);
+        this._unsavedTags.push(this._typedTag);
+        this._typedTag = "";
+      }
+    } catch (e) {
+      if (typeof e === "string") {
+        this._tagUpdateErrorMessage = e;
+        this._tagUpdateSuccessMessage = "";
+      }
     }
   };
 
@@ -225,10 +231,9 @@ export class ProfileStore {
       );
       if (result.isSuccess) {
         runInAction(() => {
-          this._updateTagSuccess = true;
           this._tagUpdateSuccessMessage = TAG_SAVE_SUCCESS;
           this._tagUpdateErrorMessage = "";
-          this._updateTagSuccess = true;
+          this._unsavedTags = [];
         });
       } else {
         runInAction(() => {
@@ -244,6 +249,10 @@ export class ProfileStore {
 
   public deleteTag = async (tagName: string) => {
     try {
+      if (this._unsavedTags.some((tag) => tag === tagName)) {
+        this._tags = this._tags!.filter((tag) => tag !== tagName);
+        return;
+      }
       if (!this.userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }

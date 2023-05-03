@@ -315,6 +315,7 @@ const TagForm: NextPage = observer(() => {
           className={"typography__text--small"}
           value={profileStore.typedTag}
           placeholder="#수능, #개발, #공시 등 검색해주세요"
+          maxLength={21}
           onKeyUp={(e) => {
             let key = e.key || e.keyCode;
             if (key === "Enter" || key === 13) {
@@ -353,7 +354,7 @@ const TagForm: NextPage = observer(() => {
         onClick={() => {
           profileStore.updateTags();
         }}
-        disabled={profileStore.updateTagSuccess}
+        disabled={profileStore.unsavedTags.length === 0}
       >
         <label className={"typography__text"}>태그 저장하기</label>
       </button>
