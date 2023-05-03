@@ -366,18 +366,17 @@ const UserProfile: NextPage = observer(() => {
   const [user, loading] = useAuthState(auth);
   const { userStore, roomListStore, profileStore } = useStores();
   const [changed, setChanged] = useState<boolean>(false);
-  useEffect(() => {
-    if (!userStore.currentUser) return;
-    profileStore.getUserProfile();
-  }, [userStore.currentUser]);
 
   useEffect(() => {
     if (!userStore.currentUser) return;
     if (profileStore.editSuccess === true) {
       setChanged(false);
       console.log("프로필 변경 성공");
+      profileStore.getUserProfile();
+    } else {
+      profileStore.getUserProfile();
     }
-  }, [profileStore.editSuccess]);
+  }, [userStore.currentUser, profileStore.editSuccess]);
 
   if (loading) {
     return <div>Loading</div>;

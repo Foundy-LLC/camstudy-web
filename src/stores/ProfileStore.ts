@@ -9,6 +9,8 @@ import {
   TAG_MAX_LENGTH_ERROR,
   TAG_SAVE_SUCCESS,
 } from "@/constants/tag.constant";
+import { validateUserTags } from "@/utils/user.validator";
+import { USER_TAG_MAX_COUNT } from "@/constants/user.constant";
 
 export class ProfileStore {
   readonly rootStore: RootStore;
@@ -118,7 +120,7 @@ export class ProfileStore {
   };
 
   public enterTag = () => {
-    if (this._tags!.length >= 3) {
+    if (this._tags!.length >= USER_TAG_MAX_COUNT) {
       this._tagUpdateErrorMessage = TAG_MAX_LENGTH_ERROR;
       this._tagUpdateSuccessMessage = "";
       return;
