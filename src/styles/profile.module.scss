@@ -455,6 +455,25 @@
       .tag__subtitle {
         color: var(--system_ui-04);
       }
+
+      .tags__content{
+        position: absolute;
+        z-index: 1;
+        top:73px;
+        width: 256px;
+        border: 1px solid var(--primary);
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        background-color: var(--system_background);
+        display: block;
+        .tag__item{
+          color:var(--system_ui-08);
+          font-weight: 300;
+          max-width: 216px;
+          height: 18px;
+          padding: 16px;
+        }
+      }
       .tag__caution{
         color: var(--system_ui-04);
       }

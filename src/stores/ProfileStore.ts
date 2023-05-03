@@ -12,6 +12,8 @@ import {
 } from "@/constants/tag.constant";
 import { validateUserTags } from "@/utils/user.validator";
 import { USER_TAG_MAX_COUNT } from "@/constants/user.constant";
+import { Tag } from "@/models/welcome/Tag";
+import { welcomeService, WelcomeService } from "@/service/welcome.service";
 
 export class ProfileStore {
   readonly rootStore: RootStore;
@@ -19,9 +21,11 @@ export class ProfileStore {
   private _userOverview?: User = undefined;
   private _selectedImageFile?: File = undefined;
   private _typedTag: string = "";
+  private _tagDropDownHidden: boolean = true;
   private _imageUrl?: string = undefined;
   private _nickName?: string = undefined;
   private _tags?: string[] = undefined;
+  private _recommendTags: Tag[] = [];
   private _unsavedTags: string[] = [];
   private _introduce?: string | null = undefined;
   private _organizations?: string[] = undefined;
@@ -32,7 +36,8 @@ export class ProfileStore {
   private _editSuccess?: boolean = undefined;
   constructor(
     root: RootStore,
-    private readonly _profileService: ProfileService = profileService
+    private readonly _profileService: ProfileService = profileService,
+    private readonly _welcomeService: WelcomeService = welcomeService
   ) {
     makeAutoObservable(this);
     this.rootStore = root;
@@ -87,7 +92,19 @@ export class ProfileStore {
     return this._editSuccess;
   }
 
-  importUserProfile = (profile: User) => {
+  public get recommendTags() {
+    return this._recommendTags;
+  }
+
+  public get tagDropDownHidden() {
+    return this._tagDropDownHidden;
+  }
+
+  public setTagDropDownHidden(hidden: boolean) {
+    this._tagDropDownHidden = hidden;
+  }
+
+  public importUserProfile = (profile: User) => {
     runInAction(() => {
       this._nickName = profile.name;
       this._introduce = profile.introduce;
@@ -96,14 +113,11 @@ export class ProfileStore {
     });
   };
 
-  public onChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  public onChanged = async (e: React.ChangeEvent<HTMLInputElement>) => {
     this._editSuccess = undefined;
     switch (e.target.id) {
       case "nickName":
         this._nickName = e.target.value;
-        break;
-      case "tags":
-        this._typedTag = e.target.value;
         break;
       case "introduce":
         this._introduce = e.target.value;
@@ -116,7 +130,7 @@ export class ProfileStore {
     }
   };
 
-  public enterTag = () => {
+  public enterTag = async () => {
     try {
       if (this._tags!.some((tag) => tag === this._typedTag)) {
         throw TAG_DUPLICATED_ERROR;
@@ -128,7 +142,9 @@ export class ProfileStore {
       if (this._typedTag) {
         this._tags!.push(this._typedTag);
         this._unsavedTags.push(this._typedTag);
+        this._recommendTags = [];
         this._typedTag = "";
+        this._tagUpdateErrorMessage = "";
       }
     } catch (e) {
       if (typeof e === "string") {
@@ -268,6 +284,9 @@ export class ProfileStore {
           };
           this._tags = this._tags!.filter((tag) => tag !== tagName);
           this._tagUpdateSuccessMessage = TAG_DELETE_SUCCESS;
+          this._unsavedTags = this._unsavedTags.filter(
+            (tag) => tag !== tagName
+          );
         });
       } else {
         runInAction(() => {
@@ -280,4 +299,28 @@ export class ProfileStore {
       });
     }
   };
+
+  public async onChangeTagInput(tag: string) {
+    try {
+      console.log(tag);
+      if (tag === "") return;
+      this._typedTag = tag;
+      const result = await this._welcomeService.getTags(this._typedTag);
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._tagUpdateErrorMessage = "";
+          this._recommendTags = result.getOrNull()!;
+        });
+      } else {
+        runInAction(() => {
+          this._tagUpdateSuccessMessage = "";
+          this._errorMessage = result.throwableOrNull()!.message;
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  }
 }
