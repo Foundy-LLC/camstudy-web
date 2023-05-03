@@ -150,7 +150,7 @@ const TagsInput: NextPage<{ welcomeStore: WelcomeStore }> = observer(
       welcomeStore.removeTags(indexToRemove);
     };
     const addTags = (event: React.KeyboardEvent<HTMLInputElement>) => {
-      if (isExistTag((event.target as HTMLInputElement).value)) return;
+      if (isExistTag((event.target as HTMLInputElement).value.slice(1))) return;
 
       if (
         (event.target as HTMLInputElement).value !== "" &&
