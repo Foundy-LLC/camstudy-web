@@ -3,8 +3,6 @@ import { observer } from "mobx-react";
 import { useStores } from "@/stores/context";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { UserSearchOverview } from "@/models/user/UserSearchOverview";
-import { friendStatus } from "@/constants/FriendStatus";
 import friendListIcon from "/public/friend-list/friend-list-icon.png";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import { UserOverview } from "@/models/user/UserOverview";
@@ -253,7 +251,7 @@ const friends: NextPage = observer(() => {
   const { friendStore, userStore } = useStores();
   const [user, loading] = useAuthState(auth);
   const keyPressed = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.charCode === 13) friendStore.getSimilarNamedUsers();
+    if (event.charCode === 13) friendStore.findUserByName();
   };
 
   useEffect(() => {

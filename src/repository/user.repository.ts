@@ -2,7 +2,6 @@ import { user_account } from ".prisma/client";
 import prisma from "../../prisma/client";
 import { UserStatus } from "@/models/user/UserStatus";
 import { User } from "@/models/user/User";
-import { getMinutesDiff } from "@/utils/DateUtil";
 import { SEARCH_USERS_MAX_NUM } from "@/constants/user.constant";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
@@ -77,11 +76,13 @@ export const getSimilarNamedUsers = async (
       select: {
         id: true,
         name: true,
+        introduce: true,
         profile_image: true,
         friend_friend_acceptor_idTouser_account: {
           where: { requester_id: userId },
           select: { accepted: true },
         },
+        status: true,
       },
     }),
   ]);
@@ -92,12 +93,14 @@ export const getSimilarNamedUsers = async (
       return {
         id: item.id,
         name: item.name,
+        introduce: item.introduce,
         profileImage: item.profile_image,
         requestHistory: item.friend_friend_acceptor_idTouser_account[0]
           ? item.friend_friend_acceptor_idTouser_account[0].accepted === true
             ? friendStatus.ACCEPTED
             : friendStatus.REQUESTED
           : friendStatus.NONE,
+        status: item.status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
       };
     }),
   };

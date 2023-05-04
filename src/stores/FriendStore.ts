@@ -11,6 +11,7 @@ import {
   FRIEND_REQUESTS_GET_SUCCESS,
   REFUSE_FRIEND_REQUEST_SUCCESS,
   SEARCH_SIMILAR_NAMED_USERS_SUCCESS,
+  USER_SEARCH_RESULT_NULL,
 } from "@/constants/FriendMessage";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
@@ -24,10 +25,12 @@ export class FriendStore {
   private _userSearchOverviews: UserSearchOverview[] = [];
   private _friendRequestUsers: UserOverview[] = [];
   private _friendOverviews: UserOverview[] = [];
-  private _friendRequestInput: string | undefined = undefined;
+  private _searchUserInput: string | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
+  private _searchErrorMessage: string | undefined = USER_SEARCH_RESULT_NULL;
   private _successMessage: string | undefined = undefined;
   private _friendListMaxPage: number = -1;
+  private _userListMaxPage: number = -1;
   private _searchFriendMaxPage: number | undefined = undefined;
   constructor(
     root: RootStore,
@@ -44,6 +47,10 @@ export class FriendStore {
 
   public get searchFriendMaxPage() {
     return this._searchFriendMaxPage;
+  }
+
+  public get searchErrorMessage() {
+    return this._searchErrorMessage;
   }
 
   public get errorMessage() {
@@ -66,8 +73,9 @@ export class FriendStore {
     return this._friendOverviews;
   }
 
-  public async changeFriendRequestInput(str: string) {
-    this._friendRequestInput = str;
+  public async changeSearchUserInput(str: string) {
+    console.log(str);
+    this._searchUserInput = str;
   }
   public findIndexFromUserOverview(userId: string) {
     return this.userSearchOverviews.findIndex(
@@ -103,29 +111,35 @@ export class FriendStore {
     );
   }
 
-  public async getSimilarNamedUsers() {
-    if (!this._friendRequestInput) return;
+  public async findUserByName() {
+    if (!this._searchUserInput) return;
     if (!this._userStore.currentUser) {
       throw new Error(NO_USER_STORE_ERROR_MESSAGE);
     }
     const userId = this._userStore.currentUser.id;
-    const result = await this._friendService.getSimilarNamedUsers(
-      this._friendRequestInput,
+    const result = await this._friendService.findUserByName(
+      this._searchUserInput,
       userId
     );
     if (result.isSuccess) {
       runInAction(() => {
         this._errorMessage = undefined;
         const dataArray = result.getOrNull()!;
+        console.log(dataArray);
         this._searchFriendMaxPage =
           Math.floor(dataArray.maxPage / FRIEND_NUM_PER_PAGE) + 1;
         this._userSearchOverviews = dataArray.users;
         this._successMessage = SEARCH_SIMILAR_NAMED_USERS_SUCCESS;
+        if (dataArray.users.length === 0) {
+          this._searchErrorMessage = USER_SEARCH_RESULT_NULL;
+        } else {
+          this._searchErrorMessage = undefined;
+        }
       });
     } else {
       runInAction(() => {
         this._successMessage = undefined;
-        this._errorMessage = result.throwableOrNull()!.message;
+        this._searchErrorMessage = result.throwableOrNull()!.message;
       });
     }
   }
@@ -217,7 +231,7 @@ export class FriendStore {
     }
   }
 
-  fetchFriendList = async (page: number) => {
+  public fetchFriendList = async (page: number) => {
     try {
       //유저 정보가 존재하지 않을 경우 에러 처리
       if (!this._userStore.currentUser) {

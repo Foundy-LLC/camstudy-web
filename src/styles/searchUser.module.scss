@@ -1,11 +1,22 @@
 @import "./color/colorPalette";
 
-.title{
+.search-user__title{
   margin: 24px 0px 0px 20px;
   color: var(--text-01);
 }
 
-.friend-list-frame{
+.search-user__input{
+  width: 210px;
+  height: 18px;
+  margin: 25px 0px 0px 20px;
+  padding: 10px 54px 10px 16px;
+  border: 1px solid var(--text-04);
+  border-radius: 8px;
+  color: var(--system_ui-05);
+  background-color: var(--ui-cardui);
+}
+
+.search-user-frame{
   width: 600px;
   height: 82vh;
   margin: 24px 0px 0px 20px;
@@ -16,26 +27,26 @@
   border-radius: 16px;
   position: relative;
 
-  .friend-list-info{
+  .search-user-info{
     width: 560px;
     height: 28px;
     display: flex;
     margin: 22px 0px 28px 20px;
     align-items:center;
-    .friend-list-icon{
-
+    .search-user-icon{
+      color: var(--text-01);
     }
-    .friend-list-label{
+    .search-user-label{
       margin-left: 4px;
       color: var(--text-01);
     }
   }
 
-  .friend-list-grid{
+  .search-user-grid{
     display: grid;
     row-gap: 20px;
     margin: 8px 0px 0px 20px;
-    .friend-list-form{
+    .search-user-form{
       width: 560px;
       height: 72px;
       display: inline-flex;
@@ -43,18 +54,18 @@
       border: 0.5px solid $-gray_cool-300;
       border-radius: 8px;
 
-      .friend-profile{
+      .user-profile{
         margin:16px;
         width: 40px;
         height: 40px;
         border-radius: 8px;
       }
-      .friend-info{
+      .user-info{
         width: 240px;
         height: 22px;
         margin-top: 16px;
 
-        .friend-name{
+        .user-name{
           width: 114px;
           height: 22px;
           color: var(--text-01);
@@ -62,17 +73,17 @@
           font-family: "Pretendard";
           margin-right: 8px;
         }
-        .friend-status-online{
+        .user-status-online{
           margin-top: 3px;
           color: var(--success);
         }
-        .friend-status-offline{
+        .user-status-offline{
           margin-top: 3px;
           color: var(--error);
         }
       }
 
-      .friend-option-button {
+      .user-option-button {
         width: 24px;
         height: 24px;
         margin-left: auto;
@@ -80,7 +91,7 @@
         margin-right: 16px;
         background: var(--ui-cardui-01);
 
-        .friend-option-icon {
+        .user-option-icon {
           display: flex;
           justify-content: center;
           align-items: center;
@@ -91,5 +102,11 @@
       }
     }
   }
-  
+
+  .search-user-error{
+    display: flex;
+    justify-content: center;
+    margin-top:50%;
+    color:var(--text-04);
+  }
 }
