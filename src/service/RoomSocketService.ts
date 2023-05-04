@@ -55,13 +55,9 @@ import { JoinRoomSuccessCallbackProperty } from "@/models/room/JoinRoomSuccessCa
 import { JoinRoomFailureCallbackProperty } from "@/models/room/JoinRoomFailureCallbackProperty";
 import { PeerState } from "@/models/room/PeerState";
 import { UserStore } from "@/stores/UserStore";
-import process from "process";
-
-const MEDIA_SERVER_BASE_URL: string =
-  process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
-// const MEDIA_SERVER_BASE_URL:string = process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
-const PORT = 2000;
-const SOCKET_SERVER_URL = process.env.NEXT_PUBLIC_MEDIA_SERVER_BASE_URL!;
+import { Result } from "@/models/common/Result";
+import { MediaServerGetResponse } from "@/models/room/MediaServerGetResponse";
+import { mediaRouterApiFetch } from "@/utils/mediaRouterApiFetch";
 
 interface CreateWebRtcTransportParams {
   readonly id: string;
@@ -95,6 +91,23 @@ interface UserAndProducerId {
   userId: string;
 }
 
+const fetchMediaServerUrl = async (
+  roomId: string
+): Promise<Result<MediaServerGetResponse>> => {
+  try {
+    const response = await mediaRouterApiFetch(`rooms/${roomId}/media-server`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!response.ok) {
+      return await Result.createErrorUsingResponseMessage(response);
+    }
+    return Result.createSuccessUsingResponseData(response);
+  } catch (e) {
+    return Result.createErrorUsingException(e);
+  }
+};
+
 export class RoomSocketService {
   private _userStore: UserStore;
 
@@ -123,11 +136,19 @@ export class RoomSocketService {
     return this._socket;
   };
 
-  public connect = (roomId: string) => {
+  public connect = async (roomId: string): Promise<Result<undefined>> => {
     if (this._socket != null) {
-      return;
+      return Result.success(undefined);
     }
-    this._socket = io(MEDIA_SERVER_BASE_URL);
+    const mediaServerGetResult = await fetchMediaServerUrl(roomId);
+    console.log(mediaServerGetResult.getOrNull());
+    console.log(mediaServerGetResult.throwableOrNull());
+    if (mediaServerGetResult.isFailure) {
+      return Result.error(mediaServerGetResult.throwableOrNull()!);
+    }
+    const mediaServerBaseUrl = mediaServerGetResult.getOrNull()!.url;
+
+    this._socket = io(`${mediaServerBaseUrl}/room`);
     this._socket.on(
       CONNECTION_SUCCESS,
       async ({ socketId }: { socketId: string }) => {
@@ -135,6 +156,7 @@ export class RoomSocketService {
         this._connectWaitingRoom(roomId);
       }
     );
+    return Result.success(undefined);
   };
 
   private _connectWaitingRoom = (roomId: string) => {
