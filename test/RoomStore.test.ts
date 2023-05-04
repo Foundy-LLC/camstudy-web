@@ -13,6 +13,7 @@ import { Auth, User } from "@firebase/auth";
 import { auth } from "@/service/firebase";
 import { RoomSocketService } from "@/service/RoomSocketService";
 import { RootStore } from "@/stores/RootStore";
+import { CONNECTING_ROOM_MESSAGE } from "@/constants/roomMessage";
 
 describe("RoomStore.onJoined", () => {
   it("should set state to JOINED", () => {
@@ -184,15 +185,15 @@ describe("RoomStore.enabledJoinRoomButton", () => {
 });
 
 describe("RoomStore.onFailedToJoin", () => {
-  it("should update failedToJoinMessage", () => {
+  it("should update waitingRoomMessage", () => {
     const rootStore: RootStore = new RootStore();
     const roomStore = new RoomStore(rootStore.userStore);
     const message = "message";
-    expect(roomStore.failedToJoinMessage).toBeUndefined();
+    expect(roomStore.waitingRoomMessage).toBe(CONNECTING_ROOM_MESSAGE);
 
     roomStore.onFailedToJoin(message);
 
-    expect(roomStore.failedToJoinMessage).toBe(message);
+    expect(roomStore.waitingRoomMessage).toBe(message);
   });
 
   it("should clear passwordInput", () => {

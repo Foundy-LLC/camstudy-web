@@ -29,6 +29,10 @@ const nextConfig = {
         source: "/rank-server/api/:path*",
         destination: `${process.env.NEXT_PUBLIC_RANK_SERVER_BASE_URL}/:path*`,
       },
+      {
+        source: "/media-router/:path*",
+        destination: `${process.env.NEXT_PUBLIC_MEDIA_ROUTER_BASE_URL}/:path*`,
+      },
     ];
   },
 };
