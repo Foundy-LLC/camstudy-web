@@ -27,6 +27,7 @@ export class ProfileStore {
   private _tags?: string[] = undefined;
   private _recommendTags: Tag[] = [];
   private _unsavedTags: string[] = [];
+  private _deletedTags: string[] = [];
   private _introduce?: string | null = undefined;
   private _organizations?: string[] = undefined;
   private _errorMessage: string = "";
@@ -62,6 +63,10 @@ export class ProfileStore {
 
   public get unsavedTags() {
     return this._unsavedTags;
+  }
+
+  public get deletedTags() {
+    return this._deletedTags;
   }
 
   public get nickName() {
@@ -226,6 +231,11 @@ export class ProfileStore {
     }
   };
 
+  public saveTagsButtonOnClick = async () => {
+    this._deletedTags.map(async (tag) => await this.deleteTags(tag));
+    await this.updateTags();
+  };
+
   public updateTags = async () => {
     try {
       if (!this.userStore.currentUser) {
@@ -250,6 +260,7 @@ export class ProfileStore {
           this._tagUpdateSuccessMessage = TAG_SAVE_SUCCESS;
           this._tagUpdateErrorMessage = "";
           this._unsavedTags = [];
+          this._deletedTags = [];
         });
       } else {
         runInAction(() => {
@@ -263,12 +274,17 @@ export class ProfileStore {
     }
   };
 
-  public deleteTag = async (tagName: string) => {
+  public addDeletedTag = (tagName: string) => {
+    if (this._unsavedTags.some((tag) => tag === tagName)) {
+      this._unsavedTags = this._unsavedTags!.filter((tag) => tag !== tagName);
+    } else {
+      this._deletedTags.push(tagName);
+    }
+    this._tags = this._tags!.filter((tag) => tag !== tagName);
+  };
+
+  public deleteTags = async (tagName: string) => {
     try {
-      if (this._unsavedTags.some((tag) => tag === tagName)) {
-        this._tags = this._tags!.filter((tag) => tag !== tagName);
-        return;
-      }
       if (!this.userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }

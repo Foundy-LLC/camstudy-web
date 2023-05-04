@@ -68,7 +68,7 @@ const TagName: NextPage<{ item: string }> = observer(({ item }) => {
             if (
               confirm(`"${item}"을 관심 태그에서 삭제하시겠습니까?`) === true
             ) {
-              profileStore.deleteTag(item);
+              profileStore.addDeletedTag(item);
               console.log(`${item}가(이) 관심 태그에서 삭제되었습니다`);
             }
           }}
@@ -151,12 +151,11 @@ const SimilarTagName: NextPage<{ item: Tag }> = observer(({ item }) => {
       <div
         id={"tag__item"}
         className={`${profileStyles["tag__item"]} typography__text--small`}
-        onClick={(e) => {
+        onClick={async (e) => {
           const text = e.target as HTMLElement;
-          const input = document.getElementById("tags") as HTMLInputElement;
-          profileStore.onChangeTagInput(text.textContent || "");
-          input!.value = "";
-          profileStore.enterTag();
+          (document.getElementById("tags") as HTMLInputElement).value = "";
+          await profileStore.onChangeTagInput(text.textContent!);
+          await profileStore.enterTag();
           profileStore.setTagDropDownHidden(true);
         }}
       >
@@ -422,11 +421,14 @@ const TagForm: NextPage = observer(() => {
       <button
         className={`${profileStyles["edit-tag__button"]}`}
         onClick={() => {
-          profileStore.updateTags();
+          profileStore.saveTagsButtonOnClick();
         }}
-        disabled={profileStore.unsavedTags.length === 0}
+        disabled={
+          profileStore.unsavedTags.length === 0 &&
+          profileStore.deletedTags.length === 0
+        }
       >
-        <label className={"typography__text"}>태그 저장하기</label>
+        <label className={"typography_장_text"}>태그 저장하기</label>
       </button>
     </div>
   );

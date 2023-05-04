@@ -179,12 +179,13 @@ export const updateUser = async (req: NextApiRequest, res: NextApiResponse) => {
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
+      res.end();
       return;
     }
     res
       .status(500)
-      .end(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
-    return;
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+    res.end();
   }
 };
 

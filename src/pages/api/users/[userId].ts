@@ -12,6 +12,7 @@ export default async function userInformationHandler(
       break;
     case "PATCH":
       await updateUser(req, res);
+      break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);
   }
