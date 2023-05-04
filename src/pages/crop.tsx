@@ -2,11 +2,11 @@ import { NextPage } from "next";
 import { Layout } from "@/components/Layout";
 import Image from "next/image";
 import { useStores } from "@/stores/context";
-import { useAuth } from "@/components/AuthProvider";
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import router from "next/router";
+import cropStyles from "@/styles/crop.module.scss";
 
 const crop: NextPage = () => {
   return (
@@ -39,14 +39,14 @@ const MyPot: NextPage = () => {
   }, [cropStore.growingCrop]);
 
   return (
-    <div>
+    <div className={`${cropStyles["my-pot"]}`}>
       <div>내 화분</div>
-      <div>
-        <div>
+      <div className={`${cropStyles["my-pot_content"]}`}>
+        <div className={`${cropStyles["growing-crop_image"]}`}>
           {cropStore.cropImageSrc != undefined ? (
             <Image
-              width={96}
-              height={96}
+              width={156}
+              height={156}
               src={cropStore.cropImageSrc}
               alt={"작물"}
             />
@@ -54,11 +54,39 @@ const MyPot: NextPage = () => {
             "작물이 죽었거나 심은 작물이 없으면 추가하는 버튼"
           )}
         </div>
-        <div>
-          <div>작물 이름</div>
-          <div>수확 예정일</div>
-          <div>평균 공부시간</div>
-          <div>예상 작물등급</div>
+        <div className={`${cropStyles["growing-crop_explain"]}`}>
+          <div>
+            <span className={`${cropStyles["growing-crop_explain_title"]}`}>
+              작물 이름
+            </span>
+            <span
+              className={`${cropStyles["growing-crop_explain_content"]}`}
+            ></span>
+          </div>
+          <div>
+            <span className={`${cropStyles["growing-crop_explain_title"]}`}>
+              수확 예정일
+            </span>
+            <span
+              className={`${cropStyles["growing-crop_explain_content"]}`}
+            ></span>
+          </div>
+          <div>
+            <span className={`${cropStyles["growing-crop_explain_title"]}`}>
+              평균 공부시간
+            </span>
+            <span
+              className={`${cropStyles["growing-crop_explain_content"]}`}
+            ></span>
+          </div>
+          <div>
+            <span className={`${cropStyles["growing-crop_explain_title"]}`}>
+              예상 작물등급
+            </span>
+            <span
+              className={`${cropStyles["growing-crop_explain_content"]}`}
+            ></span>
+          </div>
         </div>
       </div>
     </div>

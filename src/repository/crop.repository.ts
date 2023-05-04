@@ -162,6 +162,7 @@ export const getConsecutiveAttendanceDays = async (
         WHERE csd2.date IS NULL
            OR csd2.date <> csd1.date + INTERVAL '1 DAY'
     `);
+
   if (result.length === 0) {
     return 0;
   }

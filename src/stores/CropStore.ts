@@ -63,7 +63,7 @@ export class CropStore {
             this._cropName = "당근";
             break;
         }
-        this._cropImageSrc = crop.imageUrls[this._growingCrop!.level];
+        this._cropImageSrc = crop.imageUrls[this._growingCrop!.level - 1];
         return;
       }
     });
