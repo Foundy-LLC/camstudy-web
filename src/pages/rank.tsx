@@ -230,7 +230,11 @@ const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
               <label
                 className={`${rankStyles["rank-form__subtitle__label"]} typography__text--big`}
               >
-                전체 랭킹
+                {selected === rankType.TOTAL
+                  ? "전체 랭킹"
+                  : selected === rankType.WEEKLY
+                  ? "주간 랭킹"
+                  : "소속 랭킹"}
               </label>
             </div>
             <div className={`${rankStyles["my-rank-form"]}`}>
