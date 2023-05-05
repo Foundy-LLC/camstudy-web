@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { observer } from "mobx-react";
 import { Layout } from "@/components/Layout";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import rankStyles from "@/styles/rank.module.scss";
 import { useStores } from "@/stores/context";
 import { UserRankingOverview } from "@/models/rank/UserRankingOverview";
@@ -10,6 +10,8 @@ import Image from "next/image";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import { PagenationBar } from "@/components/PagenationBar";
 import { timeToString } from "@/components/TimeToString";
+import { RANK_TYPE, rankType } from "@/models/rank/RankType";
+import { MENU_DIV_POSITION } from "@/constants/rank.constant";
 
 const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
   ({ item }) => {
@@ -122,6 +124,37 @@ const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
 const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
   ({ items }) => {
     const { rankStore } = useStores();
+    const [selected, setSelected] = useState<RANK_TYPE>(rankType.TOTAL);
+    const [position, setPosition] = useState<number>(MENU_DIV_POSITION.TOTAL);
+
+    useEffect(() => {
+      switch (selected) {
+        case rankType.TOTAL:
+          setPosition(MENU_DIV_POSITION.TOTAL);
+          break;
+        case rankType.WEEKLY:
+          setPosition(MENU_DIV_POSITION.WEEKLY);
+          break;
+        case rankType.ORGANIZATIONS:
+          setPosition(MENU_DIV_POSITION.ORGANIZATIONS);
+          break;
+      }
+
+      const div = document.getElementsByClassName(
+        `${rankStyles["rank-header__menu__div"]}`
+      )[0] as HTMLElement;
+      if (div) {
+        div.animate({ left: position }, 200);
+        setTimeout(() => {
+          div.style.left = `${position}px`;
+        }, 200);
+      }
+    }, [selected, position]);
+
+    const menuOnClick = (menu: RANK_TYPE) => {
+      setSelected(menu);
+    };
+
     return (
       <>
         <div className={`${rankStyles["rank-page"]}`}>
@@ -131,23 +164,51 @@ const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
             >
               랭킹 목록
             </label>
+            <div className={`${rankStyles["rank-header__menu__div"]}`}></div>
             <button
               id="overall-rank"
-              className={`${rankStyles["rank-header__menu--selected"]} typography__text--big`}
+              className={`${
+                rankStyles[
+                  `rank-header__menu${
+                    selected === rankType.TOTAL ? "--selected" : ""
+                  }`
+                ]
+              } typography__text--big`}
+              onClick={() => {
+                menuOnClick(rankType.TOTAL);
+              }}
             >
               <label className={`${rankStyles["rank-header__menu__label"]}`}>
                 전체 랭킹
               </label>
             </button>
             <button
-              className={`${rankStyles["rank-header__menu"]} typography__text--big`}
+              className={`${
+                rankStyles[
+                  `rank-header__menu${
+                    selected === rankType.WEEKLY ? "--selected" : ""
+                  }`
+                ]
+              } typography__text--big`}
+              onClick={async () => {
+                await menuOnClick(rankType.WEEKLY);
+              }}
             >
               <label className={`${rankStyles["rank-header__menu__label"]}`}>
                 주간 랭킹
               </label>
             </button>
             <button
-              className={`${rankStyles["rank-header__menu"]} typography__text--big`}
+              className={`${
+                rankStyles[
+                  `rank-header__menu${
+                    selected === rankType.ORGANIZATIONS ? "--selected" : ""
+                  }`
+                ]
+              } typography__text--big`}
+              onClick={async () => {
+                await menuOnClick(rankType.ORGANIZATIONS);
+              }}
             >
               <label className={`${rankStyles["rank-header__menu__label"]}`}>
                 소속 랭킹

@@ -1,3 +1,21 @@
+@keyframes button-ani {
+  0% {
+    left: 26px;
+  }
+  100% {
+    left: 2px;
+  }
+}
+
+@keyframes button-active-ani {
+  0% {
+    left: 2px;
+  }
+  100% {
+    left: 26px;
+  }
+}
+
 .rank-page{
   background-color: var(--ui-cardui);
   overflow-y: scroll;
@@ -9,6 +27,7 @@
 }
 .rank-header{
   display: flex;
+  position: relative;
   margin: 24px 0px 0px 20px;
   .rank-header__title{
     font-weight: 600;
@@ -16,9 +35,10 @@
     margin-right: 12px;
   }
   .rank-header__menu{
+    z-index: 1;
     width: 88px;
     height: 28px;
-    background-color: var(--ui-cardui);
+    background-color: transparent;
     border-radius: 8px;
     color: var(--text-04);
     margin-left: 16px;
@@ -32,14 +52,27 @@
     }
   }
 
-  .rank-header__menu--selected{
+  .rank-header__menu__div {
+    z-index: 0;
+    position: absolute;
     width: 88px;
     height: 28px;
     background-color: var(--system_ui-02);
     border-radius: 8px;
     color: var(--text-04);
+    left: 144px;
+    margin-top: 7px;
+  }
+
+  .rank-header__menu--selected{
+    z-index: 1;
+    width: 88px;
+    height: 28px;
+    border-radius: 8px;
+    color: var(--text-04);
     margin-left: 16px;
     margin-top: 7px;
+    background-color: transparent;
     .rank-header__menu__label{
       color: var(--text-02);
       margin-left: 8px;
