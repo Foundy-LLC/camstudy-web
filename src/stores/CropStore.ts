@@ -87,9 +87,14 @@ export class CropStore {
   };
 
   //TODO: 작물 수확하고 작물 이미지랑 이름 비워주기
-  public getHarvestedCrops = async (userId: string) => {
+  public fetchHarvestedCrops = async (userId: string) => {
     try {
-      const result = await this._cropService.getHarvestedCrops(userId);
+      const reqBody = new UidValidationRequestBody(userId);
+      // if (!this._userStore.currentUser) {
+      //   throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      // }
+      // const uid = this._userStore.currentUser.id;
+      const result = await this._cropService.getHarvestedCrops(reqBody.userId);
       if (result.isSuccess) {
         runInAction(() => {
           this._harvestedCrops = result.getOrNull()!;
