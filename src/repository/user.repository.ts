@@ -35,6 +35,9 @@ export const findUser = async (userId: string): Promise<User | null> => {
   return {
     id: userAccount.id,
     name: userAccount.name,
+    profileImage: userAccount.profile_image
+      ? userAccount.profile_image
+      : undefined,
     introduce: userAccount.introduce,
     organizations: organizations,
     tags: tags,
