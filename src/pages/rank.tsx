@@ -9,6 +9,7 @@ import { UserStatus } from "@/models/user/UserStatus";
 import Image from "next/image";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import { PagenationBar } from "@/components/PagenationBar";
+import { timeToString } from "@/components/TimeToString";
 
 const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
   ({ item }) => {
@@ -44,19 +45,6 @@ const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
       }
       arr.push(score);
       return arr.reverse().join(",");
-    };
-
-    const timeToString = (studyTime: bigint): string => {
-      let time = Number(studyTime);
-      let divide = 60 * 60;
-      let timeArr: string[] = [];
-      while (time != 0) {
-        const result = Math.floor(time / divide);
-        timeArr.push(result < 10 ? "0" + result.toString() : result.toString());
-        time %= divide;
-        divide /= 60;
-      }
-      return timeArr.join(":");
     };
 
     return (

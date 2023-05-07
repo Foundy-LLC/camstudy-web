@@ -14,8 +14,12 @@ export class RankStore {
   private _errorMessage: string = "";
   private _successMessage: string = "";
   private _rankList?: UserRankingOverview[] = undefined;
-  private _userRank?: UserRankingOverview = undefined;
+  private _userTotalRank?: UserRankingOverview = undefined;
+  private _userWeekRank?: UserRankingOverview = undefined;
   private _rankMaxPage?: number = undefined;
+  private _totalUserCount?: number = undefined;
+  private _weeklyUserCount?: number = undefined;
+  private _totalPercentile?: string = undefined;
 
   constructor(
     root: RootStore,
@@ -38,13 +42,37 @@ export class RankStore {
     return this._rankList;
   }
 
-  public get userRank() {
-    return this._userRank;
+  public get userTotalRank() {
+    return this._userTotalRank;
+  }
+
+  public get userWeekRank() {
+    return this._userWeekRank;
   }
 
   public get rankMaxPage() {
     return this._rankMaxPage;
   }
+
+  public get totalUserCount() {
+    return this._totalUserCount;
+  }
+
+  public get weeklyUserCount() {
+    return this._weeklyUserCount;
+  }
+
+  public get totalPercentile() {
+    return this._totalPercentile;
+  }
+
+  public setTotalPercentile = () => {
+    this._totalPercentile = (
+      ((this._totalUserCount! - this._userTotalRank?.ranking!) /
+        this._totalUserCount!) *
+      100
+    ).toFixed(1);
+  };
 
   public getRank = async () => {
     try {
@@ -57,6 +85,7 @@ export class RankStore {
         runInAction(() => {
           const { totalUserCount, users } = result.getOrNull()!;
           this._rankList = users;
+          this._totalUserCount = Number(totalUserCount);
           this._rankMaxPage =
             Number(totalUserCount) % RANKING_NUM_PER_PAGE === 0
               ? Math.floor(Number(totalUserCount) / RANKING_NUM_PER_PAGE)
@@ -74,17 +103,48 @@ export class RankStore {
     }
   };
 
-  public getUserRank = async (userId: string) => {
+  public getUserTotalRank = async (userId: string) => {
     try {
       const result = await this._rankService.getUserRank(
         userId,
         this._selectedOrganizationId,
-        this._isWeeklyRank
+        false
       );
       if (result.isSuccess) {
         runInAction(() => {
           const { totalUserCount, users } = result.getOrNull()!;
-          this._userRank = users;
+          this._userTotalRank = users;
+          this._totalUserCount = Number(totalUserCount);
+          this.setTotalPercentile();
+          this._rankMaxPage =
+            Number(totalUserCount) % RANKING_NUM_PER_PAGE === 0
+              ? Math.floor(Number(totalUserCount) / RANKING_NUM_PER_PAGE)
+              : Math.floor(Number(totalUserCount) / RANKING_NUM_PER_PAGE) + 1;
+        });
+      } else {
+        runInAction(() => {
+          this._errorMessage = result.throwableOrNull()!.message;
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  };
+
+  public getUserWeeklyRank = async (userId: string) => {
+    try {
+      const result = await this._rankService.getUserRank(
+        userId,
+        this._selectedOrganizationId,
+        true
+      );
+      if (result.isSuccess) {
+        runInAction(() => {
+          const { totalUserCount, users } = result.getOrNull()!;
+          this._userWeekRank = users;
+          this._weeklyUserCount = Number(totalUserCount);
           this._rankMaxPage =
             Number(totalUserCount) % RANKING_NUM_PER_PAGE === 0
               ? Math.floor(Number(totalUserCount) / RANKING_NUM_PER_PAGE)

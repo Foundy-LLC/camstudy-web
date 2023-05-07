@@ -90,14 +90,9 @@ export class ProfileStore {
     this._imageUrl = URL.createObjectURL(thumbnail);
   };
 
-  public getUserProfile = async () => {
+  public getUserProfile = async (userId: string) => {
     try {
-      if (!this.userStore.currentUser) {
-        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
-      }
-      const result = await this._profileService.getUserProfile(
-        this.userStore.currentUser.id
-      );
+      const result = await this._profileService.getUserProfile(userId);
       if (result.isSuccess) {
         runInAction(() => {
           this._userOverview = result.getOrNull();

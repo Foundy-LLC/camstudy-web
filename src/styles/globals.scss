@@ -178,6 +178,56 @@
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.22), 0px 4px 24px rgba(0, 0, 0, 0.16);
 }
 
+
+//TODO(건우):다크모드 설정 값 없는 상태에서 테스트용 - 삭제 필요
+body {
+  //System Color
+  --system_background: #{$-White};
+  --system_ui-01: #{$-Gray-01};
+  --system_ui-02: #{$-Gray-02};
+  --system_ui-03: #{$-Gray-03};
+  --system_ui-04: #{$-Gray-04};
+  --system_ui-05: #{$-Gray-05};
+  --system_ui-06: #{$-Gray-06};
+  --system_ui-07: #{$-Gray-07};
+  --system_ui-08: #{$-Gray-08};
+  --system_ui-09: #{$-Gray-09};
+  --system_ui-10: #{$-Gray-10};
+
+  //UI Background Color
+  --ui-cardui: #{$-White};
+  --ui-cardui-01: #{$-White};
+  --ui-cardui-02: #{$-White};
+  --ui-cardui-03: #{$-White};
+  --ui-cardui-04: #{$-White};
+
+  //Process Color
+  --primary: #{$-Primary-05};
+  --primary-press: #{$-Primary-06};
+  --secondary: #{$-Gray-08};
+  --secondary-press: #{$-Gray-09};
+  --tertiary: #{$-White};
+  --tertiary-press: #{$-Gray-02};
+  --success: #{$-Success-07};
+  --error: #{$-Error-06};
+  --cancel: #{$-Gray-03};
+  --cancel-press: #{$-Gray-04};
+  --danger: #{$-Danger-06};
+  --danger-press: #{$-Danger-07};
+
+  --primary-02: #{$-Primary-02};
+  --status-login: #{$-Success-08};
+  --my-rank-form-background: #{$-Primary-01};
+  --my-rank-form-border:#{$-Primary-04};
+
+  //Text Color
+  --text-emphasize: #{$-Black};
+  --text-01: #{$-Gray-09};
+  --text-02: #{$-Gray-07};
+  --text-03: #{$-Gray-06};
+  --text-04: #{$-Gray-04};
+}
+
 body[color-theme='light'] {
   //System Color
   --system_background: #{$-White};

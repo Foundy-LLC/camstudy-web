@@ -26,6 +26,9 @@ export const findUser = async (
         select: { accepted: true },
       },
       belong: {
+        where: {
+          is_authenticated: true,
+        },
         include: {
           organization: true,
         },
