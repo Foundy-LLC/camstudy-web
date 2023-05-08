@@ -7,7 +7,10 @@ import { SEARCH_USERS_MAX_NUM } from "@/constants/user.constant";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
 
-export const findUser = async (userId: string): Promise<User | null> => {
+export const findUser = async (
+  userId: string,
+  requesterId: string
+): Promise<User | null> => {
   const userAccount = await prisma.user_account.findUnique({
     where: {
       id: userId,
@@ -19,7 +22,7 @@ export const findUser = async (userId: string): Promise<User | null> => {
         },
       },
       friend_friend_acceptor_idTouser_account: {
-        where: { requester_id: userId },
+        where: { requester_id: requesterId, acceptor_id: userId },
         select: { accepted: true },
       },
       belong: {
@@ -39,14 +42,13 @@ export const findUser = async (userId: string): Promise<User | null> => {
   return {
     id: userAccount.id,
     name: userAccount.name,
-    profileImage: userAccount.profile_image
-      ? userAccount.profile_image
-      : undefined,
-    requestHistory: userAccount.friend_friend_acceptor_idTouser_account[0]
-      ? userAccount.friend_friend_acceptor_idTouser_account[0].accepted === true
-        ? friendStatus.ACCEPTED
-        : friendStatus.REQUESTED
-      : friendStatus.NONE,
+    profileImage: userAccount.profile_image ?? undefined,
+    requestHistory:
+      userAccount.friend_friend_acceptor_idTouser_account[0] != null
+        ? userAccount.friend_friend_acceptor_idTouser_account[0].accepted
+          ? friendStatus.ACCEPTED
+          : friendStatus.REQUESTED
+        : friendStatus.NONE,
     introduce: userAccount.introduce,
     organizations: organizations,
     tags: tags,

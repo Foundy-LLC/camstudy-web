@@ -37,15 +37,22 @@ import { UserUpdateRequestBody } from "@/models/user/UserUpdateRequestBody";
 
 export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const requestBody = new UidValidationRequestBody(<string>req.query.userId);
-    const user = await findUser(requestBody.userId);
+    const { userId, requesterId } = req.query;
+    if (typeof userId !== "string" || typeof requesterId !== "string") {
+      res.status(400).send(
+        new ResponseBody({
+          message: "userId 혹은 requesterId가 잘못되었습니다.",
+        })
+      );
+      return;
+    }
+    const user = await findUser(userId, requesterId);
     if (user == null) {
       res
         .status(404)
         .send(new ResponseBody({ message: NOT_FOUND_USER_MESSAGE }));
       return;
     }
-
     res.status(200).send(
       new ResponseBody({
         message: USER_INFORMATION_LOOKUP_SUCCESS,
