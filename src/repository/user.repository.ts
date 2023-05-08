@@ -39,6 +39,7 @@ export const findUser = async (
   if (userAccount == null) {
     return null;
   }
+  console.log(userAccount);
   const organizations = userAccount.belong.map((b) => b.organization.name);
   const tags = userAccount.user_tag.map((t) => t.tag.name);
 

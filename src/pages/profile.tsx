@@ -259,6 +259,7 @@ const UserProfile: NextPage = observer(() => {
   const [user, loading] = useAuthState(auth);
   const { roomListStore, profileStore } = useStores();
   const fetcher = (args: string) => fetch(args).then((res) => res.json());
+  const [modalHidden, setModalHidden] = useState<boolean>(true);
   const { data, isLoading } = useSWR<ResponseBody<User>>(
     `/api/users/${user?.uid}`,
     fetcher
@@ -388,6 +389,7 @@ const UserProfile: NextPage = observer(() => {
             태그 삭제
           </button>
         </div>
+        <button onClick={() => {}}>프로필 보기</button>
       </Layout>
       <style jsx>
         {`

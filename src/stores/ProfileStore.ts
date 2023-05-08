@@ -96,6 +96,7 @@ export class ProfileStore {
       if (result.isSuccess) {
         runInAction(() => {
           this._userOverview = result.getOrNull();
+          console.log(this.userOverview?.requestHistory);
           this.importUserProfile(this._userOverview!);
         });
       } else {
