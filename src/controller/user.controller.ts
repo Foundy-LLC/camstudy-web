@@ -39,7 +39,6 @@ export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const requestBody = new UidValidationRequestBody(<string>req.query.userId);
     const user = await findUser(requestBody.userId);
-    console.log(user);
     if (user == null) {
       res
         .status(404)
