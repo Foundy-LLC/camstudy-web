@@ -18,6 +18,10 @@ export const findUser = async (userId: string): Promise<User | null> => {
           tag: true,
         },
       },
+      friend_friend_acceptor_idTouser_account: {
+        where: { requester_id: userId },
+        select: { accepted: true },
+      },
       belong: {
         include: {
           organization: true,
@@ -38,6 +42,11 @@ export const findUser = async (userId: string): Promise<User | null> => {
     profileImage: userAccount.profile_image
       ? userAccount.profile_image
       : undefined,
+    requestHistory: userAccount.friend_friend_acceptor_idTouser_account[0]
+      ? userAccount.friend_friend_acceptor_idTouser_account[0].accepted === true
+        ? friendStatus.ACCEPTED
+        : friendStatus.REQUESTED
+      : friendStatus.NONE,
     introduce: userAccount.introduce,
     organizations: organizations,
     tags: tags,
