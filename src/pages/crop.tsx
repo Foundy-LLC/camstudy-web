@@ -9,6 +9,8 @@ import router from "next/router";
 import cropStyles from "@/styles/crop.module.scss";
 import { observer } from "mobx-react";
 import { CROPS } from "@/constants/crops";
+import { GrowingCrop } from "@/models/crop/GrowingCrop";
+import { fruit_grade } from "@prisma/client";
 
 const crop: NextPage = () => {
   return (
@@ -108,7 +110,7 @@ const MyPot: NextPage = observer(() => {
                 <span
                   className={`${cropStyles["growing-crop_explain_content"]}`}
                 >
-                  {}
+                  {getRemainTime(cropStore.growingCrop)}
                 </span>
               </div>
               <div
@@ -120,7 +122,9 @@ const MyPot: NextPage = observer(() => {
                 <span
                   className={`${cropStyles["growing-crop_explain_content"]}`}
                 >
-                  {cropStore.growingCrop.averageStudyTimes}
+                  {revertAvgStudyTimeToText(
+                    cropStore.growingCrop.averageStudyTimes
+                  )}
                 </span>
               </div>
               <div
@@ -132,7 +136,7 @@ const MyPot: NextPage = observer(() => {
                 <span
                   className={`${cropStyles["growing-crop_explain_content"]}`}
                 >
-                  {cropStore.growingCrop.expectedGrade}
+                  {revertLevelToString(cropStore.growingCrop.expectedGrade)}
                 </span>
               </div>
             </div>
@@ -166,7 +170,11 @@ const MyPlants: NextPage = observer(() => {
           return CROPS.map((crop) => {
             return harvestedCrop.type === crop.type ? (
               <PlantBox
-                url={crop.imageUrls[crop.imageUrls.length - 1]}
+                url={
+                  crop.harvestedImageUrl[
+                    revertLevelToIndex(harvestedCrop.grade)
+                  ]
+                }
                 key={key}
               ></PlantBox>
             ) : null;
@@ -183,6 +191,79 @@ const PlantBox: NextPage<{ url: string }> = ({ url }) => {
       <Image src={url} alt={"plant_img"} width={80} height={80}></Image>
     </div>
   );
+};
+
+const revertAvgStudyTimeToText = (studyTime: number) => {
+  let totalMinutes = Math.floor(studyTime * 60); // 공부한 총 분 수
+  let hours = Math.floor(totalMinutes / 60); // 시간 구하기
+  let minutes = totalMinutes % 60; // 분 구하기
+
+  return `${hours}시간 ${minutes}분`; // 출력: "0시간 45분"
+};
+
+const revertLevelToIndex = (grade: fruit_grade) => {
+  switch (grade) {
+    case "diamond":
+      return 4;
+    case "gold":
+      return 3;
+    case "silver":
+      return 2;
+    case "fresh":
+      return 1;
+    case "not_fresh":
+      return 0;
+  }
+};
+
+const revertLevelToString = (grade: string) => {
+  switch (grade) {
+    case "diamond":
+      return "다이아";
+    case "gold":
+      return "골드";
+    case "silver":
+      return "실버";
+    case "fresh":
+      return "싱싱함";
+    case "not_fresh":
+      return "살짝 시들음";
+  }
+};
+
+const getRequireDay = (crop: GrowingCrop) => {
+  switch (crop.type) {
+    case "cabbage":
+      return 11;
+    case "strawberry":
+      return 7;
+    case "tomato":
+      return 5;
+    case "pumpkin":
+      return 9;
+    case "carrot":
+      return 3;
+  }
+};
+
+const getRemainTime = (crop: GrowingCrop) => {
+  const requiredDay = getRequireDay(crop);
+  const plantedAt = crop.plantedAt;
+  const currentDay = new Date();
+  const harvestedAt = new Date(
+    new Date(plantedAt).setDate(new Date(plantedAt).getDate() + requiredDay)
+  );
+
+  const gap = harvestedAt.getDate() - currentDay.getDate();
+
+  let hour = Math.floor(gap / 3600000);
+  let minute = Math.floor((gap % 3600000) / 60000);
+
+  if (hour < 0 || minute < 0) {
+    hour = 0;
+    minute = 0;
+  }
+  return `${hour}시간 ${minute}분 남음`;
 };
 
 export default crop;

@@ -9,6 +9,7 @@ export interface Crops {
    * 이 필드의 length는 작물의 최대 단계이다.
    */
   imageUrls: string[];
+  harvestedImageUrl: string[];
 }
 
 export const CROPS: Crops[] = [
@@ -22,6 +23,13 @@ export const CROPS: Crops[] = [
       "/strawberry/plant_strawberry_4.png",
       "/strawberry/plant_strawberry_5.png",
     ],
+    harvestedImageUrl: [
+      "/strawberry/item_wither_strawberry_1.png",
+      "/strawberry/item_strawberry_1.png",
+      "/strawberry/item_silver_strawberry_1.png",
+      "/strawberry/item_gold_strawberry_1.png",
+      "/strawberry/item_diamond_strawberry_1.png",
+    ],
   },
   {
     type: crops_type.tomato,
@@ -33,6 +41,13 @@ export const CROPS: Crops[] = [
       "/tomato/plant_tomato_4.png",
       "/tomato/plant_tomato_5.png",
     ],
+    harvestedImageUrl: [
+      "/tomato/item_wither_tomato_1.png",
+      "/tomato/item_tomato_1.png",
+      "/tomato/item_silver_tomato_1.png",
+      "/tomato/item_gold_tomato_1.png",
+      "/tomato/item_diamond_tomato_1.png",
+    ],
   },
   {
     type: crops_type.carrot,
@@ -41,6 +56,13 @@ export const CROPS: Crops[] = [
       "/carrot/plant_carrot_1.png",
       "/carrot/plant_carrot_2.png",
       "/carrot/plant_carrot_3.png",
+    ],
+    harvestedImageUrl: [
+      "/carrot/item_wither_carrot_1.png",
+      "/carrot/item_carrot_1.png",
+      "/carrot/item_silver_carrot_1.png",
+      "/carrot/item_gold_carrot_1.png",
+      "/carrot/item_diamond_carrot_1.png",
     ],
   },
   {
@@ -53,6 +75,13 @@ export const CROPS: Crops[] = [
       "/pumpkin/plant_pumpkin_4.png",
       "/pumpkin/plant_pumpkin_5.png",
     ],
+    harvestedImageUrl: [
+      "/pumpkin/item_wither_pumpkin_1.png",
+      "/pumpkin/item_pumpkin_1.png",
+      "/pumpkin/item_silver_pumpkin_1.png",
+      "/pumpkin/item_gold_pumpkin_1.png",
+      "/pumpkin/item_diamond_pumpkin_1.png",
+    ],
   },
   {
     type: crops_type.cabbage,
@@ -63,6 +92,13 @@ export const CROPS: Crops[] = [
       "/cabbage/plant_corn_2-1.png",
       "/cabbage/plant_corn_2-2.png",
       "/cabbage/plant_corn_2-3.png",
+    ],
+    harvestedImageUrl: [
+      "/cabbage/item_wither_cabbage_1.png",
+      "/cabbage/item_cabbage_1.png",
+      "/cabbage/item_silver_cabbage_1.png",
+      "/cabbage/item_gold_cabbage_1.png",
+      "/cabbage/item_diamond_cabbage_1.png",
     ],
   },
 ];
