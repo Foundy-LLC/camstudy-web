@@ -39,6 +39,7 @@ export const getUser = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { userId, requesterId } = req.query;
     if (typeof userId !== "string" || typeof requesterId !== "string") {
+      console.log(userId, requesterId);
       res.status(400).send(
         new ResponseBody({
           message: "userId 혹은 requesterId가 잘못되었습니다.",

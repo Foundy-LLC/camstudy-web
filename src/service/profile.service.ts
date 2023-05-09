@@ -5,19 +5,26 @@ import { fetchAbsolute } from "@/utils/fetchAbsolute";
 import { UserUpdateRequestBody } from "@/models/user/UserUpdateRequestBody";
 import { validateUid } from "@/utils/user.validator";
 import { TagDeleteRequestBody } from "@/models/tag/TagDeleteRequestBody";
+import { RankGetRequestBody } from "@/models/profile/ProfileGetRequestBody";
 
 const HEADER = {
   "Content-Type": "application/json",
 };
 
 export class ProfileService {
-  public getUserProfile = async (userId: string): Promise<Result<User>> => {
+  public getUserProfile = async (
+    userId: string,
+    requesterId: string
+  ): Promise<Result<User>> => {
     try {
-      const RequestBody = new UidValidationRequestBody(userId);
-      const response = await fetchAbsolute(`api/users/${RequestBody.userId}`, {
-        method: "GET",
-        headers: HEADER,
-      });
+      const RequestBody = new RankGetRequestBody(userId, requesterId);
+      const response = await fetchAbsolute(
+        `api/users/${RequestBody.userId}?requesterId=${RequestBody.requesterId}`,
+        {
+          method: "GET",
+          headers: HEADER,
+        }
+      );
       if (response.ok) {
         return Result.createSuccessUsingResponseData(response);
       } else {

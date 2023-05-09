@@ -173,7 +173,7 @@ const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
               </label>
             </div>
             <div className={`${rankStyles["my-rank-form"]}`}>
-              <RankItem item={rankStore.userRank!} />
+              <RankItem item={rankStore.userTotalRank!} />
             </div>
             {items.map((item) => (
               <RankItem item={item} key={item.id} />
@@ -205,7 +205,7 @@ const UserRanking: NextPage = observer(() => {
 
   useEffect(() => {
     if (!userStore.currentUser) return;
-    rankStore.getUserRank(userStore.currentUser.id);
+    rankStore.getUserTotalRank(userStore.currentUser.id);
     rankStore.getRank();
   }, [userStore.currentUser]);
 

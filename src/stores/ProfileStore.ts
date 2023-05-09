@@ -92,7 +92,13 @@ export class ProfileStore {
 
   public getUserProfile = async (userId: string) => {
     try {
-      const result = await this._profileService.getUserProfile(userId);
+      if (!this.userStore.currentUser) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      const result = await this._profileService.getUserProfile(
+        userId,
+        this.userStore.currentUser.id
+      );
       if (result.isSuccess) {
         runInAction(() => {
           this._userOverview = result.getOrNull();
