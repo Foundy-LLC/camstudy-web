@@ -327,6 +327,7 @@ const TagForm: NextPage = observer(() => {
   const tagInputRef = useRef<HTMLInputElement>(null);
   const debounceSearch = useDebounce(searchInput, 300);
   useEffect(() => {
+    console.log(debounceSearch);
     profileStore.onChangeTagInput(debounceSearch);
   }, [debounceSearch]);
 
@@ -375,6 +376,7 @@ const TagForm: NextPage = observer(() => {
         <input
           type={"text"}
           id={"tags"}
+          autoComplete={"off"}
           ref={tagInputRef}
           className={"typography__text--small"}
           placeholder="#수능, #개발, #공시 등 검색해주세요"

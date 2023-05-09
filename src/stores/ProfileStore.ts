@@ -318,9 +318,11 @@ export class ProfileStore {
 
   public async onChangeTagInput(tag: string) {
     try {
-      console.log(tag);
-      if (tag === "") return;
       this._typedTag = tag;
+      if (tag === "") {
+        this._recommendTags = [];
+        return;
+      }
       const result = await this._welcomeService.getTags(this._typedTag);
       if (result.isSuccess) {
         runInAction(() => {
