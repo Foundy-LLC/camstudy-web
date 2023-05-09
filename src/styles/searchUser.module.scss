@@ -83,22 +83,27 @@
         }
       }
 
-      .user-option-button {
-        width: 24px;
-        height: 24px;
+      .user-button{
+        display: flex;
         margin-left: auto;
-        margin-top: 24px;
-        margin-right: 16px;
-        background: var(--ui-cardui-01);
-
-        .user-option-icon {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          margin: auto;
-          width: 16px;
-          height: 4px;
+        margin-right: 20px;
+        background-color: var(--ui-cardui-01);
+        .user-add-friend__button{
+          margin-right: 20px;
+          background-color: var(--ui-cardui-01);
+          color: var(--text-01);
         }
+        .user-option__button {
+          background-color: var(--ui-cardui-01);
+          color: var(--text-01);
+          .user-option-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 16px;
+            height: 4px;
+          }
+      }
       }
     }
   }

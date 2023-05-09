@@ -12,6 +12,9 @@ import { UserStatus } from "@/models/user/UserStatus";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { useDebounce } from "@/components/UseDebounce";
 import { FRIEND_STATUS, friendStatus } from "@/constants/FriendStatus";
+import { NoneButton } from "@/components/friendRequestButton/NoneButton";
+import { RequestedButton } from "@/components/friendRequestButton/RequestedButton";
+import { AcceptedButton } from "@/components/friendRequestButton/AcceptedButton";
 
 const FriendOverview: NextPage<{ item: UserSearchOverview }> = observer(
   ({ item }) => {
@@ -60,54 +63,27 @@ const FriendOverview: NextPage<{ item: UserSearchOverview }> = observer(
               {introduce}
             </label>
           </div>
-          {requestHistory === friendStatus.NONE ? (
+          <div className={`${userStyles["user-button"]}`}>
+            {requestHistory === friendStatus.NONE ? (
+              <NoneButton name={name} userId={id} />
+            ) : requestHistory === friendStatus.REQUESTED ? (
+              <RequestedButton name={name} userId={id} />
+            ) : (
+              <AcceptedButton name={name} userId={id} />
+            )}
             <button
-              className={`${userStyles["user-add-friend__button"]}`}
+              className={`${userStyles["user-option__button"]}`}
               onClick={async () => {
                 if (
-                  confirm(`${name}님에게 친구 요청을 보내시겠어요?`) === true
+                  confirm(`${name}을 친구 목록에서 삭제하시겠어요?`) === true
                 ) {
-                  await friendStore.sendFriendRequest(id);
-                }
-              }}
-            >
-              <span className="material-symbols-sharp">person_add</span>
-            </button>
-          ) : requestHistory === friendStatus.REQUESTED ? (
-            <button
-              className={`${userStyles["user-add-friend__button"]}`}
-              onClick={async () => {
-                if (
-                  confirm(`${name}님에게 보낸 요청을 취소하시겠어요?`) === true
-                ) {
-                  await friendStore.cancelFriendRequest(id);
-                }
-              }}
-            >
-              <span className="material-symbols-sharp">send</span>
-            </button>
-          ) : (
-            <button
-              className={`${userStyles["user-add-friend__button"]}`}
-              onClick={async () => {
-                if (confirm(`${name}님과 친구를 끊으시겠어요?`) === true) {
                   await friendStore.deleteFriend(id);
                 }
               }}
             >
-              <span className="material-symbols-sharp">how_to_reg</span>
+              <span className="material-symbols-sharp">more_horiz</span>
             </button>
-          )}
-          <button
-            className={`${userStyles["user-option__button"]}`}
-            onClick={async () => {
-              if (confirm(`${name}을 친구 목록에서 삭제하시겠어요?`) === true) {
-                await friendStore.deleteFriend(id);
-              }
-            }}
-          >
-            <span className="material-symbols-sharp">more_horiz</span>
-          </button>
+          </div>
         </div>
         <style jsx>
           {`
