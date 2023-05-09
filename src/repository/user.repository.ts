@@ -2,10 +2,36 @@ import { user_account } from ".prisma/client";
 import prisma from "../../prisma/client";
 import { UserStatus } from "@/models/user/UserStatus";
 import { User } from "@/models/user/User";
-import { getMinutesDiff } from "@/utils/DateUtil";
 import { SEARCH_USERS_MAX_NUM } from "@/constants/user.constant";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
+import { Prisma } from "@prisma/client";
+
+const getConsecutiveStudyDays = async (userId: string): Promise<number> => {
+  const queryResult = await prisma.$queryRaw<{ count: number }[]>(Prisma.sql`
+    with local_study_dates as (
+        select distinct(
+           (join_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Seoul' + interval '-6 hours')::date
+        ) as study_date
+        from study_history
+        where user_id = ${userId} and join_at::date <= current_date
+    )
+    select count(*)
+    from local_study_dates
+    where local_study_dates.study_date > (
+        select date
+        from generate_series(date('2023-01-01'), current_date, '1 day') serial_dates(date)
+        left outer join local_study_dates on local_study_dates.study_date = serial_dates.date::date
+        where local_study_dates.study_date is null
+        order by serial_dates.date desc
+        limit 1
+    )
+  `);
+  if (queryResult.length === 0) {
+    return 0;
+  }
+  return Number(queryResult[0].count);
+};
 
 export const findUser = async (
   userId: string,
@@ -43,6 +69,7 @@ export const findUser = async (
     id: userAccount.id,
     name: userAccount.name,
     profileImage: userAccount.profile_image ?? undefined,
+    consecutiveStudyDays: await getConsecutiveStudyDays(userId),
     requestHistory:
       userAccount.friend_friend_acceptor_idTouser_account[0] != null
         ? userAccount.friend_friend_acceptor_idTouser_account[0].accepted
