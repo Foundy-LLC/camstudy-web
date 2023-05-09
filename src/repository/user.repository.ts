@@ -24,7 +24,9 @@ const getConsecutiveStudyDays = async (userId: string): Promise<number> => {
     from local_study_dates
     where local_study_dates.study_date > (
         select date
-        from generate_series(date('2023-01-01'), current_timestamp AT TIME ZONE 'KST', '1 day') serial_dates(date)
+        from generate_series(date('2023-05-01'), current_timestamp AT TIME ZONE 'KST' + interval ${Prisma.raw(
+          `'${minusUsingStandardHourText}'`
+        )}, '1 day') serial_dates(date)
         left outer join local_study_dates on local_study_dates.study_date = serial_dates.date::date
         where local_study_dates.study_date is null
         order by serial_dates.date desc
