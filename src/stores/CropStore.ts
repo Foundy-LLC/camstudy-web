@@ -76,7 +76,6 @@ export class CropStore {
       if (result.isSuccess) {
         runInAction(() => {
           this._growingCrop = result.getOrNull()!;
-          console.log(this.growingCrop);
           this._setCropImage();
         });
       } else {

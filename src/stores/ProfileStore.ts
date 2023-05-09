@@ -4,6 +4,7 @@ import profileService, { ProfileService } from "@/service/profile.service";
 import { User } from "@/models/user/User";
 import { UserStore } from "@/stores/UserStore";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
+import { FRIEND_STATUS } from "@/constants/FriendStatus";
 
 export class ProfileStore {
   readonly rootStore: RootStore;
@@ -102,7 +103,7 @@ export class ProfileStore {
       if (result.isSuccess) {
         runInAction(() => {
           this._userOverview = result.getOrNull();
-          console.log(this.userOverview?.requestHistory);
+          console.log(this.userOverview);
           this.importUserProfile(this._userOverview!);
         });
       } else {

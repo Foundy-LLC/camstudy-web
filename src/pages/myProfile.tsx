@@ -14,17 +14,21 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
     const { userStore, profileStore, cropStore, rankStore, friendStore } =
       useStores();
     useEffect(() => {
+      if (!userStore.currentUser) return;
       profileStore.getUserProfile(userId);
       cropStore.getHarvestedCrops(userId);
       cropStore.fetchGrowingCrop(userId);
       rankStore.getUserTotalRank(userId);
       rankStore.getUserWeeklyRank(userId);
-    }, []);
+    }, [userStore.currentUser]);
 
     useEffect(() => {
-      if (!profileStore.userOverview) return;
-      if (profileStore.userOverview.id !== userId) return;
-      setUser(profileStore.userOverview);
+      if (
+        profileStore.userOverview &&
+        profileStore.userOverview.id === userId
+      ) {
+        setUser(profileStore.userOverview);
+      }
     }, [profileStore.userOverview]);
 
     return (
@@ -65,11 +69,11 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
             <div
               className={`${profileDialogStyles["profile-dialog__profile"]}`}
             >
-              {profileStore.userOverview?.profileImage ? (
+              {user?.profileImage ? (
                 <Image
                   className={`${profileDialogStyles["profile-dialog__profile-image"]}`}
-                  src={profileStore.userOverview.profileImage}
-                  alt={profileStore.userOverview.name}
+                  src={user?.profileImage}
+                  alt={user?.name}
                   priority={true}
                   width={140}
                   height={140}
@@ -243,21 +247,27 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                 </label>
               </div>
             </div>
-            {userStore.currentUser?.id === profileStore.userOverview?.id ? (
+            {userStore.currentUser?.id === user?.id ? (
               <></>
-            ) : profileStore.userOverview?.requestHistory ===
-              friendStatus.REQUESTED ? (
+            ) : user?.requestHistory === friendStatus.REQUESTED ? (
               <button
                 className={`${profileDialogStyles["profile-dialog__friend-request__button--requested"]}`}
                 onClick={() => {
-                  if (profileStore.userOverview) {
-                    friendStore.sendFriendRequest(
-                      profileStore.userOverview?.id
-                    );
+                  if (
+                    confirm(
+                      `${user?.name}님에게 보낸 요청을 취소하시겠어요?`
+                    ) === true
+                  ) {
+                    friendStore.cancelFriendRequest(userId);
+                    setUser({ ...user!, requestHistory: friendStatus.NONE });
                   }
                 }}
               >
-                <span className="material-symbols-sharp">send</span>
+                <span
+                  className={`${profileDialogStyles["profile-dialog__icon"]} material-symbols-sharp`}
+                >
+                  send
+                </span>
                 <label
                   className={`${profileDialogStyles["profile-dialog__friend-request__button__label"]} typography__text`}
                 >
@@ -269,22 +279,23 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
               <button
                 className={`${profileDialogStyles["profile-dialog__friend-request__button--accepted"]}`}
                 onClick={() => {
-                  if (profileStore.userOverview) {
-                    friendStore.cancelFriendRequest(
-                      profileStore.userOverview?.id
-                    );
+                  if (
+                    confirm(`${user?.name}님을 친구에서 삭제하시겠어요?`) ===
+                    true
+                  ) {
+                    friendStore.deleteFriend(userId);
                   }
                 }}
               >
                 <span
                   className={`${profileDialogStyles["profile-dialog__icon"]} material-symbols-sharp`}
                 >
-                  person_add
+                  check
                 </span>
                 <label
                   className={`${profileDialogStyles["profile-dialog__friend-request__button__label"]} typography__text`}
                 >
-                  이미 친구입니다.
+                  이미 친구입니다
                 </label>
               </button>
             ) : (
@@ -292,9 +303,11 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                 className={`${profileDialogStyles["profile-dialog__friend-request__button"]}`}
                 onClick={() => {
                   if (profileStore.userOverview) {
-                    friendStore.sendFriendRequest(
-                      profileStore.userOverview?.id
-                    );
+                    friendStore.sendFriendRequest(userId);
+                    setUser({
+                      ...user!,
+                      requestHistory: friendStatus.REQUESTED,
+                    });
                   }
                 }}
               >

@@ -10,10 +10,13 @@ const HEADER = {
 export class UserService {
   public async getUser(userId: string): Promise<Result<User>> {
     try {
-      const response = await fetchAbsolute(`api/users/${userId}`, {
-        headers: HEADER,
-        method: "GET",
-      });
+      const response = await fetchAbsolute(
+        `api/users/${userId}?requesterId=${userId}`,
+        {
+          headers: HEADER,
+          method: "GET",
+        }
+      );
       if (response.ok)
         return await Result.createSuccessUsingResponseData(response);
       else return await Result.createErrorUsingResponseMessage(response);
