@@ -1,12 +1,26 @@
 import { NextPage } from "next";
+import profileDialogStyles from "@/styles/profileDialog.module.scss";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
-import profileDialogStyles from "@/styles/profileDialog.module.scss";
-import { useStores } from "@/stores/context";
 import { User } from "@/models/user/User";
-import { timeToString } from "@/components/TimeToString";
+import { useStores } from "@/stores/context";
 import Image from "next/image";
+import { timeToString } from "@/components/TimeToString";
 import { friendStatus } from "@/constants/FriendStatus";
+
+interface ClickableComponentProps {
+  onClick: () => void;
+}
+export const ProfileDialogContainer: NextPage<ClickableComponentProps> = ({
+  onClick,
+}) => {
+  return (
+    <div
+      onClick={onClick}
+      className={`${profileDialogStyles["profile-dialog__background"]}`}
+    ></div>
+  );
+};
 
 export const ProfileDialog: NextPage<{ userId: string }> = observer(
   ({ userId }) => {
@@ -274,8 +288,7 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                   친구 요청 전송됨
                 </label>
               </button>
-            ) : profileStore.userOverview?.requestHistory ===
-              friendStatus.ACCEPTED ? (
+            ) : user?.requestHistory === friendStatus.ACCEPTED ? (
               <button
                 className={`${profileDialogStyles["profile-dialog__friend-request__button--accepted"]}`}
                 onClick={() => {
@@ -284,6 +297,7 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                     true
                   ) {
                     friendStore.deleteFriend(userId);
+                    setUser({ ...user!, requestHistory: friendStatus.NONE });
                   }
                 }}
               >
@@ -326,6 +340,7 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
             )}
           </div>
         </div>
+
         <style jsx>
           {`
             .material-symbols-sharp {
@@ -337,15 +352,3 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
     );
   }
 );
-
-const myProfile: NextPage = observer(() => {
-  //ZwI7O4fBI1fvJfOANmq8vij6Pjm2
-  //B9j6GEh2PTSHgcrdNnNBRVAPkuX2
-  return (
-    <>
-      <ProfileDialog userId="ZwI7O4fBI1fvJfOANmq8vij6Pjm2" />
-    </>
-  );
-});
-
-export default myProfile;

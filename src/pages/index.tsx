@@ -15,9 +15,11 @@ import { Layout } from "@/components/Layout";
 import { crops_type } from "@prisma/client";
 import { RoomItemGroup } from "@/pages/rooms";
 import dashboardStyles from "@/styles/dashboard.module.scss";
-import { GrowingCrop } from "@/models/crop/GrowingCrop";
-import { CROPS } from "@/constants/crops";
 import Image from "next/image";
+import {
+  ProfileDialog,
+  ProfileDialogContainer,
+} from "@/components/ProfileDialog";
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
@@ -43,13 +45,13 @@ const HarvestedCropGroup: NextPage<{ items: HarvestedCrop[] }> = observer(
 function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const [uid, setUid] = useState(props.uid);
+  const [modal, setModal] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState("");
   const { cropStore, userStore } = useStores();
   // TODO(민성): UserProfileImage와 중복되는 코드 제거하기.
   const userProfileImageLoader = ({ src }: { src: string }): string => {
     return `${IMAGE_SERVER_URL}/users/${src}.png`;
   };
-
   // 테스트용
   const setCrop = async () => {
     const data = {
@@ -78,16 +80,41 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   }, []);
 
   return (
-    <Layout>
-      <div className={"typography__sub-headline"} style={{ padding: "20px" }}>
-        대시보드
-      </div>
-      <Dashboard userId={uid} />
-      <RoomItemGroup items={roomListStore.roomOverviews} />
-      {roomListStore.errorMessage === undefined ? null : (
-        <h3>{roomListStore.errorMessage}</h3>
+    <>
+      <Layout>
+        <div className={"typography__sub-headline"} style={{ padding: "20px" }}>
+          대시보드
+        </div>
+        <button
+          onClick={() => {
+            if (modal === "") {
+              //ZwI7O4fBI1fvJfOANmq8vij6Pjm2
+              //B9j6GEh2PTSHgcrdNnNBRVAPkuX2
+              setModal("ZwI7O4fBI1fvJfOANmq8vij6Pjm2");
+            } else {
+              setModal("");
+            }
+          }}
+        >
+          프로필 보기
+        </button>
+        <Dashboard userId={uid} />
+        <RoomItemGroup items={roomListStore.roomOverviews} />
+        {roomListStore.errorMessage === undefined ? null : (
+          <h3>{roomListStore.errorMessage}</h3>
+        )}
+      </Layout>
+      {modal !== "" && (
+        <>
+          <ProfileDialogContainer
+            onClick={() => {
+              setModal("");
+            }}
+          />
+          <ProfileDialog userId={modal} />
+        </>
       )}
-    </Layout>
+    </>
   );
 }
 
@@ -156,8 +183,7 @@ export const Dashboard: NextPage<{ userId: string }> = observer(
           .dashboard {
             display: flex;
             gap: 20px;
-            margin: auto;
-            margin-bottom: 24px;
+            margin: auto auto 24px;
           }
 
           .material-symbols-outlined {
