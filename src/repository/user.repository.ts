@@ -18,7 +18,7 @@ const getConsecutiveStudyDays = async (userId: string): Promise<number> => {
            )})::date
         ) as study_date
         from study_history
-        where user_id = ${userId} and join_at::date <= current_date
+        where user_id = ${userId}
     )
     select count(*)
     from local_study_dates
