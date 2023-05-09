@@ -6,12 +6,16 @@ import { SEARCH_USERS_MAX_NUM } from "@/constants/user.constant";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
 import { Prisma } from "@prisma/client";
+import { STANDARD_END_HOUR_OF_DAY } from "@/constants/common";
 
 const getConsecutiveStudyDays = async (userId: string): Promise<number> => {
+  const minusUsingStandardHourText: string = `-${STANDARD_END_HOUR_OF_DAY} hours`;
   const queryResult = await prisma.$queryRaw<{ count: number }[]>(Prisma.sql`
     with local_study_dates as (
         select distinct(
-           (join_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Seoul' + interval '-6 hours')::date
+           (join_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Seoul' + interval ${Prisma.raw(
+             `'${minusUsingStandardHourText}'`
+           )})::date
         ) as study_date
         from study_history
         where user_id = ${userId} and join_at::date <= current_date
