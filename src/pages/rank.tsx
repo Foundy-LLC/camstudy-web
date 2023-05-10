@@ -33,6 +33,7 @@ const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
           default:
             rank = "etc";
         }
+        if (item.rankingScore === 0) rank = "none";
         rankDiv.setAttribute("rank", rank);
         rankDiv.id = "";
       }
@@ -61,7 +62,7 @@ const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
             <label
               className={`${rankStyles["rank-form__content__ranking__label"]} typography__sub-headline--small`}
             >
-              {item.ranking}
+              {item.rankingScore === 0 ? "-" : item.ranking}
             </label>
           </div>
           <Image
