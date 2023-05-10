@@ -1,8 +1,6 @@
 @import "./color/colorPalette";
 
 .study-room__page{
-  height: 100%;
-  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,7 +10,7 @@
     flex-direction: column;
     .study-room__user-form{
       width: 1020px;
-      height: 960px;
+      height: 961px;
       background-color: #171717;
       &__grid{
         padding: 80px 50px 80px 50px;
@@ -83,13 +81,21 @@
       &__icon-form{
         display: grid;
         grid:". . .";
-        gap: 32px;
+        gap: 10px;
         position: absolute;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
         span{
+          padding: 5px;
+          border-radius: 20px;
           font-size: 45px;
+          &:hover{
+            background-color: $-Dark-03;
+          }
+          &:active{
+            background-color: $-Dark-02;
+          }
         }
       }
     }
@@ -98,6 +104,11 @@
     display: flex;
     flex-direction: column;
     background-color: #171717;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
 
     .study-room__timer-form{
       height: 448px;
@@ -131,31 +142,126 @@
         height: 36px;
         margin-bottom: 20px;
         margin-left: 28px;
+        display: flex;
+        align-items: center;
+        position: relative;
         label{
           color:$-White
+        }
+        .study-room__timer-form__drop-down{
+          display: flex;
+          z-index: 1;
+          width: 120px;
+          height: 36px;
+          margin-left: auto;
+          background-color: $-Dark-01;
+          color: $-White;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          label{
+            margin: 7px 16px;
+          }
+          span{
+            margin-left: auto;
+            margin-right: 6px;
+          }
+          &:hover{
+            background-color: $-Dark-03;
+          }
+          &:active{
+            background-color: $-Dark-02;
+            border-radius: 8px 8px 0px 0px;
+          }
+        }
+        ul{
+          position: absolute;
+          z-index: 0;
+          right: 0px;
+          top: 31px;
+          background-color: $-Dark-01;
+          border-radius: 0px 0px 8px 8px;
+          padding-top: 5px;
+          li{
+            display: flex;
+            align-items: center;
+            width: 120px;
+            height: 36px;
+            color: $-White;
+            border-radius: 8px;
+            label{
+              margin-left: 16px;
+            }
+            &:hover{
+              background-color: $-Dark-02;
+            }
+          }
         }
       }
       &__short-rest-set{
         width: 364px;
         height: 36px;
+        display: flex;
         margin-bottom: 20px;
         margin-left: 28px;
+        display: flex;
+        align-items: center;
         label{
           color:$-White
+        }
+        .study-room__timer-form__drop-down{
+          display: flex;
+          width: 120px;
+          height: 36px;
+          margin-left: auto;
+          background-color: $-Dark-01;
+          color: $-White;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          label{
+            margin: 7px 16px;
+          }
+          span{
+            margin-left: auto;
+            margin-right: 6px;
+          }
         }
       }
       &__long-rest-set{
         width: 364px;
         height: 36px;
+        display: flex;
         margin-bottom: 20px;
         margin-left: 28px;
+        display: flex;
+        align-items: center;
         label{
           color:$-White
+        }
+        .study-room__timer-form__drop-down{
+          display: flex;
+          width: 120px;
+          height: 36px;
+          margin-left: auto;
+          background-color: $-Dark-01;
+          color: $-White;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          label{
+            margin: 7px 16px;
+          }
+          span{
+            margin-left: auto;
+            margin-right: 6px;
+          }
         }
       }
       &__info{
         display: flex;
         width: 364px;
+        margin-top: 40px;
         margin-left: 28px;
         &__text{
           display: flex;

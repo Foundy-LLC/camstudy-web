@@ -1,10 +1,12 @@
 import { NextPage } from "next";
 import { observer } from "mobx-react";
 import studyRoomStyles from "@/styles/studyRoom.module.scss";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
+
 const StudyRoom: NextPage = observer(() => {
+  const [focused, setFocused] = useState<boolean>(false);
   return (
     <>
       <div className={`${studyRoomStyles["study-room__page"]}`}>
@@ -218,16 +220,58 @@ const StudyRoom: NextPage = observer(() => {
               className={`${studyRoomStyles["study-room__timer-form__time-set"]}`}
             >
               <label className="typography__text">뽀모도로 시간</label>
+              <div
+                className={`${studyRoomStyles["study-room__timer-form__drop-down"]} typography__text`}
+                onClick={() => setFocused(!focused)}
+              >
+                <label>25분</label>
+                <span className="material-symbols-rounded">expand_more</span>
+              </div>
+              <ul hidden={!focused}>
+                <li>
+                  <label>20분</label>
+                </li>
+                <li>
+                  <label>25분</label>
+                </li>
+                <li>
+                  <label>30분</label>
+                </li>
+                <li>
+                  <label>35분</label>
+                </li>
+                <li>
+                  <label>40분</label>
+                </li>
+                <li>
+                  <label>45분</label>
+                </li>
+                <li>
+                  <label>50분</label>
+                </li>
+              </ul>
             </div>
             <div
               className={`${studyRoomStyles["study-room__timer-form__short-rest-set"]}`}
             >
               <label className="typography__text">짧은 휴식 시간</label>
+              <div
+                className={`${studyRoomStyles["study-room__timer-form__drop-down"]} typography__text`}
+              >
+                <label>5분</label>
+                <span className="material-symbols-rounded">expand_more</span>
+              </div>
             </div>
             <div
               className={`${studyRoomStyles["study-room__timer-form__long-rest-set"]}`}
             >
               <label className="typography__text">긴 휴식 시간</label>
+              <div
+                className={`${studyRoomStyles["study-room__timer-form__drop-down"]} typography__text`}
+              >
+                <label>15분</label>
+                <span className="material-symbols-rounded">expand_more</span>
+              </div>
             </div>
             <div
               className={`${studyRoomStyles["study-room__timer-form__info"]}`}
