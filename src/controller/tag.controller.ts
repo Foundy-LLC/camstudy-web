@@ -12,7 +12,7 @@ import {
 import { TagGetRequestBody } from "@/models/welcome/TagGetRequestBody";
 import {
   TAG_NOT_REGISTERED_ERROR,
-  TAGS_DELETE_SUCCESS,
+  TAG_DELETE_SUCCESS,
   TAGS_GET_SUCCESS,
 } from "@/constants/tag.constant";
 import { TagDeleteRequestBody } from "@/models/tag/TagDeleteRequestBody";
@@ -59,7 +59,7 @@ export const deleteTag = async (req: NextApiRequest, res: NextApiResponse) => {
     await deleteTageById(userId, tagId);
     res.status(200).json(
       new ResponseBody({
-        message: TAGS_DELETE_SUCCESS,
+        message: TAG_DELETE_SUCCESS,
       })
     );
   } catch (e) {

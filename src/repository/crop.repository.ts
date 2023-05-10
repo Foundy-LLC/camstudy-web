@@ -7,6 +7,7 @@ import { crops, fruit_grade } from "@prisma/client";
 import { HarvestedCrop } from "@/models/crop/HarvestedCrop";
 import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
 import { STANDARD_END_HOUR_OF_DAY } from "@/constants/common";
+import { shiftToStandardDate } from "@/controller/crop.controller";
 
 export const getHarvestedCrops = async (
   userId: string
@@ -89,8 +90,20 @@ export const getTargetCropTypeAndPlantedDate = async (
   });
 };
 
+const isSameDate = (a: Date, b: Date): boolean => {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+};
+
 /**
  * 회원의 최근 연속 출석 일자를 반환한다.
+ *
+ * 만약 시작일 날짜와 첫 공부 기록의 날짜가 다른 경우 0을 반환한다.
+ * 예를 들어 2022-04-19 05:00에 작물을 심고 2022-04-19 06:00에 공부를 시작한 경우이다.
+ *
  * @param userId 회원의 아이디이다.
  * @param startDate 출석 기간을 확인할 시작 시간이다.
  * @param dayDuration 출석 기간에 포함할 기간이다. 시작 시간에 이 기간을 더하면 종료 시간이 된다.
@@ -104,31 +117,55 @@ export const getConsecutiveAttendanceDays = async (
   const endDate = new Date(startDate.getTime() + milliDuration);
   const minusUsingStandardHourText: string = `-${STANDARD_END_HOUR_OF_DAY} hours`;
 
-  const result: { num_continuous_days: number }[] = await prisma.$queryRaw(
-    Prisma.sql`
-            WITH study_days AS (
-                SELECT DISTINCT date_trunc('day', sh.join_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Seoul' +
-                    interval ${Prisma.raw(
-                      `'${minusUsingStandardHourText}'`
-                    )}) AS day
-                FROM study_history sh
-                WHERE sh.user_id = ${userId}
-                  AND sh.join_at >= (${startDate} AT TIME ZONE 'UTC')
-                  AND sh.join_at < (${endDate} AT TIME ZONE 'UTC')), 
-            continuous_days AS (
-                SELECT day, ROW_NUMBER() OVER () - DATE_PART('day', day) AS day_number
-                FROM study_days
+  const firstStudyHistoryQueryResult = await prisma.$queryRaw<
+    { join_at: Date }[]
+  >(Prisma.sql`
+        SELECT join_at
+        FROM study_history sh
+        WHERE sh.user_id = ${userId}
+          AND sh.join_at >= (${startDate} AT TIME ZONE 'UTC')
+          AND sh.join_at < (${endDate} AT TIME ZONE 'UTC')
+        ORDER BY join_at LIMIT 1
+    `);
+  if (firstStudyHistoryQueryResult.length === 0) {
+    return 0;
+  }
+  const firstStudyHistory = firstStudyHistoryQueryResult[0].join_at;
+  if (
+    !isSameDate(
+      shiftToStandardDate(firstStudyHistory),
+      shiftToStandardDate(startDate)
+    )
+  ) {
+    return 0;
+  }
+
+  const result: { consecutive_days: number }[] =
+    await prisma.$queryRaw(Prisma.sql`
+        WITH study_dates
+                 AS (SELECT DISTINCT DATE (sh.join_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Seoul' + interval ${Prisma.raw(
+                   `'${minusUsingStandardHourText}'`
+                 )}) AS date
+        FROM study_history sh
+        WHERE sh.user_id = ${userId}
+          AND sh.join_at >= (${startDate} AT TIME ZONE 'UTC')
+          AND sh.join_at
+            < (${endDate} AT TIME ZONE 'UTC')
             )
-            SELECT COUNT(*) AS num_continuous_days
-            FROM continuous_days
-            GROUP BY day_number
-            ORDER BY num_continuous_days DESC LIMIT 1;
-        `
-  );
+            , consecutive_study_dates AS (
+        SELECT date, ROW_NUMBER() OVER (ORDER BY date) AS row_number
+        FROM study_dates
+            )
+        SELECT csd1.row_number AS consecutive_days
+        FROM consecutive_study_dates csd1
+                 LEFT JOIN consecutive_study_dates csd2 ON csd2.row_number = csd1.row_number + 1
+        WHERE csd2.date IS NULL
+           OR csd2.date <> csd1.date + INTERVAL '1 DAY'
+    `);
   if (result.length === 0) {
     return 0;
   }
-  return Number(result[0].num_continuous_days);
+  return Number(result[0].consecutive_days);
 };
 
 export const getAverageStudyHours = async (
@@ -141,12 +178,12 @@ export const getAverageStudyHours = async (
 
   const result: { average_study_time: number }[] = await prisma.$queryRaw(
     Prisma.sql`SELECT SUM(extract(epoch from (COALESCE(exit_at, ${endDate}) - join_at))) /
-                    (3600 * ${requireDay}) as average_study_time
-               FROM study_history
-               WHERE user_id = ${body.userId}
-                 AND join_at >= (${plantedAt} AT TIME ZONE 'UTC')
-                 AND join_at < (${endDate} AT TIME ZONE 'UTC')
-               GROUP BY user_id;`
+                          (3600 * ${requireDay}) as average_study_time
+                   FROM study_history
+                   WHERE user_id = ${body.userId}
+                     AND join_at >= (${plantedAt} AT TIME ZONE 'UTC')
+                     AND join_at < (${endDate} AT TIME ZONE 'UTC')
+                   GROUP BY user_id;`
   );
 
   return result[0].average_study_time;
@@ -162,12 +199,12 @@ export const getExpectedAverageStudyHours = async (
 
   const result: { average_study_time: number }[] = await prisma.$queryRaw(
     Prisma.sql`SELECT SUM(extract(epoch from (exit_at - join_at))) / (3600 * ${dayDuration}) as average_study_time
-               FROM study_history
-               WHERE user_id = ${userId}
-                 AND exit_at is NOT NULL
-                 AND join_at >= (${plantedAt} AT TIME ZONE 'UTC')
-                 AND join_at < (${endDate} AT TIME ZONE 'UTC')
-               GROUP BY user_id;`
+                   FROM study_history
+                   WHERE user_id = ${userId}
+                     AND exit_at is NOT NULL
+                     AND join_at >= (${plantedAt} AT TIME ZONE 'UTC')
+                     AND join_at < (${endDate} AT TIME ZONE 'UTC')
+                   GROUP BY user_id;`
   );
   if (result.length === 0) {
     return 0;
