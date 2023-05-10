@@ -204,6 +204,7 @@ export class OrganizationStore {
   }
 
   public async fetchBelongOrganizations() {
+    if (!this._userStore.currentUser) return;
     const result = await this._organizationService.getBelongOrganizations(
       this._userStore.currentUser!.id
     );

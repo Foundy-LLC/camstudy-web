@@ -4,30 +4,69 @@ import profileService, { ProfileService } from "@/service/profile.service";
 import { User } from "@/models/user/User";
 import { UserStore } from "@/stores/UserStore";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
+import {
+  TAG_DELETE_SUCCESS,
+  TAG_DUPLICATED_ERROR,
+  TAG_MAX_LENGTH_ERROR,
+  TAG_SAVE_SUCCESS,
+} from "@/constants/tag.constant";
+import { validateUserTags } from "@/utils/user.validator";
+import { USER_TAG_MAX_COUNT } from "@/constants/user.constant";
+import { Tag } from "@/models/welcome/Tag";
+import { welcomeService, WelcomeService } from "@/service/welcome.service";
 
 export class ProfileStore {
   readonly rootStore: RootStore;
   readonly userStore: UserStore;
   private _userOverview?: User = undefined;
   private _selectedImageFile?: File = undefined;
+  private _typedTag: string = "";
+  private _tagDropDownHidden: boolean = true;
   private _imageUrl?: string = undefined;
   private _nickName?: string = undefined;
   private _tags?: string[] = undefined;
+  private _recommendTags: Tag[] = [];
+  private _unsavedTags: string[] = [];
+  private _deletedTags: string[] = [];
   private _introduce?: string | null = undefined;
   private _organizations?: string[] = undefined;
   private _errorMessage: string = "";
+  private _successMessage: string = "";
+  private _tagUpdateSuccessMessage: string = "";
+  private _tagUpdateErrorMessage: string = "";
   private _editSuccess?: boolean = undefined;
   constructor(
     root: RootStore,
-    private readonly _profileService: ProfileService = profileService
+    private readonly _profileService: ProfileService = profileService,
+    private readonly _welcomeService: WelcomeService = welcomeService
   ) {
     makeAutoObservable(this);
     this.rootStore = root;
     this.userStore = root.userStore;
   }
 
-  public get userOverview() {
-    return this._userOverview;
+  public get errorMessage() {
+    return this._errorMessage;
+  }
+
+  public get successMessage() {
+    return this._successMessage;
+  }
+
+  public get tagUpdateSuccessMessage() {
+    return this._tagUpdateSuccessMessage;
+  }
+
+  public get tagUpdateErrorMessage() {
+    return this._tagUpdateErrorMessage;
+  }
+
+  public get unsavedTags() {
+    return this._unsavedTags;
+  }
+
+  public get deletedTags() {
+    return this._deletedTags;
   }
 
   public get nickName() {
@@ -36,6 +75,10 @@ export class ProfileStore {
 
   public get tags() {
     return this._tags;
+  }
+
+  public get typedTag() {
+    return this._typedTag;
   }
 
   public get introduce() {
@@ -54,7 +97,19 @@ export class ProfileStore {
     return this._editSuccess;
   }
 
-  importUserProfile = (profile: User) => {
+  public get recommendTags() {
+    return this._recommendTags;
+  }
+
+  public get tagDropDownHidden() {
+    return this._tagDropDownHidden;
+  }
+
+  public setTagDropDownHidden(hidden: boolean) {
+    this._tagDropDownHidden = hidden;
+  }
+
+  public importUserProfile = (profile: User) => {
     runInAction(() => {
       this._nickName = profile.name;
       this._introduce = profile.introduce;
@@ -63,16 +118,11 @@ export class ProfileStore {
     });
   };
 
-  public onChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  public onChanged = async (e: React.ChangeEvent<HTMLInputElement>) => {
     this._editSuccess = undefined;
     switch (e.target.id) {
       case "nickName":
         this._nickName = e.target.value;
-        break;
-      case "tags":
-        this._tags = this._tags
-          ? [...this._tags, e.target.value]
-          : [e.target.value];
         break;
       case "introduce":
         this._introduce = e.target.value;
@@ -82,6 +132,30 @@ export class ProfileStore {
           ? [...this._organizations, e.target.value]
           : [e.target.value];
         break;
+    }
+  };
+
+  public enterTag = async () => {
+    try {
+      if (this._tags!.some((tag) => tag === this._typedTag)) {
+        throw TAG_DUPLICATED_ERROR;
+      }
+      if (this._tags!.length >= USER_TAG_MAX_COUNT) {
+        this._tagUpdateErrorMessage = TAG_MAX_LENGTH_ERROR;
+        throw TAG_MAX_LENGTH_ERROR;
+      }
+      if (this._typedTag) {
+        this._tags!.push(this._typedTag);
+        this._unsavedTags.push(this._typedTag);
+        this._recommendTags = [];
+        this._typedTag = "";
+        this._tagUpdateErrorMessage = "";
+      }
+    } catch (e) {
+      if (typeof e === "string") {
+        this._tagUpdateErrorMessage = e;
+        this._tagUpdateSuccessMessage = "";
+      }
     }
   };
 
@@ -132,7 +206,7 @@ export class ProfileStore {
         this.userStore.currentUser.id,
         this._nickName,
         this._introduce,
-        this._tags
+        this._userOverview!.tags
       );
       if (result.isSuccess) {
         runInAction(() => {
@@ -158,7 +232,59 @@ export class ProfileStore {
     }
   };
 
-  public deleteTag = async (tagName: string) => {
+  public saveTagsButtonOnClick = async () => {
+    this._deletedTags.map(async (tag) => await this.deleteTags(tag));
+    await this.updateTags();
+  };
+
+  public updateTags = async () => {
+    try {
+      if (!this.userStore.currentUser) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      if (
+        !this._userOverview ||
+        !this._userOverview.name ||
+        !this._userOverview.introduce ||
+        !this._tags
+      ) {
+        throw new Error(NO_USER_STORE_ERROR_MESSAGE);
+      }
+      const result = await this._profileService.updateProfile(
+        this.userStore.currentUser.id,
+        this._userOverview.name,
+        this._userOverview.introduce,
+        this._tags
+      );
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._tagUpdateSuccessMessage = TAG_SAVE_SUCCESS;
+          this._tagUpdateErrorMessage = "";
+          this._unsavedTags = [];
+          this._deletedTags = [];
+        });
+      } else {
+        runInAction(() => {
+          throw new Error(result.throwableOrNull()!.message);
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  };
+
+  public addDeletedTag = (tagName: string) => {
+    if (this._unsavedTags.some((tag) => tag === tagName)) {
+      this._unsavedTags = this._unsavedTags!.filter((tag) => tag !== tagName);
+    } else {
+      this._deletedTags.push(tagName);
+    }
+    this._tags = this._tags!.filter((tag) => tag !== tagName);
+  };
+
+  public deleteTags = async (tagName: string) => {
     try {
       if (!this.userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
@@ -173,7 +299,11 @@ export class ProfileStore {
             ...this._userOverview!,
             tags: this._userOverview!.tags.filter((tag) => tag !== tagName),
           };
-          console.log(tagName, "삭제 성공");
+          this._tags = this._tags!.filter((tag) => tag !== tagName);
+          this._tagUpdateSuccessMessage = TAG_DELETE_SUCCESS;
+          this._unsavedTags = this._unsavedTags.filter(
+            (tag) => tag !== tagName
+          );
         });
       } else {
         runInAction(() => {
@@ -186,4 +316,30 @@ export class ProfileStore {
       });
     }
   };
+
+  public async onChangeTagInput(tag: string) {
+    try {
+      this._typedTag = tag;
+      if (tag === "") {
+        this._recommendTags = [];
+        return;
+      }
+      const result = await this._welcomeService.getTags(this._typedTag);
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._tagUpdateErrorMessage = "";
+          this._recommendTags = result.getOrNull()!;
+        });
+      } else {
+        runInAction(() => {
+          this._tagUpdateSuccessMessage = "";
+          this._errorMessage = result.throwableOrNull()!.message;
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  }
 }
