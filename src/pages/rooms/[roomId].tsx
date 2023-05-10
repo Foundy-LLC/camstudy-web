@@ -100,9 +100,6 @@ const WaitingRoom: NextPage<{
         {roomStore.enabledHeadset ? "Mute Headset" : "Unmute Headset"}
       </button>
       <div style={{ padding: "16px" }}>
-        {roomStore.failedToJoinMessage !== undefined ? (
-          <div>{roomStore.failedToJoinMessage}</div>
-        ) : undefined}
         {roomStore.hasPassword ? (
           <input
             type="password"

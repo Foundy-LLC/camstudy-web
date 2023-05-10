@@ -5,8 +5,44 @@ import { User } from "@/models/user/User";
 import { SEARCH_USERS_MAX_NUM } from "@/constants/user.constant";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { friendStatus } from "@/constants/FriendStatus";
+import { Prisma } from "@prisma/client";
+import { STANDARD_END_HOUR_OF_DAY } from "@/constants/common";
 
-export const findUser = async (userId: string): Promise<User | null> => {
+const getConsecutiveStudyDays = async (userId: string): Promise<number> => {
+  const minusUsingStandardHourText: string = `-${STANDARD_END_HOUR_OF_DAY} hours`;
+  const queryResult = await prisma.$queryRaw<{ count: number }[]>(Prisma.sql`
+    with local_study_dates as (
+        select distinct(
+           (join_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Seoul' + interval ${Prisma.raw(
+             `'${minusUsingStandardHourText}'`
+           )})::date
+        ) as study_date
+        from study_history
+        where user_id = ${userId}
+    )
+    select count(*)
+    from local_study_dates
+    where local_study_dates.study_date > (
+        select date
+        from generate_series(date('2023-05-01'), current_timestamp AT TIME ZONE 'KST' + interval ${Prisma.raw(
+          `'${minusUsingStandardHourText}'`
+        )}, '1 day') serial_dates(date)
+        left outer join local_study_dates on local_study_dates.study_date = serial_dates.date::date
+        where local_study_dates.study_date is null
+        order by serial_dates.date desc
+        limit 1
+    )
+  `);
+  if (queryResult.length === 0) {
+    return 0;
+  }
+  return Number(queryResult[0].count);
+};
+
+export const findUser = async (
+  userId: string,
+  requesterId: string
+): Promise<User | null> => {
   const userAccount = await prisma.user_account.findUnique({
     where: {
       id: userId,
@@ -16,6 +52,10 @@ export const findUser = async (userId: string): Promise<User | null> => {
         include: {
           tag: true,
         },
+      },
+      friend_friend_acceptor_idTouser_account: {
+        where: { requester_id: requesterId, acceptor_id: userId },
+        select: { accepted: true },
       },
       belong: {
         include: {
@@ -34,6 +74,14 @@ export const findUser = async (userId: string): Promise<User | null> => {
   return {
     id: userAccount.id,
     name: userAccount.name,
+    profileImage: userAccount.profile_image ?? undefined,
+    consecutiveStudyDays: await getConsecutiveStudyDays(userId),
+    requestHistory:
+      userAccount.friend_friend_acceptor_idTouser_account[0] != null
+        ? userAccount.friend_friend_acceptor_idTouser_account[0].accepted
+          ? friendStatus.ACCEPTED
+          : friendStatus.REQUESTED
+        : friendStatus.NONE,
     introduce: userAccount.introduce,
     organizations: organizations,
     tags: tags,

@@ -187,11 +187,10 @@ export class RoomStore implements RoomViewModel {
     return waitingRoomData.blacklist.some((user) => user.id === currentUserId);
   };
 
-  public get failedToJoinMessage(): string | undefined {
-    return this._failedToJoinMessage;
-  }
-
   public get waitingRoomMessage(): string | undefined {
+    if (this._failedToJoinMessage != null) {
+      return this._failedToJoinMessage;
+    }
     const waitingRoomData = this._waitingRoomData;
     if (waitingRoomData === undefined) {
       return CONNECTING_ROOM_MESSAGE;
@@ -315,17 +314,27 @@ export class RoomStore implements RoomViewModel {
     return this._userMessage;
   }
 
-  public connectSocket = (roomId: string) => {
+  public connectSocket = async (roomId: string) => {
     // 이미 로그인 되어있으면 곧바로 소켓에 연결
     if (this._auth.currentUser != null) {
-      this._roomService.connect(roomId);
+      const result = await this._roomService.connect(roomId);
+      if (result.isFailure) {
+        runInAction(() => {
+          this._failedToJoinMessage = result.throwableOrNull()!.message;
+        });
+      }
       return;
     }
     // 아니라면 연결 되고나서 소켓에 연결
-    const unsubscribe = this._auth.onAuthStateChanged((state) => {
+    const unsubscribe = this._auth.onAuthStateChanged(async (state) => {
       unsubscribe();
       if (state != null) {
-        this._roomService.connect(roomId);
+        const result = await this._roomService.connect(roomId);
+        if (result.isFailure) {
+          runInAction(() => {
+            this._failedToJoinMessage = result.throwableOrNull()!.message;
+          });
+        }
       } else {
         this._failedToSignIn = true;
       }

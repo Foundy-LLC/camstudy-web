@@ -140,6 +140,7 @@ export class ProfileStore {
           this._userOverview = {
             id: this._userOverview!.id,
             name: this._nickName!,
+            consecutiveStudyDays: this._userOverview!.consecutiveStudyDays,
             introduce: this._introduce!,
             tags: this._tags!,
             organizations: this._userOverview!.organizations,
