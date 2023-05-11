@@ -106,6 +106,10 @@ export class ProfileStore {
     return this._tagDropDownHidden;
   }
 
+  public get userOverview() {
+    return this._userOverview;
+  }
+
   public setTagDropDownHidden(hidden: boolean) {
     this._tagDropDownHidden = hidden;
   }
