@@ -124,7 +124,7 @@ const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
 
 const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
   ({ items }) => {
-    const { rankStore } = useStores();
+    const { rankStore, userStore } = useStores();
     const [selected, setSelected] = useState<RANK_TYPE>(rankType.TOTAL);
     const [position, setPosition] = useState<number>(MENU_DIV_POSITION.TOTAL);
 
@@ -182,6 +182,10 @@ const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
               <label className={`${rankStyles["rank-header__menu__label"]}`}>
                 전체 랭킹
               </label>
+              {selected === rankType.TOTAL &&
+                userStore.currentUser?.organizations.map((organization) => (
+                  <div>{organization}</div>
+                ))}
             </button>
             <button
               className={`${
