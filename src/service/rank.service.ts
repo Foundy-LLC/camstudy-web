@@ -19,11 +19,15 @@ export class RankService {
         pageNum,
         isWeeklyRank
       );
-      let response;
-      // if (requestBody.isWeeklyRank) {
-      // }else{
-      response = await rankingApiFetch(
-        `api/ranking?page=${requestBody.pageNum}&weekly=${requestBody.isWeeklyRank}`,
+      console.log(
+        `api/ranking?page=${requestBody.pageNum}&weekly=${
+          requestBody.isWeeklyRank
+        }${organizationId ? `&organizationId=${Number(organizationId)}` : ""}`
+      );
+      const response = await rankingApiFetch(
+        `api/ranking?page=${requestBody.pageNum}&weekly=${
+          requestBody.isWeeklyRank
+        }${organizationId ? `&organizationId=${Number(organizationId)}` : ""}`,
         {
           method: "GET",
           headers: {
@@ -57,7 +61,9 @@ export class RankService {
         isWeeklyRank
       );
       const response = await rankingApiFetch(
-        `api/ranking/${requestBody.userId}?&weekly=${requestBody.isWeeklyRank}`,
+        `api/ranking/${requestBody.userId}?&weekly=${requestBody.isWeeklyRank}${
+          organizationId ? `&organizationId=${organizationId}` : ""
+        }`,
         {
           method: "GET",
           headers: {

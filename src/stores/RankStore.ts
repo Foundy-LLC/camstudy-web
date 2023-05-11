@@ -54,6 +54,10 @@ export class RankStore {
     return this._rankMaxPage;
   }
 
+  public get isWeeklyRank() {
+    return this._isWeeklyRank;
+  }
+
   public get totalUserCount() {
     return this._totalUserCount;
   }
@@ -74,6 +78,14 @@ export class RankStore {
     ).toFixed(1);
   };
 
+  public setIsWeekly = (isWeekly: boolean) => {
+    this._isWeeklyRank = isWeekly;
+  };
+
+  public setSelectedOrganizationId = (organizationId: string | undefined) => {
+    this._selectedOrganizationId = organizationId;
+  };
+
   public getRank = async () => {
     try {
       const result = await this._rankService.getRank(
@@ -84,6 +96,7 @@ export class RankStore {
       if (result.isSuccess) {
         runInAction(() => {
           const { totalUserCount, users } = result.getOrNull()!;
+          console.log(users);
           this._rankList = users;
           this._totalUserCount = Number(totalUserCount);
           this._rankMaxPage =

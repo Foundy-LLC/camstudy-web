@@ -12,6 +12,7 @@ import { PagenationBar } from "@/components/PagenationBar";
 import { timeToString } from "@/components/TimeToString";
 import { RANK_TYPE, rankType } from "@/models/rank/RankType";
 import { MENU_DIV_POSITION } from "@/constants/rank.constant";
+import { OrganizationSelectButton } from "@/components/OrganizationSelectButton";
 
 const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
   ({ item }) => {
@@ -95,12 +96,14 @@ const RankItem: NextPage<{ item: UserRankingOverview }> = observer(
             <label
               className={`${rankStyles["rank-form__content__score"]} typography__sub-headline--small`}
             >
-              {scoreToString(item.rankingScore)} 점
+              {item.rankingScore !== 0
+                ? scoreToString(item.rankingScore) + " 점"
+                : "점수 없음"}
             </label>
             <label
               className={`${rankStyles["rank-form__content__study-time"]} typography__sub-headline--small`}
             >
-              {timeToString(item.studyTime)}
+              {item.studyTime ? timeToString(item.studyTime) : "00:00:00"}
             </label>
           </div>
 
@@ -136,11 +139,8 @@ const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
         case rankType.WEEKLY:
           setPosition(MENU_DIV_POSITION.WEEKLY);
           break;
-        case rankType.ORGANIZATIONS:
-          setPosition(MENU_DIV_POSITION.ORGANIZATIONS);
-          break;
       }
-
+      rankStore.setIsWeekly(selected === rankType.WEEKLY);
       const div = document.getElementsByClassName(
         `${rankStyles["rank-header__menu__div"]}`
       )[0] as HTMLElement;
@@ -182,10 +182,6 @@ const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
               <label className={`${rankStyles["rank-header__menu__label"]}`}>
                 전체 랭킹
               </label>
-              {selected === rankType.TOTAL &&
-                userStore.currentUser?.organizations.map((organization) => (
-                  <div>{organization}</div>
-                ))}
             </button>
             <button
               className={`${
@@ -195,28 +191,12 @@ const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
                   }`
                 ]
               } typography__text--big`}
-              onClick={async () => {
-                await menuOnClick(rankType.WEEKLY);
+              onClick={() => {
+                menuOnClick(rankType.WEEKLY);
               }}
             >
               <label className={`${rankStyles["rank-header__menu__label"]}`}>
                 주간 랭킹
-              </label>
-            </button>
-            <button
-              className={`${
-                rankStyles[
-                  `rank-header__menu${
-                    selected === rankType.ORGANIZATIONS ? "--selected" : ""
-                  }`
-                ]
-              } typography__text--big`}
-              onClick={async () => {
-                await menuOnClick(rankType.ORGANIZATIONS);
-              }}
-            >
-              <label className={`${rankStyles["rank-header__menu__label"]}`}>
-                소속 랭킹
               </label>
             </button>
             <span
@@ -226,24 +206,27 @@ const RankItemGroup: NextPage<{ items: UserRankingOverview[] }> = observer(
             </span>
           </div>
           <div className={`${rankStyles["rank-form"]}`}>
-            <div className={`${rankStyles["rank-form__subtitle"]}`}>
-              <span
-                className={`${rankStyles["rank-form__subtitle__icon"]} material-symbols-sharp`}
-              >
-                insert_chart
-              </span>
-              <label
-                className={`${rankStyles["rank-form__subtitle__label"]} typography__text--big`}
-              >
-                {selected === rankType.TOTAL
-                  ? "전체 랭킹"
-                  : selected === rankType.WEEKLY
-                  ? "주간 랭킹"
-                  : "소속 랭킹"}
-              </label>
+            <div style={{ display: "flex", height: "55px" }}>
+              <div className={`${rankStyles["rank-form__subtitle"]}`}>
+                <span
+                  className={`${rankStyles["rank-form__subtitle__icon"]} material-symbols-sharp`}
+                >
+                  insert_chart
+                </span>
+                <label
+                  className={`${rankStyles["rank-form__subtitle__label"]} typography__text--big`}
+                >
+                  {selected === rankType.TOTAL ? "전체 랭킹" : "주간 랭킹"}
+                </label>
+              </div>
+              {selected === rankType.TOTAL && <OrganizationSelectButton />}
             </div>
             <div className={`${rankStyles["my-rank-form"]}`}>
-              <RankItem item={rankStore.userTotalRank!} />
+              {selected === rankType.WEEKLY && rankStore.userWeekRank ? (
+                <RankItem item={rankStore.userWeekRank} />
+              ) : (
+                <RankItem item={rankStore.userTotalRank!} />
+              )}
             </div>
             {items.map((item) => (
               <RankItem item={item} key={item.id} />
@@ -275,9 +258,13 @@ const UserRanking: NextPage = observer(() => {
 
   useEffect(() => {
     if (!userStore.currentUser) return;
-    rankStore.getUserTotalRank(userStore.currentUser.id);
+    if (!rankStore.isWeeklyRank) {
+      rankStore.getUserTotalRank(userStore.currentUser.id);
+    } else {
+      rankStore.getUserWeeklyRank(userStore.currentUser.id);
+    }
     rankStore.getRank();
-  }, [userStore.currentUser]);
+  }, [userStore.currentUser, rankStore.isWeeklyRank]);
 
   return (
     <>
