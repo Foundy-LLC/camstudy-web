@@ -447,9 +447,9 @@ const UserProfile: NextPage = observer(() => {
     if (profileStore.editSuccess === true) {
       setChanged(false);
       console.log("프로필 변경 성공");
-      profileStore.getUserProfile();
+      profileStore.getUserProfile(userStore.currentUser.id);
     } else {
-      profileStore.getUserProfile();
+      profileStore.getUserProfile(userStore.currentUser.id);
     }
   }, [userStore.currentUser, profileStore.editSuccess]);
 

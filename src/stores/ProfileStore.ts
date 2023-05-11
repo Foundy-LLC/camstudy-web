@@ -4,6 +4,7 @@ import profileService, { ProfileService } from "@/service/profile.service";
 import { User } from "@/models/user/User";
 import { UserStore } from "@/stores/UserStore";
 import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
+import { FRIEND_STATUS } from "@/constants/FriendStatus";
 import {
   TAG_DELETE_SUCCESS,
   TAG_DUPLICATED_ERROR,
@@ -105,6 +106,10 @@ export class ProfileStore {
     return this._tagDropDownHidden;
   }
 
+  public get userOverview() {
+    return this._userOverview;
+  }
+
   public setTagDropDownHidden(hidden: boolean) {
     this._tagDropDownHidden = hidden;
   }
@@ -164,12 +169,13 @@ export class ProfileStore {
     this._imageUrl = URL.createObjectURL(thumbnail);
   };
 
-  public getUserProfile = async () => {
+  public getUserProfile = async (userId: string) => {
     try {
       if (!this.userStore.currentUser) {
         throw new Error(NO_USER_STORE_ERROR_MESSAGE);
       }
       const result = await this._profileService.getUserProfile(
+        userId,
         this.userStore.currentUser.id
       );
       if (result.isSuccess) {

@@ -32,13 +32,10 @@ export class CropService {
   ): Promise<Result<HarvestedCrop[]>> => {
     try {
       const requestBody = new UidValidationRequestBody(userId);
-      const response = await fetchAbsolute(
-        `api/crops?userId=${requestBody.userId}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetchAbsolute(`api/crops/${requestBody.userId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
       if (response.ok) {
         return Result.createSuccessUsingResponseData(response);
       } else {

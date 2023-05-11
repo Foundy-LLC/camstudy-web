@@ -17,10 +17,12 @@ import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
 import { friendStatus } from "@/constants/FriendStatus";
 import { UserOverview } from "@/models/user/UserOverview";
 import { FRIEND_NUM_PER_PAGE } from "@/constants/friend.constant";
+import { ProfileStore } from "@/stores/ProfileStore";
 
 export class FriendStore {
   readonly rootStore: RootStore;
   private _userStore: UserStore;
+  private _profileStore: ProfileStore;
   private _userSearchOverviews: UserSearchOverview[] = [];
   private _friendRequestUsers: UserOverview[] = [];
   private _friendOverviews: UserOverview[] = [];
@@ -36,6 +38,7 @@ export class FriendStore {
     makeAutoObservable(this);
     this.rootStore = root;
     this._userStore = root.userStore;
+    this._profileStore = root.profileStore;
   }
 
   public get friendListMaxPage() {
@@ -143,6 +146,7 @@ export class FriendStore {
       );
       if (result.isSuccess) {
         runInAction(() => {
+          console.log("친구 전송 완료");
           this._errorMessage = undefined;
           this._successMessage = FRIEND_REQUEST_SUCCESS;
           this._changeAcceptedToRequested(userId);
@@ -176,6 +180,7 @@ export class FriendStore {
           this._errorMessage = undefined;
           this._successMessage = REFUSE_FRIEND_REQUEST_SUCCESS;
           this._changeAcceptedToNone(userId);
+          console.log("친구 요청 취소 완료");
         });
       } else {
         runInAction(() => {
@@ -325,6 +330,7 @@ export class FriendStore {
       );
       if (result.isSuccess) {
         runInAction(() => {
+          console.log("친구 취소 완료");
           this._errorMessage = undefined;
           this._successMessage = FREIND_DELETE_SUCCESS;
           this._reflectFriendDelete(userId);
