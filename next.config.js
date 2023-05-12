@@ -35,15 +35,7 @@ const nextConfig = {
       },
       {
         source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_API_SERVER_BASE_URL}/:path*`,
-      },
-    ];
-  },
-  async headers() {
-    return [
-      {
-        source: "/api/:path*",
-        headers: [{ key: "Access-Control-Allow-Origin", value: "*" }],
+        destination: `${process.env.NEXT_PUBLIC_API_SERVER_BASE_URL}/api/:path*`,
       },
     ];
   },
