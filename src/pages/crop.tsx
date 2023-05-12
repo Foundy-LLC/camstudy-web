@@ -565,7 +565,7 @@ const getRemainTime = (crop: GrowingCrop) => {
     new Date(plantedAt).setDate(new Date(plantedAt).getDate() + requiredDay)
   );
 
-  const gap = harvestedAt.getDate() - currentDay.getDate();
+  const gap = harvestedAt.valueOf() - currentDay.valueOf();
 
   let hour = Math.floor(gap / 3600000);
   let minute = Math.floor((gap % 3600000) / 60000);
