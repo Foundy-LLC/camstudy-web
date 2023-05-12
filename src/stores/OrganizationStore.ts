@@ -190,7 +190,6 @@ export class OrganizationStore {
     );
     if (result.isSuccess) {
       runInAction(() => {
-        console.log("success");
         this._errorMessage = undefined;
         this._successMessage = result.getOrNull()!;
       });
@@ -198,7 +197,6 @@ export class OrganizationStore {
       runInAction(() => {
         this._successMessage = undefined;
         this._errorMessage = result.throwableOrNull()!.message;
-        console.log(this._errorMessage);
       });
     }
   }
@@ -213,7 +211,9 @@ export class OrganizationStore {
         this._belongOrganizations = result.getOrNull()!;
       });
     } else {
-      runInAction(() => {});
+      runInAction(() => {
+        this._errorMessage = result.throwableOrNull()!.message;
+      });
     }
   }
 }

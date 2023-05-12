@@ -36,6 +36,7 @@ export class ProfileStore {
   private _tagUpdateSuccessMessage: string = "";
   private _tagUpdateErrorMessage: string = "";
   private _editSuccess?: boolean = undefined;
+
   constructor(
     root: RootStore,
     private readonly _profileService: ProfileService = profileService,

@@ -45,7 +45,6 @@ const HarvestedCropGroup: NextPage<{ items: HarvestedCrop[] }> = observer(
 function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const [uid, setUid] = useState(props.uid);
-  const [modal, setModal] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState("");
   const { cropStore, userStore } = useStores();
   // TODO(민성): UserProfileImage와 중복되는 코드 제거하기.
@@ -85,35 +84,12 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
         <div className={"typography__sub-headline"} style={{ padding: "20px" }}>
           대시보드
         </div>
-        <button
-          onClick={() => {
-            if (modal === "") {
-              //ZwI7O4fBI1fvJfOANmq8vij6Pjm2
-              //B9j6GEh2PTSHgcrdNnNBRVAPkuX2
-              setModal("ZwI7O4fBI1fvJfOANmq8vij6Pjm2");
-            } else {
-              setModal("");
-            }
-          }}
-        >
-          프로필 보기
-        </button>
         <Dashboard userId={uid} />
         <RoomItemGroup items={roomListStore.roomOverviews} />
         {roomListStore.errorMessage === undefined ? null : (
           <h3>{roomListStore.errorMessage}</h3>
         )}
       </Layout>
-      {modal !== "" && (
-        <>
-          <ProfileDialogContainer
-            onClick={() => {
-              setModal("");
-            }}
-          />
-          <ProfileDialog userId={modal} />
-        </>
-      )}
     </>
   );
 }
