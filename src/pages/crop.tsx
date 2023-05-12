@@ -402,6 +402,7 @@ const CropListPopup: NextPage<{ userId: string }> = (userId) => {
                 crop.type === selectedOption.type ? "active" : ""
               }`}
               style={{ display: "flex", paddingLeft: 10 }}
+              key={idx}
             >
               <input
                 type={"radio"}

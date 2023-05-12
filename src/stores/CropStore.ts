@@ -10,6 +10,7 @@ import { CropHarvestRequestBody } from "@/models/crop/CropHarvestRequestBody";
 import { NOT_EXIST_CROP_ID } from "@/constants/cropMessage";
 import { CropCreateRequestBody } from "@/models/crop/CropCreateRequestBody";
 import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
+import { crops_type } from "@prisma/client";
 
 export class CropStore {
   readonly rootStore: RootStore;
@@ -137,7 +138,7 @@ export class CropStore {
     }
   };
 
-  public plantingCrop = async (userId: string, cropType: string) => {
+  public plantingCrop = async (userId: string, cropType: crops_type) => {
     try {
       const requestBody = new CropCreateRequestBody(userId, cropType);
       const result = await this._cropService.plantCrop(

@@ -1,8 +1,9 @@
 import { validateUid } from "@/utils/user.validator";
 import { validateCropType } from "@/utils/crop.validator";
+import { crops_type } from "@prisma/client";
 
 export class CropCreateRequestBody {
-  constructor(readonly userId: string, readonly cropType: string) {
+  constructor(readonly userId: string, readonly cropType: crops_type) {
     this._validateUserId();
     this._validateCropType();
   }

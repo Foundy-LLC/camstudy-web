@@ -7,6 +7,7 @@ import { CropHarvestRequestBody } from "@/models/crop/CropHarvestRequestBody";
 import userId from "@/pages/users/[userId]";
 import { CropCreateRequestBody } from "@/models/crop/CropCreateRequestBody";
 import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
+import { crops_type } from "@prisma/client";
 
 export class CropService {
   public getGrowingCrop = async (
@@ -70,7 +71,7 @@ export class CropService {
     }
   };
 
-  public plantCrop = async (userId: string, cropType: string) => {
+  public plantCrop = async (userId: string, cropType: crops_type) => {
     try {
       const requestBody = new CropCreateRequestBody(userId, cropType);
       const response = await fetchAbsolute(`api/crops`, {
