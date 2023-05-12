@@ -33,6 +33,10 @@ const nextConfig = {
         source: "/media-router/:path*",
         destination: `${process.env.NEXT_PUBLIC_MEDIA_ROUTER_BASE_URL}/:path*`,
       },
+      {
+        source: "/api/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_SERVER_BASE_URL}/:path*`,
+      },
     ];
   },
   async headers() {
