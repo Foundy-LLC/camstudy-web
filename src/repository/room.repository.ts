@@ -169,6 +169,13 @@ export const createRoom = async (
   });
 };
 
+export const updateRoomThumbnail = async (roomId: string, imageUrl: string) => {
+  await client.room.update({
+    where: { id: roomId },
+    data: { thumbnail: imageUrl },
+  });
+};
+
 export const deleteRoomReq = async (body: RoomDeleteRequestBody) => {
   const roomId: string = body.roomId;
   await client.room.update({

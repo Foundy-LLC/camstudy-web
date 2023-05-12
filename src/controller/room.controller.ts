@@ -17,6 +17,7 @@ import {
   findRooms,
   isRoomFull,
   isUserBlockedAtRoom,
+  updateRoomThumbnail,
 } from "@/repository/room.repository";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
@@ -245,10 +246,18 @@ export const postRoomThumbnail = async (
     await runMiddleware(req, res, multerUpload.single("roomThumbnail"));
     const file = req.file;
     const { roomId } = req.query;
+    if (typeof roomId !== "string") {
+      res
+        .status(400)
+        .send(new ResponseBody({ message: "roomId가 잘못된 요청입니다." }));
+      return;
+    }
     const signedUrl: string = await multipartUploader(
       "rooms/" + roomId + ".png",
       file.path
     );
+
+    await updateRoomThumbnail(roomId, signedUrl);
 
     res.status(201).send(
       new ResponseBody({
