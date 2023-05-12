@@ -7,10 +7,13 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import router from "next/router";
 import cropStyles from "@/styles/crop.module.scss";
+import cropListPopupStyles from "@/styles/cropListPopup.module.scss";
 import { observer } from "mobx-react";
-import { CROPS } from "@/constants/crops";
+import { Crops, CROPS } from "@/constants/crops";
 import { GrowingCrop } from "@/models/crop/GrowingCrop";
 import { fruit_grade } from "@prisma/client";
+import Modal from "react-modal";
+import emptyImage from "@/assets/Frame 586.png";
 
 const crop: NextPage = () => {
   return (
@@ -31,6 +34,7 @@ const MyPot: NextPage = observer(() => {
   const { cropStore } = useStores();
   const [user, loading] = useAuthState(auth);
   const [exist, setExist] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
 
   if (loading) {
     return <div>Loading</div>;
@@ -53,23 +57,22 @@ const MyPot: NextPage = observer(() => {
 
   return (
     <div className={`${cropStyles["my-pot"]}`}>
-      {cropStore.growingCrop != undefined ? (
+      {cropStore.growingCrop != undefined &&
+      cropStore.growingCrop.isDead === false ? (
         <>
           <div className={`${cropStyles["my-pot_title"]}`}>
             <span className="material-symbols-outlined">grass</span>내 화분
           </div>
           <div className={`${cropStyles["my-pot_content"]}`}>
             <div className={`${cropStyles["growing-crop_image"]}`}>
-              {cropStore.cropImageSrc != undefined ? (
+              {
                 <Image
                   width={156}
                   height={156}
-                  src={cropStore.cropImageSrc}
+                  src={cropStore.cropImageSrc!}
                   alt={"작물"}
                 />
-              ) : (
-                "작물이 죽었거나 심은 작물이 없으면 추가하는 버튼"
-              )}
+              }
             </div>
             <div className={`${cropStyles["growing-crop_explain"]}`}>
               <div
@@ -104,7 +107,10 @@ const MyPot: NextPage = observer(() => {
               <div
                 className={`${cropStyles["growing-crop_explain_item"]} typography__text--big`}
               >
-                <span className={`${cropStyles["growing-crop_explain_title"]}`}>
+                <span
+                  className={`${cropStyles["growing-crop_explain_title"]}`}
+                  style={{ marginRight: 33 }}
+                >
                   수확 예정일
                 </span>
                 <span
@@ -116,7 +122,10 @@ const MyPot: NextPage = observer(() => {
               <div
                 className={`${cropStyles["growing-crop_explain_item"]} typography__text--big`}
               >
-                <span className={`${cropStyles["growing-crop_explain_title"]}`}>
+                <span
+                  className={`${cropStyles["growing-crop_explain_title"]}`}
+                  style={{ marginRight: 16 }}
+                >
                   평균 공부시간
                 </span>
                 <span
@@ -130,7 +139,10 @@ const MyPot: NextPage = observer(() => {
               <div
                 className={`${cropStyles["growing-crop_explain_item"]} typography__text--big`}
               >
-                <span className={`${cropStyles["growing-crop_explain_title"]}`}>
+                <span
+                  className={`${cropStyles["growing-crop_explain_title"]}`}
+                  style={{ marginRight: 16 }}
+                >
                   예상 작물등급
                 </span>
                 <span
@@ -141,14 +153,298 @@ const MyPot: NextPage = observer(() => {
               </div>
             </div>
           </div>
-          <button className={`${cropStyles["my-pot_button"]}`}>수확하기</button>
+          <button
+            className={`${cropStyles["my-pot_button"]}`}
+            disabled={harvestable(cropStore.growingCrop)}
+            onClick={() => {
+              if (confirm("작물을 수확하시겠습니까?")) {
+                cropStore.harvestCrops(user.uid);
+              }
+            }}
+          >
+            수확하기
+          </button>
+        </>
+      ) : cropStore.growingCrop != undefined && cropStore.growingCrop.isDead ? (
+        <>
+          <div className={`${cropStyles["my-pot_title"]}`}>
+            <span className="material-symbols-outlined">grass</span>내 화분
+          </div>
+          <div className={`${cropStyles["my-pot_content"]}`}>
+            <div className={`${cropStyles["growing-crop_image"]}`}>
+              {
+                <Image
+                  width={156}
+                  height={156}
+                  src={cropStore.cropImageSrc!}
+                  alt={"작물"}
+                />
+              }
+            </div>
+            <div className={`${cropStyles["growing-crop_explain"]}`}>
+              <div
+                className={`${cropStyles["growing-crop_explain_item--big"]}`}
+              >
+                <span
+                  className={`${cropStyles["growing-crop_explain_title--big"]}`}
+                >
+                  {`${cropStore.cropName}`}
+                </span>
+                <span
+                  className={`${cropStyles["growing-crop_explain_title--box"]} typography__text--big`}
+                >
+                  {`죽음`}
+                </span>
+                <span
+                  className={`${cropStyles["growing-crop_explain_content"]}`}
+                >
+                  {`-년 
+                    -월 
+                    -일 
+                    -시 
+                    -분`}
+                </span>
+              </div>
+              <div
+                className={`${cropStyles["growing-crop_explain_item"]} typography__text--big`}
+              >
+                <span
+                  className={`${cropStyles["growing-crop_explain_title"]}`}
+                  style={{ marginRight: 33 }}
+                >
+                  수확 예정일
+                </span>
+                <span
+                  className={`${cropStyles["growing-crop_explain_content"]}`}
+                >
+                  -
+                </span>
+              </div>
+              <div
+                className={`${cropStyles["growing-crop_explain_item"]} typography__text--big`}
+              >
+                <span
+                  className={`${cropStyles["growing-crop_explain_title"]}`}
+                  style={{ marginRight: 16 }}
+                >
+                  평균 공부시간
+                </span>
+                <span
+                  className={`${cropStyles["growing-crop_explain_content"]}`}
+                >
+                  -
+                </span>
+              </div>
+              <div
+                className={`${cropStyles["growing-crop_explain_item"]} typography__text--big`}
+              >
+                <span
+                  className={`${cropStyles["growing-crop_explain_title"]}`}
+                  style={{ marginRight: 16 }}
+                >
+                  예상 작물등급
+                </span>
+                <span
+                  className={`${cropStyles["growing-crop_explain_content"]}`}
+                >
+                  -
+                </span>
+              </div>
+            </div>
+          </div>
+          <button
+            className={`${cropStyles["my-pot_button"]}`}
+            onClick={() => {
+              if (confirm("작물을 제거하시겠습니까?")) {
+                cropStore.removeCrop(user.uid, cropStore.growingCrop!.id);
+              }
+            }}
+          >
+            제거하기
+          </button>
         </>
       ) : (
-        ""
+        <>
+          <div className={`${cropStyles["my-pot_title"]}`}>
+            <span className="material-symbols-outlined">grass</span>내 화분
+          </div>
+          <div className={`${cropStyles["my-pot_content"]}`}>
+            <div className={`${cropStyles["growing-crop_image"]}`}>
+              <Image
+                src={emptyImage}
+                alt={"img"}
+                width={96}
+                height={96}
+              ></Image>
+            </div>
+            <div
+              className={`${cropStyles["growing-crop_explain"]}`}
+              style={{ alignItems: "center", margin: "auto" }}
+            >
+              <div
+                className={"typography__sub-headline"}
+                style={{ marginBottom: "20px", color: "#C1c1c1" }}
+              >
+                화분이 비어있습니다
+              </div>
+              <button
+                className={`${cropStyles["my-pot_button"]}`}
+                style={{ width: "133px", margin: 0 }}
+                onClick={() => setOpen(true)}
+              >
+                화분에 작물 심기
+              </button>
+            </div>
+          </div>
+          <Modal
+            isOpen={open}
+            onRequestClose={() => setOpen(false)}
+            style={{
+              content: {
+                width: 380,
+                height: 768,
+                borderRadius: 20,
+                backgroundColor: "var(--ui-cardui)",
+                padding: 10,
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              },
+            }}
+          >
+            <CropListPopup userId={user.uid}></CropListPopup>
+          </Modal>
+        </>
       )}
     </div>
   );
 });
+
+const CropListPopup: NextPage<{ userId: string }> = (userId) => {
+  const { cropStore } = useStores();
+  const [selectedOption, setSelectedOption] = useState<Crops>(CROPS[0]);
+
+  const handleOptionChange = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    CROPS.find((crop) => {
+      if (crop.type === e.target.value) return setSelectedOption(crop);
+    });
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <div className={`${cropListPopupStyles["popupTitle"]}`}>
+        <span className="material-symbols-outlined">nest_eco_leaf</span>작물
+        심기
+      </div>
+      <div style={{ display: "flex", flexGrow: 1, marginLeft: 10 }}>
+        <div className={`${cropListPopupStyles["selectedCropImageBox"]}`}>
+          <Image
+            alt={"img"}
+            src={selectedOption.harvestedImageUrl[1]}
+            width={80}
+            height={80}
+          />
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            flexGrow: 1,
+            gap: 16,
+          }}
+        >
+          <div className={`${cropListPopupStyles["selectedCropTitle"]}`}>
+            <span className={`${cropListPopupStyles["selectedCropName"]}`}>
+              {revertCropTypeToCropName(selectedOption)}
+            </span>
+            <span
+              className={`${cropListPopupStyles["selectedCropTotalLevel"]}`}
+            >{`총 ${selectedOption.imageUrls.length}단계`}</span>
+          </div>
+          <div className={`${cropListPopupStyles["selectedCropRequiredDay"]}`}>
+            <span
+              className={`typography__text--big ${cropListPopupStyles["requiredDayTitle"]}`}
+            >
+              수확 소요시간
+            </span>
+            <span
+              className={`typography__text--big ${cropListPopupStyles["requiredDay"]}`}
+            >
+              {selectedOption.requireDay}일
+            </span>
+          </div>
+          <button
+            className={`${cropListPopupStyles["plantingButton"]}`}
+            onClick={() =>
+              cropStore.plantingCrop(userId.userId, selectedOption.type)
+            }
+          >
+            작물 심기
+          </button>
+        </div>
+      </div>
+      <hr
+        style={{
+          border: "none",
+          height: "1px",
+          backgroundColor: "var(--system_ui-03)",
+          margin: "20px 0",
+        }}
+      />
+      <div>
+        {CROPS.map((crop, idx) => {
+          return (
+            <label
+              className={`${cropListPopupStyles["cropItem"]} ${
+                crop.type === selectedOption.type ? "active" : ""
+              }`}
+              style={{ display: "flex", paddingLeft: 10 }}
+            >
+              <input
+                type={"radio"}
+                name={"cropList"}
+                value={crop.type}
+                checked={selectedOption.type === crop.type}
+                onChange={handleOptionChange}
+              />
+              <div className={`${cropListPopupStyles["cropListItemBox"]}`}>
+                <Image
+                  src={crop.harvestedImageUrl[1]}
+                  alt={`Option ${idx + 1}`}
+                  width={48}
+                  height={48}
+                />
+              </div>
+              <div>
+                <div className={cropListPopupStyles["itemTitle"]}>
+                  {revertCropTypeToCropName(crop)}
+                </div>
+                <div className={cropListPopupStyles["itemIntroduce"]}>
+                  {crop.introduce}
+                </div>
+              </div>
+            </label>
+          );
+        })}
+      </div>
+      <style jsx>{`
+        .material-symbols-outlined {
+          font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+        }
+        /* HIDE RADIO */
+        [type="radio"] {
+          position: absolute;
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+      `}</style>
+    </div>
+  );
+};
 
 const MyPlants: NextPage = observer(() => {
   const { cropStore } = useStores();
@@ -246,6 +542,21 @@ const getRequireDay = (crop: GrowingCrop) => {
   }
 };
 
+const revertCropTypeToCropName = (crop: Crops) => {
+  switch (crop.type) {
+    case "cabbage":
+      return "양배추";
+    case "strawberry":
+      return "딸기";
+    case "tomato":
+      return "토마토";
+    case "pumpkin":
+      return "호박";
+    case "carrot":
+      return "당근";
+  }
+};
+
 const getRemainTime = (crop: GrowingCrop) => {
   const requiredDay = getRequireDay(crop);
   const plantedAt = crop.plantedAt;
@@ -259,11 +570,29 @@ const getRemainTime = (crop: GrowingCrop) => {
   let hour = Math.floor(gap / 3600000);
   let minute = Math.floor((gap % 3600000) / 60000);
 
-  if (hour < 0 || minute < 0) {
+  if (hour < 0) {
     hour = 0;
+  }
+  if (minute < 0) {
     minute = 0;
   }
   return `${hour}시간 ${minute}분 남음`;
+};
+
+const harvestable = (crop: GrowingCrop) => {
+  const requiredDay = getRequireDay(crop);
+  const plantedAt = crop.plantedAt;
+  const currentDay = new Date();
+  const harvestedAt = new Date(
+    new Date(plantedAt).setDate(new Date(plantedAt).getDate() + requiredDay)
+  );
+
+  const gap = harvestedAt.getDate() - currentDay.getDate();
+
+  let hour = Math.floor(gap / 3600000);
+  let minute = Math.floor((gap % 3600000) / 60000);
+
+  return !(hour < 0 && minute < 0);
 };
 
 export default crop;

@@ -6,6 +6,7 @@
   height: 352px;
   max-width: 640px;
   max-height: 352px;
+  color: var(--system_ui-08);
 
   margin-bottom: 20px;
   margin-left: 20px;
@@ -37,7 +38,7 @@
     letter-spacing: -0.5px;
 
     /* Gray-09 */
-    color: #191919;
+    color: var(--system_ui-09);
   }
 
   .my-pot_content {
@@ -145,7 +146,6 @@
     width: 86px;
     height: 38px;
 
-    background: var(--system_ui-02);
     border-radius: 8px;
 
     font-family: 'Pretendard';
@@ -155,7 +155,12 @@
     line-height: 22px;
     letter-spacing: -0.5px;
     /* Gray-05 */
-    color: var(--system_ui-05);
+    background: var(--primary);
+    &:disabled{
+      background: var(--system_ui-02);
+      color: var(--system_ui-05);
+    }
+    color: var(--system_background);
   }
 }
 
@@ -204,7 +209,7 @@
 
     /* Gray-09 */
 
-    color: #191919;
+    color: var(--system_ui-09);
   }
 
   .my-pot_content {
@@ -228,5 +233,5 @@
       border-radius: 12px;
     }
   }
-
 }
+

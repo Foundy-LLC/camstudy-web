@@ -2,11 +2,14 @@ import { RootStore } from "@/stores/RootStore";
 import { HarvestedCrop } from "@/models/crop/HarvestedCrop";
 import { CropService, cropService } from "@/service/crop.service";
 import { UserStore } from "@/stores/UserStore";
-import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
 import { makeAutoObservable, runInAction } from "mobx";
 import { GrowingCrop } from "@/models/crop/GrowingCrop";
 import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 import { CROPS } from "@/constants/crops";
+import { CropHarvestRequestBody } from "@/models/crop/CropHarvestRequestBody";
+import { NOT_EXIST_CROP_ID } from "@/constants/cropMessage";
+import { CropCreateRequestBody } from "@/models/crop/CropCreateRequestBody";
+import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
 
 export class CropStore {
   readonly rootStore: RootStore;
@@ -15,6 +18,8 @@ export class CropStore {
   private _harvestedCrops: HarvestedCrop[] = [];
   private _cropImageSrc: string | undefined = undefined;
   private _cropName = "";
+  private _errorMessage: string | undefined = undefined;
+  private _successMessage: string | undefined = undefined;
 
   constructor(
     root: RootStore,
@@ -99,6 +104,68 @@ export class CropStore {
         runInAction(() => {
           this._harvestedCrops = result.getOrNull()!;
         });
+      } else {
+        throw new Error(result.throwableOrNull()!.message);
+      }
+    } catch (e) {
+      if (e instanceof Error) console.error(e.message);
+    }
+  };
+
+  public harvestCrops = async (userId: string) => {
+    try {
+      if (this._growingCrop == undefined) {
+        throw NOT_EXIST_CROP_ID;
+      }
+      const requestBody = new CropHarvestRequestBody(
+        userId,
+        this._growingCrop.id
+      );
+      const result = await this._cropService.harvestCrop(
+        requestBody.userId,
+        requestBody.cropId
+      );
+      if (result.isSuccess) {
+        this._growingCrop = undefined;
+        await this.fetchHarvestedCrops(requestBody.userId);
+      } else {
+        throw new Error(result.throwableOrNull()!.message);
+        // this._errorMessage = result.throwableOrNull()!.message
+      }
+    } catch (e) {
+      if (e instanceof Error) console.error(e.message);
+    }
+  };
+
+  public plantingCrop = async (userId: string, cropType: string) => {
+    try {
+      const requestBody = new CropCreateRequestBody(userId, cropType);
+      const result = await this._cropService.plantCrop(
+        requestBody.userId,
+        requestBody.cropType
+      );
+      if (result.isSuccess) {
+        await this.fetchGrowingCrop(requestBody.userId);
+      } else {
+        throw new Error(result.throwableOrNull()!.message);
+      }
+    } catch (e) {
+      if (e instanceof Error) console.error(e.message);
+    }
+  };
+
+  public removeCrop = async (userId: string, cropId: string) => {
+    try {
+      const requestBody = new CropDeleteRequestBody(userId, cropId);
+      const result = await this._cropService.deleteCrop(
+        requestBody.userId,
+        requestBody.cropId
+      );
+      runInAction(() => {
+        this._growingCrop = undefined;
+      });
+      if (result.isSuccess) {
+        await this.fetchGrowingCrop(requestBody.userId);
       } else {
         throw new Error(result.throwableOrNull()!.message);
       }

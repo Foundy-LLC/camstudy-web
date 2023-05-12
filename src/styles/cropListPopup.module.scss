@@ -1,0 +1,210 @@
+.popupTitle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 4px;
+
+  width: 100px;
+  height: 28px;
+
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  /* identical to box height, or 140% */
+
+  letter-spacing: -0.5px;
+
+  /* Gray-09 */
+  //color: #191919;
+  color: var(--system_ui-09);
+
+  margin-bottom: 32px;
+}
+
+.plantingButton {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 22px;
+  /* identical to box height, or 138% */
+
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.5px;
+
+  /* White */
+  color: var(--system_background);
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 10px;
+
+  width: 90px;
+  height: 38px;
+
+  /* Primary-05 */
+  background: var(--primary);
+  border-radius: 8px;
+}
+
+.selectedCropRequiredDay {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 16px;
+
+  width: 162px;
+  height: 28px;
+}
+
+.selectedCropTotalLevel {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 2px 8px;
+  gap: 10px;
+
+  max-width: 83px;
+  height: 32px;
+
+  /* Gray-02 */
+
+  background: var(--system_ui-02);
+  border-radius: 4px;
+}
+
+.selectedCropImageBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+
+  width: 140px;
+  height: 140px;
+
+  background: var(--system_ui-01);
+  border-radius: 12px;
+  margin-right: 16px;
+}
+
+.selectedCropTitle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 12px;
+
+  height: 42px;
+}
+
+.selectedCropName {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 42px;
+  /* identical to box height, or 131% */
+
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.5px;
+
+  /* Gray-08 */
+  color: var(--system_ui-08);
+}
+
+.cropListItemBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  margin-right: 16px;
+
+  width: 80px;
+  height: 80px;
+
+  background: var(--system_ui-01);
+  border-radius: 12px;
+}
+
+/* IMAGE STYLES */
+.cropItem {
+  cursor: pointer;
+  height: 100px;
+  align-items: center;
+}
+
+/* CHECKED STYLES */
+.active {
+  background: var(--system_ui-01);
+  border-radius: 12px;
+}
+
+.itemTitle{
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  /* identical to box height, or 140% */
+
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.5px;
+
+  /* Gray-08 */
+  color: var(--system_ui-09);
+}
+.itemIntroduce{
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+  /* identical to box height, or 138% */
+
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.5px;
+
+  /* Gray-04 */
+  color: var(--system_ui-04);
+}
+
+.requiredDay{
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  /* identical to box height, or 140% */
+
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.5px;
+
+  /* Gray-08 */
+
+  color: var(--system_ui-08);
+}
+
+.requiredDayTitle{
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+  /* identical to box height, or 140% */
+
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.5px;
+
+  /* Gray-04 */
+  color: var(--system_ui-04);
+}
