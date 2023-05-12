@@ -261,11 +261,28 @@
     }
 
     .rank-form__content__option{
-      position: absolute;
-      right: 34px;
+      display: flex;
+      margin-left: auto;
+      margin-right: 34px;
       font-size: 30px;
       color: var(--text-emphasize);
       cursor: pointer;
+      position: relative;
+      &-dialog{
+        position: absolute;
+        width: 61px;
+        background-color: var(--system_ui-02);
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        padding: 7px 10px;
+        right: 10px;
+        top: 17px;
+        border-radius: 8px 0px 8px 8px;
+        label{
+          cursor: pointer;
+        }
+      }
     }
   }
   .rank-page-nation{

@@ -12,6 +12,7 @@
     width: 600px;
     height: 600px;
     opacity: 100%;
+    z-index: 2;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -249,15 +250,18 @@
         border-radius: 8px;
         color: #ffffff;
         margin: 42px 20px 24px auto;
+        cursor: pointer;
 
         .profile-dialog__icon {
           font-size: 16px;
           margin-left: 16.83px;
           margin-right: 10.83px;
+          cursor: pointer;
         }
 
         .profile-dialog__friend-request__button__label {
           margin-right: 16px;
+          cursor: pointer;
         }
       }
 
@@ -270,15 +274,18 @@
         border-radius: 8px;
         color: #ffffff;
         margin: 42px 20px 24px auto;
+        cursor: pointer;
 
         .profile-dialog__icon {
           font-size: 16px;
           margin-left: 16.83px;
           margin-right: 10.83px;
+          cursor: pointer;
         }
 
         .profile-dialog__friend-request__button__label {
           margin-right: 16px;
+          cursor: pointer;
         }
       }
 
