@@ -85,7 +85,7 @@ const menus: Menu[] = [
       {
         icon: "person_search",
         text: "유저 검색",
-        path: "",
+        path: "/users",
       },
     ],
   },

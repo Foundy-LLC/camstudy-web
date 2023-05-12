@@ -11,6 +11,21 @@
     color: var(--text-01);
   }
 
+.friend-list-frame{
+  width: 600px;
+  height: 82vh;
+  margin: 24px 0px 0px 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--ui-cardui);
+  border: 0.5px solid $-gray_cool-300;
+  border-radius: 16px;
+  position: relative;
+
+  .friend-list-info{
+    width: 560px;
+    height: 28px;
+
   .friend-list-frame{
     width: 600px;
     height: 906px;

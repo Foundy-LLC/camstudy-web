@@ -127,11 +127,13 @@ export const getSimilarNamedUsers = async (
       select: {
         id: true,
         name: true,
+        introduce: true,
         profile_image: true,
         friend_friend_acceptor_idTouser_account: {
           where: { requester_id: userId },
           select: { accepted: true },
         },
+        status: true,
       },
     }),
   ]);
@@ -142,12 +144,14 @@ export const getSimilarNamedUsers = async (
       return {
         id: item.id,
         name: item.name,
+        introduce: item.introduce,
         profileImage: item.profile_image,
         requestHistory: item.friend_friend_acceptor_idTouser_account[0]
           ? item.friend_friend_acceptor_idTouser_account[0].accepted === true
             ? friendStatus.ACCEPTED
             : friendStatus.REQUESTED
           : friendStatus.NONE,
+        status: item.status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
       };
     }),
   };

@@ -11,7 +11,7 @@ const HEADER = {
   "Content-Type": "application/json",
 };
 export class FriendService {
-  public getSimilarNamedUsers = async (
+  public findUserByName = async (
     userName: string,
     userId: string
   ): Promise<Result<{ maxPage: number; users: UserSearchOverview[] }>> => {
