@@ -63,8 +63,11 @@ const StudyRoom: NextPage = observer(() => {
             <div
               className={`${studyRoomStyles["study-room__user-form__grid"]}`}
             >
-              {joinedUserNames.map((user) => (
-                <div className={`${studyRoomStyles["study-room__user"]}`}>
+              {joinedUserNames.map((user, key) => (
+                <div
+                  key={key}
+                  className={`${studyRoomStyles["study-room__user"]}`}
+                >
                   <div
                     className={`${studyRoomStyles["study-room__user__video"]}`}
                   >
@@ -347,8 +350,9 @@ const StudyRoom: NextPage = observer(() => {
                     <div
                       className={`${studyRoomStyles["study-room__chat-form__ban-list"]}`}
                     >
-                      {bannedUserNames.map((user) => (
+                      {bannedUserNames.map((user, key) => (
                         <div
+                          key={key}
                           className={`${studyRoomStyles["study-room__chat-form__ban-user"]}`}
                         >
                           <div

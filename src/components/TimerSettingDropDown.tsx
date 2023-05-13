@@ -28,9 +28,10 @@ export const TimerSettingDropDown: NextPage<{
           className={`${dropDownStyles["drop-down-form__ul"]} typography__text`}
           hidden={!focused}
         >
-          {items.map((item) =>
+          {items.map((item, key) =>
             item === selected ? (
               <li
+                key={key}
                 className={`${dropDownStyles["drop-down-form__li--selected"]}`}
                 onClick={() => setFocused(!focused)}
               >
@@ -38,6 +39,7 @@ export const TimerSettingDropDown: NextPage<{
               </li>
             ) : (
               <li
+                key={key}
                 className={`${dropDownStyles["drop-down-form__li"]}`}
                 onClick={() => {
                   setFocused(!focused);
