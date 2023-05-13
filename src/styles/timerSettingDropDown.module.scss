@@ -1,0 +1,79 @@
+@import "./color/colorPalette";
+.drop-down-form {
+  display: flex;
+  margin-left: auto;
+
+  .drop-down-form__selected {
+    z-index: 0;
+    width: 120px;
+    height: 36px;
+
+    background-color: $-Dark-01;
+    color: $-White;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+
+    label {
+      margin: 7px 16px;
+    }
+
+    span {
+      margin-left: auto;
+      margin-right: 6px;
+    }
+
+    &:hover {
+      background-color: $-Dark-03;
+    }
+
+    &:active {
+      background-color: $-Dark-02;
+      border-radius: 8px 8px 0px 0px;
+    }
+  }
+
+  .drop-down-form__ul {
+    position: absolute;
+    z-index: 1;
+    right: 0px;
+    top: 31px;
+    background-color: $-Dark-01;
+    border-radius: 0px 0px 8px 8px;
+    padding-top: 5px;
+    padding-bottom: 7px;
+
+    .drop-down-form__li {
+      display: flex;
+      align-items: center;
+      width: 120px;
+      height: 36px;
+      color: $-White;
+
+      label {
+        margin-left: 16px;
+      }
+
+      &:hover {
+        background-color: $-Dark-02;
+      }
+    }
+
+    .drop-down-form__li--selected {
+      display: flex;
+      align-items: center;
+      width: 120px;
+      height: 36px;
+      color: $-White;
+      background-color: $-Dark-02;
+
+      label {
+        margin-left: 16px;
+      }
+
+      &:hover {
+        background-color: $-Dark-02;
+      }
+    }
+  }
+}

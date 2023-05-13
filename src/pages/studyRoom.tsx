@@ -1,175 +1,150 @@
 import { NextPage } from "next";
 import { observer } from "mobx-react";
 import studyRoomStyles from "@/styles/studyRoom.module.scss";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
+import { TimerSettingDropDown } from "@/components/TimerSettingDropDown";
+import { FaSlash } from "react-icons/fa";
 
 const StudyRoom: NextPage = observer(() => {
-  const [focused, setFocused] = useState<boolean>(false);
+  const [cameraOn, setCameraOn] = useState<boolean>(true);
+  const [headphoneOn, setHeadphoneOn] = useState<boolean>(true);
+  const [micOn, setMicOn] = useState<boolean>(true);
+  const [timerStart, setTimerStart] = useState<boolean>(false);
+  const [banListOpen, setBanListOpen] = useState<boolean>(true);
+  const [showDialog, setShowDialog] = useState<string>("");
+  const [showUserOption, setShowUserOption] = useState<string>("");
+  const handleHover = (event: React.MouseEvent<HTMLSpanElement>) => {
+    console.log((event.target as HTMLElement).className);
+    const position = (event.target as HTMLElement).getBoundingClientRect();
+    const x = position.x - 8;
+    const y = position.y - 45;
+    document.getElementById("dialog")!.style.top = y.toString() + "px";
+    document.getElementById("dialog")!.style.left = x.toString() + "px";
+  };
+
+  const timerArray: string[] = [
+    "20분",
+    "25분",
+    "30분",
+    "35분",
+    "40분",
+    "45분",
+    "50분",
+  ];
+  const shortRestArray: string[] = [
+    "3분",
+    "4분",
+    "5분",
+    "6분",
+    "7분",
+    "8분",
+    "9분",
+    "10분",
+  ];
+  const longRestArray: string[] = ["10분", "15분", "20분", "25분", "30분"];
+  const joinedUserNames: string[] = ["홍길동", "강선우", "장길산123", "김철수"];
+  const bannedUserNames: string[] = ["김철수123", "김철수123", "김철수123"];
   return (
-    <>
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#6f6f6f",
+        position: "relative",
+      }}
+    >
       <div className={`${studyRoomStyles["study-room__page"]}`}>
         <div className={`${studyRoomStyles["study-room__cam-form"]}`}>
           <div className={`${studyRoomStyles["study-room__user-form"]}`}>
             <div
               className={`${studyRoomStyles["study-room__user-form__grid"]}`}
             >
-              <div className={`${studyRoomStyles["study-room__user"]}`}>
-                <div
-                  className={`${studyRoomStyles["study-room__user__video"]}`}
-                >
-                  <label className="typography__sub-headline">
-                    카메라가 꺼져있습니다
-                  </label>
+              {joinedUserNames.map((user) => (
+                <div className={`${studyRoomStyles["study-room__user"]}`}>
+                  <div
+                    className={`${studyRoomStyles["study-room__user__video"]}`}
+                  >
+                    <label className="typography__sub-headline">
+                      카메라가 꺼져있습니다
+                    </label>
+                  </div>
+                  <div
+                    className={`${studyRoomStyles["study-room__user__option-bar"]}`}
+                  >
+                    <label
+                      className={`${studyRoomStyles["study-room__user__name"]} typography__text`}
+                    >
+                      {user}
+                    </label>
+                    <div style={{ position: "relative" }}>
+                      <span
+                        className={`${studyRoomStyles["study-room__camera-icon"]} material-symbols-rounded`}
+                      >
+                        video_camera_front
+                      </span>
+                      {!cameraOn && (
+                        <FaSlash
+                          className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
+                        />
+                      )}
+                    </div>
+                    <span
+                      className={`${studyRoomStyles["study-room__headphones-icon"]} material-symbols-rounded`}
+                    >
+                      headphones
+                    </span>
+                    <span
+                      className={`${studyRoomStyles["study-room__mic-icon"]} material-symbols-rounded`}
+                    >
+                      mic
+                    </span>
+                    <div
+                      tabIndex={0}
+                      className={`${studyRoomStyles["study-room__option"]}`}
+                      onFocus={() => setShowUserOption(user)}
+                      onBlur={() => setShowUserOption("")}
+                    >
+                      <span
+                        className={`${studyRoomStyles["study-room__option-icon"]} material-symbols-rounded`}
+                      >
+                        more_horiz
+                      </span>
+                      <ul
+                        className={`${studyRoomStyles["study-room__option__dialog"]} typography__text--small`}
+                        hidden={showUserOption !== user}
+                      >
+                        <li>
+                          <span className="material-symbols-rounded">
+                            block
+                          </span>
+                          차단하기
+                        </li>
+                        <li>
+                          <span className="material-symbols-rounded">
+                            account_circle_off
+                          </span>
+                          강퇴하기
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-                <div
-                  className={`${studyRoomStyles["study-room__user__option-bar"]}`}
-                >
-                  <label
-                    className={`${studyRoomStyles["study-room__user__name"]} typography__text`}
-                  >
-                    홍길동
-                  </label>
-                  <span
-                    className={`${studyRoomStyles["study-room__camera-icon"]} material-symbols-rounded`}
-                  >
-                    video_camera_front
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__headphones-icon"]} material-symbols-rounded`}
-                  >
-                    headphones
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__mic-icon"]} material-symbols-rounded`}
-                  >
-                    mic
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__option-icon"]} material-symbols-rounded`}
-                  >
-                    more_horiz
-                  </span>
-                </div>
-              </div>
-              <div className={`${studyRoomStyles["study-room__user"]}`}>
-                <div
-                  className={`${studyRoomStyles["study-room__user__video"]}`}
-                >
-                  <label className="typography__sub-headline">
-                    카메라가 꺼져있습니다
-                  </label>
-                </div>
-                <div
-                  className={`${studyRoomStyles["study-room__user__option-bar"]}`}
-                >
-                  <label
-                    className={`${studyRoomStyles["study-room__user__name"]} typography__text`}
-                  >
-                    홍길동
-                  </label>
-                  <span
-                    className={`${studyRoomStyles["study-room__camera-icon"]} material-symbols-rounded`}
-                  >
-                    video_camera_front
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__headphones-icon"]} material-symbols-rounded`}
-                  >
-                    headphones
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__mic-icon"]} material-symbols-rounded`}
-                  >
-                    mic
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__option-icon"]} material-symbols-rounded`}
-                  >
-                    more_horiz
-                  </span>
-                </div>
-              </div>
-              <div className={`${studyRoomStyles["study-room__user"]}`}>
-                <div
-                  className={`${studyRoomStyles["study-room__user__video"]}`}
-                >
-                  <label className="typography__sub-headline">
-                    카메라가 꺼져있습니다
-                  </label>
-                </div>
-                <div
-                  className={`${studyRoomStyles["study-room__user__option-bar"]}`}
-                >
-                  <label
-                    className={`${studyRoomStyles["study-room__user__name"]} typography__text`}
-                  >
-                    홍길동
-                  </label>
-                  <span
-                    className={`${studyRoomStyles["study-room__camera-icon"]} material-symbols-rounded`}
-                  >
-                    video_camera_front
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__headphones-icon"]} material-symbols-rounded`}
-                  >
-                    headphones
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__mic-icon"]} material-symbols-rounded`}
-                  >
-                    mic
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__option-icon"]} material-symbols-rounded`}
-                  >
-                    more_horiz
-                  </span>
-                </div>
-              </div>
-              <div className={`${studyRoomStyles["study-room__user"]}`}>
-                <div
-                  className={`${studyRoomStyles["study-room__user__video"]}`}
-                >
-                  <label className="typography__sub-headline">
-                    카메라가 꺼져있습니다
-                  </label>
-                </div>
-                <div
-                  className={`${studyRoomStyles["study-room__user__option-bar"]}`}
-                >
-                  <label
-                    className={`${studyRoomStyles["study-room__user__name"]} typography__text`}
-                  >
-                    홍길동
-                  </label>
-                  <span
-                    className={`${studyRoomStyles["study-room__camera-icon"]} material-symbols-rounded`}
-                  >
-                    video_camera_front
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__headphones-icon"]} material-symbols-rounded`}
-                  >
-                    headphones
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__mic-icon"]} material-symbols-rounded`}
-                  >
-                    mic
-                  </span>
-                  <span
-                    className={`${studyRoomStyles["study-room__option-icon"]} material-symbols-rounded`}
-                  >
-                    more_horiz
-                  </span>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
           <div className={`${studyRoomStyles["study-room__button-form"]}`}>
+            <div
+              id={"dialog"}
+              className={`${studyRoomStyles["dialog-form"]} typography__caption`}
+              hidden={showDialog === ""}
+            >
+              {showDialog}
+            </div>
+
             <Image
               alt={"logo"}
               src={logo}
@@ -181,21 +156,81 @@ const StudyRoom: NextPage = observer(() => {
               className={`${studyRoomStyles["study-room__button-form__icon-form"]}`}
             >
               {" "}
-              <span
-                className={`${studyRoomStyles["study-room__camera-icon"]} material-symbols-rounded`}
-              >
-                video_camera_front
-              </span>
-              <span
-                className={`${studyRoomStyles["study-room__headphones-icon"]} material-symbols-rounded`}
-              >
-                headphones
-              </span>
-              <span
-                className={`${studyRoomStyles["study-room__mic-icon"]} material-symbols-rounded`}
-              >
-                mic
-              </span>
+              <div style={{ position: "relative" }}>
+                <span
+                  className={`${studyRoomStyles["study-room__camera-icon"]} material-symbols-rounded`}
+                  onClick={() => {
+                    setCameraOn(!cameraOn);
+                    cameraOn
+                      ? setShowDialog("카메라 켜기")
+                      : setShowDialog("카메라 끄기");
+                  }}
+                  onMouseEnter={(e) => {
+                    handleHover(e);
+                    cameraOn
+                      ? setShowDialog("카메라 끄기")
+                      : setShowDialog("카메라 켜기");
+                  }}
+                  onMouseLeave={() => setShowDialog("")}
+                >
+                  video_camera_front
+                </span>
+                {!cameraOn && (
+                  <FaSlash
+                    className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
+                  />
+                )}
+              </div>
+              <div style={{ position: "relative" }}>
+                <span
+                  className="material-symbols-rounded"
+                  onClick={() => {
+                    setHeadphoneOn(!headphoneOn);
+                    headphoneOn
+                      ? setShowDialog("헤드폰 켜기")
+                      : setShowDialog("헤드폰 끄기");
+                  }}
+                  onMouseEnter={(e) => {
+                    handleHover(e);
+                    headphoneOn
+                      ? setShowDialog("헤드폰 끄기")
+                      : setShowDialog("헤드폰 켜기");
+                  }}
+                  onMouseLeave={() => setShowDialog("")}
+                >
+                  headphones
+                </span>
+                {!headphoneOn && (
+                  <FaSlash
+                    className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
+                  />
+                )}
+              </div>
+              <div style={{ position: "relative" }}>
+                <span
+                  className={`${studyRoomStyles["study-room__mic-icon"]} material-symbols-rounded`}
+                  onClick={() => {
+                    setMicOn(!micOn);
+                    micOn
+                      ? setShowDialog("마이크 켜기")
+                      : setShowDialog("마이크 끄기");
+                  }}
+                  onMouseEnter={(e) => {
+                    handleHover(e);
+                    micOn
+                      ? setShowDialog("마이크 끄기")
+                      : setShowDialog("마이크 켜기");
+                  }}
+                  onMouseLeave={() => setShowDialog("")}
+                >
+                  mic
+                </span>
+                {!micOn && (
+                  <FaSlash
+                    className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -220,58 +255,19 @@ const StudyRoom: NextPage = observer(() => {
               className={`${studyRoomStyles["study-room__timer-form__time-set"]}`}
             >
               <label className="typography__text">뽀모도로 시간</label>
-              <div
-                className={`${studyRoomStyles["study-room__timer-form__drop-down"]} typography__text`}
-                onClick={() => setFocused(!focused)}
-              >
-                <label>25분</label>
-                <span className="material-symbols-rounded">expand_more</span>
-              </div>
-              <ul hidden={!focused}>
-                <li>
-                  <label>20분</label>
-                </li>
-                <li>
-                  <label>25분</label>
-                </li>
-                <li>
-                  <label>30분</label>
-                </li>
-                <li>
-                  <label>35분</label>
-                </li>
-                <li>
-                  <label>40분</label>
-                </li>
-                <li>
-                  <label>45분</label>
-                </li>
-                <li>
-                  <label>50분</label>
-                </li>
-              </ul>
+              <TimerSettingDropDown items={timerArray} initIndex={1} />
             </div>
             <div
               className={`${studyRoomStyles["study-room__timer-form__short-rest-set"]}`}
             >
               <label className="typography__text">짧은 휴식 시간</label>
-              <div
-                className={`${studyRoomStyles["study-room__timer-form__drop-down"]} typography__text`}
-              >
-                <label>5분</label>
-                <span className="material-symbols-rounded">expand_more</span>
-              </div>
+              <TimerSettingDropDown items={shortRestArray} initIndex={1} />
             </div>
             <div
               className={`${studyRoomStyles["study-room__timer-form__long-rest-set"]}`}
             >
               <label className="typography__text">긴 휴식 시간</label>
-              <div
-                className={`${studyRoomStyles["study-room__timer-form__drop-down"]} typography__text`}
-              >
-                <label>15분</label>
-                <span className="material-symbols-rounded">expand_more</span>
-              </div>
+              <TimerSettingDropDown items={longRestArray} initIndex={1} />
             </div>
             <div
               className={`${studyRoomStyles["study-room__timer-form__info"]}`}
@@ -290,29 +286,93 @@ const StudyRoom: NextPage = observer(() => {
                   25분 집중, 5분 휴식을 4번 반복 후 30분간 쉽니다
                 </label>
               </div>
-              <button
-                className={`${studyRoomStyles["study-room__timer-form__info__button"]}`}
-              >
-                <label className="typography__text">타이머 시작됨</label>
-              </button>
+              {timerStart ? (
+                <button
+                  className={`${studyRoomStyles["study-room__timer-form__info__button--start"]}`}
+                  onClick={() => setTimerStart(!timerStart)}
+                >
+                  <label className="typography__text">타이머 시작됨</label>
+                </button>
+              ) : (
+                <button
+                  className={`${studyRoomStyles["study-room__timer-form__info__button"]}`}
+                  onClick={() => setTimerStart(!timerStart)}
+                >
+                  <label className="typography__text">타이머 시작</label>
+                </button>
+              )}
             </div>
           </div>
           <div className={`${studyRoomStyles["study-room__chat-form"]}`}>
             <div
-              className={`${studyRoomStyles["study-room__chat-form__header"]}`}
+              className={`${studyRoomStyles["study-room__chat-form__header-form"]}`}
             >
-              <span className="material-symbols-outlined">chat</span>
-              <label
-                className={`${studyRoomStyles["study-room__chat-form__header__subtitle"]} typography__text--big`}
+              <div
+                className={`${studyRoomStyles["study-room__chat-form__header"]}`}
               >
-                채팅
-              </label>
-              <label
-                className={`${studyRoomStyles["study-room__chat-form__header__block-list--closed"]} typography__text`}
-              >
-                <label>차단 목록 열기</label>
-                <span className="material-symbols-rounded">expand_less</span>
-              </label>
+                <span
+                  className={`${studyRoomStyles["study-room__chat-form__header__icon"]} material-symbols-outlined`}
+                >
+                  chat
+                </span>
+
+                <label
+                  className={`${studyRoomStyles["study-room__chat-form__header__subtitle"]} typography__text--big`}
+                >
+                  채팅
+                </label>
+                <div
+                  className={`${studyRoomStyles["study-room__chat-form__header__ban-list__button"]} typography__text`}
+                  onClick={() => setBanListOpen(!banListOpen)}
+                >
+                  {banListOpen ? (
+                    <>
+                      <label>차단 목록 열기</label>
+                      <span className="material-symbols-rounded">
+                        expand_more
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <label>차단 목록 닫기</label>
+                      <span className="material-symbols-rounded">
+                        expand_less
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {!banListOpen && (
+                  <>
+                    <div
+                      className={`${studyRoomStyles["study-room__chat-form__ban-list"]}`}
+                    >
+                      {bannedUserNames.map((user) => (
+                        <div
+                          className={`${studyRoomStyles["study-room__chat-form__ban-user"]}`}
+                        >
+                          <div
+                            className={`${studyRoomStyles["study-room__chat-form__ban-user__image"]}`}
+                          ></div>
+                          <label
+                            className={`${studyRoomStyles["study-room__chat-form__ban-user__name"]} typography__text`}
+                          >
+                            김철수123
+                          </label>
+                          <label
+                            className={`${studyRoomStyles["study-room__chat-form__ban-user__ban-cancel"]} typography__text`}
+                          >
+                            차단 해제하기
+                          </label>
+                        </div>
+                      ))}
+                      <div
+                        className={`${studyRoomStyles["study-room__chat-form__ban-list__hr"]}`}
+                      ></div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
             <div
               className={`${studyRoomStyles["study-room__chat-form__text-field"]} typography__text--small`}
@@ -382,7 +442,7 @@ const StudyRoom: NextPage = observer(() => {
           }
         `}
       </style>
-    </>
+    </div>
   );
 });
 
