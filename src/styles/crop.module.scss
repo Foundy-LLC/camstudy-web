@@ -78,6 +78,10 @@
         line-height: 42px;
       }
 
+      .growing-crop_explain_title--empty{
+        color: var(--system_ui-03);
+      }
+
       .growing-crop_explain_title--box {
         display: flex;
         flex-direction: row;

@@ -57,8 +57,7 @@ const MyPot: NextPage = observer(() => {
 
   return (
     <div className={`${cropStyles["my-pot"]}`}>
-      {cropStore.growingCrop != undefined &&
-      cropStore.growingCrop.isDead === false ? (
+      {cropStore.growingCrop != undefined ? (
         <>
           <div className={`${cropStyles["my-pot_title"]}`}>
             <span className="material-symbols-outlined">grass</span>내 화분
@@ -69,7 +68,9 @@ const MyPot: NextPage = observer(() => {
                 <Image
                   width={156}
                   height={156}
-                  src={cropStore.cropImageSrc!}
+                  src={
+                    !cropStore.growingCrop.isDead ? cropStore.cropImageSrc! : ""
+                  }
                   alt={"작물"}
                 />
               }
@@ -86,22 +87,24 @@ const MyPot: NextPage = observer(() => {
                 <span
                   className={`${cropStyles["growing-crop_explain_title--box"]} typography__text--big`}
                 >
-                  {`${cropStore.growingCrop!.level}단계`}
+                  {!cropStore.growingCrop.isDead
+                    ? `${cropStore.growingCrop!.level}단계`
+                    : `죽음`}
                 </span>
                 <span
                   className={`${cropStyles["growing-crop_explain_content"]}`}
                 >
-                  {`${new Date(
-                    cropStore.growingCrop.plantedAt
-                  ).getFullYear()}년 
+                  {!cropStore.growingCrop.isDead
+                    ? `${new Date(
+                        cropStore.growingCrop.plantedAt
+                      ).getFullYear()}년 
                     ${
                       new Date(cropStore.growingCrop.plantedAt).getMonth() + 1
                     }월 
                     ${new Date(cropStore.growingCrop.plantedAt).getDate()}일 
                     ${new Date(cropStore.growingCrop.plantedAt).getHours()}시 
-                    ${new Date(
-                      cropStore.growingCrop.plantedAt
-                    ).getMinutes()}분`}
+                    ${new Date(cropStore.growingCrop.plantedAt).getMinutes()}분`
+                    : "-"}
                 </span>
               </div>
               <div
@@ -116,7 +119,9 @@ const MyPot: NextPage = observer(() => {
                 <span
                   className={`${cropStyles["growing-crop_explain_content"]}`}
                 >
-                  {getRemainTime(cropStore.growingCrop)}
+                  {!cropStore.growingCrop.isDead
+                    ? getRemainTime(cropStore.growingCrop)
+                    : "-"}
                 </span>
               </div>
               <div
@@ -131,9 +136,11 @@ const MyPot: NextPage = observer(() => {
                 <span
                   className={`${cropStyles["growing-crop_explain_content"]}`}
                 >
-                  {convertAvgStudyTimeToText(
-                    cropStore.growingCrop.averageStudyTimes
-                  )}
+                  {!cropStore.growingCrop.isDead
+                    ? convertAvgStudyTimeToText(
+                        cropStore.growingCrop.averageStudyTimes
+                      )
+                    : "-"}
                 </span>
               </div>
               <div
@@ -148,120 +155,37 @@ const MyPot: NextPage = observer(() => {
                 <span
                   className={`${cropStyles["growing-crop_explain_content"]}`}
                 >
-                  {convertLevelToString(cropStore.growingCrop.expectedGrade)}
+                  {!cropStore.growingCrop.isDead
+                    ? convertLevelToString(cropStore.growingCrop.expectedGrade)
+                    : "-"}
                 </span>
               </div>
             </div>
           </div>
-          <button
-            className={`${cropStyles["my-pot_button"]}`}
-            disabled={harvestable(cropStore.growingCrop)}
-            onClick={() => {
-              if (confirm("작물을 수확하시겠습니까?")) {
-                cropStore.harvestCrops(user.uid);
-              }
-            }}
-          >
-            수확하기
-          </button>
-        </>
-      ) : cropStore.growingCrop != undefined && cropStore.growingCrop.isDead ? (
-        <>
-          <div className={`${cropStyles["my-pot_title"]}`}>
-            <span className="material-symbols-outlined">grass</span>내 화분
-          </div>
-          <div className={`${cropStyles["my-pot_content"]}`}>
-            <div className={`${cropStyles["growing-crop_image"]}`}>
-              {
-                <Image
-                  width={156}
-                  height={156}
-                  src={cropStore.cropImageSrc!}
-                  alt={"작물"}
-                />
-              }
-            </div>
-            <div className={`${cropStyles["growing-crop_explain"]}`}>
-              <div
-                className={`${cropStyles["growing-crop_explain_item--big"]}`}
-              >
-                <span
-                  className={`${cropStyles["growing-crop_explain_title--big"]}`}
-                >
-                  {`${cropStore.cropName}`}
-                </span>
-                <span
-                  className={`${cropStyles["growing-crop_explain_title--box"]} typography__text--big`}
-                >
-                  {`죽음`}
-                </span>
-                <span
-                  className={`${cropStyles["growing-crop_explain_content"]}`}
-                >
-                  {`-년 
-                    -월 
-                    -일 
-                    -시 
-                    -분`}
-                </span>
-              </div>
-              <div
-                className={`${cropStyles["growing-crop_explain_item"]} typography__text--big`}
-              >
-                <span
-                  className={`${cropStyles["growing-crop_explain_title"]}`}
-                  style={{ marginRight: 33 }}
-                >
-                  수확 예정일
-                </span>
-                <span
-                  className={`${cropStyles["growing-crop_explain_content"]}`}
-                >
-                  -
-                </span>
-              </div>
-              <div
-                className={`${cropStyles["growing-crop_explain_item"]} typography__text--big`}
-              >
-                <span
-                  className={`${cropStyles["growing-crop_explain_title"]}`}
-                  style={{ marginRight: 16 }}
-                >
-                  평균 공부시간
-                </span>
-                <span
-                  className={`${cropStyles["growing-crop_explain_content"]}`}
-                >
-                  -
-                </span>
-              </div>
-              <div
-                className={`${cropStyles["growing-crop_explain_item"]} typography__text--big`}
-              >
-                <span
-                  className={`${cropStyles["growing-crop_explain_title"]}`}
-                  style={{ marginRight: 16 }}
-                >
-                  예상 작물등급
-                </span>
-                <span
-                  className={`${cropStyles["growing-crop_explain_content"]}`}
-                >
-                  -
-                </span>
-              </div>
-            </div>
-          </div>
-          <button
-            className={`${cropStyles["my-pot_button"]}`}
-            onClick={() => {
-              if (confirm("작물을 제거하시겠습니까?")) {
-                cropStore.removeCrop(user.uid, cropStore.growingCrop!.id);
-              }
-            }}
-          >
-            제거하기
-          </button>
+          {!cropStore.growingCrop.isDead ? (
+            <button
+              className={`${cropStyles["my-pot_button"]}`}
+              disabled={harvestable(cropStore.growingCrop)}
+              onClick={() => {
+                if (confirm("작물을 수확하시겠습니까?")) {
+                  cropStore.harvestCrops(user.uid);
+                }
+              }}
+            >
+              수확하기
+            </button>
+          ) : (
+            <button
+              className={`${cropStyles["my-pot_button"]}`}
+              onClick={() => {
+                if (confirm("작물을 제거하시겠습니까?")) {
+                  cropStore.removeCrop(user.uid, cropStore.growingCrop!.id);
+                }
+              }}
+            >
+              제거하기
+            </button>
+          )}
         </>
       ) : (
         <>
@@ -282,8 +206,8 @@ const MyPot: NextPage = observer(() => {
               style={{ alignItems: "center", margin: "auto" }}
             >
               <div
-                className={"typography__sub-headline"}
-                style={{ marginBottom: "20px", color: "#C1c1c1" }}
+                className={`${cropStyles["growing-crop_explain_title--empty"]} typography__sub-headline`}
+                style={{ marginBottom: "20px" }}
               >
                 화분이 비어있습니다
               </div>
