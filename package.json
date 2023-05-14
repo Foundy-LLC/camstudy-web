@@ -49,6 +49,7 @@
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
+    "@mui/icons-material": "^5.11.16",
     "@types/jest": "^29.4.0",
     "@types/multer-s3": "^3.0.0",
     "@types/nodemailer": "^6.4.7",
@@ -59,6 +60,7 @@
     "nodemailer-mailgun-transport": "^2.1.5",
     "prettier": "2.8.3",
     "prisma": "^4.10.0",
+    "react-icons": "^4.8.0",
     "sass": "^1.58.3",
     "supertest": "^6.3.3",
     "ts-debounce": "^4.0.0",

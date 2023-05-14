@@ -1,0 +1,451 @@
+@import "./color/colorPalette";
+
+
+@viewport{
+  min-zoom: 100%;
+}
+.study-room__page{
+  height: auto;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .study-room__cam-form{
+    display: flex;
+    flex-direction: column;
+    .study-room__user-form{
+      min-width: 1020px;
+      max-width: 1020px;
+      max-height: 961px;
+      min-height: 961px;
+      background-color: #171717;
+      border-top-left-radius: 16px;
+      &__grid{
+        padding: 80px 50px 80px 50px;
+        display: grid;
+        grid: '. .';
+        gap:2px;
+        .study-room__user{
+          width: 460px;
+          height: 400px;
+          background-color: #3D3D3D;
+          display: flex;
+          flex-direction: column;
+          &__video{
+            width: 460px;
+            height: 338px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-user-select:none;
+            -moz-user-select:none;
+            -ms-user-select:none;
+            user-select:none;
+            label{
+              color: $-Dark-06;
+            }
+          }
+          &__option-bar{
+            width: 460px;
+            height: 62px;
+            background-color: $-Dark-01;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            div{
+              display: flex;
+              align-items: center;
+              .study-room__slash-icon{
+                color:$-White;
+                position: absolute;
+                left: 35%;
+                top:50%;
+                transform: translate(-50%, -50%) rotate(95deg);
+                color: $-Danger-06;
+                font-size: 25px;
+                pointer-events: none;
+              }
+            }
+            .study-room__user__name{
+              margin: 20px;
+              color: $-White;
+            }
+            .study-room__camera-icon{
+              margin-left: 2px;
+              margin-right: 10px;
+            }
+            .study-room__headphones-icon{
+              margin-right: 8px;
+            }
+            .study-room__mic-icon{
+
+            }
+            .study-room__option{
+              margin-left: auto;
+              margin-right: 20px;
+              position: relative;
+              cursor: pointer;
+              -webkit-user-select:none;
+              -moz-user-select:none;
+              -ms-user-select:none;
+              user-select:none;
+              span{
+                cursor: pointer;
+              }
+              &__dialog{
+                background-color: $-Dark-02;
+                position: absolute;
+                left: -90px;
+                top: -77px;
+                color: $-White;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                border-radius: 8px 8px 0px 8px;
+                li{
+                  display: flex;
+                  align-items: center;
+                  padding: 9px 13px;
+                  cursor: pointer;
+                  span{
+                    font-size: 17px;
+                    margin-right: 4px;
+                  }
+                  &:hover{
+                    background-color: $-Dark-03;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    .study-room__button-form{
+      width: 1020px;
+      height: 120px;
+      background-color: #242424;
+      display: flex;
+      align-items: center;
+      position: relative;
+      border-bottom-left-radius: 16px;
+      &__logo{
+        color: #FFFFFF;
+        margin-left: 32px;
+        cursor: default;
+      }
+      .dialog-form{
+        position: fixed;
+        background: white;
+        padding: 7px 10px;
+        border-radius: 4px;
+        boxShadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      }
+      &__icon-form{
+        display: grid;
+        grid:". . .";
+        gap: 10px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+
+        span{
+          padding: 5px;
+          border-radius: 12px;
+          font-size: 45px;
+          cursor: pointer;
+          &:hover{
+            background-color: $-Dark-03;
+          }
+          &:active{
+            background-color: $-Dark-02;
+          }
+        }
+
+        .study-room__slash-icon{
+          color:$-White;
+          position: absolute;
+          left: 50%;
+          top:50%;
+          transform: translate(-50%, -50%) rotate(95deg);
+          color: $-Danger-06;
+          font-size: 40px;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+  .study-room__info-form{
+    display: flex;
+    flex-direction: column;
+    background-color: #171717;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    .study-room__timer-form{
+      height: 448px;
+      width: 420px;
+      border-left: 0.3px solid $-Dark-03 ;
+      border-bottom: 0.3px solid $-Dark-03;
+      &__subtitle{
+        width: 151px;
+        height: 28px;
+        margin-top: 28px;
+        margin-left: 28px;
+        display: flex;
+        &__label{
+          margin-left: 4px;
+          color: $-White;
+        }
+      }
+      &__time{
+        height: 74px;
+        width: 196px;
+        margin-top: 32px;
+        margin-left: 112px;
+        margin-bottom: 40px;
+        label{
+          font-size: 72px;
+          color: $-Primary-05;
+        }
+      }
+      &__time-set{
+        width: 364px;
+        height: 36px;
+        margin-bottom: 20px;
+        margin-left: 28px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+        label{
+          color:$-White;
+          cursor: pointer;
+        }
+      }
+      &__short-rest-set{
+        width: 364px;
+        height: 36px;
+        display: flex;
+        margin-bottom: 20px;
+        margin-left: 28px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+        label{
+          color:$-White;
+          cursor: pointer;
+        }
+      }
+      &__long-rest-set{
+        width: 364px;
+        height: 36px;
+        display: flex;
+        margin-bottom: 20px;
+        margin-left: 28px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+        label{
+          color:$-White;
+          cursor: pointer;
+        }
+      }
+      &__info{
+        display: flex;
+        width: 364px;
+        margin-top: 40px;
+        margin-left: 28px;
+        &__text{
+          display: flex;
+          flex-direction: column;
+          .study-room__timer-form__info__status{
+            color:$-White
+          }
+          .study-room__timer-form__info__time-info{
+            color:$-White
+          }
+        }
+        &__button{
+          margin-left: auto;
+          background-color: $-Primary-05;
+          border-radius: 8px;
+          cursor: pointer;
+          label{
+            width: 84px;
+            height: 22px;
+            padding: 8px 16px;
+            color: $-White;
+            cursor: pointer;
+          }
+          &:hover{
+            background-color: $-Primary-04;
+          }
+          &:active{
+            background-color: $-Primary-06;
+          }
+
+          &--start{
+            background-color: #E0E0E0;
+            margin-left: auto;
+            border-radius: 8px;
+            label{
+              width: 84px;
+              height: 22px;
+              padding: 8px 16px;
+              color: $-Gray-05;
+            }
+          }
+        }
+      }
+    }
+    .study-room__chat-form{
+      height: 632px;
+      width: 420px;
+      border-left: 0.3px solid $-Dark-03 ;
+      position: relative;
+      &__header-form{
+        display: flex;
+        flex-direction: column;
+        width: 420px;
+        margin-top: 27px;
+        label{
+          color: $-White
+        }
+        .study-room__chat-form__header{
+          display: flex;
+          align-items: center;
+
+          .study-room__chat-form__header__icon{
+            margin-top: 5px;
+            margin-left: 30px;
+          }
+          .study-room__chat-form__header__subtitle{
+            margin-left: 4px;
+            margin-top: 5px;
+          }
+
+
+          .study-room__chat-form__header__ban-list__button{
+            display: flex;
+            align-items: center;
+            width: 120px;
+            height: 24px;
+            margin-left: auto;
+            margin-right: 22px;
+            padding: 5px 10px 5px 10px;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            span{
+              margin-left: auto;
+              font-size: 26px;
+            }
+            label{
+              margin-left: 5px;
+              cursor: pointer;
+            }
+            &:hover{
+              background-color: #4B4B4B;
+            }
+            &:active{
+              background-color: #2e2d2d;
+            }
+          }
+        }
+      }
+      &__ban-list{
+        position: absolute;
+        top:75px;
+        display: grid;
+        grid:".";
+        row-gap: 5px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid $-Dark-03;
+        .study-room__chat-form__ban-user{
+          width: 420px;
+          height: 40px;
+          padding-top: 3px;
+          padding-bottom: 3px;
+          display: flex;
+          align-items: center;
+          &__image{
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            margin-right: 12px;
+            margin-left: 28px;
+            background-color: #4B4B4B;
+          }
+          &__name{
+
+          }
+          &__ban-cancel{
+            margin-left: auto;
+            width: 84px;
+            margin-right: 28px;
+            padding: 3px 7px 3px 7px;
+            border-radius: 8px;
+            cursor: pointer;
+            &:hover{
+              background-color: #4B4B4B;
+            }
+            &:active{
+              background-color: #2e2d2d;
+            }
+          }
+          &:hover{
+            background-color: #2e2d2d;
+          }
+        }
+      }
+      &__text-field{
+        height: 450px;
+        width: 364px;
+        margin-left: 30px;
+        margin-top: 10px;
+        padding-top: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        label{
+          margin:4px 4px;
+          font-weight: 200;
+        }
+        &__notice{
+          color: $-Dark-05;
+        }
+        &__chat{
+          margin:4px 0px;
+          .study-room__chat-form__text-field__name{
+            color: $-Dark-06;
+            font-weight: 300;
+          }
+          .study-room__chat-form__text-field__text{
+            color: $-White;
+            font-weight: 300;
+          }
+        }
+      }
+      &__input{
+        width: 327px;
+        height: 18px;
+        margin-left: 30px;
+        margin-top: 30px;
+        padding: 15px 16px;
+        background-color: $-Dark-01;
+        color: $-White;
+        border-radius: 8px;
+        border: none;
+      }
+    }
+  }
+
+}
