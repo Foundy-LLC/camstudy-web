@@ -130,16 +130,12 @@ const UserProfile: NextPage<{ userId: string }> = observer(({ userId }) => {
   return (
     <div className={"user-profile-box"}>
       <div className={`${headerStyles["dragUnable"]} image`}>
-        {userStore.currentUser?.profileImage ? (
+        {userStore.currentUser && (
           <UserProfileImage
-            profileSrc={userStore.currentUser?.profileImage}
+            userId={userStore.currentUser?.id}
             width={44}
             height={44}
           ></UserProfileImage>
-        ) : (
-          <div className={`${headerStyles["user-profile-image"]}`}>
-            <span className="material-symbols-sharp">person</span>
-          </div>
         )}
       </div>
       <div
