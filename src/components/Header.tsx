@@ -66,7 +66,7 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
     Router.push(`rooms/${roomId}`);
   };
 
-  const OnMouseEnter = (
+  const onMouseEnter = (
     e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>
   ) => {
     const div = document.getElementById("roomTitleDialog");
@@ -98,7 +98,7 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
             onClick={() => joinRecentRoom(room.id)}
             onMouseEnter={(e) => {
               setShowDialog(room.title);
-              OnMouseEnter(e);
+              onMouseEnter(e);
             }}
             onMouseLeave={() => {
               setShowDialog("");
@@ -110,7 +110,7 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
         className={`${headerStyles["create-room-button"]}`}
         onMouseEnter={(e) => {
           setShowDialog("방 만들기");
-          OnMouseEnter(e);
+          onMouseEnter(e);
         }}
         onMouseLeave={() => {
           setShowDialog("");
