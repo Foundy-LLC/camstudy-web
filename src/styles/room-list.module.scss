@@ -1,12 +1,38 @@
 @import "./color/colorPalette";
+.drag-unable{
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+}
+
+.room-page__title{
+  display: flex;
+  margin: 24px 20px;
+  align-items: center;
+  color: var(--text-01);
+  &__label{
+    font-weight: 600;
+  }
+  &__input{
+    width: 225px;
+    height: 18px;
+    margin-left: 28px;
+    padding: 10px 39px 10px 16px;
+    border: 1px solid var(--system_ui-04);
+    border-radius: 8px;
+    color: var(--system_ui-05);
+  }
+}
 
 .room-list-frame{
+  height: calc(100vh - 180px);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   margin: 0 auto;
   max-width: 1040px;
-  background: var(--ui-cardui);
+  background: var(--ui-cardui-01);
   border: 0.5px solid var(--system_ui-04);
   border-radius: 16px;
 
@@ -20,6 +46,7 @@
     margin: 24px 0px 0px 22px;
     height: 20px;
     width: 20px;
+    color: var(--system_ui-08);
   }
 
   .room-list-title{
@@ -31,6 +58,7 @@
     color: var(--text-01);
   }
   .room-scroll {
+    position: relative;
     overflow: scroll;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
@@ -38,6 +66,14 @@
     .room-scroll-text{
       text-align: center;
       color: var(--system_ui-05);
+    }
+
+    .room-scroll-text--lack{
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      text-align: center;
+      color: var(--error);
     }
 
     .room-list-grid {
@@ -48,20 +84,39 @@
 
       .room-list-form {
         height: 128px;
-        background: var(--ui-cardui);
+        background: var(--ui-cardui-02);
         border: 0.5px solid var(--system_ui-04);
         border-radius: 12px;
         display: inline-flex;
         margin-bottom: 20px;
 
         .room-thumbnail-img {
-          width: 96px;
+          min-width: 96px;
           height: 96px;
-          left: 16px;
-          top: 16px;
           margin: 16px;
-          background: var(--system_ui-02);
+          background-color: var(--system_ui-01);
           border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          div{
+            z-index: 0;
+            position: absolute;
+            background-color: #FFFFFF;
+            width: 50px;
+            height: 50px;
+          }
+          span{
+            z-index: 1;
+            font-size: 80px;
+            border-radius: 64px;
+            color:var(--system_ui-02);
+            cursor: default;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
         }
 
         .room-title {
@@ -76,7 +131,7 @@
           width: 232px;
           height: 22px;
           margin-top: 4px;
-          font-weight: 400;
+          font-weight: 300;
           color: var(--system_ui-05);
         }
 
@@ -99,18 +154,34 @@
           margin-right: 8px;
         }
 
+        .room-joiner-img--default {
+          height: 32px;
+          width: 32px;
+          background-color: var(--system_ui-01);
+          margin-top: 8px;
+          border: none;
+          border-radius: 8px;
+          margin-right: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          span{
+            font-size: 20px;
+            color: var(--system_ui-03);
+          }
+        }
+
         .room-enter-button {
           width: 86px;
           height: 38px;
           margin-top: 7px;
-          background: var(--primary-press);
+          background: #{$-Primary-06};
           border: none;
           border-radius: 8px;
           display: flex;
           justify-content: center;
           align-items: center;
-
-
+          cursor: pointer;
           p {
             font-style: normal;
             font-weight: 500;
@@ -118,7 +189,7 @@
             line-height: 22px;
             color: $-White;
             user-select: none;
-            cursor: default;
+            cursor: pointer;
           }
 
           &:hover {

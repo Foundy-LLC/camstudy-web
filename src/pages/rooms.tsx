@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useStores } from "@/stores/context";
 import { observer } from "mobx-react-lite";
 import { RoomOverview } from "@/models/room/RoomOverview";
@@ -8,13 +8,10 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import Router, { useRouter } from "next/router";
 import roomListStyles from "@/styles/room-list.module.scss";
-import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
-import lockedIcon from "/public/room/locked.png";
-import optionIcon from "/public/room/option.png";
-import roomListIcon from "/public/room/roomListIcon.png";
 import { UserOverview } from "@/models/user/UserOverview";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Layout } from "@/components/Layout";
+import { useDebounce } from "@/components/UseDebounce";
 
 export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
@@ -26,13 +23,12 @@ export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
           className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
         >
           <div className={`${roomListStyles["room-list-info"]}`}>
-            <Image
-              src={roomListIcon}
-              alt={"room-list-icon"}
-              width={20}
-              height={20}
-              className={`${roomListStyles["room-list-icon"]}`}
-            />
+            <span
+              className={`${roomListStyles["room-list-icon"]} material-symbols-sharp`}
+            >
+              chat_bubble
+            </span>
+
             <p
               className={`${roomListStyles["room-list-title"]} typography__text--big`}
             >
@@ -46,7 +42,7 @@ export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
               next={() =>
                 setTimeout(() => {
                   roomListStore.fetchRooms();
-                }, 800)
+                }, 1000)
               }
               hasMore={roomListStore.isExistNextPage}
               loader={
@@ -56,23 +52,21 @@ export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
                   <b>스터디 룸 목록 불러오는 중...</b>
                 </p>
               }
-              endMessage={
-                <p
-                  className={`${roomListStyles["room-scroll-text"]} typography__text--big`}
-                >
-                  <b>더 이상 방이 없습니다.</b>
-                </p>
-              }
               scrollableTarget="room-scroll"
             >
               <div className={`${roomListStyles["room-list-grid"]}`}>
-                {items.map((item) => (
-                  <RoomItem roomOverview={item} key={item.id} />
+                {items.map((item, key) => (
+                  <RoomItem roomOverview={item} key={key} />
                 ))}
               </div>
             </InfiniteScroll>
           </div>
         </div>
+        <style jsx>{`
+          .material-symbols-sharp {
+            font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+          }
+        `}</style>
       </>
     );
   }
@@ -81,81 +75,101 @@ export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
 const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
   ({ roomOverview }) => {
     return (
-      <div
-        className={`${roomListStyles["room-list-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
-      >
-        <Image
-          src={
-            roomOverview.thumbnail
-              ? roomOverview.thumbnail
-              : DEFAULT_THUMBNAIL_URL
-          }
-          alt={`${roomOverview.title}-thumbnail-img`}
-          className={`${roomListStyles["room-thumbnail-img"]}`}
-          width={96}
-          height={96}
-        ></Image>
+      <>
         <div
-          style={{
-            display: "inline-flex",
-            flexDirection: "column",
-            width: "100%",
-          }}
+          className={`${roomListStyles["room-list-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
         >
-          <div style={{ display: "inline-flex" }}>
-            <p
-              className={`${roomListStyles["room-title"]} typography__text--big`}
-            >
-              {roomOverview.title}
-            </p>
-            {!roomOverview.hasPassword ? null : (
-              <Image
-                src={lockedIcon}
-                width={15}
-                height={20}
-                alt="locked"
-                style={{ marginTop: "19px" }}
-              />
-            )}
+          {roomOverview.thumbnail ? (
             <Image
-              src={optionIcon}
-              alt={"option_icon"}
-              width={16}
-              height={4}
-              style={{
-                marginLeft: "auto",
-                marginTop: "26px",
-                marginRight: "20px",
-              }}
-            />
-          </div>
-          <div style={{ display: "inline-flex" }}>
-            {roomOverview.tags && <RoomTagGroup userTags={roomOverview.tags} />}
-          </div>
-          <div style={{ display: "inline-flex" }}>
-            <div>
-              <JoinedUserProfiles
-                joinedUsers={roomOverview.joinedUsers}
-                maxCount={roomOverview.maxCount}
-              />
-            </div>
-            <button
-              className={`${roomListStyles["room-enter-button"]} typography__text`}
-              style={{
-                marginLeft: "auto",
-                marginRight: "16px",
-                marginBottom: "16px",
-              }}
-              onClick={() => {
-                const roomLink = `/rooms/${roomOverview.id}`;
-                Router.push(roomLink);
-              }}
+              src={roomOverview.thumbnail}
+              alt={`${roomOverview.title}-thumbnail-img`}
+              className={`${roomListStyles["room-thumbnail-img"]}`}
+              width={96}
+              height={96}
+            ></Image>
+          ) : (
+            <div
+              className={`${roomListStyles["room-thumbnail-img"]} ${roomListStyles["drag-unable"]}`}
             >
-              <p>입장하기</p>
-            </button>
+              <div></div>
+              <span className="material-symbols-sharp">help</span>
+            </div>
+          )}
+          <div
+            style={{
+              display: "inline-flex",
+              flexDirection: "column",
+              width: "100%",
+            }}
+          >
+            <div style={{ display: "inline-flex" }}>
+              <p
+                className={`${roomListStyles["room-title"]} typography__text--big`}
+              >
+                {roomOverview.title}
+              </p>
+              {!roomOverview.hasPassword ? null : (
+                <span
+                  className={`${roomListStyles["drag-unable"]} ${roomListStyles["room-list-icon"]} material-symbols-sharp`}
+                  style={{
+                    cursor: "default",
+                    marginTop: "20px",
+                    fontSize: "20px",
+                  }}
+                >
+                  lock
+                </span>
+              )}
+              <span
+                className={`${roomListStyles["drag-unable"]} ${roomListStyles["room-list-icon"]} material-symbols-sharp`}
+                style={{
+                  marginLeft: "auto",
+                  marginTop: "16px",
+                  marginRight: "16px",
+                  cursor: "pointer",
+                }}
+              >
+                more_horiz
+              </span>
+            </div>
+            <div style={{ display: "inline-flex" }}>
+              {roomOverview.tags && (
+                <RoomTagGroup userTags={roomOverview.tags} />
+              )}
+            </div>
+            <div style={{ display: "inline-flex" }}>
+              <div style={{ display: "flex" }}>
+                <JoinedUserProfiles
+                  joinedUsers={roomOverview.joinedUsers}
+                  maxCount={roomOverview.maxCount}
+                />
+              </div>
+              <button
+                className={`${roomListStyles["room-enter-button"]} typography__text`}
+                style={{
+                  marginLeft: "auto",
+                  marginRight: "16px",
+                  marginBottom: "16px",
+                }}
+                onClick={() => {
+                  const roomLink = `/rooms/${roomOverview.id}`;
+                  Router.push(roomLink);
+                }}
+              >
+                <p>입장하기</p>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+        <style jsx>
+          {`
+            .material-symbols-sharp {
+              font-variation-settings: "FILL" 1, "wght" 700, "GRAD" 200,
+                "opsz" 20;
+            }
+          `}
+        </style>
+      </>
     );
   }
 );
@@ -173,7 +187,7 @@ const RoomTagGroup: NextPage<{ userTags: string[] }> = observer(
 );
 
 const RoomTag: NextPage<{ userTag: string }> = observer(({ userTag }) => {
-  return <a>{userTag.toString() + " "}</a>;
+  return <a>#{userTag.toString() + " "}</a>;
 });
 
 const JoinedUserProfiles: NextPage<{
@@ -188,21 +202,37 @@ const JoinedUserProfiles: NextPage<{
   }
   return (
     <>
-      {users.map((user) => {
+      {users.map((user, key) => {
         return user === "*blank#" ? (
           <button
+            key={key}
             className={`${roomListStyles["room-joiner-img-blank"]}`}
           ></button>
-        ) : (
+        ) : user ? (
           <Image
+            key={key}
             className={`${roomListStyles["room-joiner-img"]}`}
             alt={`user-profile-img`}
-            src={user ? user : DEFAULT_THUMBNAIL_URL}
+            src={user}
             width={32}
             height={32}
           ></Image>
+        ) : (
+          <div
+            className={`${roomListStyles["room-joiner-img--default"]}`}
+            key={key}
+          >
+            <span className="material-symbols-sharp">person</span>
+          </div>
         );
       })}
+      <style jsx>
+        {`
+          .material-symbols-sharp {
+            font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 200, "opsz" 48;
+          }
+        `}
+      </style>
     </>
   );
 });
@@ -211,11 +241,17 @@ const RoomList: NextPage = observer(() => {
   const router = useRouter();
   const { roomListStore, userStore } = useStores();
   const [user, loading] = useAuthState(auth);
+  const [searchInput, setSearchInput] = useState("");
+  const debounceSearch = useDebounce(searchInput, 500);
+  useEffect(() => {
+    console.log(debounceSearch);
+    roomListStore.setSearchRoomNameInput(debounceSearch!);
+    roomListStore.fetchRooms();
+  }, [debounceSearch]);
 
   useEffect(() => {
     if (user) {
       roomListStore.setMasterId(user.uid);
-      roomListStore.fetchRooms();
     }
   }, [user]);
 
@@ -228,10 +264,27 @@ const RoomList: NextPage = observer(() => {
   }
   return (
     <Layout>
-      <RoomItemGroup items={roomListStore.roomOverviews} />
-      {roomListStore.errorMessage === undefined ? null : (
-        <h3>{roomListStore.errorMessage}</h3>
-      )}
+      <div>
+        <div className={`${roomListStyles["room-page__title"]}`}>
+          <label
+            className={`${roomListStyles["room-page__title__label"]} typography__sub-headline`}
+          >
+            스터디 룸 목록
+          </label>
+          <input
+            className={`${roomListStyles["room-page__title__input"]} typography__text--small`}
+            type={"text"}
+            onChange={(e) => {
+              setSearchInput(e.target.value);
+            }}
+            placeholder={"스터디 룸 제목 혹은 키워드를 검색해주세요"}
+          />
+        </div>
+        <RoomItemGroup items={roomListStore.roomOverviews} />
+        {roomListStore.errorMessage === undefined ? null : (
+          <h3>{roomListStore.errorMessage}</h3>
+        )}
+      </div>
     </Layout>
   );
 });

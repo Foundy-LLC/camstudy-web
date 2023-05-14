@@ -9,14 +9,20 @@ const HEADER = {
 };
 
 export class RoomService {
-  public async getRooms(page: number): Promise<Result<RoomOverview[]>> {
+  public async getRooms(
+    page: number,
+    roomName: string
+  ): Promise<Result<RoomOverview[]>> {
     try {
-      const response = await fetchAbsolute(`api/rooms?page=${page}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetchAbsolute(
+        `api/rooms?page=${page}&query=${roomName}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.ok) {
         return Result.createSuccessUsingResponseData(response);
       } else {

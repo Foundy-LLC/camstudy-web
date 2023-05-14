@@ -20,6 +20,7 @@ import {
   ProfileDialog,
   ProfileDialogContainer,
 } from "@/components/ProfileDialog";
+import { ROOM_NUM_PER_PAGE } from "@/constants/room.constant";
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
