@@ -135,6 +135,21 @@
   border-radius: 12px;
 }
 
+.cropListItemBox--active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  margin-right: 16px;
+
+  width: 80px;
+  height: 80px;
+
+  background: var(--system_background);
+  border-radius: 12px;
+}
+
 /* IMAGE STYLES */
 .cropItem {
   cursor: pointer;

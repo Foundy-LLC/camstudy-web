@@ -131,7 +131,7 @@ const MyPot: NextPage = observer(() => {
                 <span
                   className={`${cropStyles["growing-crop_explain_content"]}`}
                 >
-                  {revertAvgStudyTimeToText(
+                  {convertAvgStudyTimeToText(
                     cropStore.growingCrop.averageStudyTimes
                   )}
                 </span>
@@ -148,7 +148,7 @@ const MyPot: NextPage = observer(() => {
                 <span
                   className={`${cropStyles["growing-crop_explain_content"]}`}
                 >
-                  {revertLevelToString(cropStore.growingCrop.expectedGrade)}
+                  {convertLevelToString(cropStore.growingCrop.expectedGrade)}
                 </span>
               </div>
             </div>
@@ -358,7 +358,7 @@ const CropListPopup: NextPage<{ userId: string }> = (userId) => {
         >
           <div className={`${cropListPopupStyles["selectedCropTitle"]}`}>
             <span className={`${cropListPopupStyles["selectedCropName"]}`}>
-              {revertCropTypeToCropName(selectedOption)}
+              {convertCropTypeToCropName(selectedOption)}
             </span>
             <span
               className={`${cropListPopupStyles["selectedCropTotalLevel"]}`}
@@ -399,7 +399,9 @@ const CropListPopup: NextPage<{ userId: string }> = (userId) => {
           return (
             <label
               className={`${cropListPopupStyles["cropItem"]} ${
-                crop.type === selectedOption.type ? "active" : ""
+                crop.type === selectedOption.type
+                  ? `${cropListPopupStyles["active"]}`
+                  : ""
               }`}
               style={{ display: "flex", paddingLeft: 10 }}
               key={idx}
@@ -411,7 +413,13 @@ const CropListPopup: NextPage<{ userId: string }> = (userId) => {
                 checked={selectedOption.type === crop.type}
                 onChange={handleOptionChange}
               />
-              <div className={`${cropListPopupStyles["cropListItemBox"]}`}>
+              <div
+                className={`${
+                  crop.type === selectedOption.type
+                    ? `${cropListPopupStyles["cropListItemBox--active"]}`
+                    : `${cropListPopupStyles["cropListItemBox"]}`
+                }`}
+              >
                 <Image
                   src={crop.harvestedImageUrl[1]}
                   alt={`Option ${idx + 1}`}
@@ -421,7 +429,7 @@ const CropListPopup: NextPage<{ userId: string }> = (userId) => {
               </div>
               <div>
                 <div className={cropListPopupStyles["itemTitle"]}>
-                  {revertCropTypeToCropName(crop)}
+                  {convertCropTypeToCropName(crop)}
                 </div>
                 <div className={cropListPopupStyles["itemIntroduce"]}>
                   {crop.introduce}
@@ -435,6 +443,7 @@ const CropListPopup: NextPage<{ userId: string }> = (userId) => {
         .material-symbols-outlined {
           font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
         }
+
         /* HIDE RADIO */
         [type="radio"] {
           position: absolute;
@@ -469,7 +478,7 @@ const MyPlants: NextPage = observer(() => {
               <PlantBox
                 url={
                   crop.harvestedImageUrl[
-                    revertLevelToIndex(harvestedCrop.grade)
+                    convertLevelToIndex(harvestedCrop.grade)
                   ]
                 }
                 key={key}
@@ -490,7 +499,7 @@ const PlantBox: NextPage<{ url: string }> = ({ url }) => {
   );
 };
 
-const revertAvgStudyTimeToText = (studyTime: number) => {
+const convertAvgStudyTimeToText = (studyTime: number) => {
   let totalMinutes = Math.floor(studyTime * 60); // 공부한 총 분 수
   let hours = Math.floor(totalMinutes / 60); // 시간 구하기
   let minutes = totalMinutes % 60; // 분 구하기
@@ -498,7 +507,7 @@ const revertAvgStudyTimeToText = (studyTime: number) => {
   return `${hours}시간 ${minutes}분`; // 출력: "0시간 45분"
 };
 
-const revertLevelToIndex = (grade: fruit_grade) => {
+const convertLevelToIndex = (grade: fruit_grade) => {
   switch (grade) {
     case "diamond":
       return 4;
@@ -513,7 +522,7 @@ const revertLevelToIndex = (grade: fruit_grade) => {
   }
 };
 
-const revertLevelToString = (grade: string) => {
+const convertLevelToString = (grade: string) => {
   switch (grade) {
     case "diamond":
       return "다이아";
@@ -543,7 +552,7 @@ const getRequireDay = (crop: GrowingCrop) => {
   }
 };
 
-const revertCropTypeToCropName = (crop: Crops) => {
+const convertCropTypeToCropName = (crop: Crops) => {
   switch (crop.type) {
     case "cabbage":
       return "양배추";
