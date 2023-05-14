@@ -18,6 +18,13 @@
   }
 }
 
+.toggle-button__label{
+  color: var(--system_ui-08);
+  span{
+    font-size: 19px;
+  }
+}
+
 .button {
   width: 48px;
   height: 24px;

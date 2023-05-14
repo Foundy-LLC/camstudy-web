@@ -51,7 +51,7 @@ hr {
 }
 
 section {
-  background-color: $-light-mode;
+  background-color: var(--section_background);
 }
 .box {
   height: 100vh;
@@ -75,8 +75,8 @@ section {
 .box-header {
   min-height: 4rem;
   max-width: 87rem;
-  background-color: $-system_white;
-  border-bottom: 1px solid $-gray_cool-200;
+  background-color: var(--system_background);
+  border-bottom: 1px solid var(--system_ui-03);
   display: flex;
   flex-grow: 1;
   align-items: center;

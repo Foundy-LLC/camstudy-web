@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import logo from "../assets/brand_logo.svg";
 import headerStyles from "@/styles/header.module.scss";
@@ -9,6 +9,7 @@ import { observer } from "mobx-react";
 import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import Router from "next/router";
 import { ThemeModeToggleButton } from "@/components/ThemeModeToggleButton";
+import Link from "next/link";
 
 export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
   const exButtonList = [
@@ -23,17 +24,19 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
 
   return (
     <header className={"box-header"}>
-      <Image
-        className={`${headerStyles["header-image"]}`}
-        src={logo}
-        alt={"brand_logo"}
-        priority={true}
-      ></Image>
+      <Link href={"/"}>
+        <Image
+          className={`${headerStyles["header-image"]} ${headerStyles["dragUnable"]}`}
+          src={logo}
+          alt={"brand_logo"}
+          priority={true}
+        ></Image>
+      </Link>
       <RecentRoomList userId={userId}></RecentRoomList>
       <div className={`${headerStyles["header-user-section"]}`}>
         <UserProfile userId={userId}></UserProfile>
         <div style={{ marginTop: "10px" }}>
-            <ThemeModeToggleButton />
+          <ThemeModeToggleButton />
         </div>
       </div>
       <style jsx>
@@ -48,6 +51,7 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
 });
 
 const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
+  const [showDialog, setShowDialog] = useState<string>("");
   const { roomListStore } = useStores();
   useEffect(() => {
     roomListStore.fetchRecentRooms(userId);
@@ -62,8 +66,26 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
     Router.push(`rooms/${roomId}`);
   };
 
+  const onMouseEnter = (
+    e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const div = document.getElementById("roomTitleDialog");
+    const position = (e.target as HTMLElement).getBoundingClientRect();
+    div!.style.left = position.x.toString() + "px";
+    div!.style.top = (position.y + 60).toString() + "px";
+  };
+
   return (
-    <div className={`${headerStyles["recent-room-list"]}`}>
+    <div
+      className={`${headerStyles["recent-room-list"]} ${headerStyles["dragUnable"]}`}
+    >
+      <div
+        id="roomTitleDialog"
+        className={`${headerStyles["recent-room-dialog"]} typography__text--small elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
+        hidden={showDialog === ""}
+      >
+        {showDialog}
+      </div>
       {recentRoomList.map((room) => {
         return (
           <Image
@@ -74,10 +96,26 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
             width={44}
             height={44}
             onClick={() => joinRecentRoom(room.id)}
+            onMouseEnter={(e) => {
+              setShowDialog(room.title);
+              onMouseEnter(e);
+            }}
+            onMouseLeave={() => {
+              setShowDialog("");
+            }}
           ></Image>
         );
       })}
-      <button className={`${headerStyles["create-room-button"]}`}>
+      <button
+        className={`${headerStyles["create-room-button"]}`}
+        onMouseEnter={(e) => {
+          setShowDialog("방 만들기");
+          onMouseEnter(e);
+        }}
+        onMouseLeave={() => {
+          setShowDialog("");
+        }}
+      >
         <span className={`${headerStyles["icon"]} material-symbols-outlined`}>
           add
         </span>
@@ -91,30 +129,48 @@ const UserProfile: NextPage<{ userId: string }> = observer(({ userId }) => {
 
   return (
     <div className={"user-profile-box"}>
-      <div className={"image"}>
-        <UserProfileImage
-          userId={userId}
-          width={44}
-          height={44}
-        ></UserProfileImage>
+      <div className={`${headerStyles["dragUnable"]} image`}>
+        {userStore.currentUser && (
+          <UserProfileImage
+            userId={userStore.currentUser?.id}
+            width={44}
+            height={44}
+          ></UserProfileImage>
+        )}
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-        <label className={"user-profile-name typography__text"}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "4px",
+        }}
+      >
+        <label
+          className={`${headerStyles["user-profile-name"]} typography__text`}
+        >
           {userStore.currentUser?.name}
         </label>
-        <label className={"typography__text--small"}>
+        <label
+          className={`${headerStyles["user-profile-introduce"]} typography__text--small`}
+          style={{
+            fontWeight: "300",
+            width: "180px",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
           {userStore.currentUser?.introduce}
         </label>
       </div>
       <style jsx>
         {`
+          .material-symbols-sharp {
+            font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+          }
           .user-profile-box {
             display: flex;
             min-width: 14.75rem;
-          }
-
-          .user-profile-name {
-            font-weight: 500;
           }
 
           .image {
