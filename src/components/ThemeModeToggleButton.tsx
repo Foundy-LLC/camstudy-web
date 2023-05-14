@@ -35,31 +35,51 @@ export const ThemeModeToggleButton: NextPage = () => {
   };
 
   return (
-    <div style={{ display: "flex" }}>
-      <div style={{ display: "flex", marginTop: "3px" }}>
-        <Image
-          alt={`moon-icon`}
-          src={moonIcon}
-          width={14}
-          height={14}
-          style={{ marginTop: "2px" }}
-        ></Image>
-        <label
-          className={"typography__text--small"}
-          style={{ marginLeft: "5px", fontWeight: "400" }}
+    <>
+      <div style={{ display: "flex" }}>
+        <div
+          className={`${buttonStyles["toggle-button__label"]}`}
+          style={{ display: "flex", marginTop: "3px" }}
         >
-          다크 모드
-        </label>
+          <span className="material-symbols-sharp">dark_mode</span>
+          <label
+            className={"typography__text--small"}
+            style={{ marginLeft: "3px", fontWeight: "400" }}
+          >
+            다크 모드
+          </label>
+        </div>
+        <button
+          id="toggleButton"
+          className={`${
+            buttonStyles[`button${darkMode === "true" ? "-active" : ""}`]
+          }`}
+          onClick={toggleButtonOnClick}
+        >
+          <div className={`${buttonStyles[`circle`]}`}></div>
+        </button>
       </div>
-      <button
-        id="toggleButton"
-        className={`${
-          buttonStyles[`button${darkMode === "true" ? "-active" : ""}`]
-        }`}
-        onClick={toggleButtonOnClick}
-      >
-        <div className={`${buttonStyles[`circle`]}`}></div>
-      </button>
-    </div>
+      <style jsx>
+        {`
+          .material-symbols-sharp {
+            font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+          }
+          .user-profile-box {
+            display: flex;
+            min-width: 14.75rem;
+          }
+
+          .image {
+            width: 44px;
+            height: 44px;
+            padding-right: 0.75rem;
+          }
+
+          label {
+            display: block;
+          }
+        `}
+      </style>
+    </>
   );
 };

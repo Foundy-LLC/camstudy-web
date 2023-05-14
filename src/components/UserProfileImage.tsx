@@ -1,34 +1,19 @@
 import { NextPage } from "next";
 import Image from "next/image";
-import {
-  IMAGE_SERVER_URL,
-  USER_DEFAULT_IMAGE_SRC,
-} from "@/constants/image.constant";
-import { useState } from "react";
-
-const userProfileImageLoader = ({ src }: { src: string }): string => {
-  return `${IMAGE_SERVER_URL}/users/${src}.png`;
-};
+import headerStyles from "@/styles/header.module.scss";
 
 export const UserProfileImage: NextPage<{
-  userId: string;
+  profileSrc: string;
   width?: number;
   height?: number;
-}> = ({ userId, width = 40, height = 40 }) => {
-  const [src, setSrc] = useState<string>(userId);
-
+}> = ({ profileSrc, width = 40, height = 40 }) => {
   return (
     <Image
       width={width}
       height={height}
-      loader={userProfileImageLoader}
-      src={src}
-      onError={(e) => {
-        e.currentTarget.onerror = null;
-        setSrc(USER_DEFAULT_IMAGE_SRC);
-      }}
+      src={profileSrc}
       alt="User profile image"
-      style={{ borderRadius: "8px" }}
+      className={`${headerStyles["user-profile-image"]}`}
     />
   );
 };

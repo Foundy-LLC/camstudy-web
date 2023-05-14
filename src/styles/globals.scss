@@ -230,6 +230,7 @@ body {
 
 body[color-theme='light'] {
   //System Color
+  --section_background: #F8F8F8;
   --system_background: #{$-White};
   --system_ui-01: #{$-Gray-01};
   --system_ui-02: #{$-Gray-02};
@@ -280,6 +281,7 @@ body[color-theme='light'] {
 //Dark mode
 
 body[color-theme='dark'] {
+  --section_background: #{$-Dark-01};
   --system_background: #{$-Black};
   --system_ui-01: #{$-Dark-01};
   --system_ui-02: #{$-Dark-02};
