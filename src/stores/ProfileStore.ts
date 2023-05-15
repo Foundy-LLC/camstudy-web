@@ -115,12 +115,20 @@ export class ProfileStore {
     this._tagDropDownHidden = hidden;
   }
 
+  public importProfileImage = (profileImage: File) => {
+    this._selectedImageFile = profileImage;
+    this._imageUrl = URL.createObjectURL(profileImage);
+    this._editSuccess = false;
+  };
+
   public importUserProfile = (profile: User) => {
     runInAction(() => {
       this._nickName = profile.name;
       this._introduce = profile.introduce;
       this._tags = profile.tags;
       this._organizations = profile.organizations;
+      this._imageUrl = profile.profileImage;
+      console.log(this._imageUrl);
     });
   };
 
@@ -163,11 +171,6 @@ export class ProfileStore {
         this._tagUpdateSuccessMessage = "";
       }
     }
-  };
-
-  public importProfileImage = (thumbnail: File) => {
-    this._selectedImageFile = thumbnail;
-    this._imageUrl = URL.createObjectURL(thumbnail);
   };
 
   public getUserProfile = async (userId: string) => {

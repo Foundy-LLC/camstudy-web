@@ -165,7 +165,10 @@ const SimilarTagName: NextPage<{ item: Tag }> = observer(({ item }) => {
   );
 });
 
-const NicknameForm: NextPage = observer(() => {
+const IntroduceForm: NextPage<{
+  setChanged: (changed: boolean) => void;
+}> = observer(({ setChanged }) => {
+  const { profileStore } = useStores();
   return (
     <div
       className={`${profileStyles["nickname-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
@@ -176,14 +179,30 @@ const NicknameForm: NextPage = observer(() => {
       </div>
       <div className={`${profileStyles["nickname"]} `}>
         <label className={"typography__caption"}>닉네임</label>
-        <input type={"text"} className={"typography__text--small"} />
+        <input
+          type={"text"}
+          className={"typography__text--small"}
+          value={profileStore.nickName}
+          onChange={(e) => {
+            profileStore.onChanged(e);
+            setChanged(true);
+          }}
+        />
         <label className={"typography__caption"}>
           다른 농부들에게 표시되는 닉네임입니다
         </label>
       </div>
-      <div className={`${profileStyles["introduce"]}`}>
+      <div className={`${profileStyles["introduce"]} `}>
         <label className={"typography__caption"}>자기소개</label>
-        <input type={"text"} className={"typography__text--small"} />
+        <input
+          type={"text"}
+          className={"typography__text--small"}
+          value={profileStore.introduce ? profileStore.introduce : ""}
+          onChange={(e) => {
+            profileStore.onChanged(e);
+            setChanged(true);
+          }}
+        />
         <label className={"typography__caption"}>
           나를 나타낼 수 있는 소개 내용을 입력해주세요
         </label>
@@ -488,14 +507,15 @@ const UserProfile: NextPage = observer(() => {
                   <span className="material-symbols-sharp">image</span>
                   <label className={"typography__text--big"}>프로필 사진</label>
                 </div>
+
                 <div className={`${profileStyles["image-upload"]}`}>
-                  {roomListStore.imageUrl === "" ? (
+                  {!profileStore.imageUrl ? (
                     <div className={`${profileStyles["image"]}`}></div>
                   ) : (
                     <Image
                       className={`${profileStyles["image"]}`}
                       alt={"selected-img"}
-                      src={roomListStore.imageUrl}
+                      src={profileStore.imageUrl}
                       width={152}
                       height={152}
                     />
@@ -520,6 +540,7 @@ const UserProfile: NextPage = observer(() => {
                             roomListStore.importRoomThumbnail(
                               e.target.files[0]
                             );
+                            setChanged(true);
                           }
                         }}
                         hidden
@@ -538,7 +559,7 @@ const UserProfile: NextPage = observer(() => {
                   </div>
                 </div>
               </div>
-              <NicknameForm />
+              <IntroduceForm setChanged={setChanged} />
             </div>
 
             <OrganizationForm />
