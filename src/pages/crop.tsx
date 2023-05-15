@@ -107,6 +107,14 @@ const MyPot: NextPage = observer(() => {
                     : "-"}
                 </span>
               </div>
+              <hr
+                style={{
+                  border: "none",
+                  height: "1px",
+                  backgroundColor: "var(--system_ui-03)",
+                  margin: "20px 20px 20px 0",
+                }}
+              />
               <div
                 className={`${cropStyles["growing-crop_explain_item"]} typography__text--big`}
               >
@@ -193,7 +201,10 @@ const MyPot: NextPage = observer(() => {
             <span className="material-symbols-outlined">grass</span>내 화분
           </div>
           <div className={`${cropStyles["my-pot_content"]}`}>
-            <div className={`${cropStyles["growing-crop_image"]}`}>
+            <div
+              className={`${cropStyles["growing-crop_image"]}`}
+              style={{ marginBottom: 32 }}
+            >
               <Image
                 src={emptyImage}
                 alt={"img"}
