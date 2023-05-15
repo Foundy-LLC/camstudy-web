@@ -64,16 +64,17 @@ const MyPot: NextPage = observer(() => {
           </div>
           <div className={`${cropStyles["my-pot_content"]}`}>
             <div className={`${cropStyles["growing-crop_image"]}`}>
-              {
-                <Image
-                  width={156}
-                  height={156}
-                  src={
-                    !cropStore.growingCrop.isDead ? cropStore.cropImageSrc! : ""
-                  }
-                  alt={"작물"}
-                />
-              }
+              <Image
+                width={156}
+                height={156}
+                src={cropStore.cropImageSrc!}
+                alt={"작물"}
+                style={
+                  cropStore.growingCrop.isDead
+                    ? { filter: "grayscale(100%)" }
+                    : {}
+                }
+              />
             </div>
             <div className={`${cropStyles["growing-crop_explain"]}`}>
               <div
