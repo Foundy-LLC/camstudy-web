@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { RootStore } from "@/stores/RootStore";
 import roomService, { RoomService } from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
+import { ROOM_NUM_PER_PAGE } from "@/constants/room.constant";
 
 //TODO(건우) 값을 임시로 할당하여 수정 필요
 export class Room {
@@ -41,7 +42,7 @@ export class RoomListStore {
   private _errorMessage: string = "";
   private _tempRoom: Room = new Room();
   private _roomExpirate: number = 2;
-
+  private _searchRoomNameInput: string = "";
   constructor(
     root: RootStore,
     private readonly _roomService: RoomService = roomService
@@ -82,6 +83,10 @@ export class RoomListStore {
     return this._isSuccessGet;
   }
 
+  get pageNum() {
+    return this._pageNum;
+  }
+
   get isSuccessImportImage(): boolean {
     return this._imageUrl !== "";
   }
@@ -98,6 +103,10 @@ export class RoomListStore {
     const date = new Date();
     date.setDate(date.getDate() + this._roomExpirate);
     this._tempRoom = { ...this._tempRoom, expiredAt: date };
+  }
+
+  public setIsExistNextPageToFalse() {
+    this._isExistNextPage = false;
   }
 
   public setMasterId = (masterId: string) => {
@@ -121,17 +130,32 @@ export class RoomListStore {
     this._tempRoom = { ...this._tempRoom, title: roomTitle, id: roomTitle };
   }
 
+  public setSearchRoomNameInput(roomName: string) {
+    this._searchRoomNameInput = roomName;
+    this._pageNum = 0;
+    this._roomOverviews = [];
+    this._isExistNextPage = false;
+  }
+
   public fetchRooms = async (): Promise<void> => {
-    const getRoomsResult = await this._roomService.getRooms(this._pageNum++);
+    const getRoomsResult = await this._roomService.getRooms(
+      this._pageNum,
+      this._searchRoomNameInput
+    );
+    console.log(this.pageNum);
+    this._pageNum += 1;
     if (getRoomsResult.isSuccess) {
       runInAction(() => {
+        console.log(getRoomsResult.getOrNull()!);
         this._initErrorMessage();
         this._isSuccessGet = true;
         const roomList = getRoomsResult.getOrNull()!!;
+        if (roomList.length === ROOM_NUM_PER_PAGE) this._isExistNextPage = true;
         if (roomList.length === 0) {
           this._isExistNextPage = false;
         } else {
           this._roomOverviews = this._roomOverviews.concat(roomList);
+          console.log(this.roomOverviews.length);
         }
       });
     } else {
