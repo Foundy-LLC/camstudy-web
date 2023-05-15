@@ -469,14 +469,17 @@ const UserProfile: NextPage = observer(() => {
 
   useEffect(() => {
     if (!userStore.currentUser) return;
+    profileStore.getUserProfile(userStore.currentUser.id);
+  }, [userStore.currentUser]);
+
+  useEffect(() => {
+    if (!userStore.currentUser) return;
     if (profileStore.editSuccess === true) {
       setChanged(false);
-      console.log("프로필 변경 성공");
-      profileStore.getUserProfile(userStore.currentUser.id);
-    } else {
+      userStore.fetchCurrentUser(userStore.currentUser.id);
       profileStore.getUserProfile(userStore.currentUser.id);
     }
-  }, [userStore.currentUser, profileStore.editSuccess]);
+  }, [profileStore.editSuccess]);
 
   useEffect(() => {
     if (!profileStore.userOverview) return;
@@ -513,6 +516,7 @@ const UserProfile: NextPage = observer(() => {
                 profileStyles[`save-button${changed ? "" : "--disabled"}`]
               } typography__text`}
               onClick={() => {
+                profileStore.updateProfileImage();
                 profileStore.updateProfile();
               }}
             >
@@ -523,7 +527,10 @@ const UserProfile: NextPage = observer(() => {
               className={`${
                 profileStyles[`undo-button${changed ? "" : "--disabled"}`]
               } typography__text`}
-              onClick={() => profileStore.undoProfile()}
+              onClick={() => {
+                profileStore.undoProfile();
+                setChanged(false);
+              }}
             >
               <label>되돌리기</label>
             </div>
@@ -567,9 +574,6 @@ const UserProfile: NextPage = observer(() => {
                         accept="image/png, image/jpeg"
                         onChange={(e) => {
                           if (e.target.files) {
-                            roomListStore.importRoomThumbnail(
-                              e.target.files[0]
-                            );
                             profileStore.importProfileImage(e.target.files[0]);
                             setChanged(true);
                           }

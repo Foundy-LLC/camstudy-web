@@ -15,6 +15,7 @@ import { validateUserTags } from "@/utils/user.validator";
 import { USER_TAG_MAX_COUNT } from "@/constants/user.constant";
 import { Tag } from "@/models/welcome/Tag";
 import { welcomeService, WelcomeService } from "@/service/welcome.service";
+import userService, { UserService } from "@/service/user.service";
 
 export class ProfileStore {
   readonly rootStore: RootStore;
@@ -24,6 +25,7 @@ export class ProfileStore {
   private _typedTag: string = "";
   private _tagDropDownHidden: boolean = true;
   private _imageUrl?: string = undefined;
+  private _imageFile?: File;
   private _nickName?: string = undefined;
   private _tags?: string[] = undefined;
   private _recommendTags: Tag[] = [];
@@ -33,14 +35,18 @@ export class ProfileStore {
   private _organizations?: string[] = undefined;
   private _errorMessage: string = "";
   private _successMessage: string = "";
+  private _profileImageChanged: boolean = false;
   private _tagUpdateSuccessMessage: string = "";
   private _tagUpdateErrorMessage: string = "";
+  private _imageUpdateSuccessMessage: string = "";
+  private _imageUpdateErrorMessage: string = "";
   private _editSuccess?: boolean = undefined;
 
   constructor(
     root: RootStore,
     private readonly _profileService: ProfileService = profileService,
-    private readonly _welcomeService: WelcomeService = welcomeService
+    private readonly _welcomeService: WelcomeService = welcomeService,
+    private readonly _userService: UserService = userService
   ) {
     makeAutoObservable(this);
     this.rootStore = root;
@@ -116,9 +122,14 @@ export class ProfileStore {
   }
 
   public importProfileImage = (profileImage: File) => {
-    this._selectedImageFile = profileImage;
-    this._imageUrl = URL.createObjectURL(profileImage);
-    this._editSuccess = false;
+    runInAction(() => {
+      this._selectedImageFile = profileImage;
+      this._imageFile = profileImage;
+      this._imageUrl = URL.createObjectURL(profileImage);
+      console.log(this._imageUrl);
+      this._profileImageChanged = true;
+      this._editSuccess = false;
+    });
   };
 
   public importUserProfile = (profile: User) => {
@@ -128,7 +139,6 @@ export class ProfileStore {
       this._tags = profile.tags;
       this._organizations = profile.organizations;
       this._imageUrl = profile.profileImage;
-      console.log(this._imageUrl);
     });
   };
 
@@ -203,6 +213,30 @@ export class ProfileStore {
     if (!this.userOverview) return;
     this._introduce = this.userOverview.introduce;
     this._nickName = this.userOverview.name;
+    this._imageUrl = this.userOverview.profileImage;
+  };
+
+  public updateProfileImage = async () => {
+    try {
+      const uid = this.userOverview!.id;
+      const formData = new FormData();
+      formData.append("fileName", uid);
+      formData.append("profileImage", this._imageFile!);
+      const uploadProfileImageResult =
+        await this._userService.uploadProfileImage(uid, formData);
+      if (uploadProfileImageResult.isSuccess) {
+        this._imageUrl = uploadProfileImageResult.getOrNull()!;
+        this._imageUpdateSuccessMessage =
+          "프로필 사진을 성공적으로 업데이트 했습니다.";
+        console.log("프로필 사진 업데이트 성공");
+      } else {
+        throw new Error(uploadProfileImageResult.throwableOrNull()!.message);
+        return;
+      }
+    } catch (e) {
+      console.log("프로필 사진 업데이트 실패");
+      if (e instanceof Error) this._imageUpdateErrorMessage = e.message;
+    }
   };
 
   public updateProfile = async () => {
