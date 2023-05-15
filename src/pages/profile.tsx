@@ -169,6 +169,12 @@ const IntroduceForm: NextPage<{
   setChanged: (changed: boolean) => void;
 }> = observer(({ setChanged }) => {
   const { profileStore } = useStores();
+  useEffect(() => {
+    (document.getElementById("nickName") as HTMLInputElement).value =
+      profileStore.nickName ? profileStore.nickName : "";
+    (document.getElementById("introduce") as HTMLInputElement).value =
+      profileStore.introduce ? profileStore.introduce : "";
+  }, [profileStore.nickName, profileStore.introduce]);
   return (
     <div
       className={`${profileStyles["nickname-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
@@ -180,9 +186,9 @@ const IntroduceForm: NextPage<{
       <div className={`${profileStyles["nickname"]} `}>
         <label className={"typography__caption"}>닉네임</label>
         <input
+          id={"nickName"}
           type={"text"}
           className={"typography__text--small"}
-          value={profileStore.nickName}
           onChange={(e) => {
             profileStore.onChanged(e);
             setChanged(true);
@@ -195,9 +201,9 @@ const IntroduceForm: NextPage<{
       <div className={`${profileStyles["introduce"]} `}>
         <label className={"typography__caption"}>자기소개</label>
         <input
+          id={"introduce"}
           type={"text"}
           className={"typography__text--small"}
-          value={profileStore.introduce ? profileStore.introduce : ""}
           onChange={(e) => {
             profileStore.onChanged(e);
             setChanged(true);
@@ -322,7 +328,7 @@ const OrganizationForm: NextPage = observer(() => {
         )}
       </div>
       <button
-        className={`${profileStyles["image-upload-button"]}`}
+        className={`${profileStyles["add-button"]}`}
         onClick={() => {
           organizationStore.sendOrganizationVerifyEmail();
         }}
@@ -472,6 +478,16 @@ const UserProfile: NextPage = observer(() => {
     }
   }, [userStore.currentUser, profileStore.editSuccess]);
 
+  useEffect(() => {
+    if (!profileStore.userOverview) return;
+    if (
+      profileStore.nickName === profileStore.userOverview.name &&
+      profileStore.introduce === profileStore.userOverview.introduce
+    ) {
+      setChanged(false);
+    }
+  }, [profileStore.nickName, profileStore.introduce]);
+
   if (loading) {
     return <div>Loading</div>;
   }
@@ -491,10 +507,24 @@ const UserProfile: NextPage = observer(() => {
             >
               내 프로필
             </label>
-            <div className={`${profileStyles["save-button"]} typography__text`}>
+            <div
+              id={"saveButton"}
+              className={`${
+                profileStyles[`save-button${changed ? "" : "--disabled"}`]
+              } typography__text`}
+              onClick={() => {
+                profileStore.updateProfile();
+              }}
+            >
               <label>프로필 변경사항 저장하기</label>
             </div>
-            <div className={`${profileStyles["undo-button"]} typography__text`}>
+            <div
+              id={"undoButton"}
+              className={`${
+                profileStyles[`undo-button${changed ? "" : "--disabled"}`]
+              } typography__text`}
+              onClick={() => profileStore.undoProfile()}
+            >
               <label>되돌리기</label>
             </div>
           </div>
@@ -540,6 +570,7 @@ const UserProfile: NextPage = observer(() => {
                             roomListStore.importRoomThumbnail(
                               e.target.files[0]
                             );
+                            profileStore.importProfileImage(e.target.files[0]);
                             setChanged(true);
                           }
                         }}

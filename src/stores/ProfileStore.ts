@@ -199,6 +199,12 @@ export class ProfileStore {
     }
   };
 
+  public undoProfile = () => {
+    if (!this.userOverview) return;
+    this._introduce = this.userOverview.introduce;
+    this._nickName = this.userOverview.name;
+  };
+
   public updateProfile = async () => {
     try {
       if (!this.userStore.currentUser) {

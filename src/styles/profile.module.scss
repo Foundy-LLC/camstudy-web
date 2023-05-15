@@ -17,22 +17,50 @@
     .save-button {
       width: 154px;
       height: 22px;
-      background-color: var(--system_ui-02);
+      background-color: var(--primary);
       padding: 8px 16px 8px 16px;
       border-radius: 8px;
-      color: var(--system_ui-05);
+      color: var(--system_ui-01);
       margin-top: 26px;
+      cursor: pointer;
+      label{
+        cursor: pointer;
+      }
+      &--disabled{
+        width: 154px;
+        height: 22px;
+        padding: 8px 16px 8px 16px;
+        border-radius: 8px;
+        margin-top: 26px;
+        cursor: default;
+        background-color: var(--system_ui-02);
+        color: var(--system_ui-05);
+      }
     }
 
     .undo-button {
       width: 54px;
       height: 22px;
-      background-color: var(--system_ui-02);
+      background-color: var(--primary);
       padding: 8px 16px 8px 16px;
       border-radius: 8px;
-      color: var(--system_ui-05);
+      color: var(--system_ui-01);
       margin-top: 26px;
       margin-left: 8px;
+      cursor: pointer;
+      label{
+        cursor: pointer;
+      }
+      &--disabled{
+        width: 54px;
+        height: 22px;
+        padding: 8px 16px 8px 16px;
+        border-radius: 8px;
+        margin-top: 26px;
+        margin-left: 8px;
+        background-color: var(--system_ui-02);
+        color: var(--system_ui-05);
+      }
     }
   }
 
@@ -94,7 +122,7 @@
           height: 38px;
           width: 158px;
           border-radius: 8px;
-          border: solid 1px var(--primary-press);
+          border: solid 1px var(--primary);
           cursor: pointer;
           margin: 20px;
 
@@ -105,12 +133,12 @@
             margin: 8px;
 
             span {
-              color: var(--primary-press);
+              color: var(--primary);
             }
 
             label {
               cursor: pointer;
-              color: var(--primary-press);
+              color: var(--primary);
               margin-left: 10px;
             }
           }
@@ -346,12 +374,12 @@
       }
     }
 
-    .image-upload-button {
+    .add-button {
       height: 38px;
       width: 144px;
       border-radius: 8px;
-      border: solid 1px var(--primary-press);
-      color: var(--primary-press);
+      border: solid 1px var(--primary);
+      color: var(--primary);
       cursor: pointer;
       display: flex;
       justify-content: center;
@@ -524,8 +552,8 @@
       height: 38px;
       width: 116px;
       border-radius: 8px;
-      border: solid 1px var(--primary-press);
-      color: var(--primary-press);
+      border: solid 1px var(--primary);
+      color: var(--primary);
       cursor: pointer;
       display: flex;
       justify-content: center;
