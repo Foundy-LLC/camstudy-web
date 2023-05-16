@@ -20,7 +20,7 @@
   //color: #191919;
   color: var(--system_ui-09);
 
-  margin-bottom: 32px;
+  margin: 10px 0 32px 10px;
 }
 
 .plantingButton {
@@ -78,6 +78,16 @@
 
   background: var(--system_ui-02);
   border-radius: 4px;
+
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+  /* identical to box height, or 140% */
+  letter-spacing: -0.5px;
+
+  /* Gray-07 */
+  color: var(--system_ui-07);
 }
 
 .selectedCropImageBox {

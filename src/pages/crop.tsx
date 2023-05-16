@@ -13,7 +13,6 @@ import { Crops, CROPS } from "@/constants/crops";
 import { GrowingCrop } from "@/models/crop/GrowingCrop";
 import { fruit_grade } from "@prisma/client";
 import Modal from "react-modal";
-import emptyImage from "@/assets/Frame 586.png";
 
 const crop: NextPage = () => {
   return (
@@ -98,7 +97,7 @@ const MyPot: NextPage = observer(() => {
                   {!cropStore.growingCrop.isDead
                     ? `${new Date(
                         cropStore.growingCrop.plantedAt
-                      ).getFullYear()}년 
+                      ).getFullYear()}년   
                     ${
                       new Date(cropStore.growingCrop.plantedAt).getMonth() + 1
                     }월 
@@ -206,12 +205,15 @@ const MyPot: NextPage = observer(() => {
               className={`${cropStyles["growing-crop_image"]}`}
               style={{ marginBottom: 32 }}
             >
-              <Image
-                src={emptyImage}
-                alt={"img"}
-                width={96}
-                height={96}
-              ></Image>
+              <span className="material-symbols-outlined">help</span>
+              <style jsx>{`
+                .material-symbols-outlined {
+                  font-size: 96px;
+                  margin: auto;
+                  font-variation-settings: "FILL" 1, "wght" 700, "GRAD" 0,
+                    "opsz" 48;
+                }
+              `}</style>
             </div>
             <div
               className={`${cropStyles["growing-crop_explain"]}`}
