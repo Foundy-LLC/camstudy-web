@@ -127,7 +127,6 @@ export class ProfileStore {
       this._selectedImageFile = profileImage;
       this._imageFile = profileImage;
       this._imageUrl = URL.createObjectURL(profileImage);
-      console.log(this._imageUrl);
       this._profileImageChanged = true;
       this._editSuccess = false;
     });
