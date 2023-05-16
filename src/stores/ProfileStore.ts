@@ -210,10 +210,12 @@ export class ProfileStore {
   };
 
   public undoProfile = () => {
-    if (!this.userOverview) return;
-    this._introduce = this.userOverview.introduce;
-    this._nickName = this.userOverview.name;
-    this._imageUrl = this.userOverview.profileImage;
+    runInAction(() => {
+      if (!this.userOverview) return;
+      this._introduce = this.userOverview.introduce;
+      this._nickName = this.userOverview.name;
+      this._imageUrl = this.userOverview.profileImage;
+    });
   };
 
   public updateProfileImage = async () => {
@@ -225,10 +227,12 @@ export class ProfileStore {
       const uploadProfileImageResult =
         await this._userService.uploadProfileImage(uid, formData);
       if (uploadProfileImageResult.isSuccess) {
-        this._imageUrl = uploadProfileImageResult.getOrNull()!;
-        this._imageUpdateSuccessMessage =
-          "프로필 사진을 성공적으로 업데이트 했습니다.";
-        console.log("프로필 사진 업데이트 성공");
+        runInAction(() => {
+          this._imageUrl = uploadProfileImageResult.getOrNull()!;
+          this._imageUpdateSuccessMessage =
+            "프로필 사진을 성공적으로 업데이트 했습니다.";
+          console.log("프로필 사진 업데이트 성공");
+        });
       } else {
         throw new Error(uploadProfileImageResult.throwableOrNull()!.message);
         return;
