@@ -78,27 +78,61 @@
           }
         }
 
-        .friend-option-button {
-          width: 24px;
-          height: 24px;
-          margin-left: auto;
+        .friend-option{
+          position: relative;
           margin-top: 24px;
-          margin-right: 16px;
-          background: var(--ui-cardui-01);
+          margin-left: auto;
+          margin-right: 18px;
+          cursor: pointer;
+          .friend-option-button {
+            cursor: pointer;
+            background: var(--ui-cardui-01);
 
-          .friend-option-icon {
-            color: var(--system_ui-10);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: auto;
-            width: 16px;
-            height: 4px;
+            .friend-option-icon {
+              width: 24px;
+              height: 24px;
+              color: var(--system_ui-10);
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin: auto;
+              cursor: pointer;
+              width: 16px;
+              height: 4px;
+            }
+          }
+
+          .friend-list__option__modal{
+            z-index: 1;
+            width: 90px;
+            position: absolute;
+            top:18px;
+            left: -85px;
+            display: none;
+            border-radius: 8px 0px 8px 8px;
+            background-color: var(--ui-cardui);
+            cursor: pointer;
+            .friend-list__option__modal__ul{
+              display: flex;
+              flex-direction: column;
+              padding: 5px;
+              color: var(--text-01);
+              .friend-list__option__modal__li{
+                padding:8px ;
+                cursor: pointer;
+              }
+            }
           }
         }
       }
     }
-
+    .friend-list__error{
+      color: var(--system_ui-04);
+      position: absolute;
+      left: 50%;
+      top: 45%;
+      transform: translate(-50%, -50%);
+    }
   }
 
   .friend-requests__frame{
@@ -182,12 +216,12 @@
           position: relative;
           .friend-requester__icon--add{
             color: var(--system_ui-10);
-            cursor: default;
+            cursor: pointer;
           }
           .friend-requester__icon--etc{
             color: var(--system_ui-10);
             margin-left: 19px;
-            cursor: default;
+            cursor: pointer;
           }
           .friend-requester__option__modal{
             z-index: 1;
@@ -197,7 +231,7 @@
             display: none;
             border-radius: 8px 0px 8px 8px;
             background-color: var(--ui-cardui);
-            cursor: default;
+            cursor: pointer;
             .friend-requester__option__modal__ul{
               display: flex;
               flex-direction: column;
@@ -206,6 +240,7 @@
               .friend-requester__option__modal__li{
                 width: 70px;
                 padding:8px ;
+                cursor: pointer;
               }
             }
           }
@@ -299,13 +334,13 @@
             color: var(--error);
           }
         }
-
         .friend-option-button {
           width: 24px;
           height: 24px;
           margin-left: auto;
           margin-top: 24px;
           margin-right: 16px;
+          cursor: pointer;
           background: var(--ui-cardui-01);
 
           .friend-option-icon {
@@ -314,6 +349,7 @@
             justify-content: center;
             align-items: center;
             margin: auto;
+            cursor: pointer;
             width: 16px;
             height: 4px;
           }
