@@ -123,6 +123,7 @@ export class ProfileStore {
 
   public importProfileImage = (profileImage: File) => {
     runInAction(() => {
+      if (!profileImage) return;
       this._selectedImageFile = profileImage;
       this._imageFile = profileImage;
       this._imageUrl = URL.createObjectURL(profileImage);
