@@ -8,4 +8,5 @@ export interface GrowingCrop {
   expectedGrade: string;
   isDead: boolean;
   plantedAt: Date;
+  averageStudyTimes: number;
 }

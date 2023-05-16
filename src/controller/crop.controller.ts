@@ -198,6 +198,7 @@ export const getGrowingCrop = async (
       expectedGrade: expectedGrade,
       isDead: isDead,
       plantedAt: growingCrop.planted_at,
+      averageStudyTimes: averageStudyTimes,
     };
 
     res.status(200).json(
