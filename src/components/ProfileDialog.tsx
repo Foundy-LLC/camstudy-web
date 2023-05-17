@@ -64,18 +64,18 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
               </label>
             </div>
 
-            <div className={`${profileDialogStyles["profile-dialog__icons"]}`}>
-              {/*<span*/}
-              {/*  className={`${profileDialogStyles["profile-dialog__share-icon"]} material-symbols-sharp`}*/}
-              {/*>*/}
-              {/*  share*/}
-              {/*</span>*/}
-              <span
-                className={`${profileDialogStyles["profile-dialog__option-icon"]} material-symbols-sharp`}
-              >
-                more_horiz
-              </span>
-            </div>
+            {/*<div className={`${profileDialogStyles["profile-dialog__icons"]}`}>*/}
+            {/*  <span*/}
+            {/*    className={`${profileDialogStyles["profile-dialog__share-icon"]} material-symbols-sharp`}*/}
+            {/*  >*/}
+            {/*    share*/}
+            {/*  </span>*/}
+            {/*  <span*/}
+            {/*    className={`${profileDialogStyles["profile-dialog__option-icon"]} material-symbols-sharp`}*/}
+            {/*  >*/}
+            {/*    more_horiz*/}
+            {/*  </span>*/}
+            {/*</div>*/}
           </div>
           <div
             className={`${profileDialogStyles["profile-dialog__profile__div"]}`}

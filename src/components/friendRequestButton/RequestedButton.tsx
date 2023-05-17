@@ -19,7 +19,7 @@ export const RequestedButton: NextPage<{
           }
         }}
       >
-        <span className="material-symbols-sharp">send</span>
+        <span className="material-symbols-sharp">person_remove</span>
       </button>
       <style jsx>
         {`

@@ -254,6 +254,8 @@ export class FriendStore {
               ? Math.floor(dataArray.maxPage / FRIEND_NUM_PER_PAGE)
               : Math.floor(dataArray.maxPage / FRIEND_NUM_PER_PAGE) + 1;
           this._friendOverviews = dataArray.friends;
+          if (dataArray.friends.length === 0)
+            this._errorMessage = "추가된 친구가 없습니다.";
         });
       } else {
         runInAction(() => {
