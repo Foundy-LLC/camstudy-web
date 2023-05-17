@@ -57,7 +57,7 @@ import { PeerState } from "@/models/room/PeerState";
 import { UserStore } from "@/stores/UserStore";
 import { Result } from "@/models/common/Result";
 import { MediaServerGetResponse } from "@/models/room/MediaServerGetResponse";
-import { mediaRouterApiFetch } from "@/utils/mediaRouterApiFetch";
+import { mediaRouterApiFetch } from "@/utils/fetchAbsolute";
 
 interface CreateWebRtcTransportParams {
   readonly id: string;

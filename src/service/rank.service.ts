@@ -2,8 +2,7 @@ import { RankGetRequestBody } from "@/models/rank/RankGetRequestBody";
 import { Result } from "@/models/common/Result";
 import { UserRankingOverview } from "@/models/rank/UserRankingOverview";
 import { UserRankGetRequestBody } from "@/models/rank/UserRankGetRequestBody";
-import { fetchAbsolute } from "@/utils/fetchAbsolute";
-import { rankingApiFetch } from "@/utils/rankingApiFetch";
+import { rankingApiFetch } from "@/utils/fetchAbsolute";
 
 export class RankService {
   public getRank = async (
