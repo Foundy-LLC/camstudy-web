@@ -4,6 +4,7 @@ export const ROOM_BODY_INVALID_ERROR_MESSAGE: string =
 export const ROOM_DELETE_SUCCESS: string = "방을 삭제되었습니다";
 export const GET_RECENT_ROOM_SUCCESS: string =
   "최근 접속한 방 목록을 성공적으로 얻었습니다.";
+export const GET_ROOM_SUCCESS: string = "방 정보를 성공적으로 얻었습니다.";
 export const ROOM_CREATE_FAILED: string = "방 생성에 실패하였습니다";
 export const GET_ROOMS_SUCCESS: string = "공부방 목록을 성공적으로 얻었습니다";
 export const GET_ROOMS_FAILED: string = "방 조회에 실패하였습니다";
