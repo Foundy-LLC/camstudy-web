@@ -7,6 +7,8 @@ import { useStores } from "@/stores/context";
 import Image from "next/image";
 import { timeToString } from "@/components/TimeToString";
 import { friendStatus } from "@/constants/FriendStatus";
+import { CROPS } from "@/constants/crops";
+import { convertLevelToIndex } from "@/pages/crop";
 
 interface ClickableComponentProps {
   onClick: () => void;
@@ -212,19 +214,26 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                 <div
                   className={`${profileDialogStyles["profile-dialog__crop--image"]}`}
                 >
-                  {cropStore.cropImageSrc && (
+                  {cropStore.cropImageSrc ? (
                     <Image
                       src={cropStore.cropImageSrc!}
                       alt={cropStore.cropName}
                       width={44}
                       height={44}
                     />
+                  ) : (
+                    <label className={"typography__text--small"}>
+                      심은 작물 없음
+                    </label>
                   )}
                 </div>
                 <label
                   className={`${profileDialogStyles["profile-dialog__crop--label"]}`}
                 >
-                  {cropStore.cropName} {cropStore.growingCrop?.level}
+                  {cropStore.cropName}{" "}
+                  {cropStore.growingCrop?.level
+                    ? cropStore.growingCrop.level
+                    : "- "}
                   단계
                 </label>
               </div>
@@ -244,15 +253,30 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                 <div
                   className={`${profileDialogStyles["profile-dialog__crop-inventory__image"]}`}
                 >
-                  {cropStore.harvestedCrops.slice(0, 4).map((crop, key) => (
+                  {cropStore.harvestedCrops.slice(0, 4).map((crop, key) =>
                     // <Image
                     //   src={CROPS.}
                     //   alt={cropStore.cropName}
                     //   width={44}
                     //   height={44}
                     // />
-                    <label key={key}>{crop.type}</label>
-                  ))}
+
+                    CROPS.map((item) => {
+                      return item.type === crop.type ? (
+                        <Image
+                          src={
+                            item.harvestedImageUrl[
+                              convertLevelToIndex(crop.grade)
+                            ]
+                          }
+                          key={key}
+                          alt={crop.type + "-" + crop.grade}
+                          width={44}
+                          height={44}
+                        ></Image>
+                      ) : null;
+                    })
+                  )}
                 </div>
                 <label
                   className={`${profileDialogStyles["profile-dialog__crop-inventory__label"]}`}
