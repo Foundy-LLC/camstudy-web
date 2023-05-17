@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { deleteRoom, postRoomThumbnail } from "@/controller/room.controller";
+import { deleteRoom, getRoom } from "@/controller/room.controller";
 
 export default async function roomInformationHandler(
   req: NextApiRequest,
@@ -8,6 +8,9 @@ export default async function roomInformationHandler(
   const { method } = req;
 
   switch (method) {
+    case "GET":
+      await getRoom(req, res);
+      break;
     case "DELETE":
       await deleteRoom(req, res);
       break;

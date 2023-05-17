@@ -43,6 +43,7 @@ export class RoomListStore {
   private _tempRoom: Room = new Room();
   private _roomExpirate: number = 2;
   private _searchRoomNameInput: string = "";
+  private _roomInfo?: RoomOverview = undefined;
   constructor(
     root: RootStore,
     private readonly _roomService: RoomService = roomService
@@ -95,6 +96,10 @@ export class RoomListStore {
     return this._isExistNextPage;
   }
 
+  get roomInfo() {
+    return this._roomInfo;
+  }
+
   private _initErrorMessage() {
     this._errorMessage = "";
   }
@@ -136,6 +141,27 @@ export class RoomListStore {
     this._roomOverviews = [];
     this._isExistNextPage = false;
   }
+
+  public getRoomById = async (roomId: string) => {
+    try {
+      const result = await this._roomService.getRoom(roomId);
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._initErrorMessage();
+          this._isSuccessGet = true;
+          this._roomInfo = result.getOrNull()!!;
+        });
+      } else {
+        runInAction(() => {
+          this._errorMessage = result.throwableOrNull()!!.message;
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  };
 
   public fetchRooms = async (): Promise<void> => {
     const getRoomsResult = await this._roomService.getRooms(
