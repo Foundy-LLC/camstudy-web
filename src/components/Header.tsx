@@ -115,6 +115,9 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
         onMouseLeave={() => {
           setShowDialog("");
         }}
+        onClick={() => {
+          Router.push(`/enterRoom`);
+        }}
       >
         <span className={`${headerStyles["icon"]} material-symbols-outlined`}>
           add

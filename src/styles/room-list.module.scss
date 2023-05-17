@@ -121,10 +121,13 @@
 
         .room-title {
           margin: 16px 12px 0px 0px;
-          width: 114px;
+          width: 200px;
           height: 28px;
           color: var(--text-03);
-          font-weight: 700;
+          font-weight: 600;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .room-tags {
