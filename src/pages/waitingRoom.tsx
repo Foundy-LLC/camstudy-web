@@ -11,6 +11,7 @@ import { RoomStore } from "@/stores/RoomStore";
 import { Video } from "@/pages/rooms/[roomId]";
 import { UserProfileImage } from "@/components/UserProfileImage";
 import { RoomJoiner } from "@/models/room/RoomJoiner";
+import { RoomOverview } from "@/models/room/RoomOverview";
 
 const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
   ({ roomStore }) => {
