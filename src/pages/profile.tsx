@@ -165,7 +165,16 @@ const SimilarTagName: NextPage<{ item: Tag }> = observer(({ item }) => {
   );
 });
 
-const NicknameForm: NextPage = observer(() => {
+const IntroduceForm: NextPage<{
+  setChanged: (changed: boolean) => void;
+}> = observer(({ setChanged }) => {
+  const { profileStore } = useStores();
+  useEffect(() => {
+    (document.getElementById("nickName") as HTMLInputElement).value =
+      profileStore.nickName ? profileStore.nickName : "";
+    (document.getElementById("introduce") as HTMLInputElement).value =
+      profileStore.introduce ? profileStore.introduce : "";
+  }, [profileStore.nickName, profileStore.introduce]);
   return (
     <div
       className={`${profileStyles["nickname-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
@@ -176,14 +185,30 @@ const NicknameForm: NextPage = observer(() => {
       </div>
       <div className={`${profileStyles["nickname"]} `}>
         <label className={"typography__caption"}>닉네임</label>
-        <input type={"text"} className={"typography__text--small"} />
+        <input
+          id={"nickName"}
+          type={"text"}
+          className={"typography__text--small"}
+          onChange={(e) => {
+            profileStore.onChanged(e);
+            setChanged(true);
+          }}
+        />
         <label className={"typography__caption"}>
           다른 농부들에게 표시되는 닉네임입니다
         </label>
       </div>
-      <div className={`${profileStyles["introduce"]}`}>
+      <div className={`${profileStyles["introduce"]} `}>
         <label className={"typography__caption"}>자기소개</label>
-        <input type={"text"} className={"typography__text--small"} />
+        <input
+          id={"introduce"}
+          type={"text"}
+          className={"typography__text--small"}
+          onChange={(e) => {
+            profileStore.onChanged(e);
+            setChanged(true);
+          }}
+        />
         <label className={"typography__caption"}>
           나를 나타낼 수 있는 소개 내용을 입력해주세요
         </label>
@@ -303,7 +328,7 @@ const OrganizationForm: NextPage = observer(() => {
         )}
       </div>
       <button
-        className={`${profileStyles["image-upload-button"]}`}
+        className={`${profileStyles["add-button"]}`}
         onClick={() => {
           organizationStore.sendOrganizationVerifyEmail();
         }}
@@ -444,14 +469,27 @@ const UserProfile: NextPage = observer(() => {
 
   useEffect(() => {
     if (!userStore.currentUser) return;
+    profileStore.getUserProfile(userStore.currentUser.id);
+  }, [userStore.currentUser]);
+
+  useEffect(() => {
+    if (!userStore.currentUser) return;
     if (profileStore.editSuccess === true) {
       setChanged(false);
-      console.log("프로필 변경 성공");
-      profileStore.getUserProfile(userStore.currentUser.id);
-    } else {
+      userStore.fetchCurrentUser(userStore.currentUser.id);
       profileStore.getUserProfile(userStore.currentUser.id);
     }
-  }, [userStore.currentUser, profileStore.editSuccess]);
+  }, [profileStore.editSuccess]);
+
+  useEffect(() => {
+    if (!profileStore.userOverview) return;
+    if (
+      profileStore.nickName === profileStore.userOverview.name &&
+      profileStore.introduce === profileStore.userOverview.introduce
+    ) {
+      setChanged(false);
+    }
+  }, [profileStore.nickName, profileStore.introduce]);
 
   if (loading) {
     return <div>Loading</div>;
@@ -472,10 +510,28 @@ const UserProfile: NextPage = observer(() => {
             >
               내 프로필
             </label>
-            <div className={`${profileStyles["save-button"]} typography__text`}>
+            <div
+              id={"saveButton"}
+              className={`${
+                profileStyles[`save-button${changed ? "" : "--disabled"}`]
+              } typography__text`}
+              onClick={() => {
+                profileStore.updateProfileImage();
+                profileStore.updateProfile();
+              }}
+            >
               <label>프로필 변경사항 저장하기</label>
             </div>
-            <div className={`${profileStyles["undo-button"]} typography__text`}>
+            <div
+              id={"undoButton"}
+              className={`${
+                profileStyles[`undo-button${changed ? "" : "--disabled"}`]
+              } typography__text`}
+              onClick={() => {
+                profileStore.undoProfile();
+                setChanged(false);
+              }}
+            >
               <label>되돌리기</label>
             </div>
           </div>
@@ -488,14 +544,15 @@ const UserProfile: NextPage = observer(() => {
                   <span className="material-symbols-sharp">image</span>
                   <label className={"typography__text--big"}>프로필 사진</label>
                 </div>
+
                 <div className={`${profileStyles["image-upload"]}`}>
-                  {roomListStore.imageUrl === "" ? (
+                  {!profileStore.imageUrl ? (
                     <div className={`${profileStyles["image"]}`}></div>
                   ) : (
                     <Image
                       className={`${profileStyles["image"]}`}
                       alt={"selected-img"}
-                      src={roomListStore.imageUrl}
+                      src={profileStore.imageUrl}
                       width={152}
                       height={152}
                     />
@@ -517,9 +574,8 @@ const UserProfile: NextPage = observer(() => {
                         accept="image/png, image/jpeg"
                         onChange={(e) => {
                           if (e.target.files) {
-                            roomListStore.importRoomThumbnail(
-                              e.target.files[0]
-                            );
+                            profileStore.importProfileImage(e.target.files[0]);
+                            setChanged(true);
                           }
                         }}
                         hidden
@@ -538,7 +594,7 @@ const UserProfile: NextPage = observer(() => {
                   </div>
                 </div>
               </div>
-              <NicknameForm />
+              <IntroduceForm setChanged={setChanged} />
             </div>
 
             <OrganizationForm />
