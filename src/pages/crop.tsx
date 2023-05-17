@@ -445,7 +445,7 @@ const convertAvgStudyTimeToText = (studyTime: number) => {
   return `${hours}시간 ${minutes}분`; // 출력: "0시간 45분"
 };
 
-const convertLevelToIndex = (grade: fruit_grade) => {
+export const convertLevelToIndex = (grade: fruit_grade) => {
   switch (grade) {
     case "diamond":
       return 4;
@@ -460,7 +460,7 @@ const convertLevelToIndex = (grade: fruit_grade) => {
   }
 };
 
-const convertLevelToString = (grade: string) => {
+export const convertLevelToString = (grade: string) => {
   switch (grade) {
     case "diamond":
       return "다이아";

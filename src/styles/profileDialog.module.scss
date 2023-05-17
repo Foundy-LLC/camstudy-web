@@ -1,4 +1,5 @@
 .profile-dialog__background {
+  z-index: 10;
   background-color: #4B4C4E;
   position: absolute;
   height: 100%;
@@ -12,7 +13,7 @@
     width: 600px;
     height: 600px;
     opacity: 100%;
-    z-index: 2;
+    z-index: 11;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -205,6 +206,9 @@
 
           .profile-dialog__crop--image {
             margin-left: 84px;
+            label{
+              color: var(--text-04);
+            }
           }
 
           .profile-dialog__crop--label {
@@ -230,6 +234,9 @@
           }
 
           .profile-dialog__crop-inventory__image {
+            display: grid;
+            grid:". . . .";
+            gap: 8px;
             margin-left: 54px;
           }
 

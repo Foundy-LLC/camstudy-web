@@ -142,11 +142,9 @@ export class RoomListStore {
       this._pageNum,
       this._searchRoomNameInput
     );
-    console.log(this.pageNum);
     this._pageNum += 1;
     if (getRoomsResult.isSuccess) {
       runInAction(() => {
-        console.log(getRoomsResult.getOrNull()!);
         this._initErrorMessage();
         this._isSuccessGet = true;
         const roomList = getRoomsResult.getOrNull()!!;
@@ -155,7 +153,6 @@ export class RoomListStore {
           this._isExistNextPage = false;
         } else {
           this._roomOverviews = this._roomOverviews.concat(roomList);
-          console.log(this.roomOverviews.length);
         }
       });
     } else {
