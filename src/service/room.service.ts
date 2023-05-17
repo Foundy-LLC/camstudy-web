@@ -3,12 +3,32 @@ import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { Room } from "@/stores/RoomListStore";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
+import { RoomGetRequestBody } from "@/models/room/RoomGetRequestBody";
 
 const HEADER = {
   "Content-Type": "application/json",
 };
 
 export class RoomService {
+  public async getRoom(roomId: string): Promise<Result<RoomOverview>> {
+    try {
+      const requestBody = new RoomGetRequestBody(roomId);
+      const response = await fetchAbsolute(`api/rooms/${requestBody.roomId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        return Result.createSuccessUsingResponseData(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  }
+
   public async getRooms(
     page: number,
     roomName: string

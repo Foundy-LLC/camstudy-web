@@ -12,6 +12,7 @@ import { RoomAvailabilityRequestBody } from "@/models/room/RoomAvailabilityReque
 import {
   createRoom,
   deleteRoomReq,
+  fetchRoom,
   findRecentRooms,
   findRoomById,
   findRooms,
@@ -26,7 +27,10 @@ import multer, { MulterError } from "multer";
 import { multipartUploader } from "@/service/imageUploader";
 import {
   GET_RECENT_ROOM_SUCCESS,
+  GET_ROOM_SUCCESS,
+  GET_ROOMS_FAILED,
   GET_ROOMS_SUCCESS,
+  NO_ROOM_ID_ERROR_MESSAGE,
   ROOM_BODY_INVALID_ERROR_MESSAGE,
   ROOM_CREATE_SUCCESS,
   ROOM_DELETE_SUCCESS,
@@ -45,6 +49,7 @@ import {
 } from "@/repository/tag.repository";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { MAX_ROOM_CAPACITY } from "@/constants/room.constant";
+import { RoomGetRequestBody } from "@/models/room/RoomGetRequestBody";
 
 export const getRoomAvailability = async (
   req: NextApiRequest,
@@ -136,6 +141,42 @@ export const getRecentRooms = async (
       new ResponseBody({
         data: result,
         message: GET_RECENT_ROOM_SUCCESS,
+      })
+    );
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+  }
+};
+
+export const getRoom = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const roomId = req.query.roomId;
+    if (!roomId) {
+      res
+        .status(400)
+        .send(new ResponseBody({ message: NO_ROOM_ID_ERROR_MESSAGE }));
+      return;
+    }
+    if (typeof roomId !== "string") {
+      res.status(400).send(new ResponseBody({ message: REQUEST_QUERY_ERROR }));
+      return;
+    }
+    const requestBody = new RoomGetRequestBody(roomId);
+    const data = await fetchRoom(requestBody.roomId);
+    if (!data) {
+      res.status(404).send(new ResponseBody({ message: GET_ROOMS_FAILED }));
+      return;
+    }
+    res.status(200).json(
+      new ResponseBody({
+        data: data,
+        message: GET_ROOM_SUCCESS,
       })
     );
   } catch (e) {

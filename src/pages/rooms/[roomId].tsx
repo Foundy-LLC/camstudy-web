@@ -23,14 +23,21 @@ enum MasterPopupMenus {
 const RoomScaffold: NextPage = observer(() => {
   const { userStore } = useStores();
   const [roomStore] = useState(() => new RoomStore(userStore));
+  const { roomListStore } = useStores();
   const router = useRouter();
   const roomId = router.query.roomId;
 
   useEffect(() => {
     if (typeof roomId === "string") {
       roomStore.connectSocket(roomId);
+      roomListStore.getRoomById(roomId);
     }
   }, [roomStore, roomId]);
+
+  useEffect(() => {
+    if (!roomListStore.roomInfo) return;
+    console.log(roomListStore.roomInfo);
+  }, [roomListStore.roomInfo]);
 
   if (roomStore.failedToSignIn) {
     router.replace("/login");

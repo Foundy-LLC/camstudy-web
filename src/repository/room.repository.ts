@@ -142,6 +142,47 @@ export const findRecentRooms = async (
   });
 };
 
+export const fetchRoom = async (
+  roomId: string
+): Promise<RoomOverview | undefined> => {
+  const result = await client.room.findUnique({
+    where: { id: roomId },
+    include: {
+      study_history: {
+        where: {
+          exit_at: null,
+        },
+        include: { user_account: true },
+      },
+      room_tag: { include: { tag: true } },
+    },
+  });
+  if (!result) return;
+  const joinedUsers = result.study_history.map((history) => {
+    const { id, name, profile_image, score, status, introduce } =
+      history.user_account;
+    return {
+      id: id,
+      name: name,
+      profileImage: profile_image,
+      rankingScore: Number(score),
+      introduce: introduce,
+      status: status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
+    };
+  });
+  return new RoomOverview(
+    result.id,
+    result.master_id,
+    result.title,
+    result.password != null,
+    result.thumbnail,
+    result.study_history.length,
+    MAX_ROOM_CAPACITY,
+    joinedUsers,
+    result.room_tag.map((tagEntity) => tagEntity.tag.name)
+  );
+};
+
 export const createRoom = async (
   body: RoomCreateRequestBody,
   tags: { id: string }[]
