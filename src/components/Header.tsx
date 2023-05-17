@@ -18,10 +18,6 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
     { icon: "more_horiz", path: "" },
   ];
 
-  const buttonClickEvent = (path: string) => {
-    Router.push(path);
-  };
-
   return (
     <header className={"box-header"}>
       <Link href={"/"}>
@@ -75,6 +71,10 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
     div!.style.top = (position.y + 60).toString() + "px";
   };
 
+  const buttonClickEvent = (path: string) => {
+    Router.push(path);
+  };
+
   return (
     <div
       className={`${headerStyles["recent-room-list"]} ${headerStyles["dragUnable"]}`}
@@ -115,6 +115,7 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
         onMouseLeave={() => {
           setShowDialog("");
         }}
+        onClick={() => buttonClickEvent("/createRoom")}
       >
         <span className={`${headerStyles["icon"]} material-symbols-outlined`}>
           add
