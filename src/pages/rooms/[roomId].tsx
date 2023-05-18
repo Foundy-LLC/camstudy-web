@@ -14,6 +14,7 @@ import { getEnumKeyByEnumValue } from "@/utils/EnumUtil";
 import Button from "@mui/material/Button";
 import { RoomSettingDialog } from "@/components/RoomSettingDialog";
 import { useStores } from "@/stores/context";
+import WaitingRoom from "@/components/waitingRoom";
 
 enum MasterPopupMenus {
   Kick = "강퇴",
@@ -22,22 +23,17 @@ enum MasterPopupMenus {
 
 const RoomScaffold: NextPage = observer(() => {
   const { userStore } = useStores();
-  const [roomStore] = useState(() => new RoomStore(userStore));
   const { roomListStore } = useStores();
+  const [roomStore] = useState(() => new RoomStore(userStore));
   const router = useRouter();
   const roomId = router.query.roomId;
 
   useEffect(() => {
+    console.log(roomId);
     if (typeof roomId === "string") {
       roomStore.connectSocket(roomId);
-      roomListStore.getRoomById(roomId);
     }
   }, [roomStore, roomId]);
-
-  useEffect(() => {
-    if (!roomListStore.roomInfo) return;
-    console.log(roomListStore.roomInfo);
-  }, [roomListStore.roomInfo]);
 
   if (roomStore.failedToSignIn) {
     router.replace("/login");
@@ -66,7 +62,7 @@ const NotExistsPage: NextPage = () => {
   );
 };
 
-const WaitingRoom: NextPage<{
+const WaitingRoom1: NextPage<{
   roomStore: RoomStore;
 }> = observer(({ roomStore }) => {
   return (
@@ -471,7 +467,7 @@ const DeviceSelector: NextPage<{ roomStore: RoomStore }> = observer(
   }
 );
 
-const Video: NextPage<{
+export const Video: NextPage<{
   id: string;
   videoStream: MediaStream | undefined;
   roomStore: RoomStore;

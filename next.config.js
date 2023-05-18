@@ -6,6 +6,18 @@ const nextConfig = {
   swcMinify: true,
   images: {
     remotePatterns: [
+      // {
+      //   protocol: "https",
+      //   hostname: "uxwing.com",
+      //   port: "",
+      //   pathname: "/wp-content/themes/uxwing/download/**",
+      // },
+      // {
+      //   protocol: "https",
+      //   hostname: "studying-farmer.kr.object.ncloudstorage.com",
+      //   port: "",
+      //   pathname: "/**",
+      // },
       {
         protocol: "https",
         hostname: "**",

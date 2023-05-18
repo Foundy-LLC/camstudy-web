@@ -1,0 +1,440 @@
+@import "./color/colorPalette";
+
+
+@viewport{
+  min-zoom: 100%;
+}
+.enter-room__page{
+  height: auto;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .enter-room__cam-form{
+    display: flex;
+    flex-direction: column;
+    .enter-room__user-form{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1020px;
+      max-width: 1020px;
+      max-height: 961px;
+      min-height: 961px;
+      background-color: #171717;
+      border-top-left-radius: 16px;
+
+      .enter-room__user{
+        width: 660px;
+        height: 557px;
+        background-color: #3D3D3D;
+        display: flex;
+        flex-direction: column;
+        &__video{
+          height: 658px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          -webkit-user-select:none;
+          -moz-user-select:none;
+          -ms-user-select:none;
+          user-select:none;
+          label{
+            color: $-Dark-06;
+          }
+        }
+        &__option-bar{
+          width: 660px;
+          height: 62px;
+          background-color: $-Dark-01;
+          margin-top: auto;
+          display: flex;
+          align-items: center;
+          div{
+            display: flex;
+            align-items: center;
+            .enter-room__slash-icon{
+              color:$-White;
+              position: absolute;
+              left: 35%;
+              top:50%;
+              transform: translate(-50%, -50%) rotate(95deg);
+              color: $-Danger-06;
+              font-size: 25px;
+              pointer-events: none;
+            }
+          }
+          .enter-room__user__name{
+            margin: 20px;
+            color: $-White;
+          }
+          .enter-room__camera-icon{
+            margin-left: 2px;
+            margin-right: 10px;
+          }
+          .enter-room__headphones-icon{
+            margin-right: 8px;
+          }
+          .enter-room__mic-icon{
+
+          }
+        }
+      }
+    }
+    .enter-room__button-form{
+      width: 1020px;
+      height: 120px;
+      background-color: #242424;
+      display: flex;
+      align-items: center;
+      position: relative;
+      border-bottom-left-radius: 16px;
+      &__logo{
+        color: #FFFFFF;
+        margin-left: 32px;
+        cursor: default;
+      }
+      .dialog-form{
+        position: fixed;
+        background: white;
+        padding: 7px 10px;
+        border-radius: 4px;
+        boxShadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      }
+      &__icon-form{
+        display: grid;
+        grid:". . .";
+        gap: 10px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+
+        span{
+          padding: 5px;
+          border-radius: 12px;
+          font-size: 45px;
+          cursor: pointer;
+          &:hover{
+            background-color: $-Dark-03;
+          }
+          &:active{
+            background-color: $-Dark-02;
+          }
+        }
+
+        .enter-room__slash-icon{
+          color:$-White;
+          position: absolute;
+          left: 50%;
+          top:50%;
+          transform: translate(-50%, -50%) rotate(95deg);
+          color: $-Danger-06;
+          font-size: 40px;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+  .enter-room__enter-form{
+    height: 1081px;
+    display: flex;
+    flex-direction: column;
+    background-color: #171717;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    border-left: 0.3px solid $-Dark-03 ;
+    .enter-room__info-form{
+      height: 546px;
+      width: 420px;
+      border-bottom: 0.3px solid $-Dark-03 ;
+      &__subtitle{
+        width: 151px;
+        height: 28px;
+        margin-top: 28px;
+        margin-left: 28px;
+        display: flex;
+        align-items: center;
+        span{
+          font-size:25px;
+        }
+        &__label{
+          margin-left: 4px;
+          color: $-White;
+        }
+      }
+      &__title{
+        display: flex;
+        align-items: center;
+        margin-top: 32px;
+        margin-left: 28px;
+        color: #{$-White};
+        label{
+          margin-right: 4px;
+        }
+      }
+      &__tags{
+        margin-top: 4px;
+        margin-left: 28px;
+        .enter-room__info-form__tag{
+          color:#{$-Dark-06}
+        }
+      }
+      &__joiners-form{
+        margin-left: 28px;
+        margin-top: 8px;
+        width: 172px;
+        display: grid;
+        grid: ". . .";
+        gap: 8px;
+        .enter-room__info-form__joiner{
+          width: 52px;
+          height: 52px;
+          border-radius: 8px;
+          background-color: #{$-Gray-01};
+        }
+      }
+      &__input{
+        width: 333px;
+        height: 18px;
+        margin-left: 28px;
+        margin-top: 24px;
+        border-radius: 8px;
+        padding: 15px 16px 15px 16px;
+        border: none;
+        background-color: #{$-Dark-01};
+        color: #{$-Dark-04};
+        font-weight: 300;
+      }
+      &__hr{
+        background-color: #{$-Dark-04};
+        margin: 28px;
+        width: 364px;
+        height: 0.5px;
+      }
+      .enter-room__setting-form{
+        &__camera,
+        &__mic{
+          display: flex;
+          align-items: center;
+          margin-left: 28px;
+          margin-bottom: 31px;
+          &__label {
+            display: flex;
+            flex-direction: column;
+            &__title {
+              color: #{$-White};
+            }
+
+            &__sub-title {
+              color: #{$-Dark-05};
+            }
+          }
+          &__toggle-button{
+            display: flex;
+            align-items: center;
+            width: 48px;
+            height: 24px;
+            border-radius: 24px;
+            background-color: #{$-Dark-03};
+            margin-left: auto;
+            margin-right: 28px;
+            cursor: pointer;
+            position: relative;
+            &__circle{
+              position: absolute;
+              width: 20px;
+              height: 20px;
+              border-radius: 20px;
+              left: 2px;
+              background-color: #FFFFFF;
+            }
+            &--on{
+              display: flex;
+              align-items: center;
+              width: 48px;
+              height: 24px;
+              border-radius: 24px;
+              margin-left: auto;
+              margin-right: 28px;
+              cursor: pointer;
+              position: relative;
+              background-color: #{$-Primary-03};
+              &__circle {
+                position: absolute;
+                right: 2px;
+                width: 20px;
+                height: 20px;
+                border-radius: 20px;
+                background-color: #FFFFFF;
+              }
+            }
+          }
+        }
+        &__enter-button{
+          margin-left: 28px;
+          margin-top: 9px;
+          padding: 13px 125px;
+          border-radius: 8px;
+          background-color: #{$-Primary-03};
+          color: #{$-Dark-01};
+          cursor: pointer;
+          label{
+            cursor: pointer;
+          }
+        }
+
+      }
+    }
+
+
+
+    .enter-room__chat-form{
+      height: 632px;
+      width: 420px;
+      border-left: 0.3px solid $-Dark-03 ;
+      position: relative;
+      &__header-form{
+        display: flex;
+        flex-direction: column;
+        width: 420px;
+        margin-top: 27px;
+        label{
+          color: $-White
+        }
+        .enter-room__chat-form__header{
+          display: flex;
+          align-items: center;
+
+          .enter-room__chat-form__header__icon{
+            margin-top: 5px;
+            margin-left: 30px;
+          }
+          .enter-room__chat-form__header__subtitle{
+            margin-left: 4px;
+            margin-top: 5px;
+          }
+
+
+          .enter-room__chat-form__header__ban-list__button{
+            display: flex;
+            align-items: center;
+            width: 120px;
+            height: 24px;
+            margin-left: auto;
+            margin-right: 22px;
+            padding: 5px 10px 5px 10px;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            span{
+              margin-left: auto;
+              font-size: 26px;
+            }
+            label{
+              margin-left: 5px;
+              cursor: pointer;
+            }
+            &:hover{
+              background-color: #4B4B4B;
+            }
+            &:active{
+              background-color: #2e2d2d;
+            }
+          }
+        }
+      }
+      &__ban-list{
+        position: absolute;
+        top:75px;
+        display: grid;
+        grid:".";
+        row-gap: 5px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid $-Dark-03;
+        .enter-room__chat-form__ban-user{
+          width: 420px;
+          height: 40px;
+          padding-top: 3px;
+          padding-bottom: 3px;
+          display: flex;
+          align-items: center;
+          &__image{
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            margin-right: 12px;
+            margin-left: 28px;
+            background-color: #4B4B4B;
+          }
+          &__name{
+
+          }
+          &__ban-cancel{
+            margin-left: auto;
+            width: 84px;
+            margin-right: 28px;
+            padding: 3px 7px 3px 7px;
+            border-radius: 8px;
+            cursor: pointer;
+            &:hover{
+              background-color: #4B4B4B;
+            }
+            &:active{
+              background-color: #2e2d2d;
+            }
+          }
+          &:hover{
+            background-color: #2e2d2d;
+          }
+        }
+      }
+      &__text-field{
+        height: 450px;
+        width: 364px;
+        margin-left: 30px;
+        margin-top: 10px;
+        padding-top: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        label{
+          margin:4px 4px;
+          font-weight: 200;
+        }
+        &__notice{
+          color: $-Dark-05;
+        }
+        &__chat{
+          margin:4px 0px;
+          .enter-room__chat-form__text-field__name{
+            color: $-Dark-06;
+            font-weight: 300;
+          }
+          .enter-room__chat-form__text-field__text{
+            color: $-White;
+            font-weight: 300;
+          }
+        }
+      }
+      &__input{
+        width: 327px;
+        height: 18px;
+        margin-left: 30px;
+        margin-top: 30px;
+        padding: 15px 16px;
+        background-color: $-Dark-01;
+        color: $-White;
+        border-radius: 8px;
+        border: none;
+      }
+    }
+  }
+
+}
