@@ -4,6 +4,10 @@ const path = require("path");
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  // TODO: Media server SSL 인증서 공인 인증 받고 나서 인증 무시하고 접속하는 코드 삭제하기
+  https: {
+    trustAllCertificates: true,
+  },
   images: {
     remotePatterns: [
       // {
@@ -18,6 +22,8 @@ const nextConfig = {
       //   port: "",
       //   pathname: "/**",
       // },
+
+      // TODO: 위에 걸로 바꾸기
       {
         protocol: "https",
         hostname: "**",
