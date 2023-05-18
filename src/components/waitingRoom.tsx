@@ -231,8 +231,9 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
               <div
                 className={`${enterRoomStyles["enter-room__info-form__tags"]} typography__text`}
               >
-                {tags.map((tag) => (
+                {tags.map((tag, key) => (
                   <label
+                    key={key}
                     className={`${enterRoomStyles["enter-room__info-form__tag"]}`}
                   >
                     #{tag}
@@ -242,11 +243,12 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
               <div
                 className={`${enterRoomStyles["enter-room__info-form__joiners-form"]}`}
               >
-                {roomStore.roomJoiners.map((joiner, index) => {
-                  return <UserProfileImage userId={joiner.id} />;
+                {roomStore.roomJoiners.map((joiner, key) => {
+                  return <UserProfileImage key={key} userId={joiner.id} />;
                 })}
-                {Array.from({ length: remainingDivs }).map((_, index) => (
+                {Array.from({ length: remainingDivs }).map((_, key) => (
                   <div
+                    key={key}
                     className={`${enterRoomStyles["enter-room__info-form__joiner"]}`}
                   ></div>
                 ))}

@@ -14,7 +14,7 @@ import { getEnumKeyByEnumValue } from "@/utils/EnumUtil";
 import Button from "@mui/material/Button";
 import { RoomSettingDialog } from "@/components/RoomSettingDialog";
 import { useStores } from "@/stores/context";
-import WaitingRoom from "@/pages/waitingRoom";
+import WaitingRoom from "@/components/waitingRoom";
 
 enum MasterPopupMenus {
   Kick = "강퇴",
