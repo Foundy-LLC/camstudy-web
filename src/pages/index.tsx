@@ -169,7 +169,9 @@ export const Dashboard: NextPage<{ userId: string }> = observer(
 const CropDashBoard = () => {
   const { cropStore, userStore } = useStores();
   const [open, setOpen] = useState(false);
-
+  useEffect(() => {
+    if (cropStore.cropImageSrc) setOpen(false);
+  }, [cropStore.cropImageSrc]);
   return (
     <div className={`${dashboardStyles["box"]}`}>
       <div className={`${dashboardStyles["crop-inner-box"]}`}>
