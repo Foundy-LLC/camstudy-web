@@ -18,11 +18,6 @@ export class RankService {
         pageNum,
         isWeeklyRank
       );
-      console.log(
-        `api/ranking?page=${requestBody.pageNum}&weekly=${
-          requestBody.isWeeklyRank
-        }${organizationId ? `&organizationId=${Number(organizationId)}` : ""}`
-      );
       const response = await rankingApiFetch(
         `api/ranking?page=${requestBody.pageNum}&weekly=${
           requestBody.isWeeklyRank

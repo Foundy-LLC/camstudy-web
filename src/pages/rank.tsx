@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { observer } from "mobx-react";
 import { Layout } from "@/components/Layout";
-import React, { useEffect, useRef, useState } from "react";
+import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import rankStyles from "@/styles/rank.module.scss";
 import { useStores } from "@/stores/context";
 import { UserRankingOverview } from "@/models/rank/UserRankingOverview";
@@ -21,8 +21,43 @@ import {
 const RankItem: NextPage<{
   item: UserRankingOverview;
   setModal: (id: string) => void;
-}> = observer(({ item, setModal }) => {
+  isMine: boolean;
+}> = observer(({ item, setModal, isMine }) => {
   const [dialogHidden, setDialogHidden] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (dialogHidden === true) {
+      window.removeEventListener("click", windowClickHandler);
+    }
+  }, [dialogHidden]);
+  const windowClickHandler = (e: Event) => {
+    console.log((e.target as Element).className);
+    if (
+      (e.target as Element).id.includes(
+        isMine ? "my-option-icon" : `${item.id}-option-icon`
+      ) === false
+    ) {
+      if (
+        !document.getElementById(
+          isMine ? "my-option-dialog" : `${item.id}-option-dialog`
+        )
+      ) {
+        return;
+      }
+      const modal = (document.getElementById(
+        isMine ? "my-option-dialog" : `${item.id}-option-dialog`
+      )!.style.display = "none");
+    }
+  };
+
+  const optionOnClick = (e: MouseEvent) => {
+    setDialogHidden(false);
+    const modal = document.getElementById(
+      isMine ? "my-option-dialog" : `${item.id}-option-dialog`
+    )!;
+    modal.style.display = "block";
+    window.addEventListener("click", windowClickHandler);
+  };
 
   useEffect(() => {
     let id = item.ranking.toString();
@@ -116,22 +151,25 @@ const RankItem: NextPage<{
         </div>
         <div className={`${rankStyles["rank-form__content__option"]}`}>
           <span
+            id={isMine ? "my-option-icon" : `${item.id}-option-icon`}
             className={`${rankStyles["rank-form__content__option-icon"]} material-symbols-sharp`}
-            onClick={() => setDialogHidden(false)}
+            onClick={(e) => {
+              optionOnClick(e);
+              setDialogHidden(false);
+            }}
           >
             more_horiz
           </span>
-          {!dialogHidden && (
-            <div
-              className={`${rankStyles["rank-form__content__option-dialog"]} typography__text--small`}
-              onClick={() => {
-                setDialogHidden(true);
-                setModal(item.id);
-              }}
-            >
-              <label>프로필 보기</label>
-            </div>
-          )}
+          <div
+            id={isMine ? "my-option-dialog" : `${item.id}-option-dialog`}
+            className={`${rankStyles["rank-form__content__option-dialog"]} typography__text--small elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
+            onClick={() => {
+              setDialogHidden(true);
+              setModal(item.id);
+            }}
+          >
+            <label>프로필 보기</label>
+          </div>
         </div>
       </div>
       <style jsx>
@@ -152,6 +190,15 @@ const RankItemGroup: NextPage<{
   const { rankStore, userStore } = useStores();
   const [selected, setSelected] = useState<RANK_TYPE>(rankType.TOTAL);
   const [position, setPosition] = useState<number>(MENU_DIV_POSITION.TOTAL);
+  const [showRankInfo, setShowRankInfo] = useState(false);
+
+  useEffect(() => {
+    if (showRankInfo) {
+      document.getElementById("rank-info-dialog")!.style.display = "flex";
+    } else {
+      document.getElementById("rank-info-dialog")!.style.display = "none";
+    }
+  }, [showRankInfo]);
 
   useEffect(() => {
     switch (selected) {
@@ -180,7 +227,7 @@ const RankItemGroup: NextPage<{
 
   return (
     <>
-      <div className={`${rankStyles["rank-page"]}`}>
+      <div className={`${rankStyles["rank-page"]} `}>
         <div className={`${rankStyles["rank-header"]}`}>
           <label
             className={`${rankStyles["rank-header__title"]} typography__sub-headline`}
@@ -221,48 +268,83 @@ const RankItemGroup: NextPage<{
               주간 랭킹
             </label>
           </button>
-          <span
-            className={`${rankStyles["rank-header__info"]} material-symbols-sharp`}
-          >
-            help
-          </span>
-        </div>
-        <div className={`${rankStyles["rank-form"]}`}>
-          <div style={{ display: "flex", height: "55px" }}>
-            <div className={`${rankStyles["rank-form__subtitle"]}`}>
-              <span
-                className={`${rankStyles["rank-form__subtitle__icon"]} material-symbols-sharp`}
-              >
-                insert_chart
-              </span>
-              <label
-                className={`${rankStyles["rank-form__subtitle__label"]} typography__text--big`}
-              >
-                {selected === rankType.TOTAL ? "전체 랭킹" : "주간 랭킹"}
+          <div className={`${rankStyles["rank-header__info"]}`}>
+            <span
+              className={`${rankStyles["rank-header__info__icon"]} material-symbols-sharp`}
+              onMouseEnter={() => setShowRankInfo(true)}
+              onMouseLeave={() => setShowRankInfo(false)}
+            >
+              help
+            </span>
+            <div
+              id={"rank-info-dialog"}
+              className={`${rankStyles["rank-header__info__dialog"]} elevation__navigation-drawer__modal-side-bottom-sheet__etc typography__text`}
+            >
+              <label>
+                랭킹 점수는 <b>공부시간</b>, <b>연속 공부 날짜</b>,
+                <b>차단 기록</b>을 기준으로 계산됩니다.
               </label>
             </div>
-            {selected === rankType.TOTAL && <OrganizationSelectButton />}
-          </div>
-          <div className={`${rankStyles["my-rank-form"]}`}>
-            {selected === rankType.WEEKLY && rankStore.userWeekRank ? (
-              <RankItem item={rankStore.userWeekRank} setModal={setModal} />
-            ) : (
-              <RankItem item={rankStore.userTotalRank!} setModal={setModal} />
-            )}
-          </div>
-          {items.map((item) => (
-            <RankItem item={item} key={item.id} setModal={setModal} />
-          ))}
-          <div className={`${rankStyles["rank-page-nation"]}`}>
-            {rankStore.rankMaxPage && (
-              <PagenationBar
-                maxPage={rankStore.rankMaxPage / 50 + 1}
-                update={() => rankStore.getRank()}
-              />
-            )}
           </div>
         </div>
+        {selected === rankType.TOTAL && (
+          <div style={{ display: "flex", height: "55px" }}>
+            <OrganizationSelectButton />
+          </div>
+        )}
+        <div
+          className={`${rankStyles["rank-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+        >
+          <div className={`${rankStyles["my-rank-form"]}`}>
+            <label
+              className={`${rankStyles["my-rank-form__label"]} typography__text--big`}
+            >
+              내 랭킹
+            </label>
+            {selected === rankType.WEEKLY && rankStore.userWeekRank ? (
+              <RankItem
+                item={rankStore.userWeekRank}
+                setModal={setModal}
+                isMine={true}
+              />
+            ) : (
+              <>
+                {rankStore.userTotalRank && (
+                  <RankItem
+                    item={rankStore.userTotalRank}
+                    setModal={setModal}
+                    isMine={true}
+                  />
+                )}
+              </>
+            )}
+          </div>
+          <div className={`${rankStyles["rank-form__subtitle"]}`}>
+            <label
+              className={`${rankStyles["rank-form__subtitle__label"]} typography__text--big`}
+            >
+              {selected === rankType.TOTAL ? "전체 랭킹" : "주간 랭킹"}
+            </label>
+          </div>
+          {items.map((item) => (
+            <RankItem
+              item={item}
+              key={item.id}
+              setModal={setModal}
+              isMine={false}
+            />
+          ))}
+        </div>
+        <div className={`${rankStyles["rank-page-nation"]}`}>
+          {rankStore.rankMaxPage && (
+            <PagenationBar
+              maxPage={rankStore.rankMaxPage / 50 + 1}
+              update={() => rankStore.getRank()}
+            />
+          )}
+        </div>
       </div>
+
       <style jsx>
         {`
           .material-symbols-sharp {
