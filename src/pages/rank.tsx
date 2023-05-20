@@ -222,7 +222,27 @@ const RankItemGroup: NextPage<{
   }, [selected, position]);
 
   const menuOnClick = (menu: RANK_TYPE) => {
+    if (menu === rankType.WEEKLY) {
+      (
+        document.getElementsByClassName(
+          `${rankStyles["rank-form"]}`
+        )[0] as Element
+      ).setAttribute("rankType", "weekly");
+    } else {
+      (
+        document.getElementsByClassName(
+          `${rankStyles["rank-form"]}`
+        )[0] as Element
+      ).removeAttribute("rankType");
+    }
     setSelected(menu);
+    console.log(
+      (
+        document.getElementsByClassName(
+          `${rankStyles["rank-form"]}`
+        )[0] as Element
+      ).getAttribute("rankType")
+    );
   };
 
   return (

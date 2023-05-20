@@ -111,9 +111,16 @@
   display: none;
 }
 
+.rank-form[rankType='weekly']{
+  height: calc(100vh - 235px);
+}
+
 .rank-form{
-  width: 1040px;
   height: calc(100vh - 290px);
+}
+
+.rank-form, .rank-form[rankType='weekly']{
+  width: 1040px;
   background-color: var(--system_background);
   display: flex;
   flex-direction: column;
@@ -368,7 +375,7 @@
         display: flex;
         align-items: center;
         cursor: pointer;
-        padding: 10px 20px;
+        padding: 7px 14px;
         right: 10px;
         top: 17px;
         display: none;
