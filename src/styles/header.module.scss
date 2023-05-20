@@ -17,6 +17,7 @@ $-gap : 1.5rem;
   display: flex;
   gap: 1rem;
   .recent-room-dialog{
+    z-index: 10;
     position: absolute;
     background-color: var(--system_background);
     color: var(--text-01);

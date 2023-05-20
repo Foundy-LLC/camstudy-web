@@ -19,7 +19,7 @@ export const PagenationBar: NextPage<{
   const pageArray: number[] = [];
   for (
     var i = firstpage === 0 ? 1 : firstpage;
-    i <= maxPage && i < firstpage + 10;
+    i <= Math.floor(maxPage) && i < firstpage + 10;
     i++
   ) {
     pageArray.push(i);
@@ -27,7 +27,7 @@ export const PagenationBar: NextPage<{
 
   useEffect(() => {
     updateElement("previous", currentPage !== 1);
-    updateElement("next", maxPage > currentPage);
+    updateElement("next", Math.floor(maxPage) > currentPage);
     updateElement(currentPage.toString(), true);
     update(currentPage);
   }, [currentPage]);

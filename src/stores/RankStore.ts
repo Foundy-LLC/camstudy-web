@@ -96,7 +96,6 @@ export class RankStore {
       if (result.isSuccess) {
         runInAction(() => {
           const { totalUserCount, users } = result.getOrNull()!;
-          console.log(users);
           this._rankList = users;
           this._totalUserCount = Number(totalUserCount);
           this._rankMaxPage =
