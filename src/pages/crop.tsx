@@ -33,7 +33,7 @@ const MyPot: NextPage = observer(() => {
   const { cropStore } = useStores();
   const [user, loading] = useAuthState(auth);
   const [exist, setExist] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   if (loading) {
     return <div>Loading</div>;
@@ -259,7 +259,9 @@ const MyPot: NextPage = observer(() => {
   );
 });
 
-const CropListPopup: NextPage<{ userId: string }> = (userId) => {
+export const CropListPopup: NextPage<{
+  userId: string;
+}> = ({ userId }) => {
   const { cropStore } = useStores();
   const [selectedOption, setSelectedOption] = useState<Crops>(CROPS[0]);
 
@@ -316,9 +318,9 @@ const CropListPopup: NextPage<{ userId: string }> = (userId) => {
           </div>
           <button
             className={`${cropListPopupStyles["plantingButton"]}`}
-            onClick={() =>
-              cropStore.plantingCrop(userId.userId, selectedOption.type)
-            }
+            onClick={() => {
+              cropStore.plantingCrop(userId, selectedOption.type);
+            }}
           >
             작물 심기
           </button>

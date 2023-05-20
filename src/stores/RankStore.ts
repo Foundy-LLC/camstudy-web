@@ -72,7 +72,7 @@ export class RankStore {
 
   public setTotalPercentile = () => {
     this._totalPercentile = (
-      ((this._totalUserCount! - this._userTotalRank?.ranking!) /
+      ((this._totalUserCount! - this._userWeekRank?.ranking!) /
         this._totalUserCount!) *
       100
     ).toFixed(1);

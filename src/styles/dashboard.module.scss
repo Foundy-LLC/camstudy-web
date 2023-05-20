@@ -1,3 +1,4 @@
+@import "./color/colorPalette";
 .box {
   padding: 24px;
 
@@ -61,7 +62,6 @@
       display: flex;
       flex-direction: row;
       align-items: center;
-      padding: 0px;
       gap: 4px;
 
       height: 28px;
@@ -76,8 +76,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0 70px 28px;
-      background: var(--system_ui-01);
+      padding: 5px 50px 14px;
+      margin-left: 20px;
+      margin-right: 20px;
+      background: var(--section_background);
       border-radius: 12px;
 
       width:111px;
@@ -87,10 +89,31 @@
       flex: none;
       order: 1;
       flex-grow: 0;
+      &--empty{
+        width: 96px;
+        height: 96px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        button{
+          cursor: pointer;
+          background-color: #{$-Primary-06};
+          padding: 7px 14px;
+          border-radius: 8px;
+          label{
+            cursor: pointer;
+            color: #FFFFFF;
+          }
+          &:hover{
+            background-color: #{$-Primary-05};
+          }
+        }
+      }
     }
   }
 
   .content-text{
     color: var(--system_ui-06);
+
   }
 }

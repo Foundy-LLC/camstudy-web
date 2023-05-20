@@ -280,10 +280,9 @@ const RoomList: NextPage = observer(() => {
             placeholder={"스터디 룸 제목 혹은 키워드를 검색해주세요"}
           />
         </div>
-        <RoomItemGroup items={roomListStore.roomOverviews} />
-        {roomListStore.errorMessage === undefined ? null : (
-          <h3>{roomListStore.errorMessage}</h3>
-        )}
+        <div className={`${roomListStyles["room-page__frame"]}`}>
+          <RoomItemGroup items={roomListStore.roomOverviews} />
+        </div>
       </div>
     </Layout>
   );
