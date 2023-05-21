@@ -1,3 +1,5 @@
+@import "./color/colorPalette";
+
 .page-form {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -268,7 +270,7 @@
         background-color: var(--primary-02);
         padding: 8px 12px 8px 12px;
         border-radius: 8px;
-        color: var(--primary-press);
+        color: #{$-Primary-06};
         margin-top: 12px;
         margin-left:12px;
         position: relative;
@@ -379,6 +381,7 @@
       width: 144px;
       border-radius: 8px;
       border: solid 1px var(--primary);
+      background-color: inherit;
       color: var(--primary);
       cursor: pointer;
       display: flex;
@@ -451,7 +454,7 @@
         background-color: var(--primary-02);
         padding: 8px 12px 8px 12px;
         border-radius: 8px;
-        color: var(--primary-press);
+        color: #{$-Primary-06};
         margin-top: 12px;
         margin-left:12px;
         position: relative;
@@ -553,6 +556,7 @@
       width: 116px;
       border-radius: 8px;
       border: solid 1px var(--primary);
+      background-color: inherit;
       color: var(--primary);
       cursor: pointer;
       display: flex;

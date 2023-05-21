@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import { NextPage } from "next";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import logo from "@/assets/logo.png";
+import Image from "next/image";
 
 interface Menu {
   title: string;
@@ -115,7 +118,7 @@ const MenuGroup = ({ menus, userId, ...props }: MenuListProps) => {
     <>
       <ul className={`${sideMenuBarStyles["menu"]}`} {...props}>
         {menus.map((menu, index) => (
-          <>
+          <div className={`${sideMenuBarStyles["menu__group"]}`}>
             <li key={index}>
               <h2
                 className={`${sideMenuBarStyles["title"]} typography__text--big`}
@@ -150,11 +153,36 @@ const MenuGroup = ({ menus, userId, ...props }: MenuListProps) => {
               </ul>
             </li>
             <hr />
-          </>
+          </div>
         ))}
-        <div className={`${sideMenuBarStyles["empty-place"]}`}>
-          <div className={`${sideMenuBarStyles["empty-place-content"]}`}>
-            푸터 대용 공간
+        <div className={`${sideMenuBarStyles["footer"]}`}>
+          <div className={`${sideMenuBarStyles["footer__logo"]}`}>
+            <Image alt={"studying-farmer-logo"} src={logo} width={100}></Image>
+          </div>
+          <div
+            className={`${sideMenuBarStyles["footer-content"]} typography__text--small`}
+          >
+            <label
+              className={`${sideMenuBarStyles["footer-content__email"]} typography__text--small`}
+            >
+              Email:&nbsp; Foundy-LLC@gmail.com
+            </label>
+            <Link href={"https://github.com/Foundy-LLC"} target={"_blank"}>
+              <div
+                className={`${sideMenuBarStyles["footer-content__git-address"]} typography__text--small`}
+              >
+                <GitHubIcon
+                  className={`${sideMenuBarStyles["footer-content__git-address__icon"]} `}
+                />
+                <label>&nbsp; Foundy / camstudy-web</label>
+              </div>
+            </Link>
+          </div>
+          <div
+            className={`${sideMenuBarStyles["copyright"]} typography__text--small`}
+          >
+            <hr />
+            <label>copyright © 한성대학교 TEAM.애플주주</label>
           </div>
         </div>
         <style jsx>
