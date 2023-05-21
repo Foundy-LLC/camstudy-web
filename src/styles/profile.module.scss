@@ -327,13 +327,17 @@
         border-bottom-left-radius: 8px;
         border-bottom-right-radius: 8px;
         background-color: var(--system_background);
-        display: block;
+        display: flex;
         .organization__item{
+          display: flex;
           color:var(--system_ui-08);
-          font-weight: 300;
           max-width: 216px;
-          height: 18px;
-          padding: 16px;
+          font-weight: 300;
+          label{
+            color:var(--system_ui-08);
+            cursor: pointer;
+            padding: 16px;
+          }
         }
       }
 
