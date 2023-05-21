@@ -172,7 +172,7 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                 <label
                   className={`${profileDialogStyles["profile-dialog__rank__total"]} typography__text`}
                 >
-                  전체 랭킹 기준 {rankStore.userTotalRank?.ranking}위
+                  전체 유저 기준 상위 {rankStore.totalPercentile}%
                 </label>
               </div>
               <div
@@ -197,7 +197,9 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                 <label
                   className={`${profileDialogStyles["profile-dialog__history__total"]} typography__text`}
                 >
-                  전체 유저 기준 상위 {rankStore.totalPercentile}%
+                  {profileStore.userOverview &&
+                    profileStore.userOverview.consecutiveStudyDays.toString()}
+                  일 연속 공부중
                 </label>
               </div>
               <div className={`${profileDialogStyles["profile-dialog__crop"]}`}>

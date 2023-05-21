@@ -8,19 +8,16 @@ import {
 } from "next";
 import { useRouter } from "next/router";
 import { verifyUserToken } from "@/service/verifyUserToken";
-import { fetchAbsolute } from "@/utils/fetchAbsolute";
 import { useStores } from "@/stores/context";
 import { HarvestedCrop } from "@/models/crop/HarvestedCrop";
 import { Layout } from "@/components/Layout";
-import { crops_type } from "@prisma/client";
 import { RoomItemGroup } from "@/pages/rooms";
 import dashboardStyles from "@/styles/dashboard.module.scss";
+import homeStyles from "@/styles/index.module.scss";
 import Image from "next/image";
-import {
-  ProfileDialog,
-  ProfileDialogContainer,
-} from "@/components/ProfileDialog";
-import { ROOM_NUM_PER_PAGE } from "@/constants/room.constant";
+import { timeToString } from "@/components/TimeToString";
+import Modal from "react-modal";
+import { CropListPopup } from "@/pages/crop";
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
@@ -52,18 +49,6 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const userProfileImageLoader = ({ src }: { src: string }): string => {
     return `${IMAGE_SERVER_URL}/users/${src}.png`;
   };
-  // 테스트용
-  const setCrop = async () => {
-    const data = {
-      userId: "B9j6GEh2PTSHgcrdNnNBRVAPkuX2",
-      cropType: crops_type.strawberry,
-    };
-    await fetchAbsolute("/api/crops", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "Content-Type": "application/json" },
-    });
-  };
 
   const { roomListStore } = useStores();
 
@@ -82,14 +67,20 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <>
       <Layout>
-        <div className={"typography__sub-headline"} style={{ padding: "20px" }}>
-          대시보드
+        <div className={`${homeStyles["home-page"]}`}>
+          <div
+            className={"typography__sub-headline"}
+            style={{ padding: "20px" }}
+          >
+            대시보드
+          </div>
+          <div className={`${homeStyles["dashboard-frame"]}`}>
+            <Dashboard userId={uid} />
+          </div>
+          <div className={`${homeStyles["room-list-frame"]}`}>
+            <RoomItemGroup items={roomListStore.roomOverviews} />
+          </div>
         </div>
-        <Dashboard userId={uid} />
-        <RoomItemGroup items={roomListStore.roomOverviews} />
-        {roomListStore.errorMessage === undefined ? null : (
-          <h3>{roomListStore.errorMessage}</h3>
-        )}
       </Layout>
     </>
   );
@@ -97,11 +88,13 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
 export const Dashboard: NextPage<{ userId: string }> = observer(
   ({ userId }) => {
-    const { cropStore } = useStores();
+    const { cropStore, rankStore } = useStores();
     const [exist, setExist] = useState<boolean>(false);
 
     useEffect(() => {
       cropStore.fetchGrowingCrop(userId);
+      rankStore.getUserTotalRank(userId);
+      rankStore.getUserWeeklyRank(userId);
     }, []);
 
     useEffect(() => {
@@ -122,12 +115,13 @@ export const Dashboard: NextPage<{ userId: string }> = observer(
                 className={"typography__title1--big time"}
                 style={{ color: "#DDA30E" }}
               >
-                56:38:17
+                {rankStore.userWeekRank &&
+                  timeToString(rankStore.userWeekRank.studyTime)}
               </div>
               <div
                 className={`typography__text ${dashboardStyles["content-text"]}`}
               >
-                전체 유저 기준 상위 6%
+                전체 유저 기준 상위 {rankStore.totalPercentile}%
               </div>
             </div>
           </div>
@@ -144,17 +138,17 @@ export const Dashboard: NextPage<{ userId: string }> = observer(
                 className={"typography__title1--big time"}
                 style={{ color: "#DDA30E" }}
               >
-                7위
+                {rankStore.userWeekRank?.ranking}위
               </div>
               <div
                 className={`typography__text ${dashboardStyles["content-text"]}`}
               >
-                전체 유저 기준 862등
+                전체 유저 기준 {rankStore.userTotalRank?.ranking}등
               </div>
             </div>
           </div>
         </div>
-        {exist ? <CropDashBoard /> : ""}
+        <CropDashBoard />
 
         <style jsx>{`
           .dashboard {
@@ -173,8 +167,11 @@ export const Dashboard: NextPage<{ userId: string }> = observer(
 );
 
 const CropDashBoard = () => {
-  const { cropStore } = useStores();
-
+  const { cropStore, userStore } = useStores();
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (cropStore.cropImageSrc) setOpen(false);
+  }, [cropStore.cropImageSrc]);
   return (
     <div className={`${dashboardStyles["box"]}`}>
       <div className={`${dashboardStyles["crop-inner-box"]}`}>
@@ -184,24 +181,50 @@ const CropDashBoard = () => {
         </div>
         <div className={`${dashboardStyles["content"]}`}>
           {cropStore.cropImageSrc != undefined ? (
-            <>
-              <Image
-                width={96}
-                height={96}
-                src={cropStore.cropImageSrc}
-                alt={"작물"}
-              />
-              <div
-                className={`${dashboardStyles["content-text"]} typography__text`}
-              >{`${cropStore.cropName} ${
-                cropStore.growingCrop!.level
-              }단계`}</div>
-            </>
+            <Image
+              width={96}
+              height={96}
+              src={cropStore.cropImageSrc}
+              alt={"작물"}
+            />
           ) : (
-            "작물을 등록하세요."
+            <div className={`${dashboardStyles["content--empty"]}`}>
+              <button onClick={() => setOpen(true)}>
+                <label>작물 심기</label>
+              </button>
+            </div>
           )}
+
+          <div
+            className={`${dashboardStyles["content-text"]} typography__text`}
+          >
+            {cropStore.cropImageSrc != undefined
+              ? `${cropStore.cropName} ${cropStore.growingCrop!.level}단계`
+              : "작물이 없습니다"}
+          </div>
         </div>
       </div>
+      <Modal
+        isOpen={open}
+        onRequestClose={() => setOpen(false)}
+        style={{
+          content: {
+            width: 380,
+            height: 768,
+            borderRadius: 20,
+            backgroundColor: "var(--ui-cardui)",
+            padding: 10,
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          },
+        }}
+      >
+        {userStore.currentUser && (
+          <CropListPopup userId={userStore.currentUser.id}></CropListPopup>
+        )}
+      </Modal>
       <style jsx>{`
         .material-symbols-outlined {
           font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;

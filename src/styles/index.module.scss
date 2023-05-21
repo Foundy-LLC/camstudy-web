@@ -1,0 +1,16 @@
+.home-page::-webkit-scrollbar {
+  display: none;
+}
+
+.home-page{
+  -ms-overflow-style: none; /* 인터넷 익스플로러 */
+  scrollbar-width: none; /* 파이어폭스 */
+  .dashboard-frame{
+    margin-left: 20px;
+  }
+
+  .room-list-frame{
+    height: calc(100vh - 440px);
+    display: flex;
+  }
+}

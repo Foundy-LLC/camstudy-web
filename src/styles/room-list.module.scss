@@ -25,8 +25,13 @@
   }
 }
 
-.room-list-frame{
+.room-page__frame{
   height: calc(100vh - 180px);
+  display: flex;
+}
+
+
+.room-list-frame{
   display: flex;
   flex-direction: column;
   flex-grow: 1;
