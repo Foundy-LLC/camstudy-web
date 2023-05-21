@@ -118,8 +118,8 @@ const MenuGroup = ({ menus, userId, ...props }: MenuListProps) => {
     <>
       <ul className={`${sideMenuBarStyles["menu"]}`} {...props}>
         {menus.map((menu, index) => (
-          <div className={`${sideMenuBarStyles["menu__group"]}`}>
-            <li key={index}>
+          <div className={`${sideMenuBarStyles["menu__group"]}`} key={index}>
+            <li>
               <h2
                 className={`${sideMenuBarStyles["title"]} typography__text--big`}
               >
