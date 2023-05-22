@@ -216,3 +216,14 @@ export const updateUserProfileImage = async (userId: string, url: string) => {
     },
   });
 };
+
+export const deleteUserProfileImage = async (userId: string) => {
+  await prisma.user_account.update({
+    data: {
+      profile_image: null,
+    },
+    where: {
+      id: userId,
+    },
+  });
+};
