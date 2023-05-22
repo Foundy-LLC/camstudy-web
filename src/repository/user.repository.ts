@@ -188,21 +188,25 @@ export const editUserProfile = async (
   introduce: string,
   tags: { id: string }[]
 ) => {
-  const tagIdsDto: { tag_id: string }[] = tags.map((tag) => {
-    return { tag_id: tag.id };
-  });
-  await prisma.user_account.update({
-    data: {
-      name: nickName,
-      introduce: introduce,
-      user_tag: {
-        createMany: {
-          data: [...tagIdsDto],
-          skipDuplicates: true,
+  prisma.$transaction(async (tx) => {
+    await tx.user_tag.deleteMany({
+      where: { user_id: userId },
+    });
+    for (const tag of tags) {
+      await tx.user_tag.create({
+        data: {
+          tag_id: tag.id,
+          user_id: userId,
         },
+      });
+    }
+    await tx.user_account.update({
+      data: {
+        name: nickName,
+        introduce: introduce,
       },
-    },
-    where: { id: userId },
+      where: { id: userId },
+    });
   });
 };
 
