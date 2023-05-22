@@ -69,7 +69,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       <Layout>
         <div className={`${homeStyles["home-page"]}`}>
           <div
-            className={"typography__sub-headline"}
+            className={`${homeStyles["home-page__title"]} typography__sub-headline`}
             style={{ padding: "20px" }}
           >
             대시보드

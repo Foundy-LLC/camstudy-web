@@ -100,15 +100,15 @@ const FriendOverview: NextPage<{
         }}
       >
         <button className={`${friendStyles["friend-option-button"]}`}>
-          <Image
+          <span
             id={"friend__" + id + "__icon--etc"}
             onClick={(e) => {
               optionOnClick(e);
             }}
-            className={`${friendStyles["friend-option-icon"]}`}
-            alt={"friend-option-icon"}
-            src={optionIcon}
-          />
+            className={`${friendStyles["friend-option-icon"]} material-symbols-sharp`}
+          >
+            more_horiz
+          </span>
         </button>
         <div
           id={"friend__" + item.id + "__modal"}

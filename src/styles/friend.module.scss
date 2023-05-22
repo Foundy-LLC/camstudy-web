@@ -83,8 +83,11 @@
           margin-top: 24px;
           margin-left: auto;
           margin-right: 18px;
-          cursor: pointer;
+
+
           .friend-option-button {
+            display: flex;
+            align-items: center;
             cursor: pointer;
             background: var(--ui-cardui-01);
 
@@ -92,13 +95,8 @@
               width: 24px;
               height: 24px;
               color: var(--system_ui-10);
-              display: flex;
-              justify-content: center;
-              align-items: center;
               margin: auto;
               cursor: pointer;
-              width: 16px;
-              height: 4px;
             }
           }
 
