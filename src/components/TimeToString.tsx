@@ -1,4 +1,5 @@
 export const timeToString = (studyTime: bigint): string => {
+  if (!studyTime) return "00:00:00";
   let time = Number(studyTime);
   let divide = 60 * 60;
   let timeArr: string[] = [];

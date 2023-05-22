@@ -6,6 +6,7 @@ import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBo
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { UserOverview } from "@/models/user/UserOverview";
 import { fetchAbsolute } from "@/utils/fetchAbsolute";
+import { validateUid } from "@/utils/user.validator";
 
 const HEADER = {
   "Content-Type": "application/json",
@@ -143,6 +144,27 @@ export class FriendService {
       );
       if (response.ok) {
         return Result.createSuccessUsingResponseMessage(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  };
+  public getRecommendFriend = async (
+    userId: string
+  ): Promise<Result<UserOverview[]>> => {
+    try {
+      const RequestBody = new UidValidationRequestBody(userId);
+      const response = await fetchAbsolute(
+        `api/users/${RequestBody.userId}/recommended-friends`,
+        {
+          method: "GET",
+          headers: HEADER,
+        }
+      );
+      if (response.ok) {
+        return Result.createSuccessUsingResponseData(response);
       } else {
         return Result.createErrorUsingResponseMessage(response);
       }

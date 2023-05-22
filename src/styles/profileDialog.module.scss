@@ -238,6 +238,9 @@
             grid:". . . .";
             gap: 8px;
             margin-left: 54px;
+            label{
+              color: var(--text-04);
+            }
           }
 
           .profile-dialog__crop-inventory__label {

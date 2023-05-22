@@ -255,6 +255,11 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                 <div
                   className={`${profileDialogStyles["profile-dialog__crop-inventory__image"]}`}
                 >
+                  {cropStore.harvestedCrops.length === 0 && (
+                    <label className={"typography__text--small"}>
+                      수확한 작물 없음
+                    </label>
+                  )}
                   {cropStore.harvestedCrops.slice(0, 4).map((crop, key) =>
                     // <Image
                     //   src={CROPS.}

@@ -14,7 +14,10 @@ import {
   USER_SEARCH_RESULT_NULL,
 } from "@/constants/FriendMessage";
 import { UserSearchOverview } from "@/models/user/UserSearchOverview";
-import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
+import {
+  NO_USER_STORE_ERROR_MESSAGE,
+  RECOMMENDED_FREINDS_GET_SUCCESS,
+} from "@/constants/message";
 import { friendStatus } from "@/constants/FriendStatus";
 import { UserOverview } from "@/models/user/UserOverview";
 import { FRIEND_NUM_PER_PAGE } from "@/constants/friend.constant";
@@ -27,6 +30,7 @@ export class FriendStore {
   private _userSearchOverviews: UserSearchOverview[] = [];
   private _friendRequestUsers: UserOverview[] = [];
   private _friendOverviews: UserOverview[] = [];
+  private _recommendedFriendOverviews: UserOverview[] = [];
   private _searchUserInput: string | undefined = undefined;
   private _errorMessage: string | undefined = undefined;
   private _searchErrorMessage: string | undefined = USER_SEARCH_RESULT_NULL;
@@ -66,6 +70,10 @@ export class FriendStore {
 
   public get userSearchOverviews() {
     return this._userSearchOverviews;
+  }
+
+  public get recommendedFriendOverviews() {
+    return this._recommendedFriendOverviews;
   }
 
   public get friendRequestUsers() {
@@ -350,6 +358,28 @@ export class FriendStore {
           this._errorMessage = undefined;
           this._successMessage = FREIND_DELETE_SUCCESS;
           this._reflectFriendDelete(userId);
+        });
+      } else {
+        runInAction(() => {
+          this._successMessage = undefined;
+          throw new Error(result.throwableOrNull()!.message);
+        });
+      }
+    } catch (e) {
+      runInAction(() => {
+        if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  }
+
+  public async fetchRecommendFriend(userId: string) {
+    try {
+      const result = await this._friendService.getRecommendFriend(userId);
+      if (result.isSuccess) {
+        runInAction(() => {
+          this._errorMessage = undefined;
+          this._successMessage = RECOMMENDED_FREINDS_GET_SUCCESS;
+          this._recommendedFriendOverviews = result.getOrNull()!;
         });
       } else {
         runInAction(() => {
