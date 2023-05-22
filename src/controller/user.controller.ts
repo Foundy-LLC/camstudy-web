@@ -5,6 +5,7 @@ import {
 } from "@/repository/tag.repository";
 import {
   createUser,
+  deleteUserProfileImage,
   editUserProfile,
   findUser,
   getSimilarNamedUsers,
@@ -22,6 +23,7 @@ import {
   REQUEST_QUERY_ERROR,
   SERVER_INTERNAL_ERROR_MESSAGE,
   USER_INFORMATION_LOOKUP_SUCCESS,
+  PROFILE_IMAGE_DELETED,
 } from "@/constants/message";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
@@ -247,6 +249,40 @@ export const postProfileImage = async (
         .send(new ResponseBody({ message: IMAGE_SIZE_EXCEED_MESSAGE }));
       return;
     }
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+    return;
+  }
+};
+
+export const removeUserProfileImage = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  try {
+    const userId = req.query.userId;
+    if (typeof userId !== "string") {
+      res.status(404).send(
+        new ResponseBody({
+          message: "잘못된 query 접근입니다. 회원 ID가 문자열이 아닙니다.",
+        })
+      );
+      return;
+    }
+
+    await deleteUserProfileImage(userId);
+
+    res.status(201).send(
+      new ResponseBody({
+        message: PROFILE_IMAGE_DELETED,
+      })
+    );
+  } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
       return;
