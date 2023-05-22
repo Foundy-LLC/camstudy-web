@@ -157,7 +157,6 @@ export const setOrganizationEmail = async (
         organizationsEmailRequestBody.organizationId
       );
     }
-
     //이메일 전송
     if (
       !(await sendSecretMail(

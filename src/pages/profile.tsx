@@ -114,17 +114,20 @@ const RecommendedOrganizationsName: NextPage<{ item: Organization }> = observer(
         <div
           id={"organizations__item"}
           className={`${profileStyles["organization__item"]} typography__text--small`}
-          onClick={(e) => {
-            const text = e.target as HTMLElement;
-            const input = document.getElementById(
-              "organization__input"
-            ) as HTMLInputElement;
-            organizationStore.onChangeNameInput(text.textContent || "");
-            input!.value = organizationStore.typedName;
-            organizationStore.setDropDownHidden(true);
-          }}
         >
-          <label>{item.name}</label>
+          <label
+            onClick={(e) => {
+              const text = e.target as HTMLElement;
+              const input = document.getElementById(
+                "organization__input"
+              ) as HTMLInputElement;
+              organizationStore.onChangeNameInput(text.textContent || "");
+              input!.value = organizationStore.typedName;
+              organizationStore.setDropDownHidden(true);
+            }}
+          >
+            {item.name}
+          </label>
         </div>
       </>
     );
