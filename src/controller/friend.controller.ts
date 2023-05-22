@@ -6,9 +6,11 @@ import {
   deleteFriendOrRequest,
   fetchFriendList,
   fetchFriendRequests,
+  fetchRecommendedFriends,
 } from "@/repository/friend.repository";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import {
+  RECOMMENDED_FREINDS_GET_SUCCESS,
   REQUEST_QUERY_ERROR,
   SERVER_INTERNAL_ERROR_MESSAGE,
 } from "@/constants/message";
@@ -29,6 +31,7 @@ import { Prisma } from ".prisma/client";
 import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError;
 import { FriendGetOverviewsBody } from "@/models/friend/FriendGetOverviewsBody";
 import { FriendRequestsGetBody } from "@/models/friend/FriendRequestsGetBody";
+import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 
 export const sendFriendRequest = async (
   req: NextApiRequest,
@@ -176,6 +179,35 @@ export const acceptFriendRequest = async (
     res.status(200).send(
       new ResponseBody({
         message: APPROVE_FRIEND_REQUEST_SUCCESS,
+      })
+    );
+  } catch (e) {
+    if (typeof e === "string") {
+      res.status(400).send(new ResponseBody({ message: e }));
+      return;
+    }
+    res
+      .status(500)
+      .send(new ResponseBody({ message: SERVER_INTERNAL_ERROR_MESSAGE }));
+  }
+};
+
+export const getRecommendedFriends = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  try {
+    const { userId } = req.query;
+    if (typeof userId !== "string") {
+      res.status(404).send(new ResponseBody({ message: REQUEST_QUERY_ERROR }));
+      return;
+    }
+    const requestBody = new UidValidationRequestBody(userId);
+    const result = await fetchRecommendedFriends(requestBody.userId);
+    res.status(200).send(
+      new ResponseBody({
+        data: result,
+        message: RECOMMENDED_FREINDS_GET_SUCCESS,
       })
     );
   } catch (e) {

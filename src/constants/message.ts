@@ -50,3 +50,5 @@ export const SUCCESSFUL_REPORTED_MESSAGE: string =
   "성공적으로 신고가 접수되었습니다.";
 export const REPORT_SCREENSHOT_UPLOADED: string =
   "신고 이미지가 업로드되었습니다.";
+export const RECOMMENDED_FREINDS_GET_SUCCESS: string =
+  "추천 친구 목록을 성공적으로 얻었습니다.";

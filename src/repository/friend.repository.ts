@@ -2,7 +2,7 @@ import client from "../../prisma/client";
 import { UserOverview } from "@/models/user/UserOverview";
 import { UserStatus } from "@/models/user/UserStatus";
 import { FRIEND_NUM_PER_PAGE } from "@/constants/friend.constant";
-
+import _ from "lodash";
 export const addFriend = async (userId: string, targetUserId: string) => {
   await client.friend.create({
     data: {
@@ -159,4 +159,49 @@ export const approveFriendRequest = async (
       },
     });
   });
+};
+
+export const fetchRecommendedFriends = async (
+  userId: string
+): Promise<UserOverview[]> => {
+  const result: UserOverview[] = await client.$transaction(async (tx) => {
+    const userTags = await tx.user_account.findMany({
+      where: {
+        id: userId,
+      },
+      select: {
+        user_tag: {
+          select: {
+            tag: {
+              select: {
+                user_tag: {
+                  select: { user_account: true },
+                  where: { NOT: { user_id: userId } },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    return userTags.flatMap<UserOverview>((userTag) => {
+      return userTag.user_tag.flatMap((tag) => {
+        return tag.tag.user_tag.flatMap<UserOverview>((userTag) => {
+          const { id, name, profile_image, introduce, status } =
+            userTag.user_account;
+          return {
+            id: id,
+            name: name,
+            profileImage: profile_image ? profile_image : null,
+            introduce: introduce ? introduce : null,
+            status:
+              status === UserStatus.LOGIN
+                ? UserStatus.LOGIN
+                : UserStatus.LOGOUT,
+          };
+        });
+      });
+    });
+  });
+  return _.uniqBy(result, "id");
 };
