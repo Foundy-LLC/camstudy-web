@@ -164,42 +164,51 @@ export const approveFriendRequest = async (
 export const fetchRecommendedFriends = async (
   userId: string
 ): Promise<UserOverview[]> => {
-  const result: UserOverview[] = await client.$transaction(async (tx) => {
-    const userTags = await tx.user_account.findMany({
-      where: {
-        id: userId,
-      },
-      select: {
-        user_tag: {
-          select: {
-            tag: {
-              select: {
-                user_tag: {
-                  select: { user_account: true },
-                  where: { NOT: { user_id: userId } },
+  const userTags = await client.user_account.findMany({
+    where: {
+      id: userId,
+    },
+    select: {
+      user_tag: {
+        select: {
+          tag: {
+            select: {
+              user_tag: {
+                where: {
+                  NOT: {
+                    user_id: userId,
+                  },
+                  user_account: {
+                    friend_friend_acceptor_idTouser_account: {
+                      none: {
+                        requester_id: userId,
+                      },
+                    },
+                  },
+                },
+                select: {
+                  user_account: true,
                 },
               },
             },
           },
         },
       },
-    });
-    return userTags.flatMap<UserOverview>((userTag) => {
-      return userTag.user_tag.flatMap((tag) => {
-        return tag.tag.user_tag.flatMap<UserOverview>((userTag) => {
-          const { id, name, profile_image, introduce, status } =
-            userTag.user_account;
-          return {
-            id: id,
-            name: name,
-            profileImage: profile_image ? profile_image : null,
-            introduce: introduce ? introduce : null,
-            status:
-              status === UserStatus.LOGIN
-                ? UserStatus.LOGIN
-                : UserStatus.LOGOUT,
-          };
-        });
+    },
+  });
+  const result = userTags.flatMap<UserOverview>((userTag) => {
+    return userTag.user_tag.flatMap((tag) => {
+      return tag.tag.user_tag.flatMap<UserOverview>((userTag) => {
+        const { id, name, profile_image, introduce, status } =
+          userTag.user_account;
+        return {
+          id: id,
+          name: name,
+          profileImage: profile_image ? profile_image : null,
+          introduce: introduce ? introduce : null,
+          status:
+            status === UserStatus.LOGIN ? UserStatus.LOGIN : UserStatus.LOGOUT,
+        };
       });
     });
   });

@@ -407,7 +407,6 @@ const FriendRecommendGroup: NextPage<{
   items: UserOverview[];
   setModal: (userId: string) => void;
 }> = observer(({ items, setModal }) => {
-  const { friendStore } = useStores();
   return (
     <>
       <div
@@ -425,14 +424,18 @@ const FriendRecommendGroup: NextPage<{
             추천 친구
           </label>
         </div>
-        {!friendStore.errorMessage ? (
+        {items.length !== 0 ? (
           <div className={`${friendStyles["friend-recommend__grid"]}`}>
             {items.map((item, key) => (
               <FriendRecommend item={item} key={key} setModal={setModal} />
             ))}
           </div>
         ) : (
-          <p>{friendStore.errorMessage}</p>
+          <p
+            className={`${friendStyles["friend-recommend--null"]} typography__text--big`}
+          >
+            추천 회원이 없습니다
+          </p>
         )}
       </div>
       <style jsx>
