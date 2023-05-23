@@ -115,3 +115,17 @@ export const findBelongOrganizations = async (
     };
   });
 };
+
+export const getOrganizationName = async (
+  id: string
+): Promise<string | undefined> => {
+  const result = await client.organization.findUnique({
+    where: {
+      id: id,
+    },
+    select: {
+      name: true,
+    },
+  });
+  return result?.name;
+};

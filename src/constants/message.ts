@@ -7,6 +7,9 @@ export const REQUEST_QUERY_ERROR = "query 요청이 잘못되었습니다";
 export const ORGANIZATION_ID_REQUEST_ERROR =
   "organizationId 요청값이 잘못되었습니다.";
 export const USER_ID_REQUEST_ERROR = "userId 요청값이 잘못되었습니다.";
+export const EMAIL_ID_REQUEST_ERROR = "email 요청값이 잘못되었습니다.";
+export const USER_NOT_EXISTS_ERROR = "해당 회원이 존재하지 않습니다.";
+export const ORGANIZATION_NOT_EXISTS_ERROR = "해당 소속이 존재하지 않습니다.";
 export const PROFILE_CREATE_SUCCESS = "프로필이 생성되었습니다.";
 export const PROFILE_EDIT_SUCCESS = "회원 프로필을 성공적으로 수정했습니다.";
 export const PROFILE_IMAGE_UPDATE: string = "프로필 이미지가 설정되었습니다.";

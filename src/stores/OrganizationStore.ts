@@ -178,10 +178,8 @@ export class OrganizationStore {
   public async sendOrganizationVerifyEmail() {
     const organizationVerifyEmailForm: OrganizationVerifyEmailForm = {
       userId: this._userStore.currentUser!!.id,
-      userName: this._userStore.currentUser!!.name,
       email: this._typedEmail,
       organizationId: this.organizationId!,
-      organizationName: this._typedName,
     };
     console.log(organizationVerifyEmailForm);
     const result = await this._organizationService.setOrganizationEmail(

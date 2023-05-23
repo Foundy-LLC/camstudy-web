@@ -231,3 +231,17 @@ export const deleteUserProfileImage = async (userId: string) => {
     },
   });
 };
+
+export const getUserName = async (
+  userId: string
+): Promise<string | undefined> => {
+  const result = await prisma.user_account.findUnique({
+    select: {
+      name: true,
+    },
+    where: {
+      id: userId,
+    },
+  });
+  return result?.name;
+};

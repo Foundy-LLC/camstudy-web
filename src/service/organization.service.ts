@@ -56,18 +56,15 @@ export class OrganizationService {
   public async setOrganizationEmail(
     organizationVerifyEmailForm: OrganizationVerifyEmailForm
   ): Promise<Result<string>> {
-    const { userId, userName, email, organizationId, organizationName } =
-      organizationVerifyEmailForm;
+    const { userId, email, organizationId } = organizationVerifyEmailForm;
     try {
       const requestBody = new OrganizationsEmailRequestBody(
         userId,
-        userName,
         email,
-        organizationId,
-        organizationName
+        organizationId
       );
       const response = await fetchAbsolute(
-        `api/organizations/${organizationId}`,
+        `api/users/${userId}/organizations`,
         {
           method: "POST",
           body: JSON.stringify(requestBody),

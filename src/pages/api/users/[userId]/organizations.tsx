@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getBelongOrganizations } from "@/controller/organization.controller";
+import {
+  getBelongOrganizations,
+  setOrganizationEmail,
+} from "@/controller/organization.controller";
 
 export default async function belongOrganizationHandler(
   req: NextApiRequest,
@@ -9,6 +12,9 @@ export default async function belongOrganizationHandler(
   switch (method) {
     case "GET":
       await getBelongOrganizations(req, res);
+      break;
+    case "POST":
+      await setOrganizationEmail(req, res);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);

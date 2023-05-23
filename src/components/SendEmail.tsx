@@ -36,7 +36,7 @@ export const sendSecretMail = (
 ) => {
   const token = createEmailToken(userId, organizationId, organizationName);
   const email = {
-    from: "studyingFarmer@example.com",
+    from: "noreply@studyingfarmer.link",
     to: address,
     subject: "공부하는 농부 - 소속 인증 이메일",
     html: emailHtml(token, userName),
@@ -46,6 +46,7 @@ export const sendSecretMail = (
       return true;
     })
     .catch((error) => {
+      console.error(error);
       return false;
     });
 };
