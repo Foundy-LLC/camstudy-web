@@ -1,7 +1,8 @@
 @import "./color/colorPalette";
 .drop-down-form {
-  display: flex;
+  display: inline-block;
   margin-left: auto;
+  position: relative;
 
   .drop-down-form__selected {
     z-index: 0;
@@ -36,8 +37,8 @@
   .drop-down-form__ul {
     position: absolute;
     z-index: 1;
-    right: 0px;
-    top: 31px;
+    //right: 0px;
+    //top: 31px;
     background-color: $-Dark-01;
     border-radius: 0px 0px 8px 8px;
     padding-top: 5px;

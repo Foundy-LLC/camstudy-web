@@ -4,54 +4,56 @@ import dropDownStyles from "@/styles/timerSettingDropDown.module.scss";
 import React, { useState } from "react";
 
 export const TimerSettingDropDown: NextPage<{
-  items: string[];
-  initIndex: number;
-}> = observer(({ items, initIndex }) => {
+  items: number[];
+  suffix: string;
+  type: string;
+  selectedValue: number;
+  onSelect: (input: string) => void;
+}> = observer(({ items, suffix, type, selectedValue, onSelect }) => {
   const [focused, setFocused] = useState<boolean>(false);
-  const [selected, setSelected] = useState<string>(items[initIndex]);
+  const [selected, setSelected] = useState<number>(selectedValue);
+
+  const select = (value: string) => {
+    onSelect(value);
+  };
+
   return (
-    <>
+    <div className={`${dropDownStyles["drop-down-form"]}`} tabIndex={0}>
       <div
-        className={`${dropDownStyles["drop-down-form"]}`}
-        tabIndex={0}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        className={`${dropDownStyles["drop-down-form__selected"]} typography__text`}
+        onClick={() => (focused ? setFocused(false) : setFocused(true))}
       >
-        <div
-          className={`${dropDownStyles["drop-down-form__selected"]} typography__text`}
-          onClick={() => (focused ? setFocused(true) : setFocused(!focused))}
-        >
-          <label>{selected}</label>
-          <span className="material-symbols-rounded">expand_more</span>
-        </div>
-        <ul
-          className={`${dropDownStyles["drop-down-form__ul"]} typography__text`}
-          hidden={!focused}
-        >
-          {items.map((item, key) =>
-            item === selected ? (
-              <li
-                key={key}
-                className={`${dropDownStyles["drop-down-form__li--selected"]}`}
-                onClick={() => setFocused(!focused)}
-              >
-                <label>{item}</label>
-              </li>
-            ) : (
-              <li
-                key={key}
-                className={`${dropDownStyles["drop-down-form__li"]}`}
-                onClick={() => {
-                  setFocused(!focused);
-                  setSelected(item);
-                }}
-              >
-                <label>{item}</label>
-              </li>
-            )
-          )}
-        </ul>
+        <label>{`${selected}${suffix}`}</label>
+        <span className="material-symbols-rounded">expand_more</span>
       </div>
-    </>
+      <ul
+        className={`${dropDownStyles["drop-down-form__ul"]} typography__text`}
+        hidden={!focused}
+      >
+        {items.map((item, key) =>
+          item === selected ? (
+            <li
+              key={key}
+              className={`${dropDownStyles["drop-down-form__li--selected"]}`}
+              onClick={() => setFocused(false)}
+            >
+              <label>{`${item}${suffix}`}</label>
+            </li>
+          ) : (
+            <li
+              key={key}
+              className={`${dropDownStyles["drop-down-form__li"]}`}
+              onClick={() => {
+                setFocused(false);
+                setSelected(item);
+                select(item.toString());
+              }}
+            >
+              <label>{`${item}${suffix}`}</label>
+            </li>
+          )
+        )}
+      </ul>
+    </div>
   );
 });

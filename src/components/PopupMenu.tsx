@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import studyRoomStyles from "@/styles/studyRoom.module.scss";
+import { MasterPopupMenus } from "@/pages/rooms/[roomId]";
 
 interface PopupMenuProps {
   label: string;
@@ -47,6 +48,7 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
       >
         <span
           className={`${studyRoomStyles["study-room__option-icon"]} material-symbols-rounded`}
+          style={{ color: "var(--system_background)" }}
         >
           more_horiz
         </span>
@@ -54,11 +56,11 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
           className={`${studyRoomStyles["study-room__option__dialog"]} typography__text--small`}
           hidden={showUserOption !== name}
         >
-          <li onClick={() => handleClick("block")}>
+          <li onClick={() => handleClick(MasterPopupMenus.Block)}>
             <span className="material-symbols-rounded">block</span>
             차단하기
           </li>
-          <li onClick={() => handleClick("kick")}>
+          <li onClick={() => handleClick(MasterPopupMenus.Kick)}>
             <span className="material-symbols-rounded">account_circle_off</span>
             강퇴하기
           </li>
