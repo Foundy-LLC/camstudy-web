@@ -109,11 +109,6 @@ export class RoomStore implements RoomViewModel {
   }
 
   public onCloseVideoConsumer(userId: string) {
-    // const newPeerStates = this._peerStates.map((peerState) => {
-    //   if (peerState.uid === userId) {
-    //
-    //   }
-    // });
     console.log(123);
     this._reRender++;
   }

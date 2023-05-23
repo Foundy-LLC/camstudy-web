@@ -299,82 +299,6 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
                     />
                   );
                 })}
-
-                {/*<div className={`${studyRoomStyles["study-room__user"]}`}>*/}
-                {/*  <div*/}
-                {/*    className={`${studyRoomStyles["study-room__user__video"]}`}*/}
-                {/*  >*/}
-                {/*    {enabledVideo ? (*/}
-                {/*      <Video*/}
-                {/*        id="localVideo"*/}
-                {/*        videoStream={roomStore.localVideoStream}*/}
-                {/*        roomStore={roomStore}*/}
-                {/*      />*/}
-                {/*    ) : (*/}
-                {/*      <label className="typography__sub-headline">*/}
-                {/*        카메라가 꺼져있습니다*/}
-                {/*      </label>*/}
-                {/*    )}*/}
-                {/*  </div>*/}
-                {/*  <div*/}
-                {/*    className={`${studyRoomStyles["study-room__user__option-bar"]}`}*/}
-                {/*  >*/}
-                {/*    <label*/}
-                {/*      className={`${studyRoomStyles["study-room__user__name"]} typography__text`}*/}
-                {/*    >*/}
-                {/*      본인*/}
-                {/*    </label>*/}
-                {/*    <div style={{ position: "relative" }}>*/}
-                {/*      <span*/}
-                {/*        className={`${studyRoomStyles["study-room__camera-icon"]} material-symbols-rounded`}*/}
-                {/*      >*/}
-                {/*        video_camera_front*/}
-                {/*      </span>*/}
-                {/*      {!enabledVideo && (*/}
-                {/*        <FaSlash*/}
-                {/*          className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}*/}
-                {/*        />*/}
-                {/*      )}*/}
-                {/*    </div>*/}
-                {/*    <div style={{ position: "relative" }}>*/}
-                {/*      <span*/}
-                {/*        className={`${studyRoomStyles["study-room__headphones-icon"]} material-symbols-rounded`}*/}
-                {/*      >*/}
-                {/*        headphones*/}
-                {/*      </span>*/}
-                {/*      {!enabledHeadset && (*/}
-                {/*        <FaSlash*/}
-                {/*          className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}*/}
-                {/*        />*/}
-                {/*      )}*/}
-                {/*    </div>*/}
-                {/*    <div style={{ position: "relative" }}>*/}
-                {/*      <span*/}
-                {/*        className={`${studyRoomStyles["study-room__mic-icon"]} material-symbols-rounded`}*/}
-                {/*      >*/}
-                {/*        mic*/}
-                {/*      </span>*/}
-                {/*      {!enabledAudio && (*/}
-                {/*        <FaSlash*/}
-                {/*          className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}*/}
-                {/*        />*/}
-                {/*      )}*/}
-                {/*    </div>*/}
-                {/*  </div>*/}
-                {/*</div>*/}
-                {/*<RemoteMediaGroup*/}
-                {/*  roomStore={roomStore}*/}
-                {/*  isCurrentUserMaster={isCurrentUserMaster}*/}
-                {/*  peerStates={roomStore.peerStates}*/}
-                {/*  remoteVideoStreamByPeerIdEntries={*/}
-                {/*    roomStore.remoteVideoStreamByPeerIdEntries*/}
-                {/*  }*/}
-                {/*  remoteAudioStreamByPeerIdEntries={*/}
-                {/*    roomStore.remoteAudioStreamByPeerIdEntries*/}
-                {/*  }*/}
-                {/*  onKickClick={handleKickButtonClick}*/}
-                {/*  onBlockClick={handleBlockButtonClick}*/}
-                {/*/>*/}
               </div>
 
               <div className={`${studyRoomStyles["study-room__button-form"]}`}>
@@ -418,7 +342,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
                     >
                       video_camera_front
                     </span>
-                    {!cameraOn && (
+                    {!roomStore.enabledLocalVideo && (
                       <FaSlash
                         className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
                       />
@@ -446,7 +370,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
                     >
                       headphones
                     </span>
-                    {!headphoneOn && (
+                    {!roomStore.enabledHeadset && (
                       <FaSlash
                         className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
                       />
@@ -474,7 +398,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
                     >
                       mic
                     </span>
-                    {!micOn && (
+                    {!roomStore.enabledLocalAudio && (
                       <FaSlash
                         className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
                       />
@@ -632,7 +556,6 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
                       className={`${studyRoomStyles["study-room__timer-form__info__time-info"]} typography__caption`}
                     >
                       {`${roomStore.pomodoroTimerProperty?.timerLengthMinutes}분 집중, ${roomStore.pomodoroTimerProperty?.shortBreakMinutes}분 휴식을 ${roomStore.pomodoroTimerProperty?.longBreakInterval}번 반복 후 ${roomStore.pomodoroTimerProperty?.longBreakMinutes}분간 쉽니다.`}
-                      {/*25분 집중, 5분 휴식을 4번 반복 후 30분간 쉽니다*/}
                     </label>
                   </div>
                   {roomStore.pomodoroTimerState !==
@@ -957,6 +880,56 @@ const GridView: NextPage<{
             audioStream={audioStream}
           />
         </div>
+        <style jsx>
+          {`
+            .material-symbols-rounded {
+              font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+              color: #ffffff;
+              -webkit-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+              user-select: none;
+              cursor: default;
+            }
+
+            .material-symbols-outlined {
+              font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48;
+              color: #ffffff;
+              -webkit-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+              user-select: none;
+              cursor: default;
+            }
+
+            button {
+              background: inherit;
+              border: none;
+              box-shadow: none;
+              border-radius: 0;
+              padding: 0;
+              overflow: visible;
+              cursor: pointer;
+            }
+
+            .timerSettingBtn {
+              display: flex;
+              flex-direction: row;
+              flex-grow: 1;
+              justify-content: center;
+              align-items: center;
+              padding: 8px 16px;
+              gap: 10px;
+
+              //width: 340px;
+              height: 38px;
+
+              /* Primary-05 */
+              background: var(--primary);
+              border-radius: 8px;
+            }
+          `}
+        </style>
       </div>
     );
   }
