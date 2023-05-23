@@ -1,8 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { ResponseBody } from "@/models/common/ResponseBody";
 import {
+  ORGANIZATION_ID_REQUEST_ERROR,
   REQUEST_QUERY_ERROR,
   SERVER_INTERNAL_ERROR_MESSAGE,
+  USER_ID_REQUEST_ERROR,
 } from "@/constants/message";
 import {
   addOrganizationEmailVerify,
@@ -25,7 +27,6 @@ import { OrganizationsGetRequestBody } from "@/models/organization/Organizations
 import { OrganizationsEmailRequestBody } from "@/models/organization/OrganizationsEmailRequestBody";
 import { sendSecretMail } from "@/components/SendEmail";
 import { Prisma } from "@prisma/client";
-import { OrganizationsBelongRequestBody } from "@/models/organization/OrganizationsBelongRequestBody";
 import { verifyEmailToken } from "@/service/manageVerifyToken";
 import { TokenExpiredError } from "jsonwebtoken";
 import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
@@ -101,19 +102,17 @@ export const deleteBelongOrganization = async (
   res: NextApiResponse
 ) => {
   try {
-    const { organizationId } = req.query;
-    const { userId, organizationName } = req.body;
-    if (typeof organizationId !== "string") throw REQUEST_QUERY_ERROR;
-    const organizationDeleteRequestBody = new OrganizationsBelongRequestBody(
-      userId,
-      organizationName
-    );
-    await deleteBelong(organizationDeleteRequestBody.userId, organizationId);
-    res.status(201).json(
-      new ResponseBody({
-        message: `${organizationName}을(를) 소속에서 삭제하였습니다.`,
-      })
-    );
+    const { userId, organizationId } = req.query;
+    if (typeof organizationId !== "string") {
+      throw ORGANIZATION_ID_REQUEST_ERROR;
+    }
+    if (typeof userId !== "string") {
+      throw USER_ID_REQUEST_ERROR;
+    }
+    await deleteBelong(userId, organizationId);
+    res
+      .status(201)
+      .json(new ResponseBody({ message: `해당 소속을 삭제하였습니다.` }));
   } catch (e) {}
 };
 

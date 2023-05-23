@@ -1,6 +1,5 @@
 import { Result } from "@/models/common/Result";
 import { OrganizationsEmailRequestBody } from "@/models/organization/OrganizationsEmailRequestBody";
-import { OrganizationsBelongRequestBody } from "@/models/organization/OrganizationsBelongRequestBody";
 import { OrganizationsEmailJWTBody } from "@/models/organization/OrganizationsEmailJWTBody";
 import { BelongOrganization } from "@/models/organization/BelongOrganization";
 import { OrganizationVerifyEmailForm } from "@/models/organization/OrganizationVerifyEmailForm";
@@ -31,21 +30,16 @@ export class OrganizationService {
       return Result.createErrorUsingException(e);
     }
   }
+
   public async deleteBelongOrganization(
     userId: string,
-    organizationId: string,
-    organizationName: string
+    organizationId: string
   ): Promise<Result<string>> {
     try {
-      const emailConfirmBody = new OrganizationsBelongRequestBody(
-        userId,
-        organizationName
-      );
       const response = await fetchAbsolute(
-        `api/organizations/${organizationId}`,
+        `api/users/${userId}/organizations/${organizationId}`,
         {
           method: "DELETE",
-          body: JSON.stringify(emailConfirmBody),
           headers: HEADER,
         }
       );
@@ -132,5 +126,6 @@ export class OrganizationService {
     }
   }
 }
+
 const organizationService = new OrganizationService();
 export default organizationService;

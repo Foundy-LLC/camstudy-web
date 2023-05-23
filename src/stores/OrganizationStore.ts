@@ -133,11 +133,10 @@ export class OrganizationStore {
   public async deleteBelongOrganization(
     belongOrganization: BelongOrganization
   ) {
-    const { userId, organizationId, organizationName } = belongOrganization;
+    const { userId, organizationId } = belongOrganization;
     const result = await this._organizationService.deleteBelongOrganization(
       userId,
-      organizationId,
-      organizationName
+      organizationId
     );
     if (result.isSuccess) {
       runInAction(() => {

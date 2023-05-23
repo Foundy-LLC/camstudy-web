@@ -4,6 +4,9 @@ import { MAX_IMAGE_BYTE_SIZE } from "@/constants/image.constant";
 export const SERVER_INTERNAL_ERROR_MESSAGE: string =
   "서버 내부에 에러가 발생했습니다.";
 export const REQUEST_QUERY_ERROR = "query 요청이 잘못되었습니다";
+export const ORGANIZATION_ID_REQUEST_ERROR =
+  "organizationId 요청값이 잘못되었습니다.";
+export const USER_ID_REQUEST_ERROR = "userId 요청값이 잘못되었습니다.";
 export const PROFILE_CREATE_SUCCESS = "프로필이 생성되었습니다.";
 export const PROFILE_EDIT_SUCCESS = "회원 프로필을 성공적으로 수정했습니다.";
 export const PROFILE_IMAGE_UPDATE: string = "프로필 이미지가 설정되었습니다.";

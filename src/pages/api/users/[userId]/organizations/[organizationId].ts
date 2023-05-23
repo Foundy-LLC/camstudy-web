@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { setOrganizationEmail } from "@/controller/organization.controller";
+import { deleteBelongOrganization } from "@/controller/organization.controller";
 
 export default async function organizationEmailHandler(
   req: NextApiRequest,
@@ -7,8 +7,8 @@ export default async function organizationEmailHandler(
 ) {
   const { method } = req;
   switch (method) {
-    case "POST":
-      await setOrganizationEmail(req, res);
+    case "DELETE":
+      await deleteBelongOrganization(req, res);
       break;
     default:
       res.status(405).end(`Method ${method} Not Allowed`);
