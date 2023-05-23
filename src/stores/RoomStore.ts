@@ -109,7 +109,6 @@ export class RoomStore implements RoomViewModel {
   }
 
   public onCloseVideoConsumer(userId: string) {
-    console.log(123);
     this._reRender++;
   }
 
@@ -282,6 +281,25 @@ export class RoomStore implements RoomViewModel {
 
   public get peerStates(): PeerState[] {
     return this._peerStates;
+  }
+
+  public get sortedPeerStates(): PeerState[] {
+    if (this._auth.currentUser?.uid === undefined) {
+      return this._peerStates;
+    }
+    const currentUid = this._auth.currentUser?.uid;
+    const currentPeerState = this._peerStates.find((peerState) => {
+      if (peerState.uid === currentUid) return peerState;
+    });
+    const otherPeerStates = this._peerStates.filter((peerState) => {
+      return peerState.uid !== currentUid;
+    });
+    const sortedOtherPeerStates = otherPeerStates.sort(
+      (a: PeerState, b: PeerState): number => {
+        return a.name > b.name ? -1 : 1;
+      }
+    );
+    return [currentPeerState!, ...sortedOtherPeerStates];
   }
 
   public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {

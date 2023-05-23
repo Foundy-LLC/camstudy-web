@@ -261,7 +261,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
               <div
                 className={`${studyRoomStyles["study-room__user-form__grid"]}`}
               >
-                {roomStore.peerStates.map((peerState) => {
+                {roomStore.sortedPeerStates.map((peerState) => {
                   const videoEntry = getVideoStream(peerState.uid);
                   let videoStream;
                   if (videoEntry != undefined) {

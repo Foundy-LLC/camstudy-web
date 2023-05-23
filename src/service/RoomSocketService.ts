@@ -1,4 +1,4 @@
-import { RoomStore, RoomViewModel } from "@/stores/RoomStore";
+import { RoomViewModel } from "@/stores/RoomStore";
 import { io, Socket } from "socket.io-client";
 import {
   BLOCK_USER,
@@ -58,8 +58,6 @@ import { UserStore } from "@/stores/UserStore";
 import { Result } from "@/models/common/Result";
 import { MediaServerGetResponse } from "@/models/room/MediaServerGetResponse";
 import { mediaRouterApiFetch } from "@/utils/fetchAbsolute";
-import { mediaRouterApiFetch } from "@/utils/mediaRouterApiFetch";
-import { object } from "prop-types";
 
 interface CreateWebRtcTransportParams {
   readonly id: string;
