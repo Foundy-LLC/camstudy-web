@@ -111,7 +111,7 @@ export const deleteBelongOrganization = async (
     }
     await deleteBelong(userId, organizationId);
     res
-      .status(201)
+      .status(200)
       .json(new ResponseBody({ message: `해당 소속을 삭제하였습니다.` }));
   } catch (e) {}
 };
