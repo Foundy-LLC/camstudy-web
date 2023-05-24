@@ -1,8 +1,10 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { computed, makeAutoObservable, runInAction } from "mobx";
 import { RootStore } from "@/stores/RootStore";
 import roomService, { RoomService } from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { ROOM_NUM_PER_PAGE } from "@/constants/room.constant";
+import { string } from "prop-types";
+import { CREATE_ROOM_TITLE_MAX_LENGTH_ERROR } from "@/constants/message";
 
 //TODO(건우) 값을 임시로 할당하여 수정 필요
 export class Room {
@@ -28,6 +30,9 @@ export class Room {
 export class RoomListStore {
   readonly rootStore: RootStore;
   private _createdRoomTitle: string = "";
+  private _createRoomTagsError?: string = undefined;
+  private _createRoomPasswordError?: string = undefined;
+  private _isRoomPrivate: boolean = false;
   private _selectedImageFile?: File = undefined;
   private _imageUrl: string = "";
   private _uploadedImgUrl?: string = "";
@@ -58,10 +63,6 @@ export class RoomListStore {
 
   get tempRoom(): Room {
     return this._tempRoom;
-  }
-
-  get createdTitle(): string {
-    return this._createdRoomTitle;
   }
 
   get roomOverviews(): RoomOverview[] {
@@ -100,6 +101,23 @@ export class RoomListStore {
     return this._roomInfo;
   }
 
+  get isPasswordValid() {
+    if (this._isRoomPrivate) {
+      return this._tempRoom.password
+        ? this._tempRoom.password.length >= 4
+        : false;
+    }
+    return true;
+  }
+
+  get isCreateButtonEnable(): boolean {
+    return (
+      this._tempRoom.title.length > 0 &&
+      this._tempRoom.tags.length > 0 &&
+      this.isPasswordValid
+    );
+  }
+
   private _initErrorMessage() {
     this._errorMessage = "";
   }
@@ -122,12 +140,37 @@ export class RoomListStore {
     this._imageUrl = URL.createObjectURL(thumbnail);
   };
 
+  public initImageUrl = () => {
+    this._imageUrl = "";
+  };
+
   public changeRoomThumbnail = (uploadedImgUrl: string) => {
     this._tempRoom = { ...this._tempRoom, thumbnail: uploadedImgUrl };
   };
 
+  public addTypedTag = (tag: string) => {
+    this._tempRoom = { ...this._tempRoom, tags: [...this.tempRoom.tags, tag] };
+    console.log(this.tempRoom.tags);
+  };
+
+  public removeTypedTag = (tagName: string) => {
+    console.log(tagName);
+    this._tempRoom = {
+      ...this._tempRoom,
+      tags: this.tempRoom.tags.filter((tag) => tag !== tagName),
+    };
+  };
+
   public changeRoomNum(pageNum: string) {
     this._pageNum = parseInt(pageNum);
+  }
+
+  public toggleIsRoomPrivate() {
+    this._isRoomPrivate = !this._isRoomPrivate;
+  }
+
+  get isRoomPrivate() {
+    return this._isRoomPrivate;
   }
 
   //TODO(건우): RoomId를 임시적으로 title로 설정하도록 함. 수정 필요

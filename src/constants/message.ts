@@ -58,3 +58,7 @@ export const REPORT_SCREENSHOT_UPLOADED: string =
   "신고 이미지가 업로드되었습니다.";
 export const RECOMMENDED_FREINDS_GET_SUCCESS: string =
   "추천 친구 목록을 성공적으로 얻었습니다.";
+export const CREATE_ROOM_TAG_INPUT_PLACE_HOLDER: string =
+  "#수능, #개발, #공시 등 태그를 검색해주세요";
+export const CREATE_ROOM_TITLE_MAX_LENGTH_ERROR: string =
+  "방 제목은 최대 20글자까지 설정 가능합니다.";
