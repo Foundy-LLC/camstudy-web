@@ -18,7 +18,11 @@ export const TimerSettingDropDown: NextPage<{
   };
 
   return (
-    <div className={`${dropDownStyles["drop-down-form"]}`} tabIndex={0}>
+    <div
+      className={`${dropDownStyles["drop-down-form"]}`}
+      tabIndex={0}
+      onBlur={() => setFocused(false)}
+    >
       <div
         className={`${dropDownStyles["drop-down-form__selected"]} typography__text`}
         onClick={() => (focused ? setFocused(false) : setFocused(true))}

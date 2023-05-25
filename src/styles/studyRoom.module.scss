@@ -8,7 +8,7 @@
   height: auto;
   width: auto;
   display: flex;
-  //align-items: center;
+  align-items: center;
   justify-content: center;
   .study-room__cam-form{
     display: flex;
@@ -21,7 +21,7 @@
       background-color: #171717;
       border-top-left-radius: 16px;
       &__grid{
-        padding: 80px 50px 80px 50px;
+        padding: 79px 50px 79px 50px;
         //padding: 80px 50px 0 50px;
         display: grid;
         grid: '. .';
@@ -184,6 +184,8 @@
   }
   .study-room__info-form{
     display: flex;
+    max-height: 1080px;
+    min-height: 1080px;
     flex-direction: column;
     background-color: #171717;
     -webkit-user-select: none;

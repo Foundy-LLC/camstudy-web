@@ -299,7 +299,8 @@ export class RoomStore implements RoomViewModel {
         return a.name > b.name ? -1 : 1;
       }
     );
-    return [currentPeerState!, ...sortedOtherPeerStates];
+    this._peerStates = [currentPeerState!, ...sortedOtherPeerStates];
+    return this._peerStates;
   }
 
   public get remoteVideoStreamByPeerIdEntries(): [string, MediaStream][] {

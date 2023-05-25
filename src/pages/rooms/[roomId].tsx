@@ -144,9 +144,6 @@ const WaitingRoom1: NextPage<{
 
 const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
   observer(({ roomStore, userStore }) => {
-    const enabledVideo = roomStore.enabledLocalVideo;
-    const enabledAudio = roomStore.enabledLocalAudio;
-    const enabledHeadset = roomStore.enabledHeadset;
     const isCurrentUserMaster = roomStore.isCurrentUserMaster;
     const router = useRouter();
     const [openSettingDialog, setOpenSettingDialog] = React.useState(false);
@@ -261,7 +258,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
               <div
                 className={`${studyRoomStyles["study-room__user-form__grid"]}`}
               >
-                {roomStore.sortedPeerStates.map((peerState) => {
+                {roomStore.sortedPeerStates.map((peerState, index) => {
                   const videoEntry = getVideoStream(peerState.uid);
                   let videoStream;
                   if (videoEntry != undefined) {
@@ -280,6 +277,7 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
                   }
                   return (
                     <GridView
+                      key={index}
                       roomStore={roomStore}
                       uid={userStore.currentUser!.id}
                       peerState={peerState}
@@ -615,29 +613,48 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
                         <div
                           className={`${studyRoomStyles["study-room__chat-form__ban-list"]}`}
                         >
-                          {roomStore.blacklist.map((blockedUser, key) => (
+                          {roomStore.blacklist.length ? (
+                            roomStore.blacklist.map((blockedUser, key) => (
+                              <div
+                                key={key}
+                                className={`${studyRoomStyles["study-room__chat-form__ban-user"]}`}
+                              >
+                                <div
+                                  className={`${studyRoomStyles["study-room__chat-form__ban-user__image"]}`}
+                                ></div>
+                                <label
+                                  className={`${studyRoomStyles["study-room__chat-form__ban-user__name"]} typography__text`}
+                                >
+                                  {blockedUser.name}
+                                </label>
+                                <label
+                                  className={`${studyRoomStyles["study-room__chat-form__ban-user__ban-cancel"]} typography__text`}
+                                  onClick={() => {
+                                    if (
+                                      confirm(
+                                        `${blockedUser.name} 님을 차단 해제하시겠습니까?`
+                                      )
+                                    ) {
+                                      roomStore.unblockUser(blockedUser.id);
+                                    }
+                                  }}
+                                >
+                                  차단 해제하기
+                                </label>
+                              </div>
+                            ))
+                          ) : (
                             <div
-                              key={key}
                               className={`${studyRoomStyles["study-room__chat-form__ban-user"]}`}
                             >
-                              <div
-                                className={`${studyRoomStyles["study-room__chat-form__ban-user__image"]}`}
-                              ></div>
                               <label
                                 className={`${studyRoomStyles["study-room__chat-form__ban-user__name"]} typography__text`}
+                                style={{ marginLeft: 28 }}
                               >
-                                {blockedUser.name}
-                              </label>
-                              <label
-                                className={`${studyRoomStyles["study-room__chat-form__ban-user__ban-cancel"]} typography__text`}
-                                onClick={() =>
-                                  roomStore.unblockUser(blockedUser.id)
-                                }
-                              >
-                                차단 해제하기
+                                차단한 회원 없음
                               </label>
                             </div>
-                          ))}
+                          )}
                           <div
                             className={`${studyRoomStyles["study-room__chat-form__ban-list__hr"]}`}
                           ></div>
@@ -768,7 +785,7 @@ const GridView: NextPage<{
 
     //TODO: 카메라 껐을 때 리렌더링 하기 위해 하드코딩 함. 나중에 고칠 것
     useEffect(() => {
-      console.log("video closed");
+      console.log("rerender", roomStore.reRender);
     }, [roomStore.reRender]);
 
     return (
@@ -978,161 +995,161 @@ const TimerSettings: NextPage<{
   );
 };
 
-const RemoteMediaGroup: NextPage<{
-  roomStore: RoomStore;
-  isCurrentUserMaster: boolean;
-  peerStates: PeerState[];
-  remoteVideoStreamByPeerIdEntries: [string, MediaStream][];
-  remoteAudioStreamByPeerIdEntries: [string, MediaStream][];
-  onKickClick: (userId: string) => void;
-  onBlockClick: (userId: string) => void;
-}> = observer(
-  ({
-    roomStore,
-    isCurrentUserMaster,
-    peerStates,
-    remoteVideoStreamByPeerIdEntries,
-    remoteAudioStreamByPeerIdEntries,
-    onKickClick,
-    onBlockClick,
-  }) => {
-    const masterPopupMenus = Object.values(MasterPopupMenus);
-
-    //TODO: 카메라 껐을 때 리렌더링 하기 위해 하드코딩 함. 나중에 고칠 것
-    useEffect(() => {
-      console.log("video closed");
-    }, [roomStore.reRender]);
-
-    const handleMasterPopupMenuClick = (item: string, userId: string) => {
-      const menuEnum = getEnumKeyByEnumValue(MasterPopupMenus, item);
-      switch (menuEnum) {
-        case "Kick":
-          onKickClick(userId);
-          break;
-        case "Block":
-          onBlockClick(userId);
-          break;
-      }
-    };
-
-    return (
-      <>
-        {remoteVideoStreamByPeerIdEntries.map((entry) => {
-          const [peerId, mediaStream] = entry;
-          const peerState = peerStates.find((p) => p.uid === peerId);
-
-          if (peerState === undefined) {
-            throw Error("피어 상태가 존재하지 않습니다.");
-          }
-          return (
-            <div className={`${studyRoomStyles["study-room__user"]}`}>
-              <div className={`${studyRoomStyles["study-room__user__video"]}`}>
-                {mediaStream.active ? (
-                  <Video
-                    id={peerId}
-                    key={peerId}
-                    videoStream={mediaStream}
-                    roomStore={roomStore}
-                  />
-                ) : (
-                  <label className="typography__sub-headline">
-                    카메라가 꺼져있습니다
-                  </label>
-                )}
-              </div>
-              <div
-                className={`${studyRoomStyles["study-room__user__option-bar"]}`}
-              >
-                <label
-                  className={`${studyRoomStyles["study-room__user__name"]} typography__text`}
-                >
-                  {peerState.name}
-                </label>
-                <div style={{ position: "relative" }}>
-                  <span
-                    className={`${studyRoomStyles["study-room__camera-icon"]} material-symbols-rounded`}
-                  >
-                    video_camera_front
-                  </span>
-                  {!mediaStream.active ? (
-                    <FaSlash
-                      className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
-                    />
-                  ) : undefined}
-                </div>
-                <div style={{ position: "relative" }}>
-                  <span
-                    className={`${studyRoomStyles["study-room__headphones-icon"]} material-symbols-rounded`}
-                  >
-                    headphones
-                  </span>
-                  {!peerState.enabledHeadset ? (
-                    <FaSlash
-                      className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
-                    />
-                  ) : undefined}
-                </div>
-                <div style={{ position: "relative" }}>
-                  <span
-                    className={`${studyRoomStyles["study-room__mic-icon"]} material-symbols-rounded`}
-                  >
-                    mic
-                  </span>
-                  {!peerState.enabledMicrophone ? (
-                    <FaSlash
-                      className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
-                    />
-                  ) : undefined}
-                </div>
-                {isCurrentUserMaster &&
-                  roomStore.userMasterId !== peerState.uid && (
-                    <PopupMenu
-                      label={"더보기"}
-                      menuItems={masterPopupMenus}
-                      onMenuItemClick={(item) =>
-                        handleMasterPopupMenuClick(item, peerId)
-                      }
-                      name={peerState.name}
-                    />
-                  )}
-              </div>
-            </div>
-          );
-        })}
-
-        <div>
-          {remoteAudioStreamByPeerIdEntries.map((entry) => {
-            const [peerId, mediaStream] = entry;
-            return <Audio key={peerId} id={peerId} audioStream={mediaStream} />;
-          })}
-        </div>
-        <style jsx>
-          {`
-            .material-symbols-rounded {
-              font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
-              color: #ffffff;
-              -webkit-user-select: none;
-              -moz-user-select: none;
-              -ms-user-select: none;
-              user-select: none;
-              cursor: default;
-            }
-
-            .material-symbols-outlined {
-              font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48;
-              color: #ffffff;
-              -webkit-user-select: none;
-              -moz-user-select: none;
-              -ms-user-select: none;
-              user-select: none;
-              cursor: default;
-            }
-          `}
-        </style>
-      </>
-    );
-  }
-);
+// const RemoteMediaGroup: NextPage<{
+//   roomStore: RoomStore;
+//   isCurrentUserMaster: boolean;
+//   peerStates: PeerState[];
+//   remoteVideoStreamByPeerIdEntries: [string, MediaStream][];
+//   remoteAudioStreamByPeerIdEntries: [string, MediaStream][];
+//   onKickClick: (userId: string) => void;
+//   onBlockClick: (userId: string) => void;
+// }> = observer(
+//   ({
+//     roomStore,
+//     isCurrentUserMaster,
+//     peerStates,
+//     remoteVideoStreamByPeerIdEntries,
+//     remoteAudioStreamByPeerIdEntries,
+//     onKickClick,
+//     onBlockClick,
+//   }) => {
+//     const masterPopupMenus = Object.values(MasterPopupMenus);
+//
+//     //TODO: 카메라 껐을 때 리렌더링 하기 위해 하드코딩 함. 나중에 고칠 것
+//     useEffect(() => {
+//       console.log("video closed");
+//     }, [roomStore.reRender]);
+//
+//     const handleMasterPopupMenuClick = (item: string, userId: string) => {
+//       const menuEnum = getEnumKeyByEnumValue(MasterPopupMenus, item);
+//       switch (menuEnum) {
+//         case "Kick":
+//           onKickClick(userId);
+//           break;
+//         case "Block":
+//           onBlockClick(userId);
+//           break;
+//       }
+//     };
+//
+//     return (
+//       <>
+//         {remoteVideoStreamByPeerIdEntries.map((entry) => {
+//           const [peerId, mediaStream] = entry;
+//           const peerState = peerStates.find((p) => p.uid === peerId);
+//
+//           if (peerState === undefined) {
+//             throw Error("피어 상태가 존재하지 않습니다.");
+//           }
+//           return (
+//             <div className={`${studyRoomStyles["study-room__user"]}`}>
+//               <div className={`${studyRoomStyles["study-room__user__video"]}`}>
+//                 {mediaStream.active ? (
+//                   <Video
+//                     id={peerId}
+//                     key={peerId}
+//                     videoStream={mediaStream}
+//                     roomStore={roomStore}
+//                   />
+//                 ) : (
+//                   <label className="typography__sub-headline">
+//                     카메라가 꺼져있습니다
+//                   </label>
+//                 )}
+//               </div>
+//               <div
+//                 className={`${studyRoomStyles["study-room__user__option-bar"]}`}
+//               >
+//                 <label
+//                   className={`${studyRoomStyles["study-room__user__name"]} typography__text`}
+//                 >
+//                   {peerState.name}
+//                 </label>
+//                 <div style={{ position: "relative" }}>
+//                   <span
+//                     className={`${studyRoomStyles["study-room__camera-icon"]} material-symbols-rounded`}
+//                   >
+//                     video_camera_front
+//                   </span>
+//                   {!mediaStream.active ? (
+//                     <FaSlash
+//                       className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
+//                     />
+//                   ) : undefined}
+//                 </div>
+//                 <div style={{ position: "relative" }}>
+//                   <span
+//                     className={`${studyRoomStyles["study-room__headphones-icon"]} material-symbols-rounded`}
+//                   >
+//                     headphones
+//                   </span>
+//                   {!peerState.enabledHeadset ? (
+//                     <FaSlash
+//                       className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
+//                     />
+//                   ) : undefined}
+//                 </div>
+//                 <div style={{ position: "relative" }}>
+//                   <span
+//                     className={`${studyRoomStyles["study-room__mic-icon"]} material-symbols-rounded`}
+//                   >
+//                     mic
+//                   </span>
+//                   {!peerState.enabledMicrophone ? (
+//                     <FaSlash
+//                       className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
+//                     />
+//                   ) : undefined}
+//                 </div>
+//                 {isCurrentUserMaster &&
+//                   roomStore.userMasterId !== peerState.uid && (
+//                     <PopupMenu
+//                       label={"더보기"}
+//                       menuItems={masterPopupMenus}
+//                       onMenuItemClick={(item) =>
+//                         handleMasterPopupMenuClick(item, peerId)
+//                       }
+//                       name={peerState.name}
+//                     />
+//                   )}
+//               </div>
+//             </div>
+//           );
+//         })}
+//
+//         <div>
+//           {remoteAudioStreamByPeerIdEntries.map((entry) => {
+//             const [peerId, mediaStream] = entry;
+//             return <Audio key={peerId} id={peerId} audioStream={mediaStream} />;
+//           })}
+//         </div>
+//         <style jsx>
+//           {`
+//             .material-symbols-rounded {
+//               font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+//               color: #ffffff;
+//               -webkit-user-select: none;
+//               -moz-user-select: none;
+//               -ms-user-select: none;
+//               user-select: none;
+//               cursor: default;
+//             }
+//
+//             .material-symbols-outlined {
+//               font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48;
+//               color: #ffffff;
+//               -webkit-user-select: none;
+//               -moz-user-select: none;
+//               -ms-user-select: none;
+//               user-select: none;
+//               cursor: default;
+//             }
+//           `}
+//         </style>
+//       </>
+//     );
+//   }
+// );
 
 const DeviceSelector: NextPage<{ roomStore: RoomStore }> = observer(
   ({ roomStore }) => {
@@ -1307,27 +1324,44 @@ const ChatMessage: NextPage<{ messages: ChatMessage[] }> = observer(
     });
 
     return (
-      <div style={{ overflow: "scroll", maxHeight: 604 }} id={"chatContainer"}>
-        {messages.map((message) => {
-          return (
-            <div
-              key={message.id}
-              className={`${studyRoomStyles["study-room__chat-form__text-field__chat"]} typography__text--small`}
-            >
-              <label
-                className={`${studyRoomStyles["study-room__chat-form__text-field__name"]}`}
+      <>
+        <div
+          style={{ overflowY: "scroll", maxHeight: 604 }}
+          id={"chatContainer"}
+        >
+          {messages.map((message) => {
+            return (
+              <div
+                key={message.id}
+                className={`${studyRoomStyles["study-room__chat-form__text-field__chat"]} typography__text--small`}
               >
-                {message.authorName}
-              </label>
-              <label
-                className={`${studyRoomStyles["study-room__chat-form__text-field__text"]}`}
-              >
-                {message.content}
-              </label>
-            </div>
-          );
-        })}
-      </div>
+                <label
+                  className={`${studyRoomStyles["study-room__chat-form__text-field__name"]}`}
+                >
+                  {message.authorName}
+                </label>
+                <label
+                  className={`${studyRoomStyles["study-room__chat-form__text-field__text"]}`}
+                >
+                  {message.content}
+                </label>
+              </div>
+            );
+          })}
+        </div>
+        <style jsx>{`
+          ::-webkit-scrollbar {
+            width: 8px;
+            background-color: #171717; /* Replace with your desired background color */
+          }
+
+          ::-webkit-scrollbar-thumb {
+            background: #a2a2a2;
+            -webkit-border-radius: 1ex;
+            -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+          }
+        `}</style>
+      </>
     );
   }
 );
