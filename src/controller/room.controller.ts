@@ -277,6 +277,9 @@ export const postRoomThumbnail = async (
   try {
     const multerUpload = multer({
       storage: multer.diskStorage({
+        destination: function (req, file, callback) {
+          callback(null, "uploads/");
+        },
         filename: function (req, file, callback) {
           const ext = path.extname(file.originalname);
           callback(null, uuidv4() + ext);
@@ -293,13 +296,14 @@ export const postRoomThumbnail = async (
         .send(new ResponseBody({ message: "roomId가 잘못된 요청입니다." }));
       return;
     }
+    console.log("pass");
     const signedUrl: string = await multipartUploader(
       "rooms/" + roomId + ".png",
       file.path
     );
-
+    console.log("pass2");
     await updateRoomThumbnail(roomId, signedUrl);
-
+    console.log("pass3");
     res.status(201).send(
       new ResponseBody({
         message: SET_ROOM_THUMBNAIL_SUCCESS,

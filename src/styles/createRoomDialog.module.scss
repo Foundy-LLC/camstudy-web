@@ -193,6 +193,7 @@
           font-weight: 400;
           .create-room__profile-form__tag__selected-tags {
             position:absolute;
+            width: auto;
             display: grid;
             grid:". . .";
             gap:5px;
@@ -349,6 +350,10 @@
       padding: 13px 46px;
       border-radius: 8px;
       color: var(--system_ui-05);
+      cursor:pointer;
+      label{
+        cursor:pointer;
+      }
     }
     &__create-button{
       background-color: var(--primary);

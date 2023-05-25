@@ -74,6 +74,9 @@ export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
 
 const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
   ({ roomOverview }) => {
+    const { userStore } = useStores();
+    const [showDeleteButton, setShowDeleteButton] = useState<boolean>(false);
+    useEffect(() => {}, []);
     return (
       <>
         <div
@@ -120,17 +123,28 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
                   lock
                 </span>
               )}
-              <span
-                className={`${roomListStyles["drag-unable"]} ${roomListStyles["room-list-icon"]} material-symbols-sharp`}
-                style={{
-                  marginLeft: "auto",
-                  marginTop: "16px",
-                  marginRight: "16px",
-                  cursor: "pointer",
-                }}
-              >
-                more_horiz
-              </span>
+              <div className={`${roomListStyles["room-list__option-button"]}`}>
+                <span
+                  className={`${roomListStyles["drag-unable"]} ${roomListStyles["room-list-icon"]} material-symbols-sharp`}
+                  style={{
+                    marginLeft: "auto",
+                    marginTop: "16px",
+                    marginRight: "16px",
+                    cursor: "pointer",
+                  }}
+                >
+                  more_horiz
+                </span>
+                {userStore.currentUser?.id === roomOverview.masterId && (
+                  <div
+                    className={`${roomListStyles["room-list__option-dialog"]} elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
+                  >
+                    <label className={"typography__text--small"}>
+                      방 삭제하기
+                    </label>
+                  </div>
+                )}
+              </div>
             </div>
             <div style={{ display: "inline-flex" }}>
               {roomOverview.tags && (

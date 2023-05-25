@@ -80,17 +80,12 @@ const CreateRoomInfo: NextPage = observer(() => {
   }, [roomListStore.tempRoom.tags]);
 
   const tagDeleted = (tag: string) => {
-    const tagInput = document.getElementById(
-      "create-tags-input"
-    ) as HTMLInputElement;
-    const tagDiv = document.getElementById(`tagDiv-${tag}`) as HTMLDivElement;
-    tagInput.style.width =
-      (
-        tagInput.clientWidth +
-        tagDiv.clientWidth +
-        4 * tagDiv.clientWidth -
-        10
-      ).toString() + "px";
+    const tagDiv = document.getElementById("create-tags") as HTMLDivElement;
+    const tagElement = document.getElementById(
+      `tagDiv-${tag}`
+    ) as HTMLDivElement;
+    tagDiv.style.width =
+      (tagDiv.clientWidth - tagElement.clientWidth).toString() + "px";
   };
 
   const tagInputOnKeyDown = async (
@@ -99,13 +94,15 @@ const CreateRoomInfo: NextPage = observer(() => {
     let key = e.key || e.keyCode;
     if (key === "Enter" || key === 13) {
       e.preventDefault();
+      const tagDiv = document.getElementById("create-tags") as HTMLDivElement;
+      tagDiv.style.width = "auto";
       if (typedTag !== "") {
         if (roomListStore.tempRoom.tags.length >= 3) {
           setTypedTag("");
           (e.target as HTMLInputElement).value = "";
           return;
         }
-        roomListStore.addTypedTag("# " + typedTag);
+        roomListStore.addTypedTag(typedTag);
         setTypedTag("");
         (e.target as HTMLInputElement).value = "";
       }
@@ -143,13 +140,7 @@ const CreateRoomInfo: NextPage = observer(() => {
                   setPictureHover(false);
                 }}
                 onClick={() => {
-                  if (
-                    confirm(
-                      `썸네일 이미지를 삭제하고 기본 이미지로 변경하시겠어요?`
-                    ) === true
-                  ) {
-                    roomListStore.initImageUrl();
-                  }
+                  roomListStore.initImageUrl();
                 }}
               >
                 <span className="material-symbols-rounded">close</span>
@@ -242,12 +233,12 @@ const CreateRoomInfo: NextPage = observer(() => {
                     id={`tagDiv-${tag}`}
                     className={`${createRoomStyles["create-room__profile-form__tag__selected-tag"]} typography__text--small elevation__top-app-bar--rise`}
                   >
-                    <label>{tag}</label>
+                    <label># {tag}</label>
                     <span
                       className="material-symbols-outlined"
                       onClick={() => {
-                        roomListStore.removeTypedTag(tag);
                         tagDeleted(tag);
+                        roomListStore.removeTypedTag(tag);
                       }}
                     >
                       close
@@ -360,6 +351,11 @@ const CreateRoomSetting: NextPage = observer(() => {
             type={"password"}
             placeholder={"스터디룸 비밀번호를 입력해주세요"}
             autoComplete={"off"}
+            onChange={(e) => {
+              roomListStore.setTypedPassword(
+                (e.target as HTMLInputElement).value
+              );
+            }}
           />
           <span
             className={`${createRoomStyles["create-room__password-form__visible-button"]} material-symbols-outlined`}
@@ -387,13 +383,18 @@ const CreateRoomSetting: NextPage = observer(() => {
   );
 });
 
-const CreateRoomButton: NextPage = observer(() => {
+const CreateRoomButton: NextPage<{
+  setShowModal: (showModal: boolean) => void;
+}> = observer(({ setShowModal }) => {
   const { roomListStore } = useStores();
   return (
     <>
       <div className={`${createRoomStyles["create-room__button-form"]}`}>
         <button
           className={`${createRoomStyles["create-room__button-form__cancel-button"]}`}
+          onClick={() => {
+            setShowModal(false);
+          }}
         >
           <label
             className={`${createRoomStyles["create-room__button-form__cancel-button__label"]}`}
@@ -407,6 +408,9 @@ const CreateRoomButton: NextPage = observer(() => {
         >
           <label
             className={`${createRoomStyles["create-room__button-form__create-button__label"]}`}
+            onClick={() => {
+              roomListStore.createRoom();
+            }}
           >
             스터디 룸 만들기
           </label>
@@ -416,7 +420,22 @@ const CreateRoomButton: NextPage = observer(() => {
   );
 });
 
-export const CreateRoomDialog: NextPage = observer(() => {
+export const CreateRoomDialog: NextPage<{
+  setShowModal: (showModal: boolean) => void;
+}> = observer(({ setShowModal }) => {
+  const { roomListStore, userStore } = useStores();
+
+  useEffect(() => {
+    if (!userStore.currentUser) return;
+    roomListStore.setMasterId(userStore.currentUser.id);
+  }, [userStore.currentUser]);
+
+  useEffect(() => {
+    if (roomListStore.isSuccessCreate) {
+      setShowModal(false);
+    }
+  }, [roomListStore.isSuccessCreate]);
+
   return (
     <>
       <div
@@ -425,7 +444,7 @@ export const CreateRoomDialog: NextPage = observer(() => {
         <CreateRoomTitle />
         <CreateRoomInfo />
         <CreateRoomSetting />
-        <CreateRoomButton />
+        <CreateRoomButton setShowModal={setShowModal} />
       </div>
       <style jsx>
         {`
