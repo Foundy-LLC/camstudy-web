@@ -52,6 +52,8 @@ export interface RoomViewModel {
   onUpdatedPomodoroTimer: (newProperty: PomodoroTimerProperty) => void;
   onKicked: (userId: string) => void;
   onBlocked: (userId: string) => void;
+  onCloseVideoConsumer: (userId: string) => void;
+  onCloseAudioConsumer: (userId: string) => void;
 }
 
 export class RoomStore implements RoomViewModel {
@@ -94,6 +96,8 @@ export class RoomStore implements RoomViewModel {
   private _currentAudioDeviceId: string | undefined = undefined;
   private _currentSpeakerDeviceId: string | undefined = undefined;
 
+  private _reRender = 0;
+
   constructor(
     userStore: UserStore,
     private _mediaUtil: MediaUtil = new MediaUtil(),
@@ -103,6 +107,16 @@ export class RoomStore implements RoomViewModel {
     makeAutoObservable(this);
     this._roomService = roomService ?? new RoomSocketService(this, userStore);
   }
+
+  public onCloseVideoConsumer(userId: string) {
+    this._reRender++;
+  }
+
+  public get reRender() {
+    return this._reRender;
+  }
+
+  public onCloseAudioConsumer(userId: string) {}
 
   /**
    * 회원에게 알림을 보내기위한 메시지이다.
@@ -261,7 +275,31 @@ export class RoomStore implements RoomViewModel {
     return this._masterId === this._auth.currentUser?.uid;
   }
 
+  public get userMasterId(): string | undefined {
+    return this._masterId;
+  }
+
   public get peerStates(): PeerState[] {
+    return this._peerStates;
+  }
+
+  public get sortedPeerStates(): PeerState[] {
+    if (this._auth.currentUser?.uid === undefined) {
+      return this._peerStates;
+    }
+    const currentUid = this._auth.currentUser?.uid;
+    const currentPeerState = this._peerStates.find((peerState) => {
+      if (peerState.uid === currentUid) return peerState;
+    });
+    const otherPeerStates = this._peerStates.filter((peerState) => {
+      return peerState.uid !== currentUid;
+    });
+    const sortedOtherPeerStates = otherPeerStates.sort(
+      (a: PeerState, b: PeerState): number => {
+        return a.name > b.name ? -1 : 1;
+      }
+    );
+    this._peerStates = [currentPeerState!, ...sortedOtherPeerStates];
     return this._peerStates;
   }
 

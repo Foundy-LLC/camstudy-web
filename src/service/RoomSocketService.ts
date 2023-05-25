@@ -276,6 +276,14 @@ export class RoomSocketService {
         return;
       }
       receiveTransport.consumer?.close();
+      switch (receiveTransport.consumer?.kind) {
+        case "audio":
+          this._roomViewModel.onCloseAudioConsumer(receiveTransport.userId);
+          break;
+        case "video":
+          this._roomViewModel.onCloseVideoConsumer(receiveTransport.userId);
+          break;
+      }
     });
     socket.on(PEER_STATE_CHANGED, (state: PeerState) => {
       this._roomViewModel.onChangePeerState(state);

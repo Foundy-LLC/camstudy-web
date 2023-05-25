@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import studyRoomStyles from "@/styles/studyRoom.module.scss";
+import { MasterPopupMenus } from "@/pages/rooms/[roomId]";
 
 interface PopupMenuProps {
   label: string;
   menuItems: string[];
   onMenuItemClick: (item: string) => void;
+  name: string;
 }
 
 /**
@@ -17,27 +20,53 @@ const PopupMenu: React.FC<PopupMenuProps> = ({
   label,
   menuItems,
   onMenuItemClick,
+  name,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showUserOption, setShowUserOption] = useState<string>("");
+  const handleHover = (event: React.MouseEvent<HTMLSpanElement>) => {
+    console.log((event.target as HTMLElement).className);
+    const position = (event.target as HTMLElement).getBoundingClientRect();
+    const x = position.x - 8;
+    const y = position.y - 45;
+    document.getElementById("dialog")!.style.top = y.toString() + "px";
+    document.getElementById("dialog")!.style.left = x.toString() + "px";
+  };
 
   const handleClick = (item: string) => {
-    setIsOpen(false);
+    setShowUserOption("");
     onMenuItemClick(item);
   };
 
   return (
-    <div>
-      <button onClick={() => setIsOpen(!isOpen)}>{label}</button>
-      {isOpen && (
-        <ul>
-          {menuItems.map((item) => (
-            <li key={item} onClick={() => handleClick(item)}>
-              {item}
-            </li>
-          ))}
+    <>
+      <div
+        tabIndex={0}
+        className={`${studyRoomStyles["study-room__option"]}`}
+        onFocus={() => setShowUserOption(name)}
+        onBlur={() => setShowUserOption("")}
+      >
+        <span
+          className={`${studyRoomStyles["study-room__option-icon"]} material-symbols-rounded`}
+          style={{ color: "var(--system_background)" }}
+        >
+          more_horiz
+        </span>
+        <ul
+          className={`${studyRoomStyles["study-room__option__dialog"]} typography__text--small`}
+          hidden={showUserOption !== name}
+        >
+          <li onClick={() => handleClick(MasterPopupMenus.Block)}>
+            <span className="material-symbols-rounded">block</span>
+            차단하기
+          </li>
+          <li onClick={() => handleClick(MasterPopupMenus.Kick)}>
+            <span className="material-symbols-rounded">account_circle_off</span>
+            강퇴하기
+          </li>
         </ul>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 
