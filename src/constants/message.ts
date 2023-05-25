@@ -62,3 +62,5 @@ export const CREATE_ROOM_TAG_INPUT_PLACE_HOLDER: string =
   "#수능, #개발, #공시 등 태그를 검색해주세요";
 export const CREATE_ROOM_TITLE_MAX_LENGTH_ERROR: string =
   "방 제목은 최대 20글자까지 설정 가능합니다.";
+export const ROOM_TAG_DUPLICATED_ERROR: string =
+  "해당 태그는 이미 추가되어 있습니다.";

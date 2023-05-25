@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import { useStores } from "@/stores/context";
 import Image from "next/image";
 import { CREATE_ROOM_TAG_INPUT_PLACE_HOLDER } from "@/constants/message";
+import Router from "next/router";
 interface ClickableComponentProps {
   onClick: () => void;
 }
@@ -259,11 +260,19 @@ const CreateRoomInfo: NextPage = observer(() => {
                 disabled={roomListStore.tempRoom.tags.length >= 3}
               />
             </div>
-            <label
-              className={`${createRoomStyles["create-room__profile-form__tag__notice"]} typography__caption`}
-            >
-              필수 입력 항목이며 최대 3개의 태그를 설정할 수 있습니다
-            </label>
+            {roomListStore.createRoomTagsError ? (
+              <label
+                className={`${createRoomStyles["create-room__profile-form__tag__error"]} typography__caption`}
+              >
+                {roomListStore.createRoomTagsError}
+              </label>
+            ) : (
+              <label
+                className={`${createRoomStyles["create-room__profile-form__tag__notice"]} typography__caption`}
+              >
+                필수 입력 항목이며 최대 3개의 태그를 설정할 수 있습니다
+              </label>
+            )}
           </div>
         </div>
       </div>
@@ -433,6 +442,8 @@ export const CreateRoomDialog: NextPage<{
   useEffect(() => {
     if (roomListStore.isSuccessCreate) {
       setShowModal(false);
+      const roomLink = `/rooms/${roomListStore.createdRoomOverview!.id}`;
+      Router.push(roomLink);
     }
   }, [roomListStore.isSuccessCreate]);
 

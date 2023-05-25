@@ -4,7 +4,10 @@ import roomService, { RoomService } from "@/service/room.service";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { ROOM_NUM_PER_PAGE } from "@/constants/room.constant";
 import { string } from "prop-types";
-import { CREATE_ROOM_TITLE_MAX_LENGTH_ERROR } from "@/constants/message";
+import {
+  CREATE_ROOM_TITLE_MAX_LENGTH_ERROR,
+  ROOM_TAG_DUPLICATED_ERROR,
+} from "@/constants/message";
 import { UserStore } from "@/stores/UserStore";
 
 //TODO(건우) 값을 임시로 할당하여 수정 필요
@@ -57,6 +60,10 @@ export class RoomListStore {
     makeAutoObservable(this);
     this.rootStore = root;
     this.userStore = root.userStore;
+  }
+
+  get createRoomTagsError() {
+    return this._createRoomTagsError;
   }
 
   get errorMessage(): string {
@@ -112,6 +119,10 @@ export class RoomListStore {
     return true;
   }
 
+  get createdRoomOverview() {
+    return this._createdRoomOverview;
+  }
+
   get isCreateButtonEnable(): boolean {
     return (
       this._tempRoom.title.length > 0 &&
@@ -153,6 +164,10 @@ export class RoomListStore {
   }
 
   public addTypedTag = (tag: string) => {
+    if (this._tempRoom.tags.includes(tag)) {
+      this._createRoomTagsError = ROOM_TAG_DUPLICATED_ERROR;
+      return;
+    }
     this._tempRoom = { ...this._tempRoom, tags: [...this.tempRoom.tags, tag] };
     console.log(this.tempRoom.tags);
   };
