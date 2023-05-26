@@ -421,7 +421,7 @@ const CreateRoomButton: NextPage<{
               roomListStore.createRoom();
             }}
           >
-            스터디 룸 만들기
+            방 생성 후 입장하기
           </label>
         </button>
       </div>
