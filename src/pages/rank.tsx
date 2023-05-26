@@ -136,17 +136,19 @@ const RankItem: NextPage<{
           </label>
         </div>
         <div className={`${rankStyles["rank-form__content__record"]}`}>
-          <label
-            className={`${rankStyles["rank-form__content__score"]} typography__sub-headline--small`}
-          >
-            {item.rankingScore !== 0
-              ? scoreToString(item.rankingScore) + " 점"
-              : "점수 없음"}
-          </label>
+          <div className={`${rankStyles["rank-form__content__score-form"]}`}>
+            <label
+              className={`${rankStyles["rank-form__content__score"]} typography__sub-headline--small`}
+            >
+              {item.rankingScore !== 0
+                ? scoreToString(item.rankingScore) + " 점"
+                : "점수 없음"}
+            </label>
+          </div>
           <label
             className={`${rankStyles["rank-form__content__study-time"]} typography__sub-headline--small`}
           >
-            {item.studyTime ? timeToString(item.studyTime) : "00:00:00"}
+            {item.studyTime ? timeToString(item.studyTime) : "0시간 0분"}
           </label>
         </div>
         <div className={`${rankStyles["rank-form__content__option"]}`}>
@@ -316,11 +318,24 @@ const RankItemGroup: NextPage<{
           className={`${rankStyles["rank-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
         >
           <div className={`${rankStyles["my-rank-form"]}`}>
-            <label
-              className={`${rankStyles["my-rank-form__label"]} typography__text--big`}
-            >
-              내 랭킹
-            </label>
+            <div className={`${rankStyles["my-rank__sub-title-form"]}`}>
+              <label
+                className={`${rankStyles["my-rank-form__label"]} typography__text--big`}
+              >
+                내 랭킹
+              </label>
+              <label
+                className={`${rankStyles["my-rank-form__label__score"]} typography__text--big`}
+              >
+                랭킹 점수
+              </label>
+              <label
+                className={`${rankStyles["my-rank-form__label__time"]} typography__text--big`}
+              >
+                공부 시간
+              </label>
+            </div>
+
             {selected === rankType.WEEKLY && rankStore.userWeekRank ? (
               <RankItem
                 item={rankStore.userWeekRank}
