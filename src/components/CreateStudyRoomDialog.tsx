@@ -51,6 +51,7 @@ const CreateRoomInfo: NextPage = observer(() => {
   const { roomListStore, welcomeStore } = useStores();
   const [pictureHover, setPictureHover] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const [tagInput, setTagInput] = useState("");
   const debounceSearch = useDebounce(tagInput, 500);
 
@@ -85,6 +86,10 @@ const CreateRoomInfo: NextPage = observer(() => {
       inputRef.current.focus();
     }
   }, [roomListStore.tempRoom.tags]);
+
+  useEffect(() => {
+    if (titleInputRef.current) titleInputRef.current.focus();
+  }, []);
 
   const tagDeleted = (tag: string) => {
     const tagDiv = document.getElementById("create-tags") as HTMLDivElement;
@@ -211,6 +216,7 @@ const CreateRoomInfo: NextPage = observer(() => {
             <input
               id={"create-title"}
               className={`${createRoomStyles["create-room__profile-form__title__input"]} typography__text--small`}
+              ref={titleInputRef}
               type={"text"}
               placeholder={"스터디 룸 제목을 입력해주세요"}
               maxLength={20}
@@ -320,7 +326,6 @@ const CreateRoomInfo: NextPage = observer(() => {
 const CreateRoomSetting: NextPage = observer(() => {
   const { roomListStore } = useStores();
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [dialogText, setDialogText] = useState<string>("");
   useEffect(() => {
     const passwordForm = document.getElementById(
       "password-form"
