@@ -21,7 +21,7 @@ import { TimerSettingDropDown } from "@/components/TimerSettingDropDown";
 import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import Modal from "react-modal";
 import { UserStore } from "@/stores/UserStore";
-import WaitingRoom from "@/components/waitingRoom";
+import WaitingRoom from "@/components/WaitingRoom";
 
 export enum MasterPopupMenus {
   Kick = "강퇴",
