@@ -6,6 +6,7 @@ import { useStores } from "@/stores/context";
 import Image from "next/image";
 import { CREATE_ROOM_TAG_INPUT_PLACE_HOLDER } from "@/constants/message";
 import Router from "next/router";
+import { useDebounce } from "@/components/UseDebounce";
 interface ClickableComponentProps {
   onClick: () => void;
 }
@@ -47,10 +48,15 @@ const CreateRoomTitle: NextPage = observer(() => {
 });
 
 const CreateRoomInfo: NextPage = observer(() => {
-  const { roomListStore } = useStores();
-  const [typedTag, setTypedTag] = useState<string>("");
+  const { roomListStore, welcomeStore } = useStores();
   const [pictureHover, setPictureHover] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [tagInput, setTagInput] = useState("");
+  const debounceSearch = useDebounce(tagInput, 500);
+
+  useEffect(() => {
+    welcomeStore.onChangeTagInput(debounceSearch);
+  }, [debounceSearch]);
 
   useEffect(() => {
     const cancelButton = document.getElementById(
@@ -89,23 +95,32 @@ const CreateRoomInfo: NextPage = observer(() => {
       (tagDiv.clientWidth - tagElement.clientWidth).toString() + "px";
   };
 
-  const tagInputOnKeyDown = async (
+  const tagOnClick = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+    const tag = (e.target as HTMLLIElement).innerText;
+    roomListStore.addTypedTag(tag);
+    inputRef.current!.value = "";
+    welcomeStore.initRecommendTags();
+  };
+
+  const tagInputOnKeyPress = async (
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
+    welcomeStore.initRecommendTags();
     let key = e.key || e.keyCode;
+    const input = e.target as HTMLInputElement;
     if (key === "Enter" || key === 13) {
       e.preventDefault();
       const tagDiv = document.getElementById("create-tags") as HTMLDivElement;
       tagDiv.style.width = "auto";
-      if (typedTag !== "") {
+      if (tagInput !== "") {
         if (roomListStore.tempRoom.tags.length >= 3) {
-          setTypedTag("");
-          (e.target as HTMLInputElement).value = "";
+          input.value = "";
+          setTagInput("");
           return;
         }
-        roomListStore.addTypedTag(typedTag);
-        setTypedTag("");
-        (e.target as HTMLInputElement).value = "";
+        roomListStore.addTypedTag(tagInput);
+        input.value = "";
+        setTagInput("");
       }
     }
   };
@@ -254,9 +269,9 @@ const CreateRoomInfo: NextPage = observer(() => {
                 type={"text"}
                 placeholder={CREATE_ROOM_TAG_INPUT_PLACE_HOLDER}
                 onChange={(e) => {
-                  setTypedTag((e.target as HTMLInputElement).value);
+                  setTagInput((e.target as HTMLInputElement).value);
                 }}
-                onKeyDown={tagInputOnKeyDown}
+                onKeyPress={tagInputOnKeyPress}
                 disabled={roomListStore.tempRoom.tags.length >= 3}
               />
             </div>
@@ -272,6 +287,21 @@ const CreateRoomInfo: NextPage = observer(() => {
               >
                 필수 입력 항목이며 최대 3개의 태그를 설정할 수 있습니다
               </label>
+            )}
+            {welcomeStore.recommendTags.length > 0 && (
+              <ul
+                className={`${createRoomStyles["create-room__profile-form__recommend-tags"]} elevation__menu__navigation-bar__contained-button--pressed__etc`}
+              >
+                {welcomeStore.recommendTags.map((tag) => (
+                  <li
+                    key={tag.name}
+                    className={`${createRoomStyles["create-room__profile-form__recommend-tag"]} typography__text--small`}
+                    onClick={tagOnClick}
+                  >
+                    {tag.name}
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         </div>

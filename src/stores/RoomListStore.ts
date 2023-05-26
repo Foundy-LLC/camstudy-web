@@ -37,6 +37,7 @@ export class RoomListStore {
   private _createRoomTagsError?: string = undefined;
   private _createRoomPasswordError?: string = undefined;
   private _createdRoomOverview?: RoomOverview = undefined;
+  private _typedPassword?: string = undefined;
   private _isRoomPrivate: boolean = false;
   private _selectedImageFile?: File = undefined;
   private _imageUrl: string = "";
@@ -161,6 +162,7 @@ export class RoomListStore {
     this._tempRoom = new Room();
     this._imageUrl = "";
     this._isSuccessCreate = undefined;
+    this._isRoomPrivate = false;
   }
 
   public addTypedTag = (tag: string) => {
@@ -168,12 +170,11 @@ export class RoomListStore {
       this._createRoomTagsError = ROOM_TAG_DUPLICATED_ERROR;
       return;
     }
+    this._createRoomTagsError = undefined;
     this._tempRoom = { ...this._tempRoom, tags: [...this.tempRoom.tags, tag] };
-    console.log(this.tempRoom.tags);
   };
 
   public removeTypedTag = (tagName: string) => {
-    console.log(tagName);
     runInAction(() => {
       this._tempRoom = {
         ...this._tempRoom,
@@ -183,7 +184,7 @@ export class RoomListStore {
   };
 
   public setTypedPassword = (password: string) => {
-    this._tempRoom = { ...this._tempRoom, password: password };
+    this._typedPassword = password;
   };
 
   public changeRoomNum(pageNum: string) {
@@ -275,6 +276,9 @@ export class RoomListStore {
 
   public createRoom = async (): Promise<void> => {
     if (!this.userStore.currentUser) return;
+    if (this._isRoomPrivate) {
+      this._tempRoom = { ...this._tempRoom, password: this._typedPassword };
+    }
     const result = await this._roomService.createRoom(this._tempRoom);
     if (result.isSuccess) {
       runInAction(() => {
