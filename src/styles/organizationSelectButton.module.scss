@@ -1,3 +1,4 @@
+@import "./color/colorPalette";
 
 .organization-button-form{
   margin-top: 16px;
@@ -26,7 +27,7 @@
       display: flex;
       align-items: center;
       background-color: var(--primary);
-      color: #FFFFFF;
+      color:var(--system_background);
       border-radius: 24px;
       span{
         cursor: pointer;
