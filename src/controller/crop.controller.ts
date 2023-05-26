@@ -36,6 +36,8 @@ import { CropDeleteRequestBody } from "@/models/crop/CropDeleteRequestBody";
 import { STANDARD_END_HOUR_OF_DAY } from "@/constants/common";
 import { getCropsByType } from "@/models/crop/CropsType";
 import { GrowingCrop } from "@/models/crop/GrowingCrop";
+import { CropsGrade } from "@/models/crop/CropsGrade";
+import { crops_type } from "@prisma/client";
 
 export const fetchHarvestedCrops = async (
   req: NextApiRequest,
@@ -139,6 +141,9 @@ export const calculateCropLevel = (
   return Math.floor(currentProgressPercent / oneLevelPercent) + 1;
 };
 
+// TODO: 시연용 코드임 프로덕션에서는 제거 필요!!!
+export const DEMO_CROP_TYPE = crops_type.strawberry;
+
 export const getGrowingCrop = async (
   req: NextApiRequest,
   res: NextApiResponse
@@ -157,6 +162,29 @@ export const getGrowingCrop = async (
         .send(new ResponseBody({ message: NOT_EXIST_GROWING_CROP }));
       return;
     }
+
+    // TODO: 시연용 코드임 프로덕션에서는 제거 필요!!!
+    if (growingCrop.type === DEMO_CROP_TYPE) {
+      const cropDto = getCropsByType(growingCrop.type);
+      const data: GrowingCrop = {
+        id: growingCrop.id,
+        ownerId: growingCrop.user_id,
+        type: growingCrop.type,
+        level: cropDto.imageUrls.length,
+        expectedGrade: CropsGrade.GOLD,
+        isDead: false,
+        plantedAt: growingCrop.planted_at,
+        averageStudyTimes: 60 * 5 + 12,
+      };
+      res.status(200).json(
+        new ResponseBody({
+          data: data,
+          message: FETCH_GROWING_CROPS_SUCCESS,
+        })
+      );
+      return;
+    }
+    // --------- End of the 시연 코드 ---------
 
     const cropReqBody = new CropHarvestRequestBody(userId, growingCrop.id);
 
@@ -277,6 +305,15 @@ export const harvestGrowingCrop = async (
     if (targetCropTypeAndPlantedDate == null) {
       throw NO_CROP_TYPE_AND_PLANTED_DATE;
     }
+
+    // TODO: 시연용 코드임 프로덕션에서는 제거 필요!!!
+    if (growingCrop.type === DEMO_CROP_TYPE) {
+      await harvestCrop(reqBody, CropsGrade.GOLD);
+      res.status(200).json(new ResponseBody({ message: HARVEST_CROP_SUCCESS }));
+      return;
+    }
+    // --------- End of the 시연 코드 ---------
+
     const targetCrop = getCropsByType(targetCropTypeAndPlantedDate.type);
 
     const plantedAt = targetCropTypeAndPlantedDate.planted_at;
