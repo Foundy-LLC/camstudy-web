@@ -418,7 +418,7 @@ const TagForm: NextPage = observer(() => {
               profileStore.onChangeTagInput("");
             }
           }}
-          onChange={async (e) => {
+          onChange={(e) => {
             setSearchInput(e.target.value);
           }}
         />

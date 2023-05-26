@@ -158,7 +158,6 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
     const [store, setStore] = useState<TimerEditInputGroupStore | undefined>(
       undefined
     );
-    // const propertyInput = store.timerPropertyInput;
 
     useEffect(() => {
       if (roomStore.pomodoroTimerProperty !== undefined) {
@@ -166,6 +165,11 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
       }
     }, []);
 
+    useEffect(() => {
+      window.onpopstate = (e) => {
+        roomStore.exitRoom();
+      };
+    });
     const handleHover = (event: React.MouseEvent<HTMLSpanElement>) => {
       console.log((event.target as HTMLElement).className);
       const position = (event.target as HTMLElement).getBoundingClientRect();
@@ -681,7 +685,11 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
                   placeholder={"채팅 내용을 입력해주세요"}
                   className={`${studyRoomStyles["study-room__chat-form__input"]} typography__text--small`}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+                    if (
+                      e.key === "Enter" &&
+                      !e.nativeEvent.isComposing &&
+                      roomStore.enabledChatSendButton
+                    ) {
                       roomStore.sendChat();
                     }
                   }}

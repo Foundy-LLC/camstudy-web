@@ -660,6 +660,10 @@ export class RoomStore implements RoomViewModel {
     this._roomService.blockUser(userId);
   };
 
+  public exitRoom = () => {
+    this._roomService.exitRoom();
+  };
+
   public unblockUser = async (userId: string) => {
     try {
       await this._roomService.unblockUser(userId);
