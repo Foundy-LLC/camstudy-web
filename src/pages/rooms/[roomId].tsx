@@ -875,6 +875,13 @@ const GridView: NextPage<{
                   />
                 ) : undefined}
               </div>
+              <div>
+                <Audio
+                  key={peerState.uid}
+                  id={peerState.uid}
+                  audioStream={audioStream}
+                />
+              </div>
             </>
           )}
           {isCurrentUserMaster &&
@@ -890,13 +897,7 @@ const GridView: NextPage<{
               />
             )}
         </div>
-        <div>
-          <Audio
-            key={peerState.uid}
-            id={peerState.uid}
-            audioStream={audioStream}
-          />
-        </div>
+
         <style jsx>
           {`
             .material-symbols-rounded {
