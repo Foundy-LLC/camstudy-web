@@ -201,20 +201,28 @@ export class RoomStore implements RoomViewModel {
     return waitingRoomData.blacklist.some((user) => user.id === currentUserId);
   };
 
+  public setFailedToJoinMessage(message: string) {
+    this._failedToJoinMessage = message;
+  }
+
+  public get failedToJoinMessage(): string | undefined {
+    return this._failedToJoinMessage;
+  }
+
   public get waitingRoomMessage(): string | undefined {
     if (this._failedToJoinMessage != null) {
       return this._failedToJoinMessage;
     }
     const waitingRoomData = this._waitingRoomData;
     if (waitingRoomData === undefined) {
-      return CONNECTING_ROOM_MESSAGE;
+      return undefined;
     }
     if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
       return ALREADY_JOINED_ROOM_MESSAGE;
     }
-    if (this._isCurrentUserMaster(waitingRoomData)) {
-      return undefined;
-    }
+    // if (this._isCurrentUserMaster(waitingRoomData)) {
+    //   return undefined;
+    // }
     if (this._isRoomFull(waitingRoomData)) {
       return ROOM_IS_FULL_MESSAGE;
     }
@@ -251,16 +259,16 @@ export class RoomStore implements RoomViewModel {
     if (waitingRoomData === undefined) {
       return false;
     }
+    if (waitingRoomData.hasPassword && this._passwordInput.length < 4) {
+      return false;
+    }
     if (this._isCurrentUserAlreadyJoined(waitingRoomData)) {
       return false;
     }
-    if (this._isCurrentUserMaster(waitingRoomData)) {
-      return true;
-    }
+    // if (this._isCurrentUserMaster(waitingRoomData)) {
+    //   return true;
+    // }
     if (this._isCurrentUserBlocked(waitingRoomData)) {
-      return false;
-    }
-    if (waitingRoomData.hasPassword && this._passwordInput.length === 0) {
       return false;
     }
     return !this._isRoomFull(waitingRoomData);
@@ -436,7 +444,6 @@ export class RoomStore implements RoomViewModel {
 
   public onFailedToJoin = (message: string) => {
     this._failedToJoinMessage = message;
-    this._passwordInput = "";
   };
 
   public onJoined = (

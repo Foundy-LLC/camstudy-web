@@ -23,8 +23,10 @@ export const UserProfileImage: NextPage<{
         </div>
         <style jsx>
           {`
-          .material-symbols-sharp {
-            font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;`}
+            .material-symbols-sharp {
+              font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+            }
+          `}
         </style>
       </>
     );
