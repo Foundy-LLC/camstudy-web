@@ -113,9 +113,7 @@ export class RoomListStore {
 
   get isPasswordValid() {
     if (this._isRoomPrivate) {
-      return this._tempRoom.password
-        ? this._tempRoom.password.length >= 4
-        : false;
+      return this._typedPassword ? this._typedPassword.length >= 4 : false;
     }
     return true;
   }
