@@ -254,6 +254,7 @@ body[color-theme='light'] {
   //Process Color
   --primary: #{$-Primary-05};
   --primary-press: #{$-Primary-06};
+  --primary-text:  #{$-Primary-06};
   --secondary: #{$-Gray-08};
   --secondary-press: #{$-Gray-09};
   --tertiary: #{$-White};
@@ -305,6 +306,7 @@ body[color-theme='dark'] {
   //Process Color
   --primary: #{$-Primary-03};
   --primary-press: #{$-Primary-02};
+  --primary-text:  #{$-Primary-07};
   --secondary: #{$-Dark-09};
   --secondary-press: #{$-White};
   --tertiary: #{$-Black};

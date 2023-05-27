@@ -23,7 +23,7 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
   };
 
   return (
-    <header className={"box-header"}>
+    <header className={`${headerStyles["header"]} box-header`}>
       <Link href={"/"}>
         <Image
           className={`${headerStyles["header-image"]} ${headerStyles["dragUnable"]}`}

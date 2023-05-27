@@ -303,7 +303,7 @@ const RankItemGroup: NextPage<{
               className={`${rankStyles["rank-header__info__dialog"]} elevation__navigation-drawer__modal-side-bottom-sheet__etc typography__text`}
             >
               <label>
-                랭킹 점수는 <b>공부시간</b>, <b>연속 공부 날짜</b>,
+                랭킹 점수는 <b>공부시간, </b> <b>연속 공부 날짜, </b>
                 <b>차단 기록</b>을 기준으로 계산됩니다.
               </label>
             </div>

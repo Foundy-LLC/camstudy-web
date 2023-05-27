@@ -1,5 +1,9 @@
 @import "./color/colorPalette";
 
+.header{
+  background-color: var(--system_background);
+}
+
 $-gap : 1.5rem;
 .dragUnable{
   -webkit-user-select: none;
