@@ -1,8 +1,7 @@
 export const TAG_NUM_PER_PAGE = 3;
 export const TAGS_GET_SUCCESS: string = "태그 조회에 성공했습니다";
-export const TAG_DELETE_SUCCESS: string =
-  "회원 관심태그를 성공적으로 삭제했습니다.";
-export const TAG_SAVE_SUCCESS: string = "태그를 성공적으로 저장하였습니다.";
+export const TAG_UPDATE_SUCCESS: string =
+  "태그를 성공적으로 업데이트 하였습니다.";
 export const TAG_MAX_LENGTH_ERROR: string =
   "태그는 최대 3개까지 설정 가능합니다.";
 export const TAG_DUPLICATED_ERROR: string = "이미 등록된 태그입니다.";

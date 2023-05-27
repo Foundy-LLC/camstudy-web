@@ -158,7 +158,7 @@ const SimilarTagName: NextPage<{ item: Tag }> = observer(({ item }) => {
           const text = e.target as HTMLElement;
           (document.getElementById("tags") as HTMLInputElement).value = "";
           await profileStore.onChangeTagInput(text.textContent!);
-          await profileStore.enterTag();
+          await profileStore.enterTag(text.textContent!);
           profileStore.setTagDropDownHidden(true);
         }}
       >
@@ -422,15 +422,18 @@ const TagForm: NextPage = observer(() => {
           onKeyUp={async (e) => {
             let key = e.key || e.keyCode;
             if (key === "Enter" || key === 13) {
-              await profileStore.enterTag();
+              await profileStore.enterTag(searchInput);
               (document.getElementById("tags") as HTMLInputElement).value = "";
-              await profileStore.setTagDropDownHidden(true);
+              profileStore.setTagDropDownHidden(true);
               profileStore.onChangeTagInput("");
+              profileStore.initRecommendTags();
+              setSearchInput("");
             }
           }}
           onChange={(e) => {
             setSearchInput(e.target.value);
           }}
+          disabled={!profileStore.isTagInputDisable}
         />
         {profileStore.recommendTags.length !== 0 && (
           <SimilarTagNameGroup items={profileStore.recommendTags} />

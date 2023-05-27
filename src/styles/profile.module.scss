@@ -507,12 +507,19 @@
         border-bottom-right-radius: 8px;
         background-color: var(--system_background);
         display: block;
+        overflow: hidden;
         .tag__item{
+          cursor: pointer;
           color:var(--system_ui-08);
           font-weight: 300;
-          max-width: 216px;
           height: 18px;
           padding: 16px;
+          label{
+            cursor: pointer;
+          }
+          &:hover{
+            background-color: var(--system_ui-01);
+          }
         }
       }
       .tag__caution{

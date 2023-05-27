@@ -7,14 +7,11 @@ import {
   NO_USER_STORE_ERROR_MESSAGE,
   PROFILE_NICKNAME_NULL_ERROR,
 } from "@/constants/message";
-import { FRIEND_STATUS } from "@/constants/FriendStatus";
 import {
-  TAG_DELETE_SUCCESS,
   TAG_DUPLICATED_ERROR,
   TAG_MAX_LENGTH_ERROR,
-  TAG_SAVE_SUCCESS,
+  TAG_UPDATE_SUCCESS,
 } from "@/constants/tag.constant";
-import { validateUserTags } from "@/utils/user.validator";
 import { USER_TAG_MAX_COUNT } from "@/constants/user.constant";
 import { Tag } from "@/models/welcome/Tag";
 import { welcomeService, WelcomeService } from "@/service/welcome.service";
@@ -28,7 +25,7 @@ export class ProfileStore {
   private _typedTag: string = "";
   private _tagDropDownHidden: boolean = true;
   private _imageUrl?: string = undefined;
-  private _imageFile?: File;
+  private _imageFile?: File = undefined;
   private _nickName?: string = undefined;
   private _tags?: string[] = undefined;
   private _recommendTags: Tag[] = [];
@@ -125,6 +122,21 @@ export class ProfileStore {
     return this._userOverview;
   }
 
+  public get isTagInputDisable(): boolean {
+    if (!this.userOverview) return false;
+    console.log(
+      this.userOverview.tags.length,
+      this._unsavedTags.length,
+      this._deletedTags.length
+    );
+    return (
+      this.userOverview.tags.length +
+        this._unsavedTags.length -
+        this._deletedTags.length <
+      3
+    );
+  }
+
   public setTagDropDownHidden(hidden: boolean) {
     this._tagDropDownHidden = hidden;
   }
@@ -176,7 +188,13 @@ export class ProfileStore {
     }
   };
 
-  public enterTag = async () => {
+  public initRecommendTags() {
+    runInAction(() => {
+      this._recommendTags = [];
+    });
+  }
+
+  public enterTag = async (tagName: string) => {
     try {
       if (this._tags!.some((tag) => tag === this._typedTag)) {
         throw TAG_DUPLICATED_ERROR;
@@ -185,13 +203,15 @@ export class ProfileStore {
         this._tagUpdateErrorMessage = TAG_MAX_LENGTH_ERROR;
         throw TAG_MAX_LENGTH_ERROR;
       }
-      if (this._typedTag) {
-        this._tags!.push(this._typedTag);
-        this._unsavedTags.push(this._typedTag);
-        this._recommendTags = [];
-        this._typedTag = "";
-        this._tagUpdateErrorMessage = "";
+      this._tags!.push(tagName);
+      if (this._deletedTags.some((tag) => tag === tagName)) {
+        this._deletedTags = this._deletedTags!.filter((tag) => tag !== tagName);
+      } else {
+        this._unsavedTags.push(tagName);
       }
+      this.initRecommendTags();
+      this._typedTag = "";
+      this._tagUpdateErrorMessage = "";
     } catch (e) {
       if (typeof e === "string") {
         this._tagUpdateErrorMessage = e;
@@ -237,6 +257,7 @@ export class ProfileStore {
 
   public updateProfileImage = async () => {
     try {
+      if (!this._imageFile) return;
       const uid = this.userOverview!.id;
       const formData = new FormData();
       formData.append("fileName", uid);
@@ -249,6 +270,7 @@ export class ProfileStore {
           this._imageUpdateSuccessMessage =
             "프로필 사진을 성공적으로 업데이트 했습니다.";
           console.log("프로필 사진 업데이트 성공");
+          this._imageFile = undefined;
         });
       } else {
         throw new Error(uploadProfileImageResult.throwableOrNull()!.message);
@@ -329,8 +351,12 @@ export class ProfileStore {
       );
       if (result.isSuccess) {
         runInAction(() => {
-          this._tagUpdateSuccessMessage = TAG_SAVE_SUCCESS;
+          this._tagUpdateSuccessMessage = TAG_UPDATE_SUCCESS;
           this._tagUpdateErrorMessage = "";
+          this._userOverview! = {
+            ...this._userOverview!,
+            tags: [...this._userOverview!.tags, ...this._unsavedTags],
+          };
           this._unsavedTags = [];
           this._deletedTags = [];
         });
@@ -371,7 +397,7 @@ export class ProfileStore {
             tags: this._userOverview!.tags.filter((tag) => tag !== tagName),
           };
           this._tags = this._tags!.filter((tag) => tag !== tagName);
-          this._tagUpdateSuccessMessage = TAG_DELETE_SUCCESS;
+          this._tagUpdateSuccessMessage = TAG_UPDATE_SUCCESS;
           this._unsavedTags = this._unsavedTags.filter(
             (tag) => tag !== tagName
           );
@@ -392,7 +418,7 @@ export class ProfileStore {
     try {
       this._typedTag = tag;
       if (tag === "") {
-        this._recommendTags = [];
+        this.initRecommendTags();
         return;
       }
       const result = await this._welcomeService.getTags(this._typedTag);
