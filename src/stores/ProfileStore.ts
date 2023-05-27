@@ -3,7 +3,10 @@ import { makeAutoObservable, runInAction } from "mobx";
 import profileService, { ProfileService } from "@/service/profile.service";
 import { User } from "@/models/user/User";
 import { UserStore } from "@/stores/UserStore";
-import { NO_USER_STORE_ERROR_MESSAGE } from "@/constants/message";
+import {
+  NO_USER_STORE_ERROR_MESSAGE,
+  PROFILE_NICKNAME_NULL_ERROR,
+} from "@/constants/message";
 import { FRIEND_STATUS } from "@/constants/FriendStatus";
 import {
   TAG_DELETE_SUCCESS,
@@ -40,6 +43,7 @@ export class ProfileStore {
   private _tagUpdateErrorMessage: string = "";
   private _imageUpdateSuccessMessage: string = "";
   private _imageUpdateErrorMessage: string = "";
+  private _editNameErrorMessage?: string = undefined;
   private _editSuccess?: boolean = undefined;
 
   constructor(
@@ -51,6 +55,10 @@ export class ProfileStore {
     makeAutoObservable(this);
     this.rootStore = root;
     this.userStore = root.userStore;
+  }
+
+  public get editNameErrorMessage() {
+    return this._editNameErrorMessage;
   }
 
   public get errorMessage() {
@@ -146,7 +154,16 @@ export class ProfileStore {
     this._editSuccess = undefined;
     switch (e.target.id) {
       case "nickName":
-        this._nickName = e.target.value;
+        runInAction(() => {
+          this._nickName = e.target.value;
+          if (this._nickName === "") {
+            console.log("1");
+            this._editNameErrorMessage = PROFILE_NICKNAME_NULL_ERROR;
+          } else {
+            console.log("2");
+            this._editNameErrorMessage = undefined;
+          }
+        });
         break;
       case "introduce":
         this._introduce = e.target.value;

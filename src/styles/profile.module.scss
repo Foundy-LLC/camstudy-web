@@ -183,7 +183,9 @@
         color: var(--text-04);
         font-weight: 300;
       }
-
+      .nickname__error{
+        color: var(--error);
+      }
       input {
         width: 260px;
         height: 30px;
