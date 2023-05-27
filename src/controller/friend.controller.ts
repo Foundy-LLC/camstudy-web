@@ -27,7 +27,7 @@ import {
   FRIEND_LIST_GET_SUCCESS,
   PAGE_NUM_OUT_OF_RANGE_ERROR,
   INVALID_FRIEND_REQUEST_USER_ID,
-  ALREADY_RECEIVED_FRIEND_REQUEST,
+  DIRECTLY_APPROVE_FRIEND_REQUEST,
 } from "@/constants/FriendMessage";
 import { Prisma } from ".prisma/client";
 import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError;
@@ -55,7 +55,14 @@ export const sendFriendRequest = async (
       requesterId: targetUserId,
     });
     if (didReceiveRequest) {
-      throw ALREADY_RECEIVED_FRIEND_REQUEST;
+      await approveFriendRequest(
+        friendRequestBody.targetUserId,
+        friendRequestBody.userId
+      );
+      res
+        .status(200)
+        .send(new ResponseBody({ message: DIRECTLY_APPROVE_FRIEND_REQUEST }));
+      return;
     }
 
     await addFriend(friendRequestBody.userId, friendRequestBody.targetUserId);
