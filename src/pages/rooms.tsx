@@ -12,6 +12,7 @@ import { UserOverview } from "@/models/user/UserOverview";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Layout } from "@/components/Layout";
 import { useDebounce } from "@/components/UseDebounce";
+import { isBlank } from "@/utils/isBlank";
 
 export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
@@ -244,8 +245,7 @@ const RoomList: NextPage = observer(() => {
   const [searchInput, setSearchInput] = useState("");
   const debounceSearch = useDebounce(searchInput, 500);
   useEffect(() => {
-    console.log(debounceSearch);
-    roomListStore.setSearchRoomNameInput(debounceSearch!);
+    roomListStore.setSearchRoomNameInput(debounceSearch);
     roomListStore.fetchRooms();
   }, [debounceSearch]);
 
@@ -275,7 +275,11 @@ const RoomList: NextPage = observer(() => {
             className={`${roomListStyles["room-page__title__input"]} typography__text--small`}
             type={"text"}
             onChange={(e) => {
-              setSearchInput(e.target.value);
+              if (isBlank(e.target.value)) {
+                setSearchInput("");
+              } else {
+                setSearchInput(e.target.value);
+              }
             }}
             placeholder={"스터디 룸 제목 혹은 키워드를 검색해주세요"}
           />

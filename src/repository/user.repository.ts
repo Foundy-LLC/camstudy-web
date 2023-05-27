@@ -107,21 +107,22 @@ export const getSimilarNamedUsers = async (
   userName: string,
   userId: string
 ): Promise<{ maxPage: number; users: UserSearchOverview[] }> => {
-  const removeSpace = userName.replace(/ /g, "");
-  const splitName = removeSpace.split("#");
+  // const removeSpace = userName.replace(/ /g, "");
+  // const splitName = removeSpace.split("#");
+  const splitName = userName.split("#");
   const result = await prisma.$transaction([
     prisma.user_account.count({
       where: {
-        name: { startsWith: splitName[0] },
-        id: { startsWith: splitName[1] },
+        name: { contains: splitName[0] },
+        id: { contains: splitName[1] },
         NOT: { id: userId },
       },
     }),
     prisma.user_account.findMany({
       take: SEARCH_USERS_MAX_NUM,
       where: {
-        name: { startsWith: splitName[0] },
-        id: { startsWith: splitName[1] },
+        name: { contains: splitName[0] },
+        id: { contains: splitName[1] },
         NOT: { id: userId },
       },
       select: {
