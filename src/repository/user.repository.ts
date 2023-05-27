@@ -57,6 +57,10 @@ export const findUser = async (
         where: { requester_id: requesterId, acceptor_id: userId },
         select: { accepted: true },
       },
+      friend_friend_requester_idTouser_account: {
+        where: { acceptor_id: userId },
+        select: { accepted: true },
+      },
       belong: {
         where: {
           is_authenticated: true,
@@ -73,18 +77,21 @@ export const findUser = async (
   }
   const organizations = userAccount.belong.map((b) => b.organization.name);
   const tags = userAccount.user_tag.map((t) => t.tag.name);
+  const friendState =
+    userAccount.friend_friend_acceptor_idTouser_account[0] != null
+      ? userAccount.friend_friend_acceptor_idTouser_account[0].accepted === true
+        ? friendStatus.ACCEPTED
+        : friendStatus.REQUESTED
+      : userAccount.friend_friend_requester_idTouser_account[0] != null
+      ? friendStatus.REQUEST_RECEIVED
+      : friendStatus.NONE;
 
   return {
     id: userAccount.id,
     name: userAccount.name,
     profileImage: userAccount.profile_image ?? undefined,
     consecutiveStudyDays: await getConsecutiveStudyDays(userId),
-    requestHistory:
-      userAccount.friend_friend_acceptor_idTouser_account[0] != null
-        ? userAccount.friend_friend_acceptor_idTouser_account[0].accepted
-          ? friendStatus.ACCEPTED
-          : friendStatus.REQUESTED
-        : friendStatus.NONE,
+    requestHistory: friendState,
     introduce: userAccount.introduce,
     organizations: organizations,
     tags: tags,
@@ -134,6 +141,10 @@ export const getSimilarNamedUsers = async (
           where: { requester_id: userId },
           select: { accepted: true },
         },
+        friend_friend_requester_idTouser_account: {
+          where: { acceptor_id: userId },
+          select: { accepted: true },
+        },
         status: true,
       },
     }),
@@ -142,16 +153,21 @@ export const getSimilarNamedUsers = async (
   return {
     maxPage: result[0],
     users: result[1].map((item) => {
+      const friendState =
+        item.friend_friend_acceptor_idTouser_account[0] != null
+          ? item.friend_friend_acceptor_idTouser_account[0].accepted === true
+            ? friendStatus.ACCEPTED
+            : friendStatus.REQUESTED
+          : item.friend_friend_requester_idTouser_account[0] != null
+          ? friendStatus.REQUEST_RECEIVED
+          : friendStatus.NONE;
+
       return {
         id: item.id,
         name: item.name,
         introduce: item.introduce,
         profileImage: item.profile_image,
-        requestHistory: item.friend_friend_acceptor_idTouser_account[0]
-          ? item.friend_friend_acceptor_idTouser_account[0].accepted === true
-            ? friendStatus.ACCEPTED
-            : friendStatus.REQUESTED
-          : friendStatus.NONE,
+        requestHistory: friendState,
         status: item.status === "login" ? UserStatus.LOGIN : UserStatus.LOGOUT,
       };
     }),
