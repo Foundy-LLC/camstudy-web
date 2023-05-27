@@ -84,7 +84,7 @@ export class FriendStore {
     return this._friendOverviews;
   }
 
-  public async changeSearchUserInput(str: string) {
+  public changeSearchUserInput(str: string) {
     console.log(str);
     this._searchUserInput = str;
   }
@@ -123,7 +123,11 @@ export class FriendStore {
   }
 
   public async findUserByName() {
-    if (!this._searchUserInput) return;
+    if (!this._searchUserInput) {
+      this._userSearchOverviews = [];
+      this._searchErrorMessage = USER_SEARCH_RESULT_NULL;
+      return;
+    }
     if (!this._userStore.currentUser) {
       throw new Error(NO_USER_STORE_ERROR_MESSAGE);
     }

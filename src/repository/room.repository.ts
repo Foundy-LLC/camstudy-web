@@ -52,7 +52,7 @@ export const findRooms = async (
   const rooms = await client.room.findMany({
     where: {
       deleted_at: null,
-      title: query == null ? undefined : { startsWith: query },
+      title: query == null ? undefined : { contains: query },
     },
     skip: pageNum * ROOM_NUM_PER_PAGE,
     take: ROOM_NUM_PER_PAGE,
