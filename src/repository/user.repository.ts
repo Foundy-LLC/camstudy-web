@@ -58,7 +58,7 @@ export const findUser = async (
         select: { accepted: true },
       },
       friend_friend_requester_idTouser_account: {
-        where: { acceptor_id: userId },
+        where: { acceptor_id: requesterId },
         select: { accepted: true },
       },
       belong: {
