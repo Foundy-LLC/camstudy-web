@@ -37,6 +37,41 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
       document.getElementById("dialog")!.style.left = x.toString() + "px";
     };
 
+    const toggleCamera = () => {
+      roomStore.enabledLocalVideo
+        ? roomStore.hideVideo()
+        : roomStore.showVideo();
+      setCameraOn(!cameraOn);
+      cameraOn ? setShowDialog("카메라 켜기") : setShowDialog("카메라 끄기");
+    };
+
+    const toggleHeadphone = () => {
+      setHeadphoneOn(!headphoneOn);
+      roomStore.enabledHeadset
+        ? roomStore.muteHeadset()
+        : roomStore.unmuteHeadset();
+      headphoneOn ? setShowDialog("헤드폰 켜기") : setShowDialog("헤드폰 끄기");
+
+      if (headphoneOn !== micOn) return;
+      setMicOn(!micOn);
+      roomStore.enabledLocalAudio
+        ? roomStore.muteMicrophone()
+        : roomStore.unmuteMicrophone();
+    };
+
+    const toggleMic = () => {
+      if (!micOn && !headphoneOn) {
+        setHeadphoneOn(true);
+        roomStore.unmuteHeadset();
+      }
+
+      setMicOn(!micOn);
+      roomStore.enabledLocalAudio
+        ? roomStore.muteMicrophone()
+        : roomStore.unmuteMicrophone();
+      micOn ? setShowDialog("마이크 켜기") : setShowDialog("마이크 끄기");
+    };
+
     const tags: string[] = ["스터디", "공시", "자격증"];
     const bannedUserNames: string[] = ["김철수123", "김철수123", "김철수123"];
     return (
@@ -139,13 +174,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                   <span
                     className={`${enterRoomStyles["enter-room__camera-icon"]} material-symbols-rounded`}
                     onClick={() => {
-                      roomStore.enabledLocalVideo
-                        ? roomStore.hideVideo()
-                        : roomStore.showVideo();
-                      setCameraOn(!cameraOn);
-                      cameraOn
-                        ? setShowDialog("카메라 켜기")
-                        : setShowDialog("카메라 끄기");
+                      toggleCamera();
                     }}
                     onMouseEnter={(e) => {
                       handleHover(e);
@@ -167,13 +196,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                   <span
                     className="material-symbols-rounded"
                     onClick={() => {
-                      setHeadphoneOn(!headphoneOn);
-                      roomStore.enabledHeadset
-                        ? roomStore.muteHeadset()
-                        : roomStore.unmuteHeadset();
-                      headphoneOn
-                        ? setShowDialog("헤드폰 켜기")
-                        : setShowDialog("헤드폰 끄기");
+                      toggleHeadphone();
                     }}
                     onMouseEnter={(e) => {
                       handleHover(e);
@@ -195,13 +218,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                   <span
                     className={`${enterRoomStyles["enter-room__mic-icon"]} material-symbols-rounded`}
                     onClick={() => {
-                      setMicOn(!micOn);
-                      roomStore.enabledLocalAudio
-                        ? roomStore.muteMicrophone()
-                        : roomStore.unmuteMicrophone();
-                      micOn
-                        ? setShowDialog("마이크 켜기")
-                        : setShowDialog("마이크 끄기");
+                      toggleMic();
                     }}
                     onMouseEnter={(e) => {
                       handleHover(e);
@@ -363,6 +380,10 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                       ]
                     }`}
                     onClick={() => {
+                      if (!micOn && !headphoneOn) {
+                        setHeadphoneOn(true);
+                        roomStore.unmuteHeadset();
+                      }
                       roomStore.enabledLocalAudio
                         ? roomStore.muteMicrophone()
                         : roomStore.unmuteMicrophone();
