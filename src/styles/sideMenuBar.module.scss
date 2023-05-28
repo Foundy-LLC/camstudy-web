@@ -2,10 +2,15 @@
 
 
 $--side-menu-bar-content-gap: 1rem;
+.menu::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera*/
+}
 
 .menu {
   //하단 스크롤바 지우려면 width 설정을 지워야함.
   //width: 19.5rem;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
   display: flex;
   flex-direction: column;
   height: calc(100vh - 90px);
@@ -83,7 +88,7 @@ $--side-menu-bar-content-gap: 1rem;
   }
 
   .footer {
-    margin-top: auto;
+    margin-top: 210px;
     margin-bottom: 15px;
     width: 21rem;
     color: var(--text-01);

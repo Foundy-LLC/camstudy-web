@@ -100,6 +100,7 @@
         padding: 10px 20px;
         color: var(--text-02);
         b{
+          color: var(--primary-press);
           font-weight: 500;
         }
       }
@@ -121,7 +122,7 @@
 
 .rank-form, .rank-form[rankType='weekly']{
   width: 1040px;
-  background-color: var(--system_background);
+  background-color: var(--ui-cardui-01);
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
@@ -290,7 +291,7 @@
     border-radius: 8px;
     margin-bottom: 24px;
     margin-left: 20px;
-    background-color: var(--ui-cardui-01);
+    background-color: var(--ui-cardui-02);
     display: flex;
     align-items: center;
     position: relative;
