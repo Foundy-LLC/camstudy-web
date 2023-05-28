@@ -17,7 +17,9 @@ import Modal from "react-modal";
 const crop: NextPage = () => {
   return (
     <Layout>
-      <h1 className={"typography__sub-headline"}>내 작물 관리하기</h1>
+      <h1 className={`${cropStyles["title"]} typography__sub-headline`}>
+        내 작물 관리하기
+      </h1>
       <MyPot></MyPot>
       <MyPlants></MyPlants>
       <style jsx>{`

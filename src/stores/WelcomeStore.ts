@@ -179,7 +179,7 @@ export class WelcomeStore {
       this._recommendTags = [];
       return;
     }
-    this._tag = tag.slice(1);
+    this._tag = tag[0] === "#" ? tag.slice(1) : tag;
     const result = await this._welcomeService.getTags(this._tag);
     if (result.isSuccess) {
       runInAction(() => {
@@ -192,6 +192,10 @@ export class WelcomeStore {
         this._errorMessage = result.throwableOrNull()!.message;
       });
     }
+  }
+
+  public initRecommendTags() {
+    this._recommendTags = [];
   }
 
   private setRecommendTags(tags: Tag[]) {

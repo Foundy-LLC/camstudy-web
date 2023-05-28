@@ -12,6 +12,8 @@ export const NOT_FOUND_FRIEND_REQUEST_ERROR =
 export const INVALID_FRIEND_REQUEST_USER_ID =
   "요청자 회원의 ID가 누락되었습니다.";
 export const FRIEND_REQUEST_ID_ERROR = "본인에게 친구 요청을 보낼 수 없습니다.";
+export const DIRECTLY_APPROVE_FRIEND_REQUEST =
+  "이미 친구 요청을 받은 상태라 바로 친구가 되었어요.";
 export const FRIEND_CANCEL_REQUEST_ID_ERROR =
   "본인에게 보낸 친구 요청이 존재할 수 없습니다.";
 export const FRIEND_REQUESTS_GET_SUCCESS =

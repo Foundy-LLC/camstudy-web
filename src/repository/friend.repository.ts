@@ -3,6 +3,25 @@ import { UserOverview } from "@/models/user/UserOverview";
 import { UserStatus } from "@/models/user/UserStatus";
 import { FRIEND_NUM_PER_PAGE } from "@/constants/friend.constant";
 import _ from "lodash";
+
+export const hasFriendRequest = async ({
+  acceptorId,
+  requesterId,
+}: {
+  acceptorId: string;
+  requesterId: string;
+}): Promise<boolean> => {
+  const request = await client.friend.findUnique({
+    where: {
+      requester_id_acceptor_id: {
+        requester_id: requesterId,
+        acceptor_id: acceptorId,
+      },
+    },
+  });
+  return request != null;
+};
+
 export const addFriend = async (userId: string, targetUserId: string) => {
   await client.friend.create({
     data: {

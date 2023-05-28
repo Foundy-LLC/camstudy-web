@@ -52,7 +52,7 @@ export const findRooms = async (
   const rooms = await client.room.findMany({
     where: {
       deleted_at: null,
-      title: query == null ? undefined : { startsWith: query },
+      title: query == null ? undefined : { contains: query },
     },
     skip: pageNum * ROOM_NUM_PER_PAGE,
     take: ROOM_NUM_PER_PAGE,
@@ -212,6 +212,7 @@ export const createRoom = async (
 };
 
 export const updateRoomThumbnail = async (roomId: string, imageUrl: string) => {
+  console.log(imageUrl);
   await client.room.update({
     where: { id: roomId },
     data: { thumbnail: imageUrl },

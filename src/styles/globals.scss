@@ -254,6 +254,7 @@ body[color-theme='light'] {
   //Process Color
   --primary: #{$-Primary-05};
   --primary-press: #{$-Primary-06};
+  --primary-text:  #{$-Primary-06};
   --secondary: #{$-Gray-08};
   --secondary-press: #{$-Gray-09};
   --tertiary: #{$-White};
@@ -269,6 +270,8 @@ body[color-theme='light'] {
   --status-login: #{$-Success-08};
   --my-rank-form-background: #{$-Primary-01};
   --my-rank-form-border:#{$-Primary-04};
+  --profile-dialog__tag-background : #{$-White};
+  --profile-dialog__toggle-background: #{$-Gray-02};
 
   //Text Color
   --text-emphasize: #{$-Black};
@@ -305,6 +308,7 @@ body[color-theme='dark'] {
   //Process Color
   --primary: #{$-Primary-03};
   --primary-press: #{$-Primary-02};
+  --primary-text:  #{$-Primary-07};
   --secondary: #{$-Dark-09};
   --secondary-press: #{$-White};
   --tertiary: #{$-Black};
@@ -319,8 +323,10 @@ body[color-theme='dark'] {
   --status-login: #{$-Success-02};
   --my-rank-form-background: #{$-Primary-03};
   --my-rank-form-border:#{$-Primary-04};
+  --profile-dialog__tag-background :#{$-Dark-01};
+  --profile-dialog__toggle-background: #{$-Dark-03};
 
-  //Text Color
+          //Text Color
   --text-emphasize: #{$-White};
   --text-01: #{$-Dark-10};
   --text-02: #{$-Dark-09};
