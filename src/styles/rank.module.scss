@@ -11,7 +11,7 @@
   user-select:none;
   .rank-page-nation{
     max-width: 1040px;
-    background-color: var(--system_background);
+    background-color: inherit;
     display: flex;
     justify-content: center;
     margin-bottom: 30px;
@@ -100,6 +100,7 @@
         padding: 10px 20px;
         color: var(--text-02);
         b{
+          color: var(--primary-press);
           font-weight: 500;
         }
       }
@@ -121,7 +122,7 @@
 
 .rank-form, .rank-form[rankType='weekly']{
   width: 1040px;
-  background-color: var(--system_background);
+  background-color: var(--ui-cardui-01);
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
@@ -151,9 +152,21 @@
 
   .my-rank-form{
     margin-top: 20px;
-    .my-rank-form__label{
-      margin-left: 25px;
-      color: var(--text-01);
+    .my-rank__sub-title-form{
+      .my-rank-form__label{
+        margin-left: 25px;
+        color: var(--text-01);
+      }
+      .my-rank-form__label__score{
+        margin-left: 476px;
+        font-weight: 300;
+        color: var(--text-03);
+      }
+      .my-rank-form__label__time{
+        margin-left: 130px;
+        font-weight: 300;
+        color: var(--text-03);
+      }
     }
   }
 
@@ -278,7 +291,7 @@
     border-radius: 8px;
     margin-bottom: 24px;
     margin-left: 20px;
-    background-color: var(--ui-cardui-01);
+    background-color: var(--ui-cardui-02);
     display: flex;
     align-items: center;
     position: relative;
@@ -347,16 +360,22 @@
       }
     }
     .rank-form__content__record{
-      width: 280px;
+      width: 330px;
       height: 32px;
       display: flex;
       justify-content: space-between;
-      margin-left: 132px;
-      font-weight: 500;
+      margin-left: 112px;
       color: var(--system_ui-05);
-      .rank-form__content__score{
+      .rank-form__content__score-form{
+        width: 124px;
+        display: flex;
+        .rank-form__content__score{
+          margin-left: auto;
+          font-weight: 500;
+        }
       }
       .rank-form__content__study-time{
+        font-weight: 500;
       }
     }
 

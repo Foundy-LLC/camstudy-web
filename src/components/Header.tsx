@@ -10,6 +10,10 @@ import { DEFAULT_THUMBNAIL_URL } from "@/constants/default";
 import Router from "next/router";
 import { ThemeModeToggleButton } from "@/components/ThemeModeToggleButton";
 import Link from "next/link";
+import {
+  CreateRoomDialog,
+  CreateRoomDialogContainer,
+} from "@/components/CreateStudyRoomDialog";
 
 export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
   const exButtonList = [
@@ -23,7 +27,7 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
   };
 
   return (
-    <header className={"box-header"}>
+    <header className={`${headerStyles["header"]} box-header`}>
       <Link href={"/"}>
         <Image
           className={`${headerStyles["header-image"]} ${headerStyles["dragUnable"]}`}
@@ -52,7 +56,15 @@ export const Header: NextPage<{ userId: string }> = observer(({ userId }) => {
 
 const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
   const [showDialog, setShowDialog] = useState<string>("");
+  const [showModal, setShowModal] = useState<boolean>(false);
   const { roomListStore } = useStores();
+
+  useEffect(() => {
+    if (!showModal) {
+      roomListStore.initTempRoom();
+    }
+  }, [showModal]);
+
   useEffect(() => {
     roomListStore.fetchRecentRooms(userId);
   }, []);
@@ -115,18 +127,30 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
         onMouseLeave={() => {
           setShowDialog("");
         }}
+        onClick={() => {
+          setShowModal(true);
+        }}
       >
         <span className={`${headerStyles["icon"]} material-symbols-outlined`}>
           add
         </span>
       </button>
+      {showModal && (
+        <>
+          <CreateRoomDialogContainer
+            onClick={() => {
+              setShowModal(false);
+            }}
+          />
+          <CreateRoomDialog setShowModal={setShowModal} />
+        </>
+      )}
     </div>
   );
 });
 
 const UserProfile: NextPage<{ userId: string }> = observer(({ userId }) => {
   const { userStore } = useStores();
-
   return (
     <div className={"user-profile-box"}>
       <div className={`${headerStyles["dragUnable"]} image`}>
@@ -163,6 +187,7 @@ const UserProfile: NextPage<{ userId: string }> = observer(({ userId }) => {
           {userStore.currentUser?.introduce}
         </label>
       </div>
+
       <style jsx>
         {`
           .material-symbols-sharp {

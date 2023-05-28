@@ -409,7 +409,7 @@ const TagForm: NextPage = observer(() => {
           className={"typography__text--small"}
           placeholder="#수능, #개발, #공시 등 검색해주세요"
           maxLength={21}
-          onKeyUp={async (e) => {
+          onKeyDown={async (e) => {
             let key = e.key || e.keyCode;
             if (key === "Enter" || key === 13) {
               await profileStore.enterTag();
@@ -418,7 +418,7 @@ const TagForm: NextPage = observer(() => {
               profileStore.onChangeTagInput("");
             }
           }}
-          onChange={async (e) => {
+          onChange={(e) => {
             setSearchInput(e.target.value);
           }}
         />
@@ -458,7 +458,7 @@ const TagForm: NextPage = observer(() => {
           profileStore.deletedTags.length === 0
         }
       >
-        <label className={"typography_장_text"}>태그 저장하기</label>
+        <label className={"typography__text"}>태그 저장하기</label>
       </button>
     </div>
   );

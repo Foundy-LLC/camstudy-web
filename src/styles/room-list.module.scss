@@ -54,6 +54,33 @@
     color: var(--system_ui-08);
   }
 
+  .room-list__option-button{
+    position: relative;
+    margin-left: auto;
+    margin-right: 5px;
+    .room-list-icon {
+      margin: 24px 0px 0px 22px;
+      height: 20px;
+      width: 20px;
+      color: var(--system_ui-08);
+    }
+    .room-list__option-dialog{
+      position: absolute;
+      background-color: var(--ui-cardui-01);
+      padding: 7px 11px 7px 14px;
+      width: 65px;
+      left:-90px;
+      top:30px;
+      border-radius: 8px 0px 8px 8px;
+      cursor: pointer;
+      display: none;
+      label{
+        color:var(--text-01);
+        cursor: pointer;
+      }
+    }
+  }
+
   .room-list-title{
     width: 148px;
     height: 28px;

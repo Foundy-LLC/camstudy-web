@@ -12,6 +12,7 @@ import { UserOverview } from "@/models/user/UserOverview";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Layout } from "@/components/Layout";
 import { useDebounce } from "@/components/UseDebounce";
+import { isBlank } from "@/utils/isBlank";
 
 export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
@@ -74,6 +75,9 @@ export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
 
 const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
   ({ roomOverview }) => {
+    const { userStore } = useStores();
+    const [showDeleteButton, setShowDeleteButton] = useState<boolean>(false);
+    useEffect(() => {}, []);
     return (
       <>
         <div
@@ -120,17 +124,28 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
                   lock
                 </span>
               )}
-              <span
-                className={`${roomListStyles["drag-unable"]} ${roomListStyles["room-list-icon"]} material-symbols-sharp`}
-                style={{
-                  marginLeft: "auto",
-                  marginTop: "16px",
-                  marginRight: "16px",
-                  cursor: "pointer",
-                }}
-              >
-                more_horiz
-              </span>
+              <div className={`${roomListStyles["room-list__option-button"]}`}>
+                <span
+                  className={`${roomListStyles["drag-unable"]} ${roomListStyles["room-list-icon"]} material-symbols-sharp`}
+                  style={{
+                    marginLeft: "auto",
+                    marginTop: "16px",
+                    marginRight: "16px",
+                    cursor: "pointer",
+                  }}
+                >
+                  more_horiz
+                </span>
+                {userStore.currentUser?.id === roomOverview.masterId && (
+                  <div
+                    className={`${roomListStyles["room-list__option-dialog"]} elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
+                  >
+                    <label className={"typography__text--small"}>
+                      방 삭제하기
+                    </label>
+                  </div>
+                )}
+              </div>
             </div>
             <div style={{ display: "inline-flex" }}>
               {roomOverview.tags && (
@@ -244,8 +259,7 @@ const RoomList: NextPage = observer(() => {
   const [searchInput, setSearchInput] = useState("");
   const debounceSearch = useDebounce(searchInput, 500);
   useEffect(() => {
-    console.log(debounceSearch);
-    roomListStore.setSearchRoomNameInput(debounceSearch!);
+    roomListStore.setSearchRoomNameInput(debounceSearch);
     roomListStore.fetchRooms();
   }, [debounceSearch]);
 
@@ -275,7 +289,11 @@ const RoomList: NextPage = observer(() => {
             className={`${roomListStyles["room-page__title__input"]} typography__text--small`}
             type={"text"}
             onChange={(e) => {
-              setSearchInput(e.target.value);
+              if (isBlank(e.target.value)) {
+                setSearchInput("");
+              } else {
+                setSearchInput(e.target.value);
+              }
             }}
             placeholder={"스터디 룸 제목 혹은 키워드를 검색해주세요"}
           />

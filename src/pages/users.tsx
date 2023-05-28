@@ -20,6 +20,7 @@ import {
   ProfileDialogContainer,
 } from "@/components/ProfileDialog";
 import rankStyles from "@/styles/rank.module.scss";
+import { isBlank } from "@/utils/isBlank";
 
 const FriendOverview: NextPage<{
   item: UserSearchOverview;
@@ -202,10 +203,8 @@ const Users: NextPage = observer(() => {
   const debounceSearch = useDebounce(searchInput, 500);
 
   useEffect(() => {
-    if (debounceSearch) {
-      friendStore.changeSearchUserInput(searchInput);
-      friendStore.findUserByName();
-    }
+    friendStore.changeSearchUserInput(debounceSearch);
+    friendStore.findUserByName();
   }, [debounceSearch]);
   return (
     <>
@@ -221,7 +220,11 @@ const Users: NextPage = observer(() => {
               type="text"
               placeholder="유저 닉네임 혹은 이메일을 검색해주세요"
               onChange={(e) => {
-                setSearchInput(e.target.value);
+                if (isBlank(e.target.value)) {
+                  setSearchInput("");
+                } else {
+                  setSearchInput(e.target.value);
+                }
               }}
               className={`${userStyles["search-user__input"]} typography__text--small`}
             ></input>

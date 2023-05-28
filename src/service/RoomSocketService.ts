@@ -111,7 +111,7 @@ const fetchMediaServerUrl = async (
 export class RoomSocketService {
   private _userStore: UserStore;
 
-  private _socket?: Socket;
+  private _socket?: Socket = undefined;
 
   private _sendTransport?: Transport;
   private _audioProducer?: Producer;
@@ -156,6 +156,10 @@ export class RoomSocketService {
         this._connectWaitingRoom(roomId);
       }
     );
+    this._socket.on("disconnect", (args) => {
+      console.log(`Disconnected ${args}`);
+      this._disconnect();
+    });
     return Result.success(undefined);
   };
 
@@ -726,6 +730,10 @@ export class RoomSocketService {
     this._requireSocket().emit(BLOCK_USER, userId);
   };
 
+  public exitRoom = () => {
+    this._disconnect();
+  };
+
   public unblockUser = (userId: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       this._requireSocket().emit(
@@ -741,4 +749,19 @@ export class RoomSocketService {
       );
     });
   };
+
+  private _disconnect() {
+    this._socket?.disconnect();
+    this._socket = undefined;
+    this._device = undefined;
+
+    this._sendTransport?.close();
+    this._receiveTransportWrappers.map((wrapper) => {
+      wrapper.receiveTransport.close();
+    });
+    this._sendTransport = undefined;
+
+    this._receiveTransportWrappers = [];
+    this._mutedHeadset = false;
+  }
 }
