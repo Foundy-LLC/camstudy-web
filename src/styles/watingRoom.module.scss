@@ -1,6 +1,5 @@
 @import "./color/colorPalette";
 
-
 @viewport{
   min-zoom: 100%;
 }
@@ -52,11 +51,10 @@
           align-items: center;
           div{
             display: flex;
-            align-items: center;
             .enter-room__slash-icon{
               color:$-White;
               position: absolute;
-              left: 35%;
+              left: 38%;
               top:50%;
               transform: translate(-50%, -50%) rotate(95deg);
               color: $-Danger-06;
@@ -76,7 +74,7 @@
             margin-right: 8px;
           }
           .enter-room__mic-icon{
-
+            
           }
         }
       }
@@ -150,7 +148,6 @@
     border-bottom-right-radius: 16px;
     border-left: 0.3px solid $-Dark-03 ;
     .enter-room__info-form{
-      height: 546px;
       width: 420px;
       border-bottom: 0.3px solid $-Dark-03 ;
       &__subtitle{
@@ -190,7 +187,7 @@
         margin-top: 8px;
         width: 172px;
         display: grid;
-        grid: ". . .";
+        grid: ". . . .";
         gap: 8px;
         .enter-room__info-form__joiner{
           width: 52px;
@@ -199,17 +196,21 @@
           background-color: #{$-Gray-01};
         }
       }
-      &__input{
+      &__input-form{
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      .enter-room__info-form__input{
         width: 333px;
         height: 18px;
         margin-left: 28px;
         margin-top: 24px;
         border-radius: 8px;
-        padding: 15px 16px 15px 16px;
         border: none;
+        padding: 15px 16px 15px 16px;
         background-color: #{$-Dark-01};
-        color: #{$-Dark-04};
-        font-weight: 300;
+        color: #{$-Gray-02};
+        font-weight: 300;}
       }
       &__hr{
         background-color: #{$-Dark-04};
@@ -218,6 +219,8 @@
         height: 0.5px;
       }
       .enter-room__setting-form{
+        display: flex;
+        flex-direction: column;
         &__camera,
         &__mic{
           display: flex;
@@ -276,9 +279,16 @@
             }
           }
         }
+        .enter-room__error{
+          color: var(--danger);
+          margin-left: 28px;
+          margin-bottom: 22px;
+          margin-top: 4px;
+        }
         &__enter-button{
           margin-left: 28px;
-          margin-top: 9px;
+          margin-right: 28px;
+          margin-bottom: 28px;
           padding: 13px 125px;
           border-radius: 8px;
           background-color: #{$-Primary-03};
@@ -287,152 +297,15 @@
           label{
             cursor: pointer;
           }
-        }
-
-      }
-    }
-
-
-
-    .enter-room__chat-form{
-      height: 632px;
-      width: 420px;
-      border-left: 0.3px solid $-Dark-03 ;
-      position: relative;
-      &__header-form{
-        display: flex;
-        flex-direction: column;
-        width: 420px;
-        margin-top: 27px;
-        label{
-          color: $-White
-        }
-        .enter-room__chat-form__header{
-          display: flex;
-          align-items: center;
-
-          .enter-room__chat-form__header__icon{
-            margin-top: 5px;
-            margin-left: 30px;
-          }
-          .enter-room__chat-form__header__subtitle{
-            margin-left: 4px;
-            margin-top: 5px;
-          }
-
-
-          .enter-room__chat-form__header__ban-list__button{
-            display: flex;
-            align-items: center;
-            width: 120px;
-            height: 24px;
-            margin-left: auto;
-            margin-right: 22px;
-            padding: 5px 10px 5px 10px;
-            border-radius: 8px;
-            position: relative;
-            cursor: pointer;
-            span{
-              margin-left: auto;
-              font-size: 26px;
-            }
+          &:disabled{
+            background-color: #{$-Gray-07};
+            cursor: default;
             label{
-              margin-left: 5px;
-              cursor: pointer;
-            }
-            &:hover{
-              background-color: #4B4B4B;
-            }
-            &:active{
-              background-color: #2e2d2d;
+              cursor: default;
             }
           }
         }
-      }
-      &__ban-list{
-        position: absolute;
-        top:75px;
-        display: grid;
-        grid:".";
-        row-gap: 5px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid $-Dark-03;
-        .enter-room__chat-form__ban-user{
-          width: 420px;
-          height: 40px;
-          padding-top: 3px;
-          padding-bottom: 3px;
-          display: flex;
-          align-items: center;
-          &__image{
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            margin-right: 12px;
-            margin-left: 28px;
-            background-color: #4B4B4B;
-          }
-          &__name{
 
-          }
-          &__ban-cancel{
-            margin-left: auto;
-            width: 84px;
-            margin-right: 28px;
-            padding: 3px 7px 3px 7px;
-            border-radius: 8px;
-            cursor: pointer;
-            &:hover{
-              background-color: #4B4B4B;
-            }
-            &:active{
-              background-color: #2e2d2d;
-            }
-          }
-          &:hover{
-            background-color: #2e2d2d;
-          }
-        }
-      }
-      &__text-field{
-        height: 450px;
-        width: 364px;
-        margin-left: 30px;
-        margin-top: 10px;
-        padding-top: 5px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        label{
-          margin:4px 4px;
-          font-weight: 200;
-        }
-        &__notice{
-          color: $-Dark-05;
-        }
-        &__chat{
-          margin:4px 0px;
-          .enter-room__chat-form__text-field__name{
-            color: $-Dark-06;
-            font-weight: 300;
-          }
-          .enter-room__chat-form__text-field__text{
-            color: $-White;
-            font-weight: 300;
-          }
-        }
-      }
-      &__input{
-        width: 327px;
-        height: 18px;
-        margin-left: 30px;
-        margin-top: 30px;
-        padding: 15px 16px;
-        background-color: $-Dark-01;
-        color: $-White;
-        border-radius: 8px;
-        border: none;
       }
     }
   }

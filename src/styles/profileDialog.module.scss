@@ -1,3 +1,5 @@
+@import "./color/colorPalette";
+
 .profile-dialog__background {
   z-index: 10;
   background-color: #4B4C4E;
@@ -118,7 +120,7 @@
               border-radius: 8px;
 
               .profile-dialog__tag__label {
-                color: var(--primary-press);
+                color: #{$-Primary-06};
               }
             }
           }

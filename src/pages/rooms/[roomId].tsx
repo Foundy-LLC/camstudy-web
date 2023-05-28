@@ -13,7 +13,6 @@ import PopupMenu from "@/components/PopupMenu";
 import { getEnumKeyByEnumValue } from "@/utils/EnumUtil";
 import Button from "@mui/material/Button";
 import { useStores } from "@/stores/context";
-import WaitingRoom from "@/components/waitingRoom";
 import studyRoomStyles from "@/styles/studyRoom.module.scss";
 import { FaSlash } from "react-icons/fa";
 import logo from "@/assets/logo.png";
@@ -22,6 +21,7 @@ import { TimerSettingDropDown } from "@/components/TimerSettingDropDown";
 import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import Modal from "react-modal";
 import { UserStore } from "@/stores/UserStore";
+import WaitingRoom from "@/components/WaitingRoom";
 
 export enum MasterPopupMenus {
   Kick = "강퇴",
@@ -36,8 +36,8 @@ const RoomScaffold: NextPage = observer(() => {
   const roomId = router.query.roomId;
 
   useEffect(() => {
-    console.log(roomId);
     if (typeof roomId === "string") {
+      roomListStore.getRoomById(roomId);
       roomStore.connectSocket(roomId);
     }
   }, [roomStore, roomId]);
@@ -53,7 +53,9 @@ const RoomScaffold: NextPage = observer(() => {
     case RoomState.CREATED:
     case RoomState.CONNECTED:
     case RoomState.WAITING_ROOM:
-      return <WaitingRoom roomStore={roomStore} />;
+      return (
+        <WaitingRoom roomStore={roomStore} roomInfo={roomListStore.roomInfo} />
+      );
     case RoomState.JOINED:
       return <StudyRoom roomStore={roomStore} userStore={userStore} />;
   }

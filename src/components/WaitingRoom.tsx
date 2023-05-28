@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
-import enterRoomStyles from "@/styles/enterRoom.module.scss";
+import React, { useEffect, useRef, useState } from "react";
+import enterRoomStyles from "@/styles/watingRoom.module.scss";
 import { FaSlash } from "react-icons/fa";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
@@ -10,18 +10,18 @@ import { User } from "@/models/user/User";
 import { RoomStore } from "@/stores/RoomStore";
 import { Video } from "@/pages/rooms/[roomId]";
 import { UserProfileImage } from "@/components/UserProfileImage";
-import { RoomJoiner } from "@/models/room/RoomJoiner";
 import { RoomOverview } from "@/models/room/RoomOverview";
 
-const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
-  ({ roomStore }) => {
+const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
+  observer(({ roomStore, roomInfo }) => {
     const { userStore } = useStores();
     const [cameraOn, setCameraOn] = useState<boolean>(true);
     const [headphoneOn, setHeadphoneOn] = useState<boolean>(true);
     const [micOn, setMicOn] = useState<boolean>(true);
     const [showDialog, setShowDialog] = useState<string>("");
     const [user, setUser] = useState<User>();
-    const remainingDivs = 3 - roomStore.roomJoiners.length;
+    const remainingDivs = 4 - roomStore.roomJoiners.length;
+    const passwordInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
       if (!userStore.currentUser) return;
@@ -35,6 +35,40 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
       const y = position.y - 45;
       document.getElementById("dialog")!.style.top = y.toString() + "px";
       document.getElementById("dialog")!.style.left = x.toString() + "px";
+    };
+
+    const toggleCamera = () => {
+      roomStore.enabledLocalVideo
+        ? roomStore.hideVideo()
+        : roomStore.showVideo();
+      setCameraOn(!cameraOn);
+      cameraOn ? setShowDialog("카메라 켜기") : setShowDialog("카메라 끄기");
+    };
+
+    const toggleHeadphone = () => {
+      if (micOn && headphoneOn) {
+        setMicOn(false);
+        roomStore.muteMicrophone();
+      }
+
+      setHeadphoneOn(!headphoneOn);
+      roomStore.enabledHeadset
+        ? roomStore.muteHeadset()
+        : roomStore.unmuteHeadset();
+      headphoneOn ? setShowDialog("헤드폰 켜기") : setShowDialog("헤드폰 끄기");
+    };
+
+    const toggleMic = () => {
+      if (!micOn && !headphoneOn) {
+        setHeadphoneOn(true);
+        roomStore.unmuteHeadset();
+      }
+
+      setMicOn(!micOn);
+      roomStore.enabledLocalAudio
+        ? roomStore.muteMicrophone()
+        : roomStore.unmuteMicrophone();
+      micOn ? setShowDialog("마이크 켜기") : setShowDialog("마이크 끄기");
     };
 
     const tags: string[] = ["스터디", "공시", "자격증"];
@@ -87,16 +121,30 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
                         />
                       )}
                     </div>
-                    <span
-                      className={`${enterRoomStyles["enter-room__headphones-icon"]} material-symbols-rounded`}
-                    >
-                      headphones
-                    </span>
-                    <span
-                      className={`${enterRoomStyles["enter-room__mic-icon"]} material-symbols-rounded`}
-                    >
-                      mic
-                    </span>
+                    <div style={{ position: "relative" }}>
+                      <span
+                        className={`${enterRoomStyles["enter-room__headphones-icon"]} material-symbols-rounded`}
+                      >
+                        headphones
+                      </span>
+                      {!headphoneOn && (
+                        <FaSlash
+                          className={`${enterRoomStyles["enter-room__slash-icon"]} material-symbols-rounded`}
+                        />
+                      )}
+                    </div>
+                    <div style={{ position: "relative" }}>
+                      <span
+                        className={`${enterRoomStyles["enter-room__mic-icon"]} material-symbols-rounded`}
+                      >
+                        mic
+                      </span>
+                      {!micOn && (
+                        <FaSlash
+                          className={`${enterRoomStyles["enter-room__slash-icon"]} material-symbols-rounded`}
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -125,13 +173,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
                   <span
                     className={`${enterRoomStyles["enter-room__camera-icon"]} material-symbols-rounded`}
                     onClick={() => {
-                      roomStore.enabledLocalVideo
-                        ? roomStore.hideVideo()
-                        : roomStore.showVideo();
-                      setCameraOn(!cameraOn);
-                      cameraOn
-                        ? setShowDialog("카메라 켜기")
-                        : setShowDialog("카메라 끄기");
+                      toggleCamera();
                     }}
                     onMouseEnter={(e) => {
                       handleHover(e);
@@ -153,13 +195,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
                   <span
                     className="material-symbols-rounded"
                     onClick={() => {
-                      setHeadphoneOn(!headphoneOn);
-                      roomStore.enabledHeadset
-                        ? roomStore.muteHeadset()
-                        : roomStore.unmuteHeadset();
-                      headphoneOn
-                        ? setShowDialog("헤드폰 켜기")
-                        : setShowDialog("헤드폰 끄기");
+                      toggleHeadphone();
                     }}
                     onMouseEnter={(e) => {
                       handleHover(e);
@@ -181,13 +217,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
                   <span
                     className={`${enterRoomStyles["enter-room__mic-icon"]} material-symbols-rounded`}
                     onClick={() => {
-                      setMicOn(!micOn);
-                      roomStore.enabledLocalAudio
-                        ? roomStore.muteMicrophone()
-                        : roomStore.unmuteMicrophone();
-                      micOn
-                        ? setShowDialog("마이크 켜기")
-                        : setShowDialog("마이크 끄기");
+                      toggleMic();
                     }}
                     onMouseEnter={(e) => {
                       handleHover(e);
@@ -223,7 +253,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
               <div
                 className={`${enterRoomStyles["enter-room__info-form__title"]} typography__sub-headline--small`}
               >
-                <label>스터디 룸 제목</label>
+                <label>{roomInfo?.title}</label>
                 {roomStore.hasPassword && (
                   <span className="material-symbols-outlined">lock</span>
                 )}
@@ -231,7 +261,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
               <div
                 className={`${enterRoomStyles["enter-room__info-form__tags"]} typography__text`}
               >
-                {tags.map((tag, key) => (
+                {roomInfo?.tags.map((tag, key) => (
                   <label
                     key={key}
                     className={`${enterRoomStyles["enter-room__info-form__tag"]}`}
@@ -243,27 +273,37 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
               <div
                 className={`${enterRoomStyles["enter-room__info-form__joiners-form"]}`}
               >
-                {roomStore.roomJoiners.map((joiner, key) => {
-                  return <UserProfileImage key={key} userId={joiner.id} />;
-                })}
+                {roomStore.roomJoiners.map((joiner, key) => (
+                  <UserProfileImage
+                    width={52}
+                    height={52}
+                    key={key}
+                    userId={joiner.id}
+                  />
+                ))}
                 {Array.from({ length: remainingDivs }).map((_, key) => (
                   <div
                     key={key}
                     className={`${enterRoomStyles["enter-room__info-form__joiner"]}`}
                   ></div>
                 ))}
-                ;
               </div>
               {roomStore.hasPassword && (
-                <input
-                  className={`${enterRoomStyles["enter-room__info-form__input"]} typography__text--small`}
-                  type={"password"}
-                  placeholder={"스터디 룸 비밀번호를 입력해주세요"}
-                  value={roomStore.passwordInput}
-                  onChange={(e) =>
-                    roomStore.updatePasswordInput(e.target.value)
-                  }
-                />
+                <div
+                  className={`${enterRoomStyles["enter-room__info-form__input-form"]} typography__text--small`}
+                >
+                  <input
+                    ref={passwordInputRef}
+                    id={"password-input"}
+                    className={`${enterRoomStyles["enter-room__info-form__input"]} typography__text--small`}
+                    type={"password"}
+                    placeholder={"스터디 룸 비밀번호를 입력해주세요"}
+                    value={roomStore.passwordInput}
+                    onChange={(e) =>
+                      roomStore.updatePasswordInput(e.target.value)
+                    }
+                  />
+                </div>
               )}
               <div
                 className={`${enterRoomStyles["enter-room__info-form__hr"]}`}
@@ -339,6 +379,10 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
                       ]
                     }`}
                     onClick={() => {
+                      if (!micOn && !headphoneOn) {
+                        setHeadphoneOn(true);
+                        roomStore.unmuteHeadset();
+                      }
                       roomStore.enabledLocalAudio
                         ? roomStore.muteMicrophone()
                         : roomStore.unmuteMicrophone();
@@ -357,6 +401,13 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
                     ></div>
                   </div>
                 </div>
+                {roomStore.waitingRoomMessage && (
+                  <label
+                    className={`${enterRoomStyles["enter-room__error"]} typography__text--small`}
+                  >
+                    {roomStore.waitingRoomMessage}
+                  </label>
+                )}
                 <button
                   className={`${enterRoomStyles["enter-room__setting-form__enter-button"]} typography__text`}
                   onClick={() => roomStore.joinRoom()}
@@ -379,6 +430,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
               user-select: none;
               cursor: default;
             }
+
             .material-symbols-outlined {
               font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
               color: #ffffff;
@@ -392,6 +444,5 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore }> = observer(
         </style>
       </div>
     );
-  }
-);
+  });
 export default WaitingRoom;
