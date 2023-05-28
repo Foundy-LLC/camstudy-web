@@ -71,7 +71,7 @@ export class RoomService {
     }
   }
 
-  public async createRoom(room: Room): Promise<Result<string>> {
+  public async createRoom(room: Room): Promise<Result<RoomOverview>> {
     try {
       const requestBody = new RoomCreateRequestBody(
         room.masterId,
@@ -89,8 +89,9 @@ export class RoomService {
         body: JSON.stringify(requestBody),
         headers: HEADER,
       });
+
       if (response.ok) {
-        return Result.createSuccessUsingResponseMessage(response);
+        return Result.createSuccessUsingResponseData(response);
       } else {
         return await Result.createErrorUsingResponseMessage(response);
       }

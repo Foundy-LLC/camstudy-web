@@ -277,6 +277,9 @@ export const postRoomThumbnail = async (
   try {
     const multerUpload = multer({
       storage: multer.diskStorage({
+        destination: function (req, file, callback) {
+          callback(null, "uploads/");
+        },
         filename: function (req, file, callback) {
           const ext = path.extname(file.originalname);
           callback(null, uuidv4() + ext);
@@ -297,9 +300,7 @@ export const postRoomThumbnail = async (
       "rooms/" + roomId + ".png",
       file.path
     );
-
     await updateRoomThumbnail(roomId, signedUrl);
-
     res.status(201).send(
       new ResponseBody({
         message: SET_ROOM_THUMBNAIL_SUCCESS,

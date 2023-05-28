@@ -1,0 +1,407 @@
+@import "./color/colorPalette";
+
+.create-room__background {
+  z-index: 10;
+  background-color: #4B4C4E;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  opacity: 0.3;
+  top: 0;
+  left: 0;
+}
+
+.button-info__dialog{
+  z-index: 20;
+  position: absolute;
+  background-color: #FF2C1F;
+  &__label{
+
+  }
+}
+
+.create-room-form{
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  z-index: 11;
+  height: 774px;
+  width: 620px;
+  border-radius: 20px;
+  background-color: var(--ui-cardui-01);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+
+  .create-room__title{
+    margin-top: 28px;
+    margin-left: 28px;
+    display: flex;
+    align-items: center;
+    color: var(--text-01);
+    &__icon{
+
+    }
+    &__label{
+      margin-left: 4px;
+    }
+  }
+
+  .create-room__info-form{
+    display: flex;
+    margin-top: 32px;
+    margin-left: 28px;
+    margin-right: 28px;
+    border-bottom: 0.5px solid var(--system_ui-04);
+    .create-room__profile-image-form{
+      &__image{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 172px;
+        height: 172px;
+        border-radius: 12px;
+        background-color: var(--system_ui-01);
+        color: var(--system_ui-02);
+        position: relative;
+        &--empty{
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 172px;
+          height: 172px;
+          border-radius: 12px;
+          background-color: var(--system_ui-01);
+          color: var(--system_ui-02);
+          cursor: default;
+          position: relative;
+          span{
+            z-index: 10;
+            font-size: 120px;
+          }
+          .background{
+            width: 70px;
+            height: 70px;
+            position: absolute;
+            background-color: #FFFFFF;
+          }
+        }
+      }
+      &__cancel-button{
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        border-radius: 16px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--system_ui-09);
+        cursor: pointer;
+        span{
+          color: var(--system_ui-01);
+          font-size: 13px;
+          font-weight: 500;
+          padding: 2px;
+          cursor: pointer;
+        }
+      }
+      &__button{
+        display: flex;
+        align-items: center;
+        margin-top: 16px;
+        margin-bottom: 48px;
+        padding: 8px 16px;
+        background-color: #{$-Primary-05};
+        color: #{$-White};
+        border-radius: 8px;
+        cursor: pointer;
+        &__icon{
+          font-size: 22px;
+          cursor: pointer;
+        }
+        &__label{
+          cursor: pointer;
+          margin-left: 7px;
+        }
+        &:hover{
+          background-color: #{$-Primary-04};
+        }
+        &:active{
+          background-color: #{$-Primary-06};
+        }
+      }
+    }
+    .create-room__profile-form{
+      display: flex;
+      flex-direction: column;
+      margin-left: 28px;
+      &__title{
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 24px;
+        color: var(--system_ui-05);
+        &__label{
+          font-weight: 400;
+        }
+        &__input{
+          width: 316px;
+          height: 18px;
+          padding: 15px 16px 15px 16px;
+          border-radius: 8px;
+          border: none;
+          margin-top: 6px;
+          margin-bottom: 4px;
+          color:var(--text-01);
+          background-color: var(--system_ui-01);
+          font-weight: 400;
+          &:focus{
+            outline: none;
+          }
+        }
+
+        &__notice{
+          font-weight: 400;
+          color: var(--system_ui-04);
+        }
+        &__error{
+          font-weight: 400;
+          color: var(--error);
+        }
+      }
+      &__tag{
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 24px;
+        position: relative;
+        color: var(--system_ui-05);
+        &__label{
+          font-weight: 400;
+        }
+        &__input-form {
+          display: flex;
+          align-items: center;
+          height: 18px;
+          width: 336px;
+          padding: 15px 16px 15px 0px;
+          overflow: hidden;
+          border-radius: 8px;
+          border: none;
+          margin-top: 6px;
+          margin-bottom: 4px;
+          background-color: var(--system_ui-01);
+          font-weight: 400;
+          .create-room__profile-form__tag__selected-tags {
+            position:absolute;
+            width: auto;
+            display: grid;
+            grid:". . .";
+            gap:5px;
+            margin-left: 10px;
+            align-items: center;
+            margin-right: 10px;
+            .create-room__profile-form__tag__selected-tag {
+              padding: 4px 5px 4px 10px;
+              border-radius: 14px;
+              background-color: var(--profile-dialog__tag-background);
+              border: 1px solid var(--primary-press);
+              display: grid;
+              white-space: nowrap;
+              grid: ". .";
+              gap: 2px;
+              align-items: center;
+              cursor: default;
+              span{
+                color: var(--primary-press);
+                font-size: 12px;
+                cursor: pointer;
+              }
+              label {
+                max-width: 75px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                color: var(--primary-press);
+              }
+            }
+          }
+          input {
+            padding: 15px 16px 15px 16px;
+            background-color: var(--system_ui-01);
+            border: none;
+            color:var(--text-01);
+            &:focus{
+              outline: none;
+            }
+          }
+        }
+        &__notice{
+          font-weight: 400;
+          color: var(--system_ui-04);
+        }
+        &__error{
+          font-weight: 400;
+          color: var(--error);
+        }
+        .create-room__profile-form__recommend-tags{
+          z-index: 40;
+          width: 350px;
+          position: absolute;
+          left: 0px;
+          top:68px;
+          border:1px solid var(--primary);
+          background-color: var(--ui-cardui-01);
+          border-radius: 0px 0px 8px 8px;
+          overflow: hidden;
+          .create-room__profile-form__recommend-tag{
+            padding: 12px 16px;
+            cursor: pointer;
+            color: var(--system_ui-07);
+            font-weight: 400;
+            &:hover{
+              background-color: var(--system_ui-01);
+              cursor: pointer;
+            }
+          }
+        }
+      }
+
+    }
+  }
+
+  .create-room__setting-form{
+    display: flex;
+    flex-direction: column;
+    width: 564px;
+    margin: 32px 28px 0px 28px;
+    .create-room__private-form{
+      display: flex;
+      width: 564px;
+      &__label-form{
+        display: flex;
+        flex-direction: column;
+        &__title{
+          color: var(--text-02);
+        }
+        &__notice{
+          color: var(--text-04);
+        }
+      }
+      &__button{
+        display: flex;
+        margin-left: auto;
+        width: 48px;
+        height: 24px;
+        background-color: var(--profile-dialog__toggle-background);
+        position: relative;
+        cursor: pointer;
+        border-radius: 24px;
+        &__circle{
+          position: absolute;
+          border-radius: 24px;
+          left: 2px;
+          top:2px;
+          width: 20px;
+          height: 20px;
+          background-color: #FFFFFF;
+          cursor: pointer;
+        }
+        &--on{
+          display: flex;
+          align-items: center;
+          margin-left: auto;
+          width: 48px;
+          height: 24px;
+          background-color: var(--primary);
+          position: relative;
+          cursor: pointer;
+          border-radius: 24px;
+          div{
+            position: absolute;
+            border-radius: 24px;
+            left: auto;
+            right: 2px;
+            width: 20px;
+            height: 20px;
+            background-color: #FFFFFF;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .create-room__password-form{
+      display: flex;
+      flex-direction: column;
+      margin-top: 24px;
+      position: relative;
+      &__title{
+        color: var(--system_ui-05);
+      }
+      &__input{
+        color: var(--system_ui-05);
+        padding: 15px 16px 15px 16px;
+        border-radius: 8px;
+        border: none;
+        margin-top: 6px;
+        margin-bottom: 4px;
+        background-color: var(--system_ui-01);
+        font-weight: 400;
+      }
+      &__visible-button{
+        position: absolute;
+        padding: 2px;
+        left: 95%;
+        top:48%;
+        transform: translate(-50%,-50%);
+        font-size: 20px;
+        background-color: var(--system_ui-01);
+        cursor: default;
+        color: var(--system_ui-05);
+        &:hover{
+          color: var(--system_ui-07);
+        }
+      }
+      &__notice{
+        margin-top: 4px;
+        color: var(--system_ui-04);
+      }
+    }
+  }
+  .create-room__button-form {
+    display: grid;
+    grid: ". .";
+    gap: 16px;
+    margin: auto 28px 28px auto;
+    &__cancel-button{
+      background-color: var(--system_ui-03);
+      padding: 13px 46px;
+      border-radius: 8px;
+      color: var(--system_ui-05);
+      cursor:pointer;
+      label{
+        cursor:pointer;
+      }
+    }
+    &__create-button{
+      background-color: var(--primary);
+      cursor:pointer;
+      color: var(--system_ui-05);
+      padding: 13px 46px;
+      border-radius: 8px;
+      label{
+        color:var(--system_background);
+        cursor:pointer;
+      }
+      &:disabled{
+        cursor:default;
+        background-color: var(--system_ui-03);
+        label{
+          color: #{$-Gray-05};
+          cursor:default;
+        }
+      }
+    }
+  }
+}

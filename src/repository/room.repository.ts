@@ -211,6 +211,7 @@ export const createRoom = async (
 };
 
 export const updateRoomThumbnail = async (roomId: string, imageUrl: string) => {
+  console.log(imageUrl);
   await client.room.update({
     where: { id: roomId },
     data: { thumbnail: imageUrl },
