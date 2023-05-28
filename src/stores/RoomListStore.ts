@@ -43,13 +43,18 @@ export class RoomListStore {
   private _imageUrl: string = "";
   private _uploadedImgUrl?: string = "";
   private _isExistNextPage: boolean = true;
+  private _isRecommendRoomExistNextPage: boolean = true;
   private _roomOverviews: RoomOverview[] = [];
+  private _recommendedRoomOverviews: RoomOverview[] = [];
   private _recentRoomOverviews: RoomOverview[] = [];
   private _pageNum: number = 0;
+  private _recommendPageNum: number = 0;
   private _isSuccessCreate?: boolean = undefined;
   private _isSuccessGet: boolean = false;
+  private _isRecommendRoomSuccessGet: boolean = false;
   private _isSuccessDelete: boolean = false;
   private _errorMessage: string = "";
+  private _recommendRoomErrorMessage: string = "";
   private _tempRoom: Room = new Room();
   private _roomExpirate: number = 2;
   private _searchRoomNameInput: string = "";
@@ -77,6 +82,10 @@ export class RoomListStore {
 
   get roomOverviews(): RoomOverview[] {
     return this._roomOverviews;
+  }
+
+  get recommendedRoomOverviews(): RoomOverview[] {
+    return this._recommendedRoomOverviews;
   }
 
   get recentRoomOverviews(): RoomOverview[] {
@@ -107,6 +116,10 @@ export class RoomListStore {
     return this._isExistNextPage;
   }
 
+  get isRecommendRoomExistNextPage() {
+    return this._isRecommendRoomExistNextPage;
+  }
+
   get roomInfo() {
     return this._roomInfo;
   }
@@ -132,6 +145,10 @@ export class RoomListStore {
 
   private _initErrorMessage() {
     this._errorMessage = "";
+  }
+
+  private _initRecommedRoomErrorMessage() {
+    this._recommendRoomErrorMessage = "";
   }
 
   private _setRoomExpirationDate() {
@@ -226,6 +243,32 @@ export class RoomListStore {
     } catch (e) {
       runInAction(() => {
         if (e instanceof Error) this._errorMessage = e.message;
+      });
+    }
+  };
+
+  public fetchRecommendedRooms = async (userId: string): Promise<void> => {
+    const result = await this._roomService.getRecommendedRooms(userId);
+    this._recommendPageNum += 1;
+    if (result.isSuccess) {
+      runInAction(() => {
+        this._initRecommedRoomErrorMessage();
+        this._isRecommendRoomSuccessGet = true;
+        const roomList = result.getOrNull()!.rooms;
+        console.log(roomList);
+        if (roomList.length === ROOM_NUM_PER_PAGE)
+          this._isRecommendRoomExistNextPage = true;
+        if (roomList.length === 0) {
+          this._isRecommendRoomExistNextPage = false;
+        } else {
+          this._recommendedRoomOverviews =
+            this._recommendedRoomOverviews.concat(roomList);
+        }
+      });
+    } else {
+      runInAction(() => {
+        this._recommendRoomErrorMessage = result.throwableOrNull()!!.message;
+        this._isRecommendRoomSuccessGet = false;
       });
     }
   };

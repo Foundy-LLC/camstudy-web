@@ -11,7 +11,7 @@ import { verifyUserToken } from "@/service/verifyUserToken";
 import { useStores } from "@/stores/context";
 import { HarvestedCrop } from "@/models/crop/HarvestedCrop";
 import { Layout } from "@/components/Layout";
-import { RoomItemGroup } from "@/pages/rooms";
+import { RecommendedRoomItemGroup, RoomItemGroup } from "@/pages/rooms";
 import dashboardStyles from "@/styles/dashboard.module.scss";
 import homeStyles from "@/styles/index.module.scss";
 import Image from "next/image";
@@ -55,7 +55,7 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   useEffect(() => {
     userStore.fetchCurrentUser(uid);
     roomListStore.setMasterId(uid);
-    roomListStore.fetchRooms();
+    roomListStore.fetchRecommendedRooms(uid);
   }, []);
 
   useEffect(() => {
@@ -78,7 +78,9 @@ function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
             <Dashboard userId={uid} />
           </div>
           <div className={`${homeStyles["room-list-frame"]}`}>
-            <RoomItemGroup items={roomListStore.roomOverviews} />
+            <RecommendedRoomItemGroup
+              items={roomListStore.recommendedRoomOverviews}
+            />
           </div>
         </div>
       </Layout>

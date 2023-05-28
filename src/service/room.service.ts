@@ -2,7 +2,7 @@ import { Result } from "@/models/common/Result";
 import { RoomCreateRequestBody } from "@/models/room/RoomCreateRequestBody";
 import { RoomOverview } from "@/models/room/RoomOverview";
 import { Room } from "@/stores/RoomListStore";
-import { fetchAbsolute } from "@/utils/fetchAbsolute";
+import { fetchAbsolute, rankingApiFetch } from "@/utils/fetchAbsolute";
 import { RoomGetRequestBody } from "@/models/room/RoomGetRequestBody";
 
 const HEADER = {
@@ -61,6 +61,29 @@ export class RoomService {
           "Content-Type": "application/json",
         },
       });
+      if (response.ok) {
+        return Result.createSuccessUsingResponseData(response);
+      } else {
+        return Result.createErrorUsingResponseMessage(response);
+      }
+    } catch (e) {
+      return Result.createErrorUsingException(e);
+    }
+  }
+
+  public async getRecommendedRooms(
+    userId: string
+  ): Promise<Result<{ totalRoomCount: number; rooms: RoomOverview[] }>> {
+    try {
+      const response = await rankingApiFetch(
+        `api/users/${userId}/recommended-rooms`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.ok) {
         return Result.createSuccessUsingResponseData(response);
       } else {
