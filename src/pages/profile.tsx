@@ -158,7 +158,7 @@ const SimilarTagName: NextPage<{ item: Tag }> = observer(({ item }) => {
           const text = e.target as HTMLElement;
           (document.getElementById("tags") as HTMLInputElement).value = "";
           await profileStore.onChangeTagInput(text.textContent!);
-          await profileStore.enterTag();
+          await profileStore.enterTag(text.textContent!);
           profileStore.setTagDropDownHidden(true);
         }}
       >
@@ -196,10 +196,19 @@ const IntroduceForm: NextPage<{
             profileStore.onChanged(e);
             setChanged(true);
           }}
+          maxLength={20}
         />
-        <label className={"typography__caption"}>
-          다른 농부들에게 표시되는 닉네임입니다
-        </label>
+        {profileStore.editNameErrorMessage ? (
+          <label
+            className={`${profileStyles["nickname__error"]} typography__caption`}
+          >
+            {profileStore.editNameErrorMessage}
+          </label>
+        ) : (
+          <label className={"typography__caption"}>
+            다른 농부들에게 표시되는 닉네임입니다
+          </label>
+        )}
       </div>
       <div className={`${profileStyles["introduce"]} `}>
         <label className={"typography__caption"}>자기소개</label>
@@ -211,6 +220,7 @@ const IntroduceForm: NextPage<{
             profileStore.onChanged(e);
             setChanged(true);
           }}
+          maxLength={100}
         />
         <label className={"typography__caption"}>
           나를 나타낼 수 있는 소개 내용을 입력해주세요
@@ -412,15 +422,18 @@ const TagForm: NextPage = observer(() => {
           onKeyDown={async (e) => {
             let key = e.key || e.keyCode;
             if (key === "Enter" || key === 13) {
-              await profileStore.enterTag();
+              await profileStore.enterTag(searchInput);
               (document.getElementById("tags") as HTMLInputElement).value = "";
-              await profileStore.setTagDropDownHidden(true);
+              profileStore.setTagDropDownHidden(true);
               profileStore.onChangeTagInput("");
+              profileStore.initRecommendTags();
+              setSearchInput("");
             }
           }}
           onChange={(e) => {
             setSearchInput(e.target.value);
           }}
+          disabled={!profileStore.isTagInputDisable}
         />
         {profileStore.recommendTags.length !== 0 && (
           <SimilarTagNameGroup items={profileStore.recommendTags} />
@@ -516,7 +529,13 @@ const UserProfile: NextPage = observer(() => {
             <div
               id={"saveButton"}
               className={`${
-                profileStyles[`save-button${changed ? "" : "--disabled"}`]
+                profileStyles[
+                  `save-button${
+                    changed && profileStore.editNameErrorMessage === undefined
+                      ? ""
+                      : "--disabled"
+                  }`
+                ]
               } typography__text`}
               onClick={() => {
                 profileStore.updateProfileImage();

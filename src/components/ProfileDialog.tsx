@@ -335,12 +335,12 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                 <span
                   className={`${profileDialogStyles["profile-dialog__icon"]} material-symbols-sharp`}
                 >
-                  check
+                  person_remove
                 </span>
                 <label
                   className={`${profileDialogStyles["profile-dialog__friend-request__button__label"]} typography__text`}
                 >
-                  이미 친구입니다
+                  친구 취소하기
                 </label>
               </button>
             ) : (
