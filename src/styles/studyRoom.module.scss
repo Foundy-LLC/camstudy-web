@@ -46,6 +46,7 @@
             -moz-user-select:none;
             -ms-user-select:none;
             user-select:none;
+            overflow: hidden;
             label{
               color: $-Dark-06;
             }
