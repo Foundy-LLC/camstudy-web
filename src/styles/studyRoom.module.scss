@@ -25,14 +25,14 @@
         //padding: 80px 50px 0 50px;
         display: grid;
         grid: '. .';
-        gap:2px;
+        grid-gap: 4px;
 
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(2, 1fr);
 
         .study-room__user{
           width: 460px;
-          height: 400px;
+          height: 399px;
           background-color: #3D3D3D;
           display: flex;
           flex-direction: column;
@@ -46,6 +46,7 @@
             -moz-user-select:none;
             -ms-user-select:none;
             user-select:none;
+            overflow: hidden;
             label{
               color: $-Dark-06;
             }

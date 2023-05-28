@@ -1306,7 +1306,7 @@ export const Video: NextPage<{
       className="video"
       muted
       onClick={() => handleVideoControl({ userId: id })}
-      style={{ width: "inherit", height: "inherit" }}
+      style={{ width: "inherit" }}
     ></video>
   );
 };
