@@ -252,6 +252,7 @@ export class ProfileStore {
       this._introduce = this.userOverview.introduce;
       this._nickName = this.userOverview.name;
       this._imageUrl = this.userOverview.profileImage;
+      this._editNameErrorMessage = undefined;
     });
   };
 
