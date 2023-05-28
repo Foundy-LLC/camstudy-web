@@ -268,6 +268,7 @@ export class ProfileStore {
           this._userOverview = {
             id: this._userOverview!.id,
             name: this._nickName!,
+            requestHistory: "NONE",
             consecutiveStudyDays: this._userOverview!.consecutiveStudyDays,
             introduce: this._introduce!,
             tags: this._tags!,
