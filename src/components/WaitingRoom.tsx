@@ -46,17 +46,16 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
     };
 
     const toggleHeadphone = () => {
+      if (micOn && headphoneOn) {
+        setMicOn(false);
+        roomStore.muteMicrophone();
+      }
+
       setHeadphoneOn(!headphoneOn);
       roomStore.enabledHeadset
         ? roomStore.muteHeadset()
         : roomStore.unmuteHeadset();
       headphoneOn ? setShowDialog("헤드폰 켜기") : setShowDialog("헤드폰 끄기");
-
-      if (headphoneOn !== micOn) return;
-      setMicOn(!micOn);
-      roomStore.enabledLocalAudio
-        ? roomStore.muteMicrophone()
-        : roomStore.unmuteMicrophone();
     };
 
     const toggleMic = () => {
