@@ -34,6 +34,7 @@ import PrismaClientKnownRequestError = Prisma.PrismaClientKnownRequestError;
 import { FriendGetOverviewsBody } from "@/models/friend/FriendGetOverviewsBody";
 import { FriendRequestsGetBody } from "@/models/friend/FriendRequestsGetBody";
 import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
+import { friendStatus } from "@/constants/FriendStatus";
 
 export const sendFriendRequest = async (
   req: NextApiRequest,
@@ -59,14 +60,22 @@ export const sendFriendRequest = async (
         friendRequestBody.targetUserId,
         friendRequestBody.userId
       );
-      res
-        .status(200)
-        .send(new ResponseBody({ message: DIRECTLY_APPROVE_FRIEND_REQUEST }));
+      res.status(200).send(
+        new ResponseBody({
+          message: DIRECTLY_APPROVE_FRIEND_REQUEST,
+          data: friendStatus.ACCEPTED,
+        })
+      );
       return;
     }
 
     await addFriend(friendRequestBody.userId, friendRequestBody.targetUserId);
-    res.status(201).send(new ResponseBody({ message: FRIEND_REQUEST_SUCCESS }));
+    res.status(201).send(
+      new ResponseBody({
+        message: FRIEND_REQUEST_SUCCESS,
+        data: friendStatus.REQUESTED,
+      })
+    );
   } catch (e) {
     if (typeof e === "string") {
       res.status(400).send(new ResponseBody({ message: e }));
