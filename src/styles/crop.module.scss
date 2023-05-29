@@ -9,7 +9,7 @@
   width: 640px;
   height: 352px;
   max-width: 640px;
-  //max-height: 312px;
+  max-height: 352px;
   color: var(--system_ui-08);
 
   margin-bottom: 20px;
@@ -146,33 +146,67 @@
     }
   }
 
+  .my-pot_button--group{
+    display: flex;
+    gap: 12px;
+    margin: auto 20px 20px auto;
+  }
+
   .my-pot_button {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     padding: 8px 16px;
-    margin: auto 20px 20px auto;
+
     gap: 10px;
 
-    width: 86px;
     height: 38px;
 
     border-radius: 8px;
 
-    font-family: 'Pretendard';
     font-style: normal;
     font-weight: 500;
     font-size: 16px;
     line-height: 22px;
     letter-spacing: -0.5px;
-    /* Gray-05 */
-    background: var(--primary);
-    &:disabled{
-      background: var(--system_ui-02);
-      color: var(--system_ui-05);
+  }
+}
+
+.my-pot_button__harvest{
+  @extend .my-pot_button;
+
+  width: 86px;
+  background: var(--primary);
+  &:disabled{
+    background: var(--system_ui-02);
+    color: var(--system_ui-05);
+  }
+  &:enabled{
+    &:hover{
+      background: var(--primary-hover);
     }
-    color: var(--system_background);
+    &:active{
+      background: var(--primary-press);
+    }
+    &:focus{
+      background: var(--primary-focus);
+    }
+  }
+  color: var(--system_background);
+}
+
+.my-pot_button__remove{
+  @extend .my-pot_button;
+  border:1.5px solid var(--danger);
+  color: var(--danger);
+  width: 118px;
+  background: inherit;
+  &:hover{
+    background: var(--danger-01);
+  }
+  &:active{
+    background: var(--danger-03);
   }
 }
 

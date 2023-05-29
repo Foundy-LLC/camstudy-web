@@ -58,7 +58,7 @@ const MyPot: NextPage = observer(() => {
 
   return (
     <div className={`${cropStyles["my-pot"]}`}>
-      {cropStore.growingCrop != undefined ? (
+      {cropStore.growingCrop ? (
         <>
           <div className={`${cropStyles["my-pot_title"]}`}>
             <span className="material-symbols-outlined">grass</span>내 화분
@@ -172,30 +172,31 @@ const MyPot: NextPage = observer(() => {
               </div>
             </div>
           </div>
-          {!cropStore.growingCrop.isDead ? (
+          <div className={`${cropStyles["my-pot_button--group"]}`}>
             <button
-              className={`${cropStyles["my-pot_button"]}`}
-              disabled={harvestable(cropStore.growingCrop)}
-              onClick={() => {
-                if (confirm("작물을 수확하시겠습니까?")) {
-                  cropStore.harvestCrops(user.uid);
-                }
-              }}
-            >
-              수확하기
-            </button>
-          ) : (
-            <button
-              className={`${cropStyles["my-pot_button"]}`}
+              className={`${cropStyles["my-pot_button__remove"]}`}
               onClick={() => {
                 if (confirm("작물을 제거하시겠습니까?")) {
                   cropStore.removeCrop(user.uid, cropStore.growingCrop!.id);
                 }
               }}
             >
-              제거하기
+              작물 제거하기
             </button>
-          )}
+            {!cropStore.growingCrop.isDead ? (
+              <button
+                className={`${cropStyles["my-pot_button__harvest"]}`}
+                disabled={!harvestable(cropStore.growingCrop)}
+                onClick={() => {
+                  if (confirm("작물을 수확하시겠습니까?")) {
+                    cropStore.harvestCrops(user.uid);
+                  }
+                }}
+              >
+                수확하기
+              </button>
+            ) : undefined}
+          </div>
         </>
       ) : (
         <>
@@ -228,7 +229,7 @@ const MyPot: NextPage = observer(() => {
                 화분이 비어있습니다
               </div>
               <button
-                className={`${cropStyles["my-pot_button"]}`}
+                className={`${cropStyles["my-pot_button__harvest"]}`}
                 style={{ width: "133px", margin: 0 }}
                 onClick={() => setOpen(true)}
               >
