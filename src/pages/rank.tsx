@@ -281,17 +281,17 @@ const RankItemGroup: NextPage<{
               </label>
             </div>
 
-            {selected === rankType.WEEKLY && rankStore.userWeekRank ? (
+            {selected === rankType.WEEKLY && rankStore.myWeekRank ? (
               <RankItem
-                item={rankStore.userWeekRank}
+                item={rankStore.myWeekRank}
                 setModal={setModal}
                 isMine={true}
               />
             ) : (
               <>
-                {rankStore.userTotalRank && (
+                {rankStore.myTotalRank && (
                   <RankItem
-                    item={rankStore.userTotalRank}
+                    item={rankStore.myTotalRank}
                     setModal={setModal}
                     isMine={true}
                   />
