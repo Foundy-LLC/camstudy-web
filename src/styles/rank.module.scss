@@ -132,6 +132,7 @@
   border-radius: 16px;
   margin: 22px 40px 20px 20px;
   position: relative;
+
   .rank-header__menu{
   }
   .rank-form__subtitle{
@@ -158,12 +159,12 @@
         color: var(--text-01);
       }
       .my-rank-form__label__score{
-        margin-left: 476px;
+        margin-left: 490px;
         font-weight: 300;
         color: var(--text-03);
       }
       .my-rank-form__label__time{
-        margin-left: 130px;
+        margin-left: 163px;
         font-weight: 300;
         color: var(--text-03);
       }
@@ -232,6 +233,12 @@
     .rank-form__content__option{
       color: #{$-Gray-09};
     }
+    &:hover{
+      background-color: var(--my-rank-form-background--hover);
+    }
+    &:active{
+      background-color: var(--my-rank-form-background--active);
+    }
   }
 
   .rank-from__hr{
@@ -281,6 +288,13 @@
       .rank-form__content__ranking__label{
         color: #FFFFFF;
       }
+    }
+
+    &:hover{
+      background-color: var(--system_ui-01);
+    }
+    &:active{
+      background-color: var(--system_ui-02);
     }
   }
 
@@ -360,11 +374,11 @@
       }
     }
     .rank-form__content__record{
-      width: 330px;
+      width: 360px;
       height: 32px;
       display: flex;
       justify-content: space-between;
-      margin-left: 112px;
+      margin-left: 130px;
       color: var(--system_ui-05);
       .rank-form__content__score-form{
         width: 124px;
@@ -376,32 +390,6 @@
       }
       .rank-form__content__study-time{
         font-weight: 500;
-      }
-    }
-
-    .rank-form__content__option{
-      display: flex;
-      margin-left: auto;
-      margin-right: 34px;
-      font-size: 30px;
-      color: var(--text-emphasize);
-      cursor: pointer;
-      position: relative;
-      &-dialog{
-        position: absolute;
-        width: 61px;
-        background-color: var(--system_background);
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        padding: 7px 14px;
-        right: 10px;
-        top: 17px;
-        display: none;
-        border-radius: 8px 0px 8px 8px;
-        label{
-          cursor: pointer;
-        }
       }
     }
   }
