@@ -54,32 +54,32 @@
     color: var(--system_ui-08);
   }
 
-  .room-list__option-button{
-    position: relative;
-    margin-left: auto;
-    margin-right: 5px;
-    .room-list-icon {
-      margin: 24px 0px 0px 22px;
-      height: 20px;
-      width: 20px;
-      color: var(--system_ui-08);
-    }
-    .room-list__option-dialog{
-      position: absolute;
-      background-color: var(--ui-cardui-01);
-      padding: 7px 11px 7px 14px;
-      width: 65px;
-      left:-90px;
-      top:30px;
-      border-radius: 8px 0px 8px 8px;
-      cursor: pointer;
-      display: none;
-      label{
-        color:var(--text-01);
-        cursor: pointer;
-      }
-    }
-  }
+  //.room-list__option-button{
+  //  position: relative;
+  //  margin-left: auto;
+  //  margin-right: 5px;
+  //  .room-list-icon {
+  //    margin: 24px 0px 0px 22px;
+  //    height: 20px;
+  //    width: 20px;
+  //    color: var(--system_ui-08);
+  //  }
+  //  .room-list__option-dialog{
+  //    position: absolute;
+  //    background-color: var(--ui-cardui-01);
+  //    padding: 7px 11px 7px 14px;
+  //    width: 65px;
+  //    left:-90px;
+  //    top:30px;
+  //    border-radius: 8px 0px 8px 8px;
+  //    cursor: pointer;
+  //    display: none;
+  //    label{
+  //      color:var(--text-01);
+  //      cursor: pointer;
+  //    }
+  //  }
+  //}
 
   .room-list-title{
     width: 148px;
@@ -152,8 +152,8 @@
         }
 
         .room-title {
-          margin: 16px 12px 0px 0px;
-          width: 200px;
+          margin: 16px 2px 0px 0px;
+          max-width: 200px;
           height: 28px;
           color: var(--text-03);
           font-weight: 600;
@@ -161,7 +161,12 @@
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-
+        .room-list__lock-icon{
+          cursor: default;
+          margin-top: 19px;
+          font-size: 20px;
+          color: var(--text-03);
+        }
         .room-tags {
           width: 232px;
           height: 22px;
@@ -210,7 +215,7 @@
           width: 86px;
           height: 38px;
           margin-top: 7px;
-          background: #{$-Primary-06};
+          background: #{$-Primary-05};
           border: none;
           border-radius: 8px;
           display: flex;
@@ -228,11 +233,11 @@
           }
 
           &:hover {
-            background: $-primary-300;
+            background: #{$-Primary-03};
           }
 
           &:active {
-            background: var(--primary-press);
+            background: #{$-Primary-06};
           }
 
           &:disabled {
@@ -240,7 +245,7 @@
           }
 
           &:focus {
-            background: $-primary-400;
+            background: #{$-Primary-06};
           }
         }
       }

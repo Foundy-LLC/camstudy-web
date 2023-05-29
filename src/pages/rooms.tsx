@@ -114,38 +114,34 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
               </p>
               {!roomOverview.hasPassword ? null : (
                 <span
-                  className={`${roomListStyles["drag-unable"]} ${roomListStyles["room-list-icon"]} material-symbols-sharp`}
-                  style={{
-                    cursor: "default",
-                    marginTop: "20px",
-                    fontSize: "20px",
-                  }}
+                  className={`${roomListStyles["drag-unable"]} ${roomListStyles["room-list__lock-icon"]} material-symbols-sharp`}
                 >
                   lock
                 </span>
               )}
-              <div className={`${roomListStyles["room-list__option-button"]}`}>
-                <span
-                  className={`${roomListStyles["drag-unable"]} ${roomListStyles["room-list-icon"]} material-symbols-sharp`}
-                  style={{
-                    marginLeft: "auto",
-                    marginTop: "16px",
-                    marginRight: "16px",
-                    cursor: "pointer",
-                  }}
-                >
-                  more_horiz
-                </span>
-                {userStore.currentUser?.id === roomOverview.masterId && (
-                  <div
-                    className={`${roomListStyles["room-list__option-dialog"]} elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
-                  >
-                    <label className={"typography__text--small"}>
-                      방 삭제하기
-                    </label>
-                  </div>
-                )}
-              </div>
+
+              {/*<div className={`${roomListStyles["room-list__option-button"]}`}>*/}
+              {/*  <span*/}
+              {/*    className={`${roomListStyles["drag-unable"]} ${roomListStyles["room-list-icon"]} material-symbols-sharp`}*/}
+              {/*    style={{*/}
+              {/*      marginLeft: "auto",*/}
+              {/*      marginTop: "16px",*/}
+              {/*      marginRight: "16px",*/}
+              {/*      cursor: "pointer",*/}
+              {/*    }}*/}
+              {/*  >*/}
+              {/*    more_horiz*/}
+              {/*  </span>*/}
+              {/*  {userStore.currentUser?.id === roomOverview.masterId && (*/}
+              {/*    <div*/}
+              {/*      className={`${roomListStyles["room-list__option-dialog"]} elevation__navigation-drawer__modal-side-bottom-sheet__etc`}*/}
+              {/*    >*/}
+              {/*      <label className={"typography__text--small"}>*/}
+              {/*        방 삭제하기*/}
+              {/*      </label>*/}
+              {/*    </div>*/}
+              {/*  )}*/}
+              {/*</div>*/}
             </div>
             <div style={{ display: "inline-flex" }}>
               {roomOverview.tags && (
