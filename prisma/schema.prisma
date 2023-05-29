@@ -86,7 +86,7 @@ model room {
   deleted_at          DateTime?       @db.Timestamp(6)
   ranking_score       Decimal         @default(0.0) @db.Decimal
   room_vec            Json?           @db.Json
-  created_at          DateTime        @default(dbgenerated("'2023-01-01 00:00:00'::timestamp without time zone")) @db.Timestamp(6)
+  created_at          DateTime        @default(now()) @db.Timestamp(6)
   block               block[]
   report              report[]
   user_account        user_account    @relation(fields: [master_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "room_master_id__fk")
