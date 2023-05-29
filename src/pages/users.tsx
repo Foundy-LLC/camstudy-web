@@ -28,59 +28,33 @@ const FriendOverview: NextPage<{
 }> = observer(({ item, setModal }) => {
   const { friendStore } = useStores();
   const { id, name, profileImage, requestHistory, introduce, status } = item;
-  const [isModalHidden, setIsModalHidden] = useState<boolean>(true);
-
-  useEffect(() => {
-    if (isModalHidden === true) {
-      window.removeEventListener("click", windowClickHandler);
-    }
-  }, [isModalHidden]);
-  const windowClickHandler = (e: Event) => {
-    if ((e.target as Element).id.includes(`${id}__icon--etc`) === false) {
-      if (!document.getElementById(`${id}__modal`)) {
-        return;
-      }
-      document.getElementById(`${id}__modal`)!.style.display = "none";
-    }
-  };
-
-  const optionOnClick = (e: MouseEvent) => {
-    setIsModalHidden(false);
-    const modal = document.getElementById(`${id}__modal`)!;
-    modal.style.display = "block";
-    window.addEventListener("click", windowClickHandler);
-  };
 
   return (
     <>
       <div
         className={`${userStyles["search-user-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+        onClick={() => {
+          setModal(id);
+        }}
       >
-        <Image
-          width={50}
-          height={50}
-          src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
-          alt={`${name}-profileImg`}
-          className={`${userStyles["user-profile"]} `}
-        />
+        {profileImage ? (
+          <Image
+            width={40}
+            height={40}
+            src={profileImage}
+            alt={`${name}-profileImg`}
+            className={`${userStyles["user-profile"]} `}
+          />
+        ) : (
+          <div className={`${userStyles["user-profile"]}`}>
+            <span className="material-symbols-outlined">person</span>
+          </div>
+        )}
         <div className={`${userStyles["user-info"]} typography__text`}>
           <div style={{ display: "flex", flexDirection: "row" }}>
             <label className={`${userStyles["user-name"]} typography__text`}>
               {name}
             </label>{" "}
-            {status === UserStatus.LOGIN ? (
-              <label
-                className={`${userStyles["user-status-online"]} typography__caption`}
-              >
-                접속 중
-              </label>
-            ) : (
-              <label
-                className={`${userStyles["user-status-offline"]} typography__caption`}
-              >
-                로그오프
-              </label>
-            )}{" "}
           </div>
           <label
             className={`typography__text`}
@@ -88,6 +62,7 @@ const FriendOverview: NextPage<{
               color: "#838383",
               fontFamily: "Pretendard",
               fontWeight: "400",
+              cursor: "pointer",
             }}
           >
             {introduce}
@@ -101,26 +76,6 @@ const FriendOverview: NextPage<{
           ) : (
             <AcceptedButton name={name} userId={id} />
           )}
-          <div className={`${userStyles["user-option"]}`}>
-            <button
-              className={`${userStyles["user-option__button"]}`}
-              onClick={(e) => optionOnClick(e)}
-            >
-              <span id={id + "__icon--etc"} className="material-symbols-sharp">
-                more_horiz
-              </span>
-            </button>
-            <div
-              id={id + "__modal"}
-              className={`${userStyles["user-option__dialog"]} typography__text--small elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
-              onClick={() => {
-                setIsModalHidden(true);
-                setModal(id);
-              }}
-            >
-              <label>프로필 보기</label>
-            </div>
-          </div>
         </div>
       </div>
       <style jsx>

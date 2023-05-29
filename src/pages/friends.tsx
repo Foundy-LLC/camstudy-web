@@ -17,6 +17,7 @@ import {
   ProfileDialog,
   ProfileDialogContainer,
 } from "@/components/ProfileDialog";
+import userStyles from "@/styles/searchUser.module.scss";
 
 const FriendOverview: NextPage<{
   item: UserOverview;
@@ -56,32 +57,44 @@ const FriendOverview: NextPage<{
   return (
     <div
       className={`${friendStyles["friend-list-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+      onClick={(e) => {
+        if ((e.target as HTMLElement).id.includes("friend__" + id + "__icon"))
+          return;
+        setModal(id);
+      }}
     >
-      <Image
-        width={50}
-        height={50}
-        src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
-        alt={`${name}-profileImg`}
-        className={`${friendStyles["friend-profile"]} `}
-      />
+      {profileImage ? (
+        <Image
+          width={50}
+          height={50}
+          src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
+          alt={`${name}-profileImg`}
+          className={`${friendStyles["friend-profile"]} `}
+        />
+      ) : (
+        <div className={`${friendStyles["friend-profile"]} `}>
+          <span className="material-symbols-outlined">person</span>
+        </div>
+      )}
+
       <div className={`${friendStyles["friend-info"]} typography__text`}>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <label className={`${friendStyles["friend-name"]} typography__text`}>
             {name}
           </label>{" "}
-          {status === UserStatus.LOGIN ? (
-            <label
-              className={`${friendStyles["friend-status-online"]} typography__caption`}
-            >
-              접속 중
-            </label>
-          ) : (
-            <label
-              className={`${friendStyles["friend-status-offline"]} typography__caption`}
-            >
-              로그오프
-            </label>
-          )}{" "}
+          {/*{status === UserStatus.LOGIN ? (*/}
+          {/*  <label*/}
+          {/*    className={`${friendStyles["friend-status-online"]} typography__caption`}*/}
+          {/*  >*/}
+          {/*    접속 중*/}
+          {/*  </label>*/}
+          {/*) : (*/}
+          {/*  <label*/}
+          {/*    className={`${friendStyles["friend-status-offline"]} typography__caption`}*/}
+          {/*  >*/}
+          {/*    로그오프*/}
+          {/*  </label>*/}
+          {/*)}{" "}*/}
         </div>
         <label
           className={`typography__text`}
@@ -129,17 +142,6 @@ const FriendOverview: NextPage<{
               }}
             >
               친구 삭제
-            </li>
-            <li
-              className={`${friendStyles["friend-list__option__modal__li"]} typography__caption`}
-              onClick={() => {
-                document.getElementById(`friend__${id}__modal`)!.style.display =
-                  "none";
-                setModal(id);
-                window.removeEventListener("click", windowClickHandler);
-              }}
-            >
-              프로필 보기
             </li>
           </ul>
         </div>
@@ -308,14 +310,24 @@ const FriendRequest: NextPage<{
     <>
       <div
         className={`${friendStyles["friend-request__form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+        onClick={(e) => {
+          if ((e.target as HTMLElement).id.includes("icon")) return;
+          setModal(id);
+        }}
       >
-        <Image
-          width={50}
-          height={50}
-          src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
-          alt={`${name}-profileImg`}
-          className={`${friendStyles["friend-request__image"]} `}
-        />
+        {profileImage ? (
+          <Image
+            width={50}
+            height={50}
+            src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
+            alt={`${name}-profileImg`}
+            className={`${friendStyles["friend-request__image"]} `}
+          />
+        ) : (
+          <div className={`${friendStyles["friend-request__image"]} `}>
+            <span className="material-symbols-outlined">person</span>
+          </div>
+        )}
         <div
           className={`${friendStyles["friend-request__info"]} typography__text`}
         >
@@ -334,6 +346,7 @@ const FriendRequest: NextPage<{
         </div>
         <div className={`${friendStyles["friend-requester__icons"]}`}>
           <span
+            id={item.id + "__icon--add"}
             className={`${friendStyles["friend-requester__icon--add"]} material-symbols-sharp`}
             onClick={async () => {
               if (
@@ -376,17 +389,6 @@ const FriendRequest: NextPage<{
                 }}
               >
                 친구 요청 거절
-              </li>
-              <li
-                className={`${friendStyles["friend-requester__option__modal__li"]} typography__caption`}
-                onClick={() => {
-                  document.getElementById(`${id}__modal`)!.style.display =
-                    "none";
-                  setModal(id);
-                  window.removeEventListener("click", windowClickHandler);
-                }}
-              >
-                프로필 보기
               </li>
             </ul>
           </div>
@@ -455,47 +457,29 @@ const FriendRecommend: NextPage<{
 }> = observer(({ item, setModal }) => {
   const { friendStore } = useStores();
   const { id, name, profileImage, introduce, status } = item;
-  const [isModalHidden, setIsModalHidden] = useState<boolean>(true);
-
-  useEffect(() => {
-    if (isModalHidden === true) {
-      window.removeEventListener("click", windowClickHandler);
-    }
-  }, [isModalHidden]);
-  const windowClickHandler = (e: Event) => {
-    if (
-      (e.target as Element).id.includes(`${id}__icon--etc`) === false &&
-      (e.target as Element).className.includes(
-        "friend-requester__option__modal"
-      ) === false
-    ) {
-      if (!document.getElementById(`recommended__${id}__modal`)) {
-        return;
-      }
-      document.getElementById(`recommended__${id}__modal`)!.style.display =
-        "none";
-    }
-  };
-
-  const optionOnClick = (e: MouseEvent) => {
-    setIsModalHidden(false);
-    const modal = document.getElementById(`recommended__${id}__modal`)!;
-    modal.style.display = "block";
-    window.addEventListener("click", windowClickHandler);
-  };
 
   return (
     <>
       <div
         className={`${friendStyles["friend-recommend__form"]} elevation__card__search-bar__contained-button--waiting__etc`}
+        onClick={() => {
+          setModal(id);
+        }}
       >
-        <Image
-          width={50}
-          height={50}
-          src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
-          alt={`${name}-profileImg`}
-          className={`${friendStyles["friend-recommend__image"]} `}
-        />
+        {profileImage ? (
+          <Image
+            width={50}
+            height={50}
+            src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
+            alt={`${name}-profileImg`}
+            className={`${friendStyles["friend-recommend__image"]} `}
+          />
+        ) : (
+          <div className={`${friendStyles["friend-recommend__image"]} `}>
+            <span className="material-symbols-outlined">person</span>
+          </div>
+        )}
+
         <div
           className={`${friendStyles["friend-recommend__info"]} typography__text`}
         >
@@ -511,36 +495,6 @@ const FriendRecommend: NextPage<{
           >
             {introduce}
           </label>
-        </div>
-        <div className={`${friendStyles["friend-recommend__icons"]}`}>
-          <span
-            id={"recommended__" + item.id + "__icon--etc"}
-            className={`${friendStyles["friend-recommend__icon--etc"]} material-symbols-sharp`}
-            onClick={(e) => optionOnClick(e)}
-          >
-            more_horiz
-          </span>
-          <div
-            id={"recommended__" + item.id + "__modal"}
-            className={`${friendStyles["friend-recommend__option__modal"]} elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
-          >
-            <ul
-              className={`${friendStyles["friend-recommend__option__modal__ul"]}`}
-            >
-              <li
-                className={`${friendStyles["friend-recommend__option__modal__li"]} typography__caption`}
-                onClick={() => {
-                  document.getElementById(
-                    `recommended__${id}__modal`
-                  )!.style.display = "none";
-                  setModal(id);
-                  window.removeEventListener("click", windowClickHandler);
-                }}
-              >
-                프로필 보기
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
       <style jsx>

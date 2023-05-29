@@ -60,18 +60,39 @@
       background-color: var(--ui-cardui-02);
       border: 0.5px solid var(--system_ui-04);
       border-radius: 8px;
+      cursor: pointer;
+
+      &:hover{
+        background: var(--system_ui-01);
+      }
+      &:active{
+        background: var(--system_ui-02);
+      }
 
       .user-profile{
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin:16px;
         width: 40px;
         height: 40px;
         border-radius: 8px;
+        cursor: pointer;
+        background-color: var(--system_ui-01);
+        span{
+          font-variation-settings:
+                  'FILL' 1,
+                  'wght' 400,
+                  'GRAD' 0,
+                  'opsz' 48;
+          color: var(--system_ui-03);
+        }
       }
       .user-info{
         width: 240px;
         height: 22px;
         margin-top: 16px;
-
+        cursor: pointer;
         .user-name{
           width: 114px;
           height: 22px;
@@ -79,62 +100,21 @@
           font-weight: 500;
           font-family: "Pretendard";
           margin-right: 8px;
-        }
-        .user-status-online{
-          margin-top: 3px;
-          color: var(--success);
-        }
-        .user-status-offline{
-          margin-top: 3px;
-          color: var(--error);
+          cursor: pointer;
         }
       }
 
       .user-button{
         display: flex;
         margin-left: auto;
-        margin-right: 20px;
+        margin-right: 10px;
         align-items: center;
-        background-color: var(--ui-cardui-02);
+        background-color: inherit;
         .user-add-friend__button{
           margin-right: 20px;
-          background-color: var(--ui-cardui-02);
+          background-color: inherit;
           color: var(--text-01);
           cursor: pointer;
-        }
-        .user-option{
-          position: relative;
-          &__button {
-            height: 30px;
-            background-color: var(--ui-cardui-02);
-            color: var(--text-01);
-            cursor: pointer;
-            .user-option-icon {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              width: 16px;
-              height: 4px;
-            }
-          }
-          &__dialog{
-            position: absolute;
-            width: 70px;
-            background-color: var(--ui-cardui);
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            padding: 7px 10px;
-            right: 10px;
-            top: 17px;
-            display: none;
-            border-radius: 8px 0px 8px 8px;
-            label{
-              padding:4px ;
-              color: var(--text-01);
-              cursor: pointer;
-            }
-          }
         }
       }
     }
