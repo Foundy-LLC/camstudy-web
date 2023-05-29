@@ -183,6 +183,7 @@
   &:disabled{
     background: var(--system_ui-02);
     color: var(--system_ui-05);
+    cursor: default;
   }
   &:enabled{
     &:hover{
