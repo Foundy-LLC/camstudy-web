@@ -304,15 +304,16 @@
       .profile-dialog__friend-request__button--accepted {
         display: flex;
         align-items: center;
-        width: 150px;
         height: 38px;
-        background-color: var(--system_ui-02);
+        border: 1px solid var(--primary); ;
+        background-color: inherit;
         border-radius: 8px;
         color: #ffffff;
         margin: 42px 20px 24px auto;
         cursor: pointer;
 
         .profile-dialog__icon {
+          color: var(--primary);
           font-size: 16px;
           margin-left: 16.83px;
           margin-right: 10.83px;
@@ -320,6 +321,7 @@
         }
 
         .profile-dialog__friend-request__button__label {
+          color: var(--primary);
           margin-right: 16px;
           cursor: pointer;
         }
