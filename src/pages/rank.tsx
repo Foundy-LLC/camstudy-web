@@ -23,42 +23,6 @@ const RankItem: NextPage<{
   setModal: (id: string) => void;
   isMine: boolean;
 }> = observer(({ item, setModal, isMine }) => {
-  const [dialogHidden, setDialogHidden] = useState<boolean>(true);
-
-  useEffect(() => {
-    if (dialogHidden === true) {
-      window.removeEventListener("click", windowClickHandler);
-    }
-  }, [dialogHidden]);
-  const windowClickHandler = (e: Event) => {
-    console.log((e.target as Element).className);
-    if (
-      (e.target as Element).id.includes(
-        isMine ? "my-option-icon" : `${item.id}-option-icon`
-      ) === false
-    ) {
-      if (
-        !document.getElementById(
-          isMine ? "my-option-dialog" : `${item.id}-option-dialog`
-        )
-      ) {
-        return;
-      }
-      const modal = (document.getElementById(
-        isMine ? "my-option-dialog" : `${item.id}-option-dialog`
-      )!.style.display = "none");
-    }
-  };
-
-  const optionOnClick = (e: MouseEvent) => {
-    setDialogHidden(false);
-    const modal = document.getElementById(
-      isMine ? "my-option-dialog" : `${item.id}-option-dialog`
-    )!;
-    modal.style.display = "block";
-    window.addEventListener("click", windowClickHandler);
-  };
-
   useEffect(() => {
     let id = item.ranking.toString();
     const rankDiv = document.getElementById(id);
@@ -98,6 +62,9 @@ const RankItem: NextPage<{
     <>
       <div
         className={`${rankStyles["rank-form__content"]} elevation__card__search-bar__contained-button--waiting__etc`}
+        onClick={() => {
+          setModal(item.id);
+        }}
       >
         <div
           id={item.ranking.toString()}
@@ -150,28 +117,6 @@ const RankItem: NextPage<{
           >
             {item.studyTime ? timeToString(item.studyTime) : "0시간 0분"}
           </label>
-        </div>
-        <div className={`${rankStyles["rank-form__content__option"]}`}>
-          <span
-            id={isMine ? "my-option-icon" : `${item.id}-option-icon`}
-            className={`${rankStyles["rank-form__content__option-icon"]} material-symbols-sharp`}
-            onClick={(e) => {
-              optionOnClick(e);
-              setDialogHidden(false);
-            }}
-          >
-            more_horiz
-          </span>
-          <div
-            id={isMine ? "my-option-dialog" : `${item.id}-option-dialog`}
-            className={`${rankStyles["rank-form__content__option-dialog"]} typography__text--small elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
-            onClick={() => {
-              setDialogHidden(true);
-              setModal(item.id);
-            }}
-          >
-            <label>프로필 보기</label>
-          </div>
         </div>
       </div>
       <style jsx>
