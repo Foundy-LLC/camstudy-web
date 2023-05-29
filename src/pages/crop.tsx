@@ -13,6 +13,7 @@ import { Crops, CROPS } from "@/constants/crops";
 import { GrowingCrop } from "@/models/crop/GrowingCrop";
 import { fruit_grade } from "@prisma/client";
 import Modal from "react-modal";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const crop: NextPage = () => {
   return (
@@ -38,7 +39,7 @@ const MyPot: NextPage = observer(() => {
   const [open, setOpen] = useState<boolean>(false);
 
   if (loading) {
-    return <div>Loading</div>;
+    return <LoadingSpinner />;
   }
   if (!user) {
     router.replace("/login");

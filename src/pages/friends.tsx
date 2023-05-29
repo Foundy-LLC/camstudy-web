@@ -18,6 +18,7 @@ import {
   ProfileDialogContainer,
 } from "@/components/ProfileDialog";
 import userStyles from "@/styles/searchUser.module.scss";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const FriendOverview: NextPage<{
   item: UserOverview;
@@ -526,7 +527,7 @@ const friends: NextPage = observer(() => {
   }, [userStore.currentUser]);
 
   if (loading) {
-    return <div>Loading</div>;
+    return <LoadingSpinner />;
   }
 
   if (!user) {

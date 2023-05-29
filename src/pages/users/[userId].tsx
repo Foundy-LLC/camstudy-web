@@ -7,6 +7,7 @@ import { ResponseBody } from "@/models/common/ResponseBody";
 import { UserProfileImage } from "@/components/UserProfileImage";
 import { NOT_FOUND_USER_MESSAGE } from "@/constants/message";
 import { useRouter } from "next/router";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return await verifyUserToken(ctx);
@@ -27,7 +28,7 @@ function UserProfile(
   if (error) return "error";
   if (data?.message === NOT_FOUND_USER_MESSAGE || user === undefined)
     return NOT_FOUND_USER_MESSAGE;
-  if (isLoading) return "Loading";
+  if (isLoading) return <LoadingSpinner />;
   if (user != undefined)
     return (
       <div>
