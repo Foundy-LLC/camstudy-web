@@ -56,7 +56,7 @@ export const findRooms = async (
     },
     skip: pageNum * ROOM_NUM_PER_PAGE,
     take: ROOM_NUM_PER_PAGE,
-    orderBy: { expired_at: "desc" },
+    orderBy: { created_at: "desc" },
     include: {
       study_history: {
         where: {
