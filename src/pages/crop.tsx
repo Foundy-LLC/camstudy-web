@@ -57,8 +57,13 @@ const MyPot: NextPage = observer(() => {
   }, [cropStore.growingCrop]);
 
   return (
-    <div className={`${cropStyles["my-pot"]}`}>
-      {cropStore.growingCrop != undefined ? (
+    <div
+      className={`${cropStyles["my-pot"]}`}
+      style={
+        cropStore.growingCrop == undefined ? { maxHeight: 312 } : undefined
+      }
+    >
+      {cropStore.growingCrop ? (
         <>
           <div className={`${cropStyles["my-pot_title"]}`}>
             <span className="material-symbols-outlined">grass</span>내 화분
@@ -172,30 +177,31 @@ const MyPot: NextPage = observer(() => {
               </div>
             </div>
           </div>
-          {!cropStore.growingCrop.isDead ? (
+          <div className={`${cropStyles["my-pot_button--group"]}`}>
             <button
-              className={`${cropStyles["my-pot_button"]}`}
-              disabled={harvestable(cropStore.growingCrop)}
-              onClick={() => {
-                if (confirm("작물을 수확하시겠습니까?")) {
-                  cropStore.harvestCrops(user.uid);
-                }
-              }}
-            >
-              수확하기
-            </button>
-          ) : (
-            <button
-              className={`${cropStyles["my-pot_button"]}`}
+              className={`${cropStyles["my-pot_button__remove"]}`}
               onClick={() => {
                 if (confirm("작물을 제거하시겠습니까?")) {
                   cropStore.removeCrop(user.uid, cropStore.growingCrop!.id);
                 }
               }}
             >
-              제거하기
+              작물 제거하기
             </button>
-          )}
+            {!cropStore.growingCrop.isDead ? (
+              <button
+                className={`${cropStyles["my-pot_button__harvest"]}`}
+                disabled={!harvestable(cropStore.growingCrop)}
+                onClick={() => {
+                  if (confirm("작물을 수확하시겠습니까?")) {
+                    cropStore.harvestCrops(user.uid);
+                  }
+                }}
+              >
+                수확하기
+              </button>
+            ) : undefined}
+          </div>
         </>
       ) : (
         <>
@@ -228,7 +234,7 @@ const MyPot: NextPage = observer(() => {
                 화분이 비어있습니다
               </div>
               <button
-                className={`${cropStyles["my-pot_button"]}`}
+                className={`${cropStyles["my-pot_button__harvest"]}`}
                 style={{ width: "133px", margin: 0 }}
                 onClick={() => setOpen(true)}
               >
@@ -253,7 +259,7 @@ const MyPot: NextPage = observer(() => {
               },
             }}
           >
-            <CropListPopup userId={user.uid}></CropListPopup>
+            <CropListPopup userId={user.uid} setOpen={setOpen}></CropListPopup>
           </Modal>
         </>
       )}
@@ -263,7 +269,8 @@ const MyPot: NextPage = observer(() => {
 
 export const CropListPopup: NextPage<{
   userId: string;
-}> = ({ userId }) => {
+  setOpen: (flag: boolean) => void;
+}> = ({ userId, setOpen }) => {
   const { cropStore } = useStores();
   const [selectedOption, setSelectedOption] = useState<Crops>(CROPS[0]);
 
@@ -322,6 +329,7 @@ export const CropListPopup: NextPage<{
             className={`${cropListPopupStyles["plantingButton"]}`}
             onClick={() => {
               cropStore.plantingCrop(userId, selectedOption.type);
+              setOpen(false);
             }}
           >
             작물 심기
@@ -400,8 +408,6 @@ export const CropListPopup: NextPage<{
 
 const MyPlants: NextPage = observer(() => {
   const { cropStore } = useStores();
-
-  console.log(cropStore.harvestedCrops);
 
   return (
     <div className={`${cropStyles["my-plants"]}`}>

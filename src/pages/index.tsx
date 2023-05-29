@@ -222,7 +222,10 @@ const CropDashBoard = () => {
         }}
       >
         {userStore.currentUser && (
-          <CropListPopup userId={userStore.currentUser.id}></CropListPopup>
+          <CropListPopup
+            userId={userStore.currentUser.id}
+            setOpen={setOpen}
+          ></CropListPopup>
         )}
       </Modal>
       <style jsx>{`

@@ -253,7 +253,9 @@ body[color-theme='light'] {
 
   //Process Color
   --primary: #{$-Primary-05};
+  --primary-hover: #{$-Primary-03};
   --primary-press: #{$-Primary-06};
+  --primary-focus: #{$-Primary-04};
   --primary-text:  #{$-Primary-06};
   --secondary: #{$-Gray-08};
   --secondary-press: #{$-Gray-09};
@@ -264,6 +266,8 @@ body[color-theme='light'] {
   --cancel: #{$-Gray-03};
   --cancel-press: #{$-Gray-04};
   --danger: #{$-Danger-06};
+  --danger-01: #{$-Danger-01};
+  --danger-03: #{$-Danger-03};
   --danger-press: #{$-Danger-07};
 
   --primary-02: #{$-Primary-02};
@@ -307,7 +311,9 @@ body[color-theme='dark'] {
 
   //Process Color
   --primary: #{$-Primary-03};
+  --primary-hover: #{$-Primary-02};
   --primary-press: #{$-Primary-02};
+  --primary-focus: #{$-Primary-04};
   --primary-text:  #{$-Primary-07};
   --secondary: #{$-Dark-09};
   --secondary-press: #{$-White};
@@ -318,6 +324,8 @@ body[color-theme='dark'] {
   --cancel: #{$-Dark-05};
   --cancel-press: #{$-Dark-06};
   --danger: #{$-Danger-04};
+  --danger-01: #{$-Dark-01};
+  --danger-03: #{$-Black};
   --danger-press: #{$-Danger-03};
 
   --status-login: #{$-Success-02};

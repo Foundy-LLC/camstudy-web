@@ -164,6 +164,7 @@ export class CropStore {
       );
       runInAction(() => {
         this._growingCrop = undefined;
+        this._cropImageSrc = undefined;
       });
       if (result.isSuccess) {
         await this.fetchGrowingCrop(requestBody.userId);
