@@ -110,17 +110,19 @@
         }
 
         .friend-option{
+          display: flex;
+          align-items: center;
           position: relative;
-          margin-top: 24px;
           margin-left: auto;
-          margin-right: 18px;
-
-
           .friend-option-button {
             display: flex;
             align-items: center;
             cursor: pointer;
+            border-radius: 10px;
             background-color: inherit;
+            position: absolute;
+            right: 18px;
+            padding: 4px;
             .friend-option-icon {
               z-index: 1;
               width: 24px;
@@ -129,13 +131,16 @@
               margin: auto;
               cursor: pointer;
             }
+            &:hover{
+              background-color: var(--ui-cardui-02);
+            }
           }
 
           .friend-list__option__modal{
             z-index: 1;
             position: absolute;
-            top:18px;
-            left: -68px;
+            top:38px;
+            left: -115px;
             display: none;
             border-radius: 8px 0px 8px 8px;
             background-color: var(--ui-cardui);
@@ -268,17 +273,27 @@
           .friend-requester__icon--add{
             color: var(--system_ui-10);
             cursor: pointer;
+            padding: 6px;
+            border-radius: 12px;
+            &:hover{
+              background: var(--ui-cardui-02);
+            }
           }
           .friend-requester__icon--etc{
             color: var(--system_ui-10);
-            margin-left: 19px;
+            margin-left: 6px;
             cursor: pointer;
+            padding: 6px;
+            border-radius: 12px;
+            &:hover{
+              background: var(--ui-cardui-02);
+            }
           }
           .friend-requester__option__modal{
             z-index: 1;
             position: absolute;
             top:18px;
-            left: -30px;
+            left: -32px;
             display: none;
             border-radius: 8px 0px 8px 8px;
             background-color: var(--ui-cardui);

@@ -107,14 +107,21 @@
       .user-button{
         display: flex;
         margin-left: auto;
-        margin-right: 10px;
+        margin-right: 20px;
         align-items: center;
         background-color: inherit;
         .user-add-friend__button{
-          margin-right: 20px;
           background-color: inherit;
           color: var(--text-01);
           cursor: pointer;
+          padding: 5px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          &:hover{
+            background-color: var(--ui-cardui-02);
+          }
         }
       }
     }
