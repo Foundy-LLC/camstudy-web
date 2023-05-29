@@ -57,7 +57,12 @@ const MyPot: NextPage = observer(() => {
   }, [cropStore.growingCrop]);
 
   return (
-    <div className={`${cropStyles["my-pot"]}`}>
+    <div
+      className={`${cropStyles["my-pot"]}`}
+      style={
+        cropStore.growingCrop == undefined ? { maxHeight: 312 } : undefined
+      }
+    >
       {cropStore.growingCrop ? (
         <>
           <div className={`${cropStyles["my-pot_title"]}`}>
@@ -254,7 +259,7 @@ const MyPot: NextPage = observer(() => {
               },
             }}
           >
-            <CropListPopup userId={user.uid}></CropListPopup>
+            <CropListPopup userId={user.uid} setOpen={setOpen}></CropListPopup>
           </Modal>
         </>
       )}
@@ -264,7 +269,8 @@ const MyPot: NextPage = observer(() => {
 
 export const CropListPopup: NextPage<{
   userId: string;
-}> = ({ userId }) => {
+  setOpen: (flag: boolean) => void;
+}> = ({ userId, setOpen }) => {
   const { cropStore } = useStores();
   const [selectedOption, setSelectedOption] = useState<Crops>(CROPS[0]);
 
@@ -323,6 +329,7 @@ export const CropListPopup: NextPage<{
             className={`${cropListPopupStyles["plantingButton"]}`}
             onClick={() => {
               cropStore.plantingCrop(userId, selectedOption.type);
+              setOpen(false);
             }}
           >
             작물 심기
@@ -401,8 +408,6 @@ export const CropListPopup: NextPage<{
 
 const MyPlants: NextPage = observer(() => {
   const { cropStore } = useStores();
-
-  console.log(cropStore.harvestedCrops);
 
   return (
     <div className={`${cropStyles["my-plants"]}`}>

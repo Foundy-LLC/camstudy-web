@@ -170,6 +170,8 @@
     font-size: 16px;
     line-height: 22px;
     letter-spacing: -0.5px;
+
+    cursor: pointer;
   }
 }
 
@@ -200,7 +202,6 @@
   @extend .my-pot_button;
   border:1.5px solid var(--danger);
   color: var(--danger);
-  width: 118px;
   background: inherit;
   &:hover{
     background: var(--danger-01);
