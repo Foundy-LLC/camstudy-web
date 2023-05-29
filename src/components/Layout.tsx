@@ -4,12 +4,13 @@ import React from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/service/firebase";
 import router from "next/router";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export const Layout = (props: { children: React.ReactNode }) => {
   const [user, loading] = useAuthState(auth);
 
   if (loading) {
-    return <div>Loading</div>;
+    return <LoadingSpinner />;
   }
   if (!user) {
     router.replace("/login");

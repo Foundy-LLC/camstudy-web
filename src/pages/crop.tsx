@@ -15,7 +15,7 @@ import { fruit_grade } from "@prisma/client";
 import Modal from "react-modal";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
-const crop: NextPage = () => {
+const Crop: NextPage = () => {
   return (
     <Layout>
       <h1 className={`${cropStyles["title"]} typography__sub-headline`}>
@@ -554,4 +554,4 @@ const harvestable = (crop: GrowingCrop) => {
   return !(hour < 0 && minute < 0);
 };
 
-export default crop;
+export default Crop;
