@@ -16,6 +16,8 @@ export class RankStore {
   private _rankList?: UserRankingOverview[] = undefined;
   private _userTotalRank?: UserRankingOverview = undefined;
   private _userWeekRank?: UserRankingOverview = undefined;
+  private _myTotalRank?: UserRankingOverview = undefined;
+  private _myWeekRank?: UserRankingOverview = undefined;
   private _rankMaxPage?: number = undefined;
   private _totalUserCount?: number = undefined;
   private _weeklyUserCount?: number = undefined;
@@ -48,6 +50,14 @@ export class RankStore {
 
   public get userWeekRank() {
     return this._userWeekRank;
+  }
+
+  public get myTotalRank() {
+    return this._myTotalRank;
+  }
+
+  public get myWeekRank() {
+    return this._myWeekRank;
   }
 
   public get rankMaxPage() {
@@ -117,6 +127,7 @@ export class RankStore {
 
   public getUserTotalRank = async (userId: string) => {
     try {
+      if (!this.userStore.currentUser) return;
       const result = await this._rankService.getUserRank(
         userId,
         this._selectedOrganizationId,
@@ -125,7 +136,12 @@ export class RankStore {
       if (result.isSuccess) {
         runInAction(() => {
           const { totalUserCount, users } = result.getOrNull()!;
-          this._userTotalRank = users;
+          if (userId === this.userStore.currentUser!.id) {
+            this._myTotalRank = users;
+            this._userTotalRank = users;
+          } else {
+            this._userTotalRank = users;
+          }
           this._totalUserCount = Number(totalUserCount);
           this.setTotalPercentile();
           this._rankMaxPage =
@@ -147,6 +163,7 @@ export class RankStore {
 
   public getUserWeeklyRank = async (userId: string) => {
     try {
+      if (!this.userStore.currentUser) return;
       const result = await this._rankService.getUserRank(
         userId,
         this._selectedOrganizationId,
@@ -155,7 +172,12 @@ export class RankStore {
       if (result.isSuccess) {
         runInAction(() => {
           const { totalUserCount, users } = result.getOrNull()!;
-          this._userWeekRank = users;
+          if (userId === this.userStore.currentUser!.id) {
+            this._myWeekRank = users;
+            this._userWeekRank = users;
+          } else {
+            this._userWeekRank = users;
+          }
           this._weeklyUserCount = Number(totalUserCount);
           this._rankMaxPage =
             Number(totalUserCount) % RANKING_NUM_PER_PAGE === 0
