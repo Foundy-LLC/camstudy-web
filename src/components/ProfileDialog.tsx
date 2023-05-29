@@ -292,7 +292,7 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
                 </label>
               </div>
             </div>
-            {userStore.currentUser?.id !== user?.id ? (
+            {userStore.currentUser?.id === user?.id ? (
               <></>
             ) : user?.requestHistory === friendStatus.REQUESTED ? (
               <button
