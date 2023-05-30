@@ -195,11 +195,6 @@
           font-weight: 500;
           color: #{$-Gray-09};
         }
-        .rank-form__content__status{
-          margin-left:8px;
-          font-weight: 600;
-          color: #{$-Success-08};
-        }
       }
       .rank-form__content__introduce{
         display: block;
@@ -309,6 +304,7 @@
     display: flex;
     align-items: center;
     position: relative;
+    cursor: pointer;
 
     .rank-form__content__ranking[rank='etc']{
       width: 40px;
@@ -319,6 +315,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      cursor: pointer;
       .rank-form__content__ranking__label{
         color: #FFFFFF;
       }
@@ -333,6 +330,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      cursor: pointer;
       .rank-form__content__ranking__label{
         color: #FFFFFF;
       }
@@ -343,24 +341,35 @@
       height: 40px;
       background-color: var(--system_ui-02);
       border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      span{
+        color: var(--system_ui-03);
+      }
     }
     .rank-form__content__profile{
       margin-left: 16px;
       display: flex;
       flex-direction: column;
+      cursor: pointer;
       .rank-form__content__info{
         display: flex;
         align-items: center;
+        cursor: pointer;
         .rank-form__content__nickname{
           width: 114px;
           height: 22px;
           font-weight: 500;
-          color:var(--text-01)
+          color:var(--text-01);
+          cursor: pointer;
         }
         .rank-form__content__status{
           margin-left:8px;
           font-weight: 600;
           color: var(--status-login);
+          cursor: pointer;
         }
       }
       .rank-form__content__introduce{
@@ -371,6 +380,7 @@
         white-space: nowrap;
         overflow: hidden;
         color:var(--system_ui-05);
+        cursor: pointer;
       }
     }
     .rank-form__content__record{
@@ -380,16 +390,20 @@
       justify-content: space-between;
       margin-left: 130px;
       color: var(--system_ui-05);
+      cursor: pointer;
       .rank-form__content__score-form{
         width: 124px;
         display: flex;
+        cursor: pointer;
         .rank-form__content__score{
           margin-left: auto;
           font-weight: 500;
+          cursor: pointer;
         }
       }
       .rank-form__content__study-time{
         font-weight: 500;
+        cursor: pointer;
       }
     }
   }

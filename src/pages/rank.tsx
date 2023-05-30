@@ -45,7 +45,7 @@ const RankItem: NextPage<{
       rankDiv.setAttribute("rank", rank);
       rankDiv.id = "";
     }
-  }, [item.ranking]);
+  }, [item.ranking, item.studyTime]);
 
   const scoreToString = (rankingScore: number): string => {
     let score = rankingScore.toString();
@@ -76,24 +76,25 @@ const RankItem: NextPage<{
             {item.rankingScore === 0 ? "-" : item.ranking}
           </label>
         </div>
-        <Image
-          alt={item.id}
-          src={item.profileImage ? item.profileImage : DEFAULT_THUMBNAIL_URL}
-          width={40}
-          height={40}
-          className={`${rankStyles["rank-form__content__profile-img"]}`}
-        ></Image>
+        {item.profileImage ? (
+          <Image
+            alt={item.id}
+            src={item.profileImage}
+            width={40}
+            height={40}
+            className={`${rankStyles["rank-form__content__profile-img"]}`}
+          ></Image>
+        ) : (
+          <div className={`${rankStyles["rank-form__content__profile-img"]}`}>
+            <span className="material-symbols-sharp">person</span>
+          </div>
+        )}
         <div className={`${rankStyles["rank-form__content__profile"]}`}>
           <div className={`${rankStyles["rank-form__content__info"]}`}>
             <label
               className={`${rankStyles["rank-form__content__nickname"]} typography__text`}
             >
               {item.name}
-            </label>
-            <label
-              className={`${rankStyles["rank-form__content__status"]} typography__caption`}
-            >
-              {item.status === UserStatus.LOGIN ? "접속중" : "오프라인"}
             </label>
           </div>
           <label
