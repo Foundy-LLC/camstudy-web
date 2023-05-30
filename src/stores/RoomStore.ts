@@ -394,8 +394,6 @@ export class RoomStore implements RoomViewModel {
     runInAction(() => {
       this._localVideoStream =
         this._mediaUtil.getMediaStreamUsingFirstVideoTrackOf(mediaStream);
-      this._localAudioStream =
-        this._mediaUtil.getMediaStreamUsingFirstAudioTrackOf(mediaStream);
       this._state = RoomState.WAITING_ROOM;
       this._waitingRoomData = waitingRoomData;
       this._masterId = waitingRoomData.masterId;
