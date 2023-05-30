@@ -80,7 +80,6 @@ export const Dashboard: NextPage<{ userId: string }> = observer(
 
     useEffect(() => {
       cropStore.fetchGrowingCrop(userId);
-      rankStore.getUserTotalRank(userId);
       rankStore.getUserWeeklyRank(userId);
     }, []);
 
