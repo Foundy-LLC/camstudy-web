@@ -15,6 +15,45 @@ import { useDebounce } from "@/components/UseDebounce";
 import { isBlank } from "@/utils/isBlank";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
+export const RecommendedRoomItemGroup: NextPage<{ items: RoomOverview[] }> =
+  observer(({ items }) => {
+    return (
+      <>
+        <div
+          id="room-list-frame"
+          className={`${roomListStyles["room-list-frame"]} elevation__card__search-bar__contained-button--waiting__etc`}
+        >
+          <div className={`${roomListStyles["room-list-info"]}`}>
+            <span
+              className={`${roomListStyles["room-list-icon"]} material-symbols-sharp`}
+            >
+              chat_bubble
+            </span>
+
+            <p
+              className={`${roomListStyles["room-list-title"]} typography__text--big`}
+            >
+              추천 방 목록
+            </p>
+          </div>
+
+          <div id="room-scroll" className={`${roomListStyles["room-scroll"]} `}>
+            <div className={`${roomListStyles["room-list-grid"]}`}>
+              {items.map((item, key) => (
+                <RoomItem roomOverview={item} key={key} />
+              ))}
+            </div>
+          </div>
+        </div>
+        <style jsx>{`
+          .material-symbols-sharp {
+            font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+          }
+        `}</style>
+      </>
+    );
+  });
+
 export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
     const { roomListStore } = useStores();
