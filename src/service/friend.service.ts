@@ -5,7 +5,7 @@ import { UserSearchOverview } from "@/models/user/UserSearchOverview";
 import { UidValidationRequestBody } from "@/models/common/UidValidationRequestBody";
 import { FriendRequestUser } from "@/models/friend/FriendRequestUser";
 import { UserOverview } from "@/models/user/UserOverview";
-import { fetchAbsolute } from "@/utils/fetchAbsolute";
+import { fetchAbsolute, rankingApiFetch } from "@/utils/fetchAbsolute";
 import { validateUid } from "@/utils/user.validator";
 
 const HEADER = {
@@ -153,10 +153,10 @@ export class FriendService {
   };
   public getRecommendFriend = async (
     userId: string
-  ): Promise<Result<UserOverview[]>> => {
+  ): Promise<Result<{ users: UserOverview[] }>> => {
     try {
       const RequestBody = new UidValidationRequestBody(userId);
-      const response = await fetchAbsolute(
+      const response = await rankingApiFetch(
         `api/users/${RequestBody.userId}/recommended-friends`,
         {
           method: "GET",

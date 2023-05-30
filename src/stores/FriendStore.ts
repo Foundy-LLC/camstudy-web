@@ -383,7 +383,7 @@ export class FriendStore {
         runInAction(() => {
           this._errorMessage = undefined;
           this._successMessage = RECOMMENDED_FREINDS_GET_SUCCESS;
-          this._recommendedFriendOverviews = result.getOrNull()!;
+          this._recommendedFriendOverviews = result.getOrNull()!.users;
         });
       } else {
         runInAction(() => {
