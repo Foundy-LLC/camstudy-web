@@ -80,6 +80,14 @@ export class RankStore {
     return this._totalPercentile;
   }
 
+  public setTotalPercentile = () => {
+    this._totalPercentile = (
+      ((this._totalUserCount! - this._userWeekRank?.ranking!) /
+        this._totalUserCount!) *
+      100
+    ).toFixed(1);
+  };
+
   public setIsWeekly = (isWeekly: boolean) => {
     this._isWeeklyRank = isWeekly;
   };
@@ -135,6 +143,7 @@ export class RankStore {
             this._userTotalRank = users;
           }
           this._totalUserCount = Number(totalUserCount);
+          this.setTotalPercentile();
           this._rankMaxPage =
             Number(totalUserCount) % RANKING_NUM_PER_PAGE === 0
               ? Math.floor(Number(totalUserCount) / RANKING_NUM_PER_PAGE)
@@ -170,16 +179,6 @@ export class RankStore {
             this._userWeekRank = users;
           }
           this._weeklyUserCount = Number(totalUserCount);
-          if (users.ranking) {
-            this._totalPercentile = (
-              (1 -
-                (this._weeklyUserCount - users.ranking) /
-                  this._weeklyUserCount) *
-              100
-            ).toFixed(1);
-          } else {
-            this._totalPercentile = "--";
-          }
           this._rankMaxPage =
             Number(totalUserCount) % RANKING_NUM_PER_PAGE === 0
               ? Math.floor(Number(totalUserCount) / RANKING_NUM_PER_PAGE)

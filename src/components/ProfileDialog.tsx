@@ -34,6 +34,7 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
       profileStore.getUserProfile(userId);
       cropStore.fetchHarvestedCrops(userId);
       cropStore.fetchGrowingCrop(userId);
+      rankStore.getUserTotalRank(userId);
       rankStore.getUserWeeklyRank(userId);
     }, [userStore.currentUser]);
 
