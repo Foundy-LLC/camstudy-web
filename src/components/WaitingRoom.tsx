@@ -11,6 +11,7 @@ import { RoomStore } from "@/stores/RoomStore";
 import { Video } from "@/pages/rooms/[roomId]";
 import { UserProfileImage } from "@/components/UserProfileImage";
 import { RoomOverview } from "@/models/room/RoomOverview";
+import Router from "next/router";
 
 const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
   observer(({ roomStore, roomInfo }) => {
@@ -232,6 +233,22 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                       className={`${enterRoomStyles["enter-room__slash-icon"]} material-symbols-rounded`}
                     />
                   )}
+                </div>
+                <div style={{ position: "relative" }}>
+                  <span
+                    className={`${enterRoomStyles["enter-room__exit-icon"]} material-symbols-rounded`}
+                    onClick={() => {
+                      roomStore.exitRoom();
+                      Router.back();
+                    }}
+                    onMouseEnter={(e) => {
+                      handleHover(e);
+                      setShowDialog("공부방 나가기");
+                    }}
+                    onMouseLeave={() => setShowDialog("")}
+                  >
+                    call_end
+                  </span>
                 </div>
               </div>
             </div>

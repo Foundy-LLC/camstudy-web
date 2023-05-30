@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { RoomStore } from "@/stores/RoomStore";
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
 import { ChatMessage } from "@/models/room/ChatMessage";
 import { PomodoroTimerState } from "@/models/room/PomodoroTimerState";
 import { TimerEditInputGroupStore } from "@/components/TimerEditInputGroup";
@@ -22,6 +22,7 @@ import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import Modal from "react-modal";
 import { UserStore } from "@/stores/UserStore";
 import WaitingRoom from "@/components/WaitingRoom";
+import enterRoomStyles from "@/styles/watingRoom.module.scss";
 
 export enum MasterPopupMenus {
   Kick = "강퇴",
@@ -407,6 +408,22 @@ const StudyRoom: NextPage<{ roomStore: RoomStore; userStore: UserStore }> =
                         className={`${studyRoomStyles["study-room__slash-icon"]} material-symbols-rounded`}
                       />
                     )}
+                  </div>
+                  <div style={{ position: "relative" }}>
+                    <span
+                      className={`${studyRoomStyles["study-room__exit-icon"]} material-symbols-rounded`}
+                      onClick={() => {
+                        roomStore.exitRoom();
+                        Router.back();
+                      }}
+                      onMouseEnter={(e) => {
+                        handleHover(e);
+                        setShowDialog("공부방 나가기");
+                      }}
+                      onMouseLeave={() => setShowDialog("")}
+                    >
+                      call_end
+                    </span>
                   </div>
                 </div>
               </div>
