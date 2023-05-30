@@ -539,19 +539,14 @@ const getRemainTime = (crop: GrowingCrop) => {
 };
 
 const harvestable = (crop: GrowingCrop) => {
-  const requiredDay = getRequireDay(crop);
-  const plantedAt = crop.plantedAt;
-  const currentDay = new Date();
-  const harvestedAt = new Date(
-    new Date(plantedAt).setDate(new Date(plantedAt).getDate() + requiredDay)
+  const requireDay = getRequireDay(crop);
+  const plantedAt = new Date(crop.plantedAt);
+  const currentDate = new Date();
+
+  return (
+    (currentDate.getTime() - plantedAt.getTime()) / (1000 * 60 * 60 * 24) >
+    requireDay
   );
-
-  const gap = harvestedAt.getDate() - currentDay.getDate();
-
-  let hour = Math.floor(gap / 3600000);
-  let minute = Math.floor((gap % 3600000) / 60000);
-
-  return !(hour < 0 && minute < 0);
 };
 
 export default Crop;

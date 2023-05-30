@@ -71,8 +71,6 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
       micOn ? setShowDialog("마이크 켜기") : setShowDialog("마이크 끄기");
     };
 
-    const tags: string[] = ["스터디", "공시", "자격증"];
-    const bannedUserNames: string[] = ["김철수123", "김철수123", "김철수123"];
     return (
       <div
         style={{
