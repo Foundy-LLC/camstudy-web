@@ -666,6 +666,12 @@ export class RoomStore implements RoomViewModel {
   };
 
   public exitRoom = () => {
+    this._localVideoStream?.getTracks().forEach((track) => {
+      track.stop();
+    });
+    this._localAudioStream?.getTracks().forEach((track) => {
+      track.stop();
+    });
     this._roomService.exitRoom();
   };
 
