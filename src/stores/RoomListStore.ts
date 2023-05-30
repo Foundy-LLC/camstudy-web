@@ -249,13 +249,11 @@ export class RoomListStore {
 
   public fetchRecommendedRooms = async (userId: string): Promise<void> => {
     const result = await this._roomService.getRecommendedRooms(userId);
-    this._recommendPageNum += 1;
     if (result.isSuccess) {
       runInAction(() => {
         this._initRecommedRoomErrorMessage();
         this._isRecommendRoomSuccessGet = true;
         const roomList = result.getOrNull()!.rooms;
-        console.log(roomList);
         if (roomList.length === ROOM_NUM_PER_PAGE)
           this._isRecommendRoomExistNextPage = true;
         if (roomList.length === 0) {

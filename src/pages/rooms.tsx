@@ -16,7 +16,6 @@ import { isBlank } from "@/utils/isBlank";
 
 export const RecommendedRoomItemGroup: NextPage<{ items: RoomOverview[] }> =
   observer(({ items }) => {
-    const { roomListStore, userStore } = useStores();
     return (
       <>
         <div
@@ -38,30 +37,11 @@ export const RecommendedRoomItemGroup: NextPage<{ items: RoomOverview[] }> =
           </div>
 
           <div id="room-scroll" className={`${roomListStyles["room-scroll"]} `}>
-            <InfiniteScroll
-              dataLength={items.length}
-              next={() =>
-                setTimeout(() => {
-                  if (!userStore.currentUser) return;
-                  roomListStore.fetchRecommendedRooms(userStore.currentUser.id);
-                }, 1000)
-              }
-              hasMore={roomListStore.isRecommendRoomExistNextPage}
-              loader={
-                <p
-                  className={`${roomListStyles["room-scroll-text"]} typography__text--big`}
-                >
-                  <b>스터디 룸 목록 불러오는 중...</b>
-                </p>
-              }
-              scrollableTarget="room-scroll"
-            >
-              <div className={`${roomListStyles["room-list-grid"]}`}>
-                {items.map((item, key) => (
-                  <RoomItem roomOverview={item} key={key} />
-                ))}
-              </div>
-            </InfiniteScroll>
+            <div className={`${roomListStyles["room-list-grid"]}`}>
+              {items.map((item, key) => (
+                <RoomItem roomOverview={item} key={key} />
+              ))}
+            </div>
           </div>
         </div>
         <style jsx>{`

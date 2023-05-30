@@ -73,7 +73,7 @@ export class RoomService {
 
   public async getRecommendedRooms(
     userId: string
-  ): Promise<Result<{ totalRoomCount: number; rooms: RoomOverview[] }>> {
+  ): Promise<Result<{ rooms: RoomOverview[] }>> {
     try {
       const response = await rankingApiFetch(
         `api/users/${userId}/recommended-rooms`,
