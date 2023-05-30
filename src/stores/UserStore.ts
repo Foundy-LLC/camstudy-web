@@ -48,6 +48,10 @@ export class UserStore {
     }
   };
 
+  public setUserProfile = (user: User) => {
+    this._currentUser = user;
+  };
+
   fetchAuth = async () => {
     if (this._auth.currentUser != null) {
       await this.fetchCurrentUser(this._auth.currentUser.uid);

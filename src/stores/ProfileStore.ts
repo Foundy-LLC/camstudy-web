@@ -124,11 +124,6 @@ export class ProfileStore {
 
   public get isTagInputDisable(): boolean {
     if (!this.userOverview) return false;
-    console.log(
-      this.userOverview.tags.length,
-      this._unsavedTags.length,
-      this._deletedTags.length
-    );
     return (
       this.userOverview.tags.length +
         this._unsavedTags.length -
@@ -169,10 +164,8 @@ export class ProfileStore {
         runInAction(() => {
           this._nickName = e.target.value;
           if (this._nickName === "") {
-            console.log("1");
             this._editNameErrorMessage = PROFILE_NICKNAME_NULL_ERROR;
           } else {
-            console.log("2");
             this._editNameErrorMessage = undefined;
           }
         });
@@ -232,6 +225,8 @@ export class ProfileStore {
       if (result.isSuccess) {
         runInAction(() => {
           this._userOverview = result.getOrNull();
+          this._nickName = result.getOrNull()!.name;
+          this._introduce = result.getOrNull()!.introduce;
           this.importUserProfile(this._userOverview!);
         });
       } else {

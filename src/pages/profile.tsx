@@ -492,8 +492,8 @@ const UserProfile: NextPage = observer(() => {
     if (!userStore.currentUser) return;
     if (profileStore.editSuccess === true) {
       setChanged(false);
-      userStore.fetchCurrentUser(userStore.currentUser.id);
       profileStore.getUserProfile(userStore.currentUser.id);
+      userStore.setUserProfile(profileStore.userOverview!);
     }
   }, [profileStore.editSuccess]);
 
