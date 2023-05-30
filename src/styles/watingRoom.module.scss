@@ -66,10 +66,11 @@
             margin: 20px;
             color: $-White;
           }
-          .enter-room__camera-icon{
-            margin-left: 2px;
-            margin-right: 10px;
-          }
+            .enter-room__camera-icon{
+              margin-left: 2px;
+              margin-right: 10px;
+            }
+
           .enter-room__headphones-icon{
             margin-right: 8px;
           }
@@ -107,12 +108,28 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-
-        span{
-          padding: 5px;
+        button{
+          background-color: inherit;
           border-radius: 12px;
-          font-size: 45px;
-          cursor: pointer;
+          span{
+            padding: 5px;
+            border-radius: 12px;
+            font-size: 45px;
+            cursor: pointer;
+          }
+          &:disabled{
+            span{
+              padding: 5px;
+              font-size: 45px;
+              cursor: default;
+              color: var(--system_ui-06);
+            }
+            &:hover{
+              background-color: inherit;
+            }
+            &:active{
+            }
+          }
           &:hover{
             background-color: $-Dark-03;
           }
@@ -121,12 +138,19 @@
           }
         }
 
-        .enter-room__exit-icon{
-          padding: 5px;
-          border-radius: 12px;
-          font-size: 45px;
-          cursor: pointer;
-          color: #{$-Danger-04};
+        button{
+          .enter-room__exit-icon{
+            padding: 5px;
+            border-radius: 12px;
+            font-size: 45px;
+            cursor: pointer;
+            color: #{$-Danger-04};
+          }
+          &:disabled{
+            .enter-room__exit-icon{
+              color: var(--system_ui-06);
+            }
+          }
           &:hover{
             background-color: $-Dark-03;
           }
@@ -263,6 +287,10 @@
             margin-right: 28px;
             cursor: pointer;
             position: relative;
+            &:disabled{
+              background-color: var(--system_ui-07);
+              cursor: default;
+            }
             &__circle{
               position: absolute;
               width: 20px;
@@ -279,9 +307,20 @@
               border-radius: 24px;
               margin-left: auto;
               margin-right: 28px;
-              cursor: pointer;
+              cursor: default;
               position: relative;
               background-color: #{$-Primary-03};
+              &:disabled{
+                background-color: var(--system_ui-07);
+                div {
+                  position: absolute;
+                  left: 2px;
+                  width: 20px;
+                  height: 20px;
+                  border-radius: 20px;
+                  background-color: #FFFFFF;
+                }
+              }
               &__circle {
                 position: absolute;
                 right: 2px;

@@ -29,6 +29,12 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
       setUser(userStore.currentUser);
     }, [userStore.currentUser]);
 
+    useEffect(() => {
+      window.onpopstate = (e) => {
+        roomStore.exitRoom();
+      };
+    });
+
     const handleHover = (event: React.MouseEvent<HTMLSpanElement>) => {
       console.log((event.target as HTMLElement).className);
       const position = (event.target as HTMLElement).getBoundingClientRect();
@@ -169,8 +175,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
               >
                 {" "}
                 <div style={{ position: "relative" }}>
-                  <span
-                    className={`${enterRoomStyles["enter-room__camera-icon"]} material-symbols-rounded`}
+                  <button
                     onClick={() => {
                       toggleCamera();
                     }}
@@ -181,9 +186,14 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                         : setShowDialog("카메라 켜기");
                     }}
                     onMouseLeave={() => setShowDialog("")}
+                    disabled={roomStore.enableMediaButton}
                   >
-                    video_camera_front
-                  </span>
+                    <span
+                      className={`${enterRoomStyles["enter-room__camera-icon"]} material-symbols-rounded`}
+                    >
+                      video_camera_front
+                    </span>
+                  </button>
                   {!cameraOn && (
                     <FaSlash
                       className={`${enterRoomStyles["enter-room__slash-icon"]} material-symbols-rounded`}
@@ -191,8 +201,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                   )}
                 </div>
                 <div style={{ position: "relative" }}>
-                  <span
-                    className="material-symbols-rounded"
+                  <button
                     onClick={() => {
                       toggleHeadphone();
                     }}
@@ -203,9 +212,10 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                         : setShowDialog("헤드폰 켜기");
                     }}
                     onMouseLeave={() => setShowDialog("")}
+                    disabled={roomStore.enableMediaButton}
                   >
-                    headphones
-                  </span>
+                    <span className="material-symbols-rounded">headphones</span>
+                  </button>
                   {!headphoneOn && (
                     <FaSlash
                       className={`${enterRoomStyles["enter-room__slash-icon"]} material-symbols-rounded`}
@@ -213,8 +223,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                   )}
                 </div>
                 <div style={{ position: "relative" }}>
-                  <span
-                    className={`${enterRoomStyles["enter-room__mic-icon"]} material-symbols-rounded`}
+                  <button
                     onClick={() => {
                       toggleMic();
                     }}
@@ -225,18 +234,23 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                         : setShowDialog("마이크 켜기");
                     }}
                     onMouseLeave={() => setShowDialog("")}
+                    disabled={roomStore.enableMediaButton}
                   >
-                    mic
-                  </span>
-                  {!micOn && (
+                    <span
+                      className={`${enterRoomStyles["enter-room__mic-icon"]} material-symbols-rounded`}
+                    >
+                      mic
+                    </span>
+                  </button>
+
+                  {!micOn && !roomStore.enableMediaButton && (
                     <FaSlash
                       className={`${enterRoomStyles["enter-room__slash-icon"]} material-symbols-rounded`}
                     />
                   )}
                 </div>
                 <div style={{ position: "relative" }}>
-                  <span
-                    className={`${enterRoomStyles["enter-room__exit-icon"]} material-symbols-rounded`}
+                  <button
                     onClick={() => {
                       roomStore.exitRoom();
                       Router.back();
@@ -246,9 +260,14 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                       setShowDialog("공부방 나가기");
                     }}
                     onMouseLeave={() => setShowDialog("")}
+                    disabled={roomStore.enableMediaButton}
                   >
-                    call_end
-                  </span>
+                    <span
+                      className={`${enterRoomStyles["enter-room__exit-icon"]} material-symbols-rounded`}
+                    >
+                      call_end
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -341,7 +360,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                       다른 사용자들에게 내 캠 화면이 보이게 설정합니다
                     </label>
                   </div>
-                  <div
+                  <button
                     className={`${
                       enterRoomStyles[
                         `enter-room__setting-form__camera__toggle-button${
@@ -355,6 +374,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                         : roomStore.showVideo();
                       setCameraOn(!cameraOn);
                     }}
+                    disabled={roomStore.enableMediaButton}
                   >
                     <div
                       id={"cameraToggle"}
@@ -366,7 +386,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                         ]
                       }`}
                     ></div>
-                  </div>
+                  </button>
                 </div>
                 <div
                   className={`${enterRoomStyles["enter-room__setting-form__mic"]}`}
@@ -385,7 +405,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                       다른 사용자들에게 내 음성이 들리게 설정합니다
                     </label>
                   </div>
-                  <div
+                  <button
                     className={`${
                       enterRoomStyles[
                         `enter-room__setting-form__mic__toggle-button${
@@ -403,6 +423,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                         : roomStore.unmuteMicrophone();
                       setMicOn(!micOn);
                     }}
+                    disabled={roomStore.enableMediaButton}
                   >
                     <div
                       id={"micToggle"}
@@ -414,7 +435,7 @@ const WaitingRoom: NextPage<{ roomStore: RoomStore; roomInfo?: RoomOverview }> =
                         ]
                       }`}
                     ></div>
-                  </div>
+                  </button>
                 </div>
                 {roomStore.waitingRoomMessage && (
                   <label
