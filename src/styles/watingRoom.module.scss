@@ -101,7 +101,7 @@
       }
       &__icon-form{
         display: grid;
-        grid:". . .";
+        grid:". . . .";
         gap: 10px;
         position: absolute;
         left: 50%;
@@ -113,6 +113,20 @@
           border-radius: 12px;
           font-size: 45px;
           cursor: pointer;
+          &:hover{
+            background-color: $-Dark-03;
+          }
+          &:active{
+            background-color: $-Dark-02;
+          }
+        }
+
+        .enter-room__exit-icon{
+          padding: 5px;
+          border-radius: 12px;
+          font-size: 45px;
+          cursor: pointer;
+          color: #{$-Danger-04};
           &:hover{
             background-color: $-Dark-03;
           }
