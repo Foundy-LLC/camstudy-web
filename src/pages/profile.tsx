@@ -12,6 +12,7 @@ import { BelongOrganization } from "@/models/organization/BelongOrganization";
 import { useDebounce } from "@/components/UseDebounce";
 import { Organization } from "@/models/organization/Organization";
 import { Tag } from "@/models/welcome/Tag";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const BelongOrganizationsName: NextPage<{ item: BelongOrganization }> =
   observer(({ item }) => {
@@ -508,7 +509,7 @@ const UserProfile: NextPage = observer(() => {
   }, [profileStore.nickName, profileStore.introduce]);
 
   if (loading) {
-    return <div>Loading</div>;
+    return <LoadingSpinner />;
   }
 
   if (!user) {

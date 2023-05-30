@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { IMAGE_SERVER_URL } from "@/constants/image.constant";
 import {
   GetServerSidePropsContext,
@@ -18,27 +18,12 @@ import Image from "next/image";
 import { timeToString } from "@/components/TimeToString";
 import Modal from "react-modal";
 import { CropListPopup } from "@/pages/crop";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 // TODO 페이지 들어갈 때 유저 쿠키가 유효한지 판단함. 중복되는 코드라서 따로 빼보는 방법 찾아 볼 것.
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return await verifyUserToken(ctx);
 };
-
-const HarvestedCropGroup: NextPage<{ items: HarvestedCrop[] }> = observer(
-  ({ items }) => {
-    return (
-      <>
-        {items.map((item, key) => (
-          <div key={key}>
-            <p>
-              {key + 1}.{item.type}({item.grade})
-            </p>
-          </div>
-        ))}
-      </>
-    );
-  }
-);
 
 function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
@@ -166,7 +151,7 @@ export const Dashboard: NextPage<{ userId: string }> = observer(
   }
 );
 
-const CropDashBoard = () => {
+export const CropDashBoard = () => {
   const { cropStore, userStore } = useStores();
   const [open, setOpen] = useState(false);
   useEffect(() => {

@@ -15,6 +15,7 @@ import loginStyles from "@/styles/login.module.scss";
 import { ThemeContext } from "@/context/ThemeContext";
 import { PROJECT_SUB_TITLE, PROJECT_TITLE } from "@/constants/common";
 import { useStores } from "@/stores/context";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const Login: NextPage = () => {
   const { userStore } = useStores();
@@ -28,7 +29,7 @@ const Login: NextPage = () => {
     } else {
       router.push("/").then(() => {});
     }
-    return <div>Loading</div>;
+    return <LoadingSpinner />;
   }
 
   return (

@@ -13,8 +13,9 @@ import { Crops, CROPS } from "@/constants/crops";
 import { GrowingCrop } from "@/models/crop/GrowingCrop";
 import { fruit_grade } from "@prisma/client";
 import Modal from "react-modal";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
-const crop: NextPage = () => {
+const Crop: NextPage = () => {
   return (
     <Layout>
       <h1 className={`${cropStyles["title"]} typography__sub-headline`}>
@@ -38,7 +39,7 @@ const MyPot: NextPage = observer(() => {
   const [open, setOpen] = useState<boolean>(false);
 
   if (loading) {
-    return <div>Loading</div>;
+    return <LoadingSpinner />;
   }
   if (!user) {
     router.replace("/login");
@@ -553,4 +554,4 @@ const harvestable = (crop: GrowingCrop) => {
   return !(hour < 0 && minute < 0);
 };
 
-export default crop;
+export default Crop;

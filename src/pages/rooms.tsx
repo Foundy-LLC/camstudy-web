@@ -13,6 +13,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Layout } from "@/components/Layout";
 import { useDebounce } from "@/components/UseDebounce";
 import { isBlank } from "@/utils/isBlank";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export const RoomItemGroup: NextPage<{ items: RoomOverview[] }> = observer(
   ({ items }) => {
@@ -266,12 +267,13 @@ const RoomList: NextPage = observer(() => {
   }, [user]);
 
   if (loading) {
-    return <div>Loading</div>;
+    return <LoadingSpinner />;
   }
   if (!user) {
     router.replace("/login");
     return <div>Please sign in to continue</div>;
   }
+
   return (
     <Layout>
       <div>
