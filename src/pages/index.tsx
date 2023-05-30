@@ -25,22 +25,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return await verifyUserToken(ctx);
 };
 
-const HarvestedCropGroup: NextPage<{ items: HarvestedCrop[] }> = observer(
-  ({ items }) => {
-    return (
-      <>
-        {items.map((item, key) => (
-          <div key={key}>
-            <p>
-              {key + 1}.{item.type}({item.grade})
-            </p>
-          </div>
-        ))}
-      </>
-    );
-  }
-);
-
 function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const [uid, setUid] = useState(props.uid);

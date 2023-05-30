@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import "../styles/_main.scss";
 import { ThemeContext, ThemeProvider } from "@/context/ThemeContext";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+
 export default function App({ Component, pageProps }: AppProps) {
   const { theme } = useContext(ThemeContext);
   return (
