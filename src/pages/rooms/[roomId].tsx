@@ -22,7 +22,6 @@ import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import Modal from "react-modal";
 import { UserStore } from "@/stores/UserStore";
 import WaitingRoom from "@/components/WaitingRoom";
-import enterRoomStyles from "@/styles/watingRoom.module.scss";
 
 export enum MasterPopupMenus {
   Kick = "강퇴",
