@@ -6,9 +6,9 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  width: 640px;
+  width: 720px;
   height: 352px;
-  max-width: 640px;
+  max-width: 720px;
   max-height: 352px;
   color: var(--system_ui-08);
 
@@ -86,6 +86,7 @@
         font-weight: 700;
         font-size: 32px;
         line-height: 42px;
+        white-space: nowrap;
       }
 
       .growing-crop_explain_title--empty{
@@ -120,6 +121,7 @@
           font-weight: 400;
           font-size: 16px;
           line-height: 22px;
+          white-space: nowrap;
           /* identical to box height, or 138% */
 
           display: flex;
@@ -215,9 +217,9 @@
 .my-plants {
   display: flex;
   flex-direction: column;
-  width: 600px;
+  width: 680px;
   height: 534px;
-  max-width: 600px;
+  max-width: 680px;
   max-height: 534px;
   margin-bottom: 20px;
   margin-left: 20px;

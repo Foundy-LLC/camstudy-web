@@ -35,7 +35,7 @@ export const CROPS: Crops[] = [
   },
   {
     type: crops_type.strawberry,
-    requireDay: 7,
+    requireDay: 0,
     imageUrls: [
       "/strawberry/plant_strawberry_1.png",
       "/strawberry/plant_strawberry_2.png",

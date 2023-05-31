@@ -195,7 +195,8 @@ export const CropDashBoard = () => {
         onRequestClose={() => setOpen(false)}
         style={{
           content: {
-            width: 380,
+            zIndex: 1000,
+            width: 450,
             height: 768,
             borderRadius: 20,
             backgroundColor: "var(--ui-cardui)",

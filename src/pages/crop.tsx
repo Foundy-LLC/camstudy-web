@@ -248,7 +248,7 @@ const MyPot: NextPage = observer(() => {
             onRequestClose={() => setOpen(false)}
             style={{
               content: {
-                width: 380,
+                width: 450,
                 height: 768,
                 borderRadius: 20,
                 backgroundColor: "var(--ui-cardui)",
@@ -284,7 +284,10 @@ export const CropListPopup: NextPage<{
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div
+      className={`${cropListPopupStyles["cropDialog"]}`}
+      style={{ display: "flex", flexDirection: "column", zIndex: 10 }}
+    >
       <div className={`${cropListPopupStyles["popupTitle"]}`}>
         <span className="material-symbols-outlined">nest_eco_leaf</span>작물
         심기
@@ -491,7 +494,7 @@ const getRequireDay = (crop: GrowingCrop) => {
     case "cabbage":
       return 11;
     case "strawberry":
-      return 7;
+      return 0;
     case "tomato":
       return 5;
     case "pumpkin":
@@ -506,7 +509,7 @@ const convertCropTypeToCropName = (crop: Crops) => {
     case "cabbage":
       return "양배추";
     case "strawberry":
-      return "딸기";
+      return "딸기 (시연용)";
     case "tomato":
       return "토마토";
     case "pumpkin":

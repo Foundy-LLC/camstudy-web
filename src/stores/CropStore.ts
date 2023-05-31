@@ -57,7 +57,7 @@ export class CropStore {
             this._cropName = "양배추";
             break;
           case "strawberry":
-            this._cropName = "딸기";
+            this._cropName = "딸기 (시연용)";
             break;
           case "tomato":
             this._cropName = "토마토";
