@@ -28,6 +28,7 @@ import { auth } from "@/service/firebase";
 import { BlockedUser } from "@/models/room/BlockedUser";
 import { convertToKoreaDate } from "@/utils/DateUtil";
 import { UserStore } from "@/stores/UserStore";
+import { SYSTEM } from "@/constants/cropMessage";
 
 export interface RoomViewModel {
   onConnectedWaitingRoom: (waitingRoomData: WaitingRoomData) => void;
@@ -595,7 +596,7 @@ export class RoomStore implements RoomViewModel {
         authorName: "",
         content: `${state.name}님이 입장하셨습니다.`,
         sentAt: "",
-        type: "system",
+        type: SYSTEM,
       });
     }
     this._peerStates = this._peerStates.filter((s) => state.uid !== s.uid);
@@ -658,7 +659,7 @@ export class RoomStore implements RoomViewModel {
           authorName: "",
           content: `공부 타이머가 시작되었어요.`,
           sentAt: "",
-          type: "system",
+          type: SYSTEM,
         });
         break;
       case PomodoroTimerEvent.ON_SHORT_BREAK:
@@ -669,7 +670,7 @@ export class RoomStore implements RoomViewModel {
           authorName: "",
           content: `휴식 타이머가 시작되었어요.`,
           sentAt: "",
-          type: "system",
+          type: SYSTEM,
         });
         break;
       case PomodoroTimerEvent.ON_LONG_BREAK:
@@ -680,7 +681,7 @@ export class RoomStore implements RoomViewModel {
           authorName: "",
           content: `휴식 타이머가 시작되었어요.`,
           sentAt: "",
-          type: "system",
+          type: SYSTEM,
         });
         break;
     }
@@ -768,7 +769,7 @@ export class RoomStore implements RoomViewModel {
       authorName: "",
       content: `${this.getUserNameBy(peerId)}님이 퇴장하셨습니다.`,
       sentAt: "",
-      type: "system",
+      type: SYSTEM,
     });
     this._remoteVideoStreamsByPeerId.delete(peerId);
     this._remoteAudioStreamsByPeerId.delete(peerId);
