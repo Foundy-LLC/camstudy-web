@@ -184,7 +184,8 @@ export const CropDashBoard = () => {
           <div
             className={`${dashboardStyles["content-text"]} typography__text`}
           >
-            {cropStore.cropImageSrc != undefined
+            {cropStore.cropImageSrc != undefined &&
+            cropStore.growingCrop != undefined
               ? `${cropStore.cropName} ${cropStore.growingCrop!.level}단계`
               : "작물이 없습니다"}
           </div>
@@ -194,6 +195,7 @@ export const CropDashBoard = () => {
         isOpen={open}
         onRequestClose={() => setOpen(false)}
         style={{
+          overlay: { zIndex: 10 },
           content: {
             zIndex: 1000,
             width: 450,

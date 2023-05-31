@@ -128,6 +128,7 @@ export class CropStore {
       );
       if (result.isSuccess) {
         this._growingCrop = undefined;
+        this._cropImageSrc = undefined;
         await this.fetchHarvestedCrops(requestBody.userId);
       } else {
         throw new Error(result.throwableOrNull()!.message);
