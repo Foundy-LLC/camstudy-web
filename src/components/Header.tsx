@@ -88,64 +88,90 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
   };
 
   return (
-    <div
-      className={`${headerStyles["recent-room-list"]} ${headerStyles["dragUnable"]}`}
-    >
+    <>
       <div
-        id="roomTitleDialog"
-        className={`${headerStyles["recent-room-dialog"]} typography__text--small elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
-        hidden={showDialog === ""}
+        className={`${headerStyles["recent-room-list"]} ${headerStyles["dragUnable"]}`}
       >
-        {showDialog}
+        <div
+          id="roomTitleDialog"
+          className={`${headerStyles["recent-room-dialog"]} typography__text--small elevation__navigation-drawer__modal-side-bottom-sheet__etc`}
+          hidden={showDialog === ""}
+        >
+          {showDialog}
+        </div>
+        {recentRoomList.map((room) => {
+          return (
+            <>
+              {room.thumbnail ? (
+                <Image
+                  key={room.id}
+                  className={`${headerStyles["recent-room-item"]}`}
+                  alt={"room_thumbnail"}
+                  src={room.thumbnail || DEFAULT_THUMBNAIL_URL}
+                  width={44}
+                  height={44}
+                  onClick={() => joinRecentRoom(room.id)}
+                  onMouseEnter={(e) => {
+                    setShowDialog(room.title);
+                    onMouseEnter(e);
+                  }}
+                  onMouseLeave={() => {
+                    setShowDialog("");
+                  }}
+                ></Image>
+              ) : (
+                <div
+                  className={`${headerStyles["recent-room-item"]}`}
+                  onMouseEnter={(e) => {
+                    setShowDialog(room.title);
+                    onMouseEnter(e);
+                  }}
+                  onMouseLeave={() => {
+                    setShowDialog("");
+                  }}
+                >
+                  <span className="material-symbols-sharp">help</span>
+                </div>
+              )}
+            </>
+          );
+        })}
+        <button
+          className={`${headerStyles["create-room-button"]}`}
+          onMouseEnter={(e) => {
+            setShowDialog("방 만들기");
+            onMouseEnter(e);
+          }}
+          onMouseLeave={() => {
+            setShowDialog("");
+          }}
+          onClick={() => {
+            setShowModal(true);
+          }}
+        >
+          <span className={`${headerStyles["icon"]} material-symbols-outlined`}>
+            add
+          </span>
+        </button>
+        {showModal && (
+          <>
+            <CreateRoomDialogContainer
+              onClick={() => {
+                setShowModal(false);
+              }}
+            />
+            <CreateRoomDialog setShowModal={setShowModal} />
+          </>
+        )}
       </div>
-      {recentRoomList.map((room) => {
-        return (
-          <Image
-            key={room.id}
-            className={`${headerStyles["recent-room-item"]}`}
-            alt={"room_thumbnail"}
-            src={room.thumbnail || DEFAULT_THUMBNAIL_URL}
-            width={44}
-            height={44}
-            onClick={() => joinRecentRoom(room.id)}
-            onMouseEnter={(e) => {
-              setShowDialog(room.title);
-              onMouseEnter(e);
-            }}
-            onMouseLeave={() => {
-              setShowDialog("");
-            }}
-          ></Image>
-        );
-      })}
-      <button
-        className={`${headerStyles["create-room-button"]}`}
-        onMouseEnter={(e) => {
-          setShowDialog("방 만들기");
-          onMouseEnter(e);
-        }}
-        onMouseLeave={() => {
-          setShowDialog("");
-        }}
-        onClick={() => {
-          setShowModal(true);
-        }}
-      >
-        <span className={`${headerStyles["icon"]} material-symbols-outlined`}>
-          add
-        </span>
-      </button>
-      {showModal && (
-        <>
-          <CreateRoomDialogContainer
-            onClick={() => {
-              setShowModal(false);
-            }}
-          />
-          <CreateRoomDialog setShowModal={setShowModal} />
-        </>
-      )}
-    </div>
+      <style jsx>
+        {`
+          .material-symbols-sharp {
+            font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+          }
+        `}
+      </style>
+    </>
   );
 });
 
