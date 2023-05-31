@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - demo
 
   workflow_dispatch:
     inputs:
