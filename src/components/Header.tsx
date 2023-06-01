@@ -79,7 +79,7 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
   };
 
   const onMouseEnter = (
-    e: React.MouseEvent<HTMLImageElement> | React.MouseEvent<HTMLButtonElement>
+    e: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLDivElement>
   ) => {
     const div = document.getElementById("roomTitleDialog");
     const position = (e.target as HTMLElement).getBoundingClientRect();
