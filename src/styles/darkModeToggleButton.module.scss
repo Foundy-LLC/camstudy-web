@@ -32,6 +32,7 @@
   background-color: $-Gray-02;
   border-radius: 24px;
   position: relative;
+  cursor: pointer;
   .circle {
     width: 20px;
     height: 20px;
@@ -40,6 +41,7 @@
     background: $-White;
     position:absolute;
     transform: translateY(-50%);
+    cursor: pointer;
   }
 }
 
@@ -50,6 +52,7 @@
   background-color: $-Primary-03;
   border-radius: 24px;
   position: relative;
+  cursor: pointer;
 
   .circle {
     width: 20px;
@@ -59,6 +62,7 @@
     transform: translateY(-50%);
     border-radius: 50%;
     background: $-White;
+    cursor: pointer;
   }
 }
 
@@ -71,6 +75,7 @@
   background-color: $-Gray-02;
   border-radius: 24px;
   position: relative;
+  cursor: pointer;
   .circle {
     width: 20px;
     height: 20px;
@@ -79,6 +84,7 @@
     position:absolute;
     transform: translateY(-50%);
     animation: button-ani 0.1s linear forwards;
+    cursor: pointer;
   }
 }
 
@@ -89,6 +95,7 @@
   background-color: $-Primary-03;
   border-radius: 24px;
   position: relative;
+  cursor: pointer;
 
   .circle {
     width: 20px;
@@ -99,6 +106,7 @@
     border-radius: 50%;
     background: $-White;
     animation: button-active-ani 0.1s linear forwards;
+    cursor: pointer;
   }
 }
 

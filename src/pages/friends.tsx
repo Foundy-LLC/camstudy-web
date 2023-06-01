@@ -65,13 +65,14 @@ const FriendOverview: NextPage<{
       }}
     >
       {profileImage ? (
-        <Image
-          width={50}
-          height={50}
-          src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
-          alt={`${name}-profileImg`}
-          className={`${friendStyles["friend-profile"]} `}
-        />
+        <div className={`${friendStyles["friend-profile"]} `}>
+          <Image
+            objectFit="cover"
+            layout="fill"
+            src={profileImage}
+            alt={`${name}-profileImg`}
+          />
+        </div>
       ) : (
         <div className={`${friendStyles["friend-profile"]} `}>
           <span className="material-symbols-outlined">person</span>
@@ -317,13 +318,14 @@ const FriendRequest: NextPage<{
         }}
       >
         {profileImage ? (
-          <Image
-            width={50}
-            height={50}
-            src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
-            alt={`${name}-profileImg`}
-            className={`${friendStyles["friend-request__image"]} `}
-          />
+          <div className={`${friendStyles["friend-request__image"]} `}>
+            <Image
+              objectFit="cover"
+              layout="fill"
+              src={profileImage}
+              alt={`${name}-profileImg`}
+            />
+          </div>
         ) : (
           <div className={`${friendStyles["friend-request__image"]} `}>
             <span className="material-symbols-outlined">person</span>
@@ -468,13 +470,14 @@ const FriendRecommend: NextPage<{
         }}
       >
         {profileImage ? (
-          <Image
-            width={50}
-            height={50}
-            src={profileImage ? profileImage : DEFAULT_THUMBNAIL_URL}
-            alt={`${name}-profileImg`}
-            className={`${friendStyles["friend-recommend__image"]} `}
-          />
+          <div className={`${friendStyles["friend-recommend__image"]} `}>
+            <Image
+              objectFit="cover"
+              layout="fill"
+              src={profileImage}
+              alt={`${name}-profileImg`}
+            />
+          </div>
         ) : (
           <div className={`${friendStyles["friend-recommend__image"]} `}>
             <span className="material-symbols-outlined">person</span>

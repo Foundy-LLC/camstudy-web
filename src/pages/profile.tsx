@@ -420,7 +420,7 @@ const TagForm: NextPage = observer(() => {
           className={"typography__text--small"}
           placeholder="#수능, #개발, #공시 등 검색해주세요"
           maxLength={21}
-          onKeyDown={async (e) => {
+          onKeyPress={async (e) => {
             let key = e.key || e.keyCode;
             if (key === "Enter" || key === 13) {
               await profileStore.enterTag(searchInput);
@@ -572,13 +572,14 @@ const UserProfile: NextPage = observer(() => {
                   {!profileStore.imageUrl ? (
                     <div className={`${profileStyles["image"]}`}></div>
                   ) : (
-                    <Image
-                      className={`${profileStyles["image"]}`}
-                      alt={"selected-img"}
-                      src={profileStore.imageUrl}
-                      width={152}
-                      height={152}
-                    />
+                    <div className={`${profileStyles["image"]}`}>
+                      <Image
+                        alt={"selected-img"}
+                        src={profileStore.imageUrl}
+                        objectFit="cover"
+                        layout="fill"
+                      />
+                    </div>
                   )}
                   <div className={`${profileStyles["precautions"]}`}>
                     <label className={"typography__text--small"}>

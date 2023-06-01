@@ -124,13 +124,16 @@ const RoomItem: NextPage<{ roomOverview: RoomOverview }> = observer(
           className={`${roomListStyles["room-list-form"]} elevation__card__search-bar__contained-button--waiting__etc`}
         >
           {roomOverview.thumbnail ? (
-            <Image
-              src={roomOverview.thumbnail}
-              alt={`${roomOverview.title}-thumbnail-img`}
-              className={`${roomListStyles["room-thumbnail-img"]}`}
-              width={96}
-              height={96}
-            ></Image>
+            <div
+              className={`${roomListStyles["room-thumbnail-img"]} ${roomListStyles["drag-unable"]}`}
+            >
+              <Image
+                src={roomOverview.thumbnail}
+                alt={`${roomOverview.title}-thumbnail-img`}
+                objectFit="cover"
+                layout="fill"
+              ></Image>
+            </div>
           ) : (
             <div
               className={`${roomListStyles["room-thumbnail-img"]} ${roomListStyles["drag-unable"]}`}
