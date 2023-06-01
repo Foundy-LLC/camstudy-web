@@ -420,7 +420,7 @@ const TagForm: NextPage = observer(() => {
           className={"typography__text--small"}
           placeholder="#수능, #개발, #공시 등 검색해주세요"
           maxLength={21}
-          onKeyDown={async (e) => {
+          onKeyPress={async (e) => {
             let key = e.key || e.keyCode;
             if (key === "Enter" || key === 13) {
               await profileStore.enterTag(searchInput);
