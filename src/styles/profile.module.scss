@@ -97,7 +97,8 @@
         background-color: var(--system_ui-01);
         border-radius: 16px;
         margin-left: 20px;
-
+        position: relative;
+        overflow: hidden;
       }
 
       .precautions {

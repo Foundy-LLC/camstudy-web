@@ -38,13 +38,14 @@ const FriendOverview: NextPage<{
         }}
       >
         {profileImage ? (
-          <Image
-            width={40}
-            height={40}
-            src={profileImage}
-            alt={`${name}-profileImg`}
-            className={`${userStyles["user-profile"]} `}
-          />
+          <div className={`${userStyles["user-profile"]}`}>
+            <Image
+              objectFit="cover"
+              layout="fill"
+              src={profileImage}
+              alt={`${name}-profileImg`}
+            />
+          </div>
         ) : (
           <div className={`${userStyles["user-profile"]}`}>
             <span className="material-symbols-outlined">person</span>

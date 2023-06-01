@@ -79,6 +79,8 @@
         border-radius: 8px;
         cursor: pointer;
         background-color: var(--system_ui-01);
+        position: relative;
+        overflow: hidden;
         span{
           font-variation-settings:
                   'FILL' 1,

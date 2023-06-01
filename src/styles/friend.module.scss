@@ -75,6 +75,8 @@
           height: 40px;
           border-radius: 8px;
           background-color: var(--system_ui-01);
+          position: relative;
+          overflow: hidden;
           span{
             font-variation-settings:
                     'FILL' 1,
@@ -223,6 +225,8 @@
           height: 40px;
           border-radius: 8px;
           background-color: var(--system_ui-01);
+          position: relative;
+          overflow: hidden;
           span{
             font-variation-settings:
                     'FILL' 1,
@@ -386,6 +390,8 @@
           height: 40px;
           border-radius: 8px;
           background-color: var(--system_ui-01);
+          position: relative;
+          overflow: hidden;
           span{
             font-variation-settings:
                     'FILL' 1,
