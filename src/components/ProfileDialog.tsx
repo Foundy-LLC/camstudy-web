@@ -85,14 +85,17 @@ export const ProfileDialog: NextPage<{ userId: string }> = observer(
               className={`${profileDialogStyles["profile-dialog__profile"]}`}
             >
               {user?.profileImage ? (
-                <Image
+                <div
                   className={`${profileDialogStyles["profile-dialog__profile-image"]}`}
-                  src={user?.profileImage}
-                  alt={user?.name}
-                  priority={true}
-                  width={140}
-                  height={140}
-                />
+                >
+                  <Image
+                    src={user?.profileImage}
+                    alt={user?.name}
+                    priority={true}
+                    objectFit="cover"
+                    layout="fill"
+                  />
+                </div>
               ) : (
                 <div
                   className={`${profileDialogStyles["profile-dialog__profile-image"]}`}

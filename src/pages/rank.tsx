@@ -77,13 +77,14 @@ const RankItem: NextPage<{
           </label>
         </div>
         {item.profileImage ? (
-          <Image
-            alt={item.id}
-            src={item.profileImage}
-            width={40}
-            height={40}
-            className={`${rankStyles["rank-form__content__profile-img"]}`}
-          ></Image>
+          <div className={`${rankStyles["rank-form__content__profile-img"]}`}>
+            <Image
+              alt={item.id}
+              src={item.profileImage}
+              objectFit="cover"
+              layout="fill"
+            ></Image>
+          </div>
         ) : (
           <div className={`${rankStyles["rank-form__content__profile-img"]}`}>
             <span className="material-symbols-sharp">person</span>

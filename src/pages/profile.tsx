@@ -572,13 +572,14 @@ const UserProfile: NextPage = observer(() => {
                   {!profileStore.imageUrl ? (
                     <div className={`${profileStyles["image"]}`}></div>
                   ) : (
-                    <Image
-                      className={`${profileStyles["image"]}`}
-                      alt={"selected-img"}
-                      src={profileStore.imageUrl}
-                      width={152}
-                      height={152}
-                    />
+                    <div className={`${profileStyles["image"]}`}>
+                      <Image
+                        alt={"selected-img"}
+                        src={profileStore.imageUrl}
+                        objectFit="cover"
+                        layout="fill"
+                      />
+                    </div>
                   )}
                   <div className={`${profileStyles["precautions"]}`}>
                     <label className={"typography__text--small"}>

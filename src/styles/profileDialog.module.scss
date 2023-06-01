@@ -77,7 +77,8 @@
           display: flex;
           align-items: center;
           justify-content: center;
-
+          position: relative;
+          overflow: hidden;
           span {
             color: var(--system_ui-03);
             font-size: 65px;
