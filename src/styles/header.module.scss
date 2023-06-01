@@ -62,6 +62,8 @@ $-gap : 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  position: relative;
   span{
     font-size: 30px;
     color: var(--system_ui-03);

@@ -103,22 +103,23 @@ const RecentRoomList: NextPage<{ userId: string }> = observer(({ userId }) => {
           return (
             <>
               {room.thumbnail ? (
-                <Image
-                  key={room.id}
-                  className={`${headerStyles["recent-room-item"]}`}
-                  alt={"room_thumbnail"}
-                  src={room.thumbnail || DEFAULT_THUMBNAIL_URL}
-                  width={44}
-                  height={44}
-                  onClick={() => joinRecentRoom(room.id)}
-                  onMouseEnter={(e) => {
-                    setShowDialog(room.title);
-                    onMouseEnter(e);
-                  }}
-                  onMouseLeave={() => {
-                    setShowDialog("");
-                  }}
-                ></Image>
+                <div className={`${headerStyles["recent-room-item"]}`}>
+                  <Image
+                    key={room.id}
+                    alt={"room_thumbnail"}
+                    src={room.thumbnail}
+                    objectFit="cover"
+                    layout="fill"
+                    onClick={() => joinRecentRoom(room.id)}
+                    onMouseEnter={(e) => {
+                      setShowDialog(room.title);
+                      onMouseEnter(e);
+                    }}
+                    onMouseLeave={() => {
+                      setShowDialog("");
+                    }}
+                  ></Image>
+                </div>
               ) : (
                 <div
                   className={`${headerStyles["recent-room-item"]}`}
