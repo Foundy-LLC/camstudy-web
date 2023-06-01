@@ -226,6 +226,7 @@ const UserProfile: NextPage<{ userId: string }> = observer(({ userId }) => {
           }
 
           .image {
+            display: flex;
             width: 44px;
             height: 44px;
             padding-right: 0.75rem;

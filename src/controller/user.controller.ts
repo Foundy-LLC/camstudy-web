@@ -231,7 +231,7 @@ export const postProfileImage = async (
     await runMiddleware(req, res, multerUpload.single("profileImage"));
     const file = req.file;
     const signedUrl = await multipartUploader(
-      "users/" + userId + ".png",
+      "users/" + userId + `.png?v=${uuidv4()}`,
       file.path
     );
     await updateUserProfileImage(userId, signedUrl);
