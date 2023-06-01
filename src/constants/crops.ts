@@ -15,6 +15,23 @@ export interface Crops {
 
 export const CROPS: Crops[] = [
   {
+    type: crops_type.carrot,
+    requireDay: 3,
+    imageUrls: [
+      "/carrot/plant_carrot_1.png",
+      "/carrot/plant_carrot_2.png",
+      "/carrot/plant_carrot_3.png",
+    ],
+    harvestedImageUrl: [
+      "/carrot/item_wither_carrot_1.png",
+      "/carrot/item_carrot_1.png",
+      "/carrot/item_silver_carrot_1.png",
+      "/carrot/item_gold_carrot_1.png",
+      "/carrot/item_diamond_carrot_1.png",
+    ],
+    introduce: "말이 좋아하는 간식. 홍당무로도 불려요",
+  },
+  {
     type: crops_type.tomato,
     requireDay: 5,
     imageUrls: [
@@ -70,23 +87,6 @@ export const CROPS: Crops[] = [
       "/pumpkin/item_diamond_pumpkin_1.png",
     ],
     introduce: "세계에서 가장 큰 열매를 맺는 식물",
-  },
-  {
-    type: crops_type.carrot,
-    requireDay: 3,
-    imageUrls: [
-      "/carrot/plant_carrot_1.png",
-      "/carrot/plant_carrot_2.png",
-      "/carrot/plant_carrot_3.png",
-    ],
-    harvestedImageUrl: [
-      "/carrot/item_wither_carrot_1.png",
-      "/carrot/item_carrot_1.png",
-      "/carrot/item_silver_carrot_1.png",
-      "/carrot/item_gold_carrot_1.png",
-      "/carrot/item_diamond_carrot_1.png",
-    ],
-    introduce: "말이 좋아하는 간식. 홍당무로도 불려요",
   },
   {
     type: crops_type.cabbage,
