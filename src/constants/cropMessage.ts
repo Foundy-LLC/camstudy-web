@@ -16,3 +16,4 @@ export const FETCH_GROWING_CROPS_SUCCESS =
   "성장 중인 작물을 성공적으로 조회했습니다.";
 export const NO_CROP_TYPE_AND_PLANTED_DATE =
   "targetCropTypeAndPlantedDate 가 없습니다.";
+export const SYSTEM = "system";

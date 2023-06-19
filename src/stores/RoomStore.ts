@@ -28,6 +28,7 @@ import { auth } from "@/service/firebase";
 import { BlockedUser } from "@/models/room/BlockedUser";
 import { convertToKoreaDate } from "@/utils/DateUtil";
 import { UserStore } from "@/stores/UserStore";
+import { SYSTEM } from "@/constants/cropMessage";
 
 export interface RoomViewModel {
   onConnectedWaitingRoom: (waitingRoomData: WaitingRoomData) => void;
@@ -585,6 +586,19 @@ export class RoomStore implements RoomViewModel {
   };
 
   public onChangePeerState = (state: PeerState) => {
+    const isExist = this._peerStates.find((peerState) => {
+      return peerState.uid === state.uid;
+    });
+    if (!isExist) {
+      this._chatMessages.push({
+        id: "",
+        authorId: "",
+        authorName: "",
+        content: `${state.name}님이 입장하셨습니다.`,
+        sentAt: "",
+        type: SYSTEM,
+      });
+    }
     this._peerStates = this._peerStates.filter((s) => state.uid !== s.uid);
     this._peerStates.push(state);
   };
@@ -639,12 +653,36 @@ export class RoomStore implements RoomViewModel {
     switch (event) {
       case PomodoroTimerEvent.ON_START:
         this._pomodoroTimerState = PomodoroTimerState.STARTED;
+        this._chatMessages.push({
+          id: "",
+          authorId: "",
+          authorName: "",
+          content: `공부 타이머가 시작되었어요.`,
+          sentAt: "",
+          type: SYSTEM,
+        });
         break;
       case PomodoroTimerEvent.ON_SHORT_BREAK:
         this._pomodoroTimerState = PomodoroTimerState.SHORT_BREAK;
+        this._chatMessages.push({
+          id: "",
+          authorId: "",
+          authorName: "",
+          content: `휴식 타이머가 시작되었어요.`,
+          sentAt: "",
+          type: SYSTEM,
+        });
         break;
       case PomodoroTimerEvent.ON_LONG_BREAK:
         this._pomodoroTimerState = PomodoroTimerState.LONG_BREAK;
+        this._chatMessages.push({
+          id: "",
+          authorId: "",
+          authorName: "",
+          content: `휴식 타이머가 시작되었어요.`,
+          sentAt: "",
+          type: SYSTEM,
+        });
         break;
     }
   };
@@ -725,6 +763,14 @@ export class RoomStore implements RoomViewModel {
   };
 
   public onDisposedPeer = (peerId: string): void => {
+    this._chatMessages.push({
+      id: "",
+      authorId: "",
+      authorName: "",
+      content: `${this.getUserNameBy(peerId)}님이 퇴장하셨습니다.`,
+      sentAt: "",
+      type: SYSTEM,
+    });
     this._remoteVideoStreamsByPeerId.delete(peerId);
     this._remoteAudioStreamsByPeerId.delete(peerId);
     this._peerStates = this._peerStates.filter((peer) => peer.uid !== peerId);

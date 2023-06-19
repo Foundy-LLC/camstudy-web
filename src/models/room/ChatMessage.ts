@@ -6,4 +6,5 @@ export interface ChatMessage {
   readonly content: string;
   /** ISO time string format */
   readonly sentAt: string;
+  readonly type: string;
 }

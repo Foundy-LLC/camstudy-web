@@ -22,6 +22,7 @@ import { PomodoroTimerProperty } from "@/models/room/PomodoroTimerProperty";
 import Modal from "react-modal";
 import { UserStore } from "@/stores/UserStore";
 import WaitingRoom from "@/components/WaitingRoom";
+import { SYSTEM } from "@/constants/cropMessage";
 
 export enum MasterPopupMenus {
   Kick = "강퇴",
@@ -1357,23 +1358,36 @@ const ChatMessage: NextPage<{ messages: ChatMessage[] }> = observer(
           id={"chatContainer"}
         >
           {messages.map((message) => {
-            return (
-              <div
-                key={message.id}
-                className={`${studyRoomStyles["study-room__chat-form__text-field__chat"]} typography__text--small`}
-              >
-                <label
-                  className={`${studyRoomStyles["study-room__chat-form__text-field__name"]}`}
-                >
-                  {message.authorName}
-                </label>
-                <label
-                  className={`${studyRoomStyles["study-room__chat-form__text-field__text"]}`}
-                >
-                  {message.content}
-                </label>
-              </div>
-            );
+            {
+              if (message.type === SYSTEM) {
+                return (
+                  <div
+                    key={message.id}
+                    className={`${studyRoomStyles["study-room__chat-form__text-field__notice"]} typography__text--small`}
+                  >
+                    <label>{message.content}</label>
+                  </div>
+                );
+              } else {
+                return (
+                  <div
+                    key={message.id}
+                    className={`${studyRoomStyles["study-room__chat-form__text-field__chat"]} typography__text--small`}
+                  >
+                    <label
+                      className={`${studyRoomStyles["study-room__chat-form__text-field__name"]}`}
+                    >
+                      {message.authorName}
+                    </label>
+                    <label
+                      className={`${studyRoomStyles["study-room__chat-form__text-field__text"]}`}
+                    >
+                      {message.content}
+                    </label>
+                  </div>
+                );
+              }
+            }
           })}
         </div>
         <style jsx>{`
